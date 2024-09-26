@@ -1,12 +1,12 @@
 {
-    "name": "inertiaui-modal",
+    "name": "@inertiaui/modal",
     "author": "Pascal Baljet <pascal@protone.media>",
-    "license": "Commercial",
-    "private": true,
+    "private": false,
+    "license": "MIT",
     "type": "module",
     "files": [
-        "dist/inertiaui-modal.js",
-        "dist/inertiaui-modal.umd.js"
+        "dist",
+        "src"
     ],
     "module": "./dist/inertiaui-modal.js",
     "main": "./dist/inertiaui-modal.umd.js",
