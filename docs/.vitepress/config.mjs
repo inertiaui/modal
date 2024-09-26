@@ -21,7 +21,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Documentation', link: '/introduction' },
-      { text: 'Demo', link: 'https://form-demo.inertiaui.com' },
+      { text: 'Demo', link: 'https://www.youtube.com/watch?v=KAKOosmWV14' },
       { text: 'Inertia UI portal', link: 'https://inertiaui.com/dashboard' }
     ],
 
@@ -57,7 +57,7 @@ export default defineConfig({
     aside: false,
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/inertiaui' },
+      { icon: 'github', link: 'https://github.com/inertiaui/modal' },
       { icon: 'twitter', link: 'https://twitter.com/pascalbaljet' },
       { icon: 'youtube', link: 'https://youtube.com/pascalbaljet' },
     ]
