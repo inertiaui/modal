@@ -1,0 +1,14 @@
+.idea
+.phpunit.cache
+build
+composer.lock
+coverage
+phpunit.xml
+phpstan.neon
+testbench.yaml
+vendor
+node_modules
+/docs/.vitepress/cache
+/demo-app/storage/debugbar
+.DS_Store
+/demo-app/tests/Browser/downloads

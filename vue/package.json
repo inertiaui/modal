@@ -1,0 +1,52 @@
+{
+    "name": "inertiaui-modal",
+    "author": "Pascal Baljet <pascal@protone.media>",
+    "license": "Commercial",
+    "private": true,
+    "type": "module",
+    "files": [
+        "dist/inertiaui-modal.js",
+        "dist/inertiaui-modal.umd.js"
+    ],
+    "module": "./dist/inertiaui-modal.js",
+    "main": "./dist/inertiaui-modal.umd.js",
+    "exports": {
+        ".": {
+            "import": "./dist/inertiaui-modal.js",
+            "require": "./dist/inertiaui-modal.umd.js"
+        }
+    },
+    "scripts": {
+        "dev": "vite build --watch",
+        "build": "vite build",
+        "build-watch": "vite build --watch",
+        "eslint": "eslint \"src/**/*.{js,vue}\" --fix",
+        "prettier": "prettier -w src/",
+        "test": "vitest"
+    },
+    "dependencies": {
+        "@headlessui/vue": "^1.7.22"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.0.0",
+        "@vitest/coverage-v8": "^2.1.1",
+        "@vitest/ui": "^2.1.1",
+        "@vue/test-utils": "^2.4.6",
+        "eslint": "^8.52.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-prettier": "^5.1.0",
+        "eslint-plugin-tailwindcss": "^3.15.1",
+        "eslint-plugin-unused-imports": "^3.1.0",
+        "eslint-plugin-vue": "^9.23.0",
+        "happy-dom": "^15.7.4",
+        "prettier": "^3.2.4",
+        "prettier-plugin-tailwindcss": "^0.5.12",
+        "vite": "^5.0",
+        "vite-plugin-eslint": "^1.8.1",
+        "vitest": "^2.1.1"
+    },
+    "peerDependencies": {
+        "@inertiajs/vue3": "^1.2.0",
+        "vue": "^3.4.x"
+    }
+}

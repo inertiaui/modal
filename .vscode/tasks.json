@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Serve Demo App",
+            "command": "php artisan serve",
+            "type": "shell",
+            "options": { "cwd": "${workspaceFolder}/demo-app" },
+            "runOptions": { "runOn": "folderOpen" }
+        },
+        {
+            "label": "Build Demo App",
+            "command": "npm run dev",
+            "type": "shell",
+            "options": { "cwd": "${workspaceFolder}/demo-app" },
+            "runOptions": { "runOn": "folderOpen" }
+        },
+        {
+            "label": "Build React library",
+            "command": "npm run dev",
+            "type": "shell",
+            "options": { "cwd": "${workspaceFolder}/react" },
+            "runOptions": { "runOn": "folderOpen" }
+        },
+        {
+            "label": "Build Vue library",
+            "command": "npm run dev",
+            "type": "shell",
+            "options": { "cwd": "${workspaceFolder}/vue" },
+            "runOptions": { "runOn": "folderOpen" }
+        },
+        {
+            "label": "Migrate and seed database",
+            "command": "php artisan migrate:fresh --seed",
+            "type": "shell",
+            "options": { "cwd": "${workspaceFolder}/demo-app" },
+        }
+    ]
+}

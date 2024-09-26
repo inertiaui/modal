@@ -1,0 +1,91 @@
+<script setup>
+import { useForm } from '@inertiajs/vue3';
+import { Modal, ModalLink } from 'inertiaui/modal';
+import { ref } from 'vue';
+
+const props = defineProps({
+    user: Object,
+    roles: Object,
+});
+
+const form = useForm({
+    name: props.user.name,
+    email: props.user.email,
+    role_id: props.user.role_id,
+})
+
+const modalRef = ref(null)
+const messageRef = ref('')
+
+function submit() {
+    form.put(`/users/${props.user.id}`, {
+        onSuccess() {
+            modalRef.value.close()
+        }
+    })
+}
+
+function onMessage(message) {
+    messageRef.value = message
+    modalRef.value.getChildModal().emit('greeting', `Thanks from ${props.user.name}`)
+}
+</script>
+
+<template>
+    <Modal
+        ref="modalRef"
+        @message="onMessage"
+        #default="{ close, reload, emit }"
+    >
+        <div class="">
+            <h2 class="text-lg font-medium text-gray-900">Edit User</h2>
+            <p dusk="message" v-text="messageRef" v-if="messageRef" class="text-sm text-gray-500" />
+        </div>
+
+        <button type="button" @click="emit('user-greets', 'Hello from EditUser.vue')" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Send Message
+        </button>
+
+        <form @submit.prevent="submit" class="mt-8 space-y-6">
+            <div class="grid grid-cols-3 gap-6">
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input v-model="form.name" type="text" id="name" name="name" autocomplete="off" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <p v-if="form.errors.name" class="mt-2 text-sm text-red-600" v-text="form.errors.name"></p>
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input v-model="form.email" type="email" id="email" name="email" autocomplete="off" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <p v-if="form.errors.email" class="mt-2 text-sm text-red-600" v-text="form.errors.email"></p>
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                    <select v-model="form.role_id" id="role" name="role" autocomplete="off" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <option v-for="(role, id) in props.roles" :key="id" :value="id" v-text="role"></option>
+                    </select>
+
+                    <ModalLink
+                        fragment="add-role"
+                        @close="reload({ only: ['roles'] })"
+                        href="/roles/create" class="mt-2 text-sm text-indigo-600 hover:text-indigo-500 bg-transparent border border-indigo-500 rounded-md py-1 px-2 inline-flex items-center">
+                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Role
+                    </ModalLink>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="button" @click="close" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Cancel
+                </button>
+                <button type="submit" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Save
+                </button>
+            </div>
+        </form>
+    </Modal>
+</template>
