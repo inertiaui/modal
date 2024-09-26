@@ -34,7 +34,7 @@ The page you linked can then use the `Modal` component to wrap its content in a 
 
 ```vue
 <script setup>
-import { ModalLink } from '@inertiaui/modal-vue'
+import { Modal } from '@inertiaui/modal-vue'
 </script>
 
 <template>
