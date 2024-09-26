@@ -1,5 +1,6 @@
 {
-    "name": "@inertiaui/modal",
+    "name": "@inertiaui/modal-vue",
+    "version": "0.1.0",
     "author": "Pascal Baljet <pascal@protone.media>",
     "private": false,
     "license": "MIT",
