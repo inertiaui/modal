@@ -1,6 +1,6 @@
 # Inertia Modal
 
-![tests](https://github.com/inertiaui/modal/workflows/tests/badge.svg)
+[![Tests](https://github.com/inertiaui/modal/actions/workflows/tests.yml/badge.svg)](https://github.com/inertiaui/modal/actions/workflows/tests.yml)
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/pascalbaljet)
 
 Inertia Modal is part of [Inertia UI](https://inertiaui.com), a suite of packages designed for Laravel, Inertia.js, and Tailwind CSS. With Inertia Modal, you can easily **open any route in a Modal or Slideover** without having to change anything about your existing routes or controllers.
