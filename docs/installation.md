@@ -2,9 +2,17 @@
 
 Now you can install Inertia Modal using npm:
 
-```bash
-npm install inertiaui/modal-vue
+::: code-group
+
+```bash [Vue]
+npm install @inertiaui/modal-vue
 ```
+
+```bash [React]
+npm install @inertiaui/modal-react
+```
+
+:::
 
 There's no backend package required for Inertia Modal, so you don't need to install anything using Composer.
 
@@ -17,7 +25,7 @@ Inertia Modal uses Tailwind CSS for styling. You need to include the package pat
 ```js [Vue]
 export default {
     content: [
-        './node_modules/inertiaui/modal-vue/**/*.{js,vue}',
+        './node_modules/@inertiaui/modal-vue/src/**/*.{js,vue}',
         // other paths...
     ]
 }
@@ -26,7 +34,7 @@ export default {
 ```js [React]
 export default {
     content: [
-        './node_modules/inertiaui/modal-react/**/*.{js,jsx}',
+        './node_modules/@inertiaui/modal-react/src/**/*.{js,jsx}',
         // other paths...
     ]
 }

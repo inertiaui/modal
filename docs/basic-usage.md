@@ -6,14 +6,14 @@ To use the components, you need to import them into your page:
 
 ```vue
 <script setup>
-import { Modal, ModalLink } from 'inertiaui/modal-vue'
+import { Modal, ModalLink } from '@inertiaui/modal-vue'
 </script>
 ```
 
 Instead of importing the components on every page, you may also consider importing them globally in your `app.js` file:
 
 ```js{7-8}
-import { Modal, ModalLink } from 'inertiaui/modal-vue'
+import { Modal, ModalLink } from '@inertiaui/modal-vue'
 
 createInertiaApp({
     setup({ el, App, props, plugin }) {

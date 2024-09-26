@@ -97,7 +97,7 @@ The `slideover` prop allows you to open the modal as a slideover instead of a mo
 You can set the default configuration for all modals and slideovers by importing the `putConfig` function from the package, for example, in your `app.js` file.
 
 ```js
-import { putConfig } from 'inertiaui/modal-vue'
+import { putConfig } from '@inertiaui/modal-vue'
 ```
 
 You can call the `putConfig` function with an object containing the configuration that you want to set as the default. Here is an example with the default configuration. Note that there are separate keys for modals and slideovers.
