@@ -9,7 +9,7 @@ export default defineConfig({
       {
         defer: '',
         src: 'https://helloworld.protone.media/hey.js',
-        'data-website-id': '553d745e-2115-4553-9d5d-  '
+        'data-website-id': '553d745e-2115-4553-9d5d-bf4bc49052f5'
       }
     ] : [],
     ['link', { rel: 'icon', href: '/favicon.ico' }]
