@@ -116,12 +116,12 @@ function callLocalModal(name, modalProps, onClose, afterLeave) {
     }
 }
 
-function visit(href, method, data, headers, modalProps, onClose, onAfterLeave, queryStringArrayFormat = 'brackets') {
-    ;[href, data] = mergeDataIntoQueryString(method, href || '', data, queryStringArrayFormat)
+function visit(href, method, payload = {}, headers = {}, modalProps = {}, onClose, onAfterLeave, queryStringArrayFormat = 'brackets') {
+    const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
     return new Promise((resolve, reject) => {
         Axios({
-            url: href,
+            url,
             method,
             data,
             headers: {

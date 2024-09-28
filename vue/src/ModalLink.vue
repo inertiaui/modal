@@ -10,7 +10,6 @@ const props = defineProps({
     },
     method: {
         type: String,
-        required: false,
         default: 'get',
     },
     data: {
@@ -23,7 +22,6 @@ const props = defineProps({
     },
     fragment: {
         type: String,
-        required: false,
         default: null,
     },
     headers: {

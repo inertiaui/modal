@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useModalStack, modalPropNames } from './../src/modalStack'
-import { ref } from 'vue'
 import axios from 'axios'
+import { usePage, router } from '@inertiajs/vue3'
 
 vi.mock('@inertiajs/vue3', () => ({
-    router: {},
+    router: {
+        resolveComponent: vi.fn(),
+    },
     usePage: vi.fn(),
 }))
 
@@ -207,6 +209,66 @@ describe('modalStack', () => {
             expect(modal.componentProps.value.test).toBe('updated')
             expect(modal.componentProps.value.another).toBe('prop') // This should not change
             expect(modal.componentProps.value.third).toBe('updated value')
+        })
+
+        it('should make an Axios request and push a new modal', async () => {
+            const href = '/test-url'
+            const method = 'get'
+            const data = { key: 'value' }
+            const headers = { 'Custom-Header': 'Test' }
+            const modalProps = { closeButton: true }
+            const onClose = vi.fn()
+            const onAfterLeave = vi.fn()
+
+            const mockResponse = {
+                data: {
+                    component: 'TestComponent',
+                    props: { testProp: 'value' },
+                    url: '/test-url',
+                    version: '1',
+                },
+            }
+
+            const mockComponent = { name: 'TestComponent' }
+
+            vi.mocked(axios).mockResolvedValue(mockResponse)
+            vi.mocked(router.resolveComponent).mockResolvedValue(mockComponent)
+            vi.mocked(usePage).mockReturnValue({ version: '1.0' })
+
+            const result = await modalStack.visit(href, method, data, headers, modalProps, onClose, onAfterLeave)
+
+            expect(axios).toHaveBeenCalledWith({
+                url: '/test-url?key=value',
+                method: 'get',
+                data: {},
+                headers: {
+                    'Custom-Header': 'Test',
+                    Accept: 'text/html, application/xhtml+xml',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-Inertia': true,
+                    'X-Inertia-Version': '1.0',
+                    'X-InertiaUI-Modal': true,
+                },
+            })
+
+            expect(router.resolveComponent).toHaveBeenCalledWith('TestComponent')
+
+            expect(result).toBeDefined()
+            expect(result.component).toBe(mockComponent)
+            expect(result.response).toEqual(mockResponse.data)
+            expect(result.modalProps).toEqual(modalProps)
+            expect(modalStack.stack.value).toHaveLength(1)
+        })
+
+        it('should handle errors during the visit', async () => {
+            const href = '/test-url'
+            const method = 'get'
+
+            const mockError = new Error('Network Error')
+            vi.mocked(axios).mockRejectedValue(mockError)
+
+            await expect(modalStack.visit(href, method)).rejects.toThrow('Network Error')
+            expect(modalStack.stack.value).toHaveLength(0)
         })
     })
 
