@@ -138,6 +138,7 @@ describe('modalStack', () => {
 
             expect(axios.get).toHaveBeenCalledWith('/test', {
                 headers: {
+                    Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
@@ -166,6 +167,7 @@ describe('modalStack', () => {
 
             expect(axios.get).toHaveBeenCalledWith('/test', {
                 headers: {
+                    Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
@@ -194,6 +196,7 @@ describe('modalStack', () => {
 
             expect(axios.get).toHaveBeenCalledWith('/test', {
                 headers: {
+                    Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
