@@ -1,6 +1,8 @@
-import { computed, readonly, ref } from 'vue'
+import { computed, readonly, ref, markRaw } from 'vue'
 import { default as Axios } from 'axios'
 import { except, only } from './helpers'
+import { router, usePage } from '@inertiajs/vue3'
+import { mergeDataIntoQueryString } from '@inertiajs/core'
 
 const stack = ref([])
 const localModals = ref({})
@@ -89,6 +91,7 @@ class Modal {
 
         Axios.get(this.response.url, {
             headers: {
+                Accept: 'text/html, application/xhtml+xml',
                 'X-Inertia': true,
                 'X-Inertia-Partial-Component': this.response.component,
                 'X-Inertia-Version': this.response.version,
@@ -113,6 +116,34 @@ function callLocalModal(name, modalProps, onClose, afterLeave) {
     }
 }
 
+function visit(href, method, data, headers, modalProps, onClose, onAfterLeave, queryStringArrayFormat = 'brackets') {
+    ;[href, data] = mergeDataIntoQueryString(method, href || '', data, queryStringArrayFormat)
+
+    return new Promise((resolve, reject) => {
+        Axios({
+            url: href,
+            method,
+            data,
+            headers: {
+                ...headers,
+                Accept: 'text/html, application/xhtml+xml',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-Inertia': true,
+                'X-Inertia-Version': usePage().version,
+                'X-InertiaUI-Modal': true,
+            },
+        })
+            .then((response) => {
+                router.resolveComponent(response.data.component).then((component) => {
+                    resolve(push(markRaw(component), response.data, modalProps, onClose, onAfterLeave))
+                })
+            })
+            .catch((error) => {
+                reject(error)
+            })
+    })
+}
+
 function push(component, response, modalProps, onClose, afterLeave) {
     const newModal = new Modal(component, response, modalProps, onClose, afterLeave)
     stack.value.push(newModal)
@@ -126,6 +157,7 @@ export function useModalStack() {
         stack: readonly(stack),
         push,
         reset: () => (stack.value = []),
+        visit,
         callLocalModal,
         registerLocalModal,
         removeLocalModal: (name) => delete localModals.value[name],
