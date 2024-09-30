@@ -42,6 +42,13 @@ Route::post('/roles', function () {
     return back();
 })->name('roles.store');
 
+// POST route that returns Modal
+Route::post('/data', function () {
+    return inertia('Data', [
+        'message' => request()->input('message'),
+    ]);
+});
+
 // General pages
 Route::get('{page}', function ($page) {
     if (request()->query('slow')) {

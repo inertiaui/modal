@@ -1,14 +1,20 @@
 <script setup>
-import { default as Axios } from 'axios'
 import { modalPropNames, useModalStack } from './modalStack'
-import { nextTick, ref, provide, watch, markRaw, onMounted, useAttrs } from 'vue'
+import { nextTick, ref, provide, watch, onMounted, useAttrs } from 'vue'
 import { only, rejectNullValues } from './helpers'
-import { router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
     href: {
         type: String,
         required: true,
+    },
+    method: {
+        type: String,
+        default: 'get',
+    },
+    data: {
+        type: Object,
+        default: () => ({}),
     },
     as: {
         type: String,
@@ -16,12 +22,15 @@ const props = defineProps({
     },
     fragment: {
         type: String,
-        required: false,
         default: null,
     },
     headers: {
         type: Object,
         default: () => ({}),
+    },
+    queryStringArrayFormat: {
+        type: String,
+        default: 'brackets',
     },
     // Passthrough to Modal.vue
     closeButton: {
@@ -142,29 +151,11 @@ function handle() {
     loading.value = true
     emit('start')
 
-    Axios({
-        method: 'get',
-        url: props.href,
-        headers: {
-            ...props.headers,
-            Accept: 'text/html, application/xhtml+xml',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-Inertia': true,
-            'X-Inertia-Version': usePage().version,
-            'X-InertiaUI-Modal': true,
-        },
-    })
-        .then((response) => {
-            router.resolveComponent(response.data.component).then((component) => {
-                modalContext.value = modalStack.push(markRaw(component), response.data, modalProps, onClose, onAfterLeave)
-            })
-        })
-        .catch((error) => {
-            emit('error', error)
-        })
-        .finally(() => {
-            loading.value = false
-        })
+    modalStack
+        .visit(props.href, props.method, props.data, props.headers, modalProps, onClose, onAfterLeave, props.queryStringArrayFormat)
+        .then((context) => (modalContext.value = context))
+        .catch((error) => emit('error', error))
+        .finally(() => (loading.value = false))
 }
 </script>
 
