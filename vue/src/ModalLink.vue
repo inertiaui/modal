@@ -153,15 +153,9 @@ function handle() {
 
     modalStack
         .visit(props.href, props.method, props.data, props.headers, modalProps, onClose, onAfterLeave, props.queryStringArrayFormat)
-        .then((context) => {
-            modalContext.value = context
-        })
-        .catch((error) => {
-            emit('error', error)
-        })
-        .finally(() => {
-            loading.value = false
-        })
+        .then((context) => (modalContext.value = context))
+        .catch((error) => emit('error', error))
+        .finally(() => (loading.value = false))
 }
 </script>
 
