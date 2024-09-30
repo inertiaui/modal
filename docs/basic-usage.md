@@ -57,6 +57,22 @@ The `ModalLink` component is very similar to Inertia's [built-in `Link` componen
 </template>
 ```
 
+### Method and Data
+
+The `method` prop allows you to specify the HTTP method that should be used when requesting the modal. By default, the method is set to `get`. With the `data` prop, you can pass additional data to the backend.
+
+```vue
+<template>
+    <ModalLink
+        href="/users/create"
+        method="post"
+        :data="{ default_name: 'John Doe' }"
+    >
+        Create User
+    </ModalLink>
+</template>
+```
+
 ### Headers
 
 The `headers` prop allows you to pass additional headers to the Inertia request. This is useful if you need to pass custom headers to the backend.
