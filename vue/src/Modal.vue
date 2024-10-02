@@ -1,6 +1,7 @@
 <script setup>
 import { inject, onBeforeUnmount, ref, provide } from 'vue'
 import ModalContent from './ModalContent.vue'
+import ModalResolver from './ModalWrapper.vue'
 import ModalWrapper from './ModalWrapper.vue'
 import SlideoverContent from './SlideoverContent.vue'
 import { useModalStack } from './modalStack'
@@ -61,5 +62,11 @@ defineExpose({
                 :reload="modalContext.reload"
             />
         </component>
+
+        <!-- The next modal in the stack -->
+        <ModalResolver
+            v-if="modalStack.stack.value[modalContext.index + 1]"
+            :index="modalContext.index + 1"
+        />
     </ModalWrapper>
 </template>
