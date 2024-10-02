@@ -1,5 +1,5 @@
 <script setup>
-import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, nextTick } from 'vue'
+import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog } from '@headlessui/vue'
 
 import { getConfig, getConfigByType } from './config'

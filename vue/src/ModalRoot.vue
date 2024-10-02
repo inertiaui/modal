@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount } from 'vue';
+import { onBeforeMount } from 'vue'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
 
