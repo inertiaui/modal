@@ -1,5 +1,5 @@
 <script setup>
-import { inject, onBeforeUnmount, ref, computed } from 'vue'
+import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, nextTick } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog } from '@headlessui/vue'
 
 import { getConfig, getConfigByType } from './config'
@@ -7,7 +7,7 @@ import { modalPropNames } from './modalStack'
 import { only } from './helpers'
 import { useModalStack } from './modalStack'
 import ModalContent from './ModalContent.vue'
-import ModalResolver from './ModalResolver.vue'
+import ModalRenderer from './ModalRenderer.vue'
 import SlideoverContent from './SlideoverContent.vue'
 
 const props = defineProps({
@@ -56,9 +56,11 @@ const modalProps = computed(() => {
     }
 })
 
+// Local Modals...
 if (props.name) {
     modalStack.registerLocalModal(props.name, function (context) {
         modalContext.value = context
+        registerEventListeners()
     })
 
     onBeforeUnmount(() => {
@@ -66,32 +68,33 @@ if (props.name) {
     })
 }
 
+onMounted(() => {
+    modalStack.verifyRoot()
+
+    if (!props.name) {
+        registerEventListeners()
+    }
+})
+
 function closeDialog() {
     if (!modalProps.value.closeExplicitly) {
         modalContext.value.close()
     }
 }
 
+const unsubscribeEventListeners = ref(null)
+onBeforeUnmount(() => unsubscribeEventListeners.value?.())
+
 const $attrs = useAttrs()
 
-Object.keys($attrs)
-    .filter((key) => key.startsWith('on'))
-    .forEach((key) => {
-        // e.g. onRefreshKey -> refresh-key
-        const snakeCaseKey = key
-            .replace(/^on/, '')
-            .replace(/^./, (firstLetter) => firstLetter.toLowerCase())
-            .replace(/([A-Z])/g, '-$1')
-            .toLowerCase()
+function registerEventListeners() {
+    unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs)
+}
 
-        // TODO: after unmounting, we need to remove the event listener
-        modalContext.value.on(snakeCaseKey, $attrs[key])
-    })
-
-const emits = defineEmits(['emit'])
+const emits = defineEmits(['modal-event'])
 
 function emit(event, ...args) {
-    emits('emit', event, ...args)
+    emits('modal-event', event, ...args)
 }
 
 defineExpose({
@@ -163,7 +166,7 @@ defineExpose({
             </component>
 
             <!-- The next modal in the stack -->
-            <ModalResolver
+            <ModalRenderer
                 v-if="modalStack.stack.value[modalContext.index + 1]"
                 :index="modalContext.index + 1"
             />

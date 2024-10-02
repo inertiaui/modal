@@ -56,7 +56,6 @@ class Modal {
     }
 
     afterLeave = () => {
-        // console.log(`After leave modal ${this.id}`)
         stack.value = stack.value.filter((m) => m.id !== this.id)
         this.afterLeaveCallback()
     }
@@ -76,6 +75,26 @@ class Modal {
 
     emit = (event, ...args) => {
         this.listeners[event]?.forEach((callback) => callback(...args))
+    }
+
+    registerEventListenersFromAttrs = ($attrs) => {
+        const unsubscribers = []
+
+        Object.keys($attrs)
+            .filter((key) => key.startsWith('on'))
+            .forEach((key) => {
+                // e.g. onRefreshKey -> refresh-key
+                const snakeCaseKey = key
+                    .replace(/^on/, '')
+                    .replace(/^./, (firstLetter) => firstLetter.toLowerCase())
+                    .replace(/([A-Z])/g, '-$1')
+                    .toLowerCase()
+
+                this.on(snakeCaseKey, $attrs[key])
+                unsubscribers.push(() => this.off(snakeCaseKey, $attrs[key]))
+            })
+
+        return () => unsubscribers.forEach((unsub) => unsub())
     }
 
     reload = (options = {}) => {
@@ -150,6 +169,8 @@ function push(component, response, modalProps, onClose, afterLeave) {
     return newModal
 }
 
+export const rootPresent = ref(false)
+
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
 export function useModalStack() {
@@ -161,5 +182,13 @@ export function useModalStack() {
         callLocalModal,
         registerLocalModal,
         removeLocalModal: (name) => delete localModals.value[name],
+        rootPresent,
+        verifyRoot: () => {
+            if (!rootPresent.value) {
+                throw new Error(
+                    'The <ModalRoot> component is missing from your app layout. Please check the documentation for more information: https://inertiaui.com/inertia-modal/docs/installation',
+                )
+            }
+        },
     }
 }

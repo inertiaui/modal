@@ -1,6 +1,6 @@
 <script setup>
 import { modalPropNames, useModalStack } from './modalStack'
-import { nextTick, ref, provide, watch, onMounted, useAttrs } from 'vue'
+import { nextTick, ref, provide, watch, onMounted, useAttrs, onBeforeUnmount } from 'vue'
 import { only, rejectNullValues } from './helpers'
 
 const props = defineProps({
@@ -95,26 +95,20 @@ watch(
 )
 
 onMounted(() => {
+    modalStack.verifyRoot()
+
     if (props.fragment && window.location.hash === `#${props.fragment}`) {
         handle()
     }
 })
 
+const unsubscribeEventListeners = ref(null)
+onBeforeUnmount(() => unsubscribeEventListeners.value?.())
+
 const $attrs = useAttrs()
 
 function registerEventListeners() {
-    Object.keys($attrs)
-        .filter((key) => key.startsWith('on'))
-        .forEach((key) => {
-            // e.g. onRefreshKey -> refresh-key
-            const snakeCaseKey = key
-                .replace(/^on/, '')
-                .replace(/^./, (firstLetter) => firstLetter.toLowerCase())
-                .replace(/([A-Z])/g, '-$1')
-                .toLowerCase()
-
-            modalContext.value.on(snakeCaseKey, $attrs[key])
-        })
+    unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs)
 }
 
 watch(modalContext, (value, oldValue) => {
@@ -123,7 +117,6 @@ watch(modalContext, (value, oldValue) => {
             window.location.hash = props.fragment
         }
 
-        // TODO: after unmounting, remove event listeners
         registerEventListeners()
 
         nextTick(() => {

@@ -1,14 +1,19 @@
 <script setup>
+import { onBeforeMount } from 'vue';
 import { useModalStack } from './modalStack'
-import ModalResolver from './ModalResolver.vue'
+import ModalRenderer from './ModalRenderer.vue'
 
 const modalStack = useModalStack()
+
+onBeforeMount(() => {
+    modalStack.rootPresent.value = true
+})
 </script>
 
 <template>
     <slot />
 
-    <ModalResolver
+    <ModalRenderer
         v-if="modalStack.stack.value.length"
         :index="0"
     />
