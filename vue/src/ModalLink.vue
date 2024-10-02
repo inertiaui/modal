@@ -1,6 +1,6 @@
 <script setup>
 import { modalPropNames, useModalStack } from './modalStack'
-import { nextTick, ref, provide, watch, onMounted, useAttrs, onBeforeUnmount } from 'vue'
+import { ref, provide, watch, onMounted, useAttrs, onBeforeUnmount } from 'vue'
 import { only, rejectNullValues } from './helpers'
 
 const props = defineProps({
@@ -118,11 +118,7 @@ watch(modalContext, (value, oldValue) => {
         }
 
         registerEventListeners()
-
-        nextTick(() => {
-            modalContext.value.open = true
-            emit('success')
-        })
+        emit('success')
     }
 })
 
@@ -143,18 +139,22 @@ function handle() {
         return
     }
 
-    const modalProps = rejectNullValues(only(props, modalPropNames))
-
-    if (props.href.startsWith('#')) {
-        modalContext.value = modalStack.callLocalModal(props.href.substring(1), modalProps, onClose, onAfterLeave)
-        return
+    if (!props.href.startsWith('#')) {
+        loading.value = true
+        emit('start')
     }
 
-    loading.value = true
-    emit('start')
-
     modalStack
-        .visit(props.href, props.method, props.data, props.headers, modalProps, onClose, onAfterLeave, props.queryStringArrayFormat)
+        .visit(
+            props.href,
+            props.method,
+            props.data,
+            props.headers,
+            rejectNullValues(only(props, modalPropNames)),
+            onClose,
+            onAfterLeave,
+            props.queryStringArrayFormat,
+        )
         .then((context) => (modalContext.value = context))
         .catch((error) => emit('error', error))
         .finally(() => (loading.value = false))

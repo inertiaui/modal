@@ -10,7 +10,7 @@ const localModals = ref({})
 class Modal {
     constructor(component, response, modalProps, onClose, afterLeave) {
         this.id = Modal.generateId()
-        this.open = false
+        this.open = true
         this.listeners = {}
 
         this.component = component
@@ -51,13 +51,13 @@ class Modal {
             })
 
             stack.value[index].open = false
-            this.onCloseCallback()
+            this.onCloseCallback?.()
         }
     }
 
     afterLeave = () => {
         stack.value = stack.value.filter((m) => m.id !== this.id)
-        this.afterLeaveCallback()
+        this.afterLeaveCallback?.()
     }
 
     on = (event, callback) => {
@@ -126,19 +126,26 @@ function registerLocalModal(name, callback) {
     localModals.value[name] = { name, callback }
 }
 
-function callLocalModal(name, modalProps, onClose, afterLeave) {
-    if (localModals.value[name]) {
-        const modal = push(null, {}, modalProps, onClose, afterLeave)
-        modal.name = name
-        localModals.value[name].callback(modal)
-        return modal
+function pushLocalModal(name, modalProps, onClose, afterLeave) {
+    if (!localModals.value[name]) {
+        throw new Error(`The local modal "${name}" has not been registered.`)
     }
+
+    const modal = push(null, {}, modalProps, onClose, afterLeave)
+    modal.name = name
+    localModals.value[name].callback(modal)
+    return modal
 }
 
-function visit(href, method, payload = {}, headers = {}, modalProps = {}, onClose, onAfterLeave, queryStringArrayFormat = 'brackets') {
+function visit(href, method, payload = {}, headers = {}, modalProps = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = 'brackets') {
     const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
     return new Promise((resolve, reject) => {
+        if (href.startsWith('#')) {
+            resolve(pushLocalModal(href.substring(1), modalProps, onClose, onAfterLeave))
+            return
+        }
+
         Axios({
             url,
             method,
@@ -179,7 +186,6 @@ export function useModalStack() {
         push,
         reset: () => (stack.value = []),
         visit,
-        callLocalModal,
         registerLocalModal,
         removeLocalModal: (name) => delete localModals.value[name],
         rootPresent,

@@ -156,3 +156,45 @@ Then there are two more events: `@close` and `@after-leave`. The `@close` event 
 ### Customizing
 
 Just like the `Modal` component, you can pass additional props to the `ModalLink` component to customize its behavior and style. Check out the [Configuration](/configuration.html) section for a list of all available props.
+
+## Programmatic Usage
+
+Instead of using the `ModalLink` component, you can also open a modal programmatically using the `visitModal` method.
+
+```vue
+<script setup>
+import { visitModal } from '@inertiaui/modal-vue'
+
+function createUserModal() {
+    visitModal('/users/create')
+}
+</script>
+
+<template>
+    <button @click="createUserModal">Create User</button>
+</template>
+```
+
+If you want to open a [Local Modal](/local-modals.html), you must prepend the URL with a `#`:
+
+```js
+visitModal('#confirm-action')
+```
+
+The `visitModal` method accepts a second argument, which is an object with options:
+
+```js
+visitModal('/users/create', {
+    method: 'post',
+    data: { default_name: 'John Doe' },
+    headers: { 'X-Header': 'Value' },
+    config: {
+        slideover: true,
+    }
+    onClose: () => console.log('Modal closed'),
+    onAfterLeave: () => console.log('Modal removed from DOM'),
+    queryStringArrayFormat: 'brackets',
+})
+```
+
+The `config` option allows you to customize the behavior and style of the modal. You should check out the [Configuration](/configuration.html#default-configuration) section for a list of all available options. The `queryStringArrayFormat` can be set to either `brackets` or `indices`.
