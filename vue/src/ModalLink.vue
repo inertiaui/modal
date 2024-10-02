@@ -102,13 +102,19 @@ onMounted(() => {
 
 const $attrs = useAttrs()
 
-function handleEmittedEvent(event, ...args) {
-    // // e.g. refresh-key -> onRefreshKey
-    const kebabEvent = event.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-    const listener = `on${kebabEvent.charAt(0).toUpperCase()}${kebabEvent.slice(1)}`
-    if (listener in $attrs) {
-        $attrs[listener](...args)
-    }
+function registerEventListeners() {
+    Object.keys($attrs)
+        .filter((key) => key.startsWith('on'))
+        .forEach((key) => {
+            // e.g. onRefreshKey -> refresh-key
+            const snakeCaseKey = key
+                .replace(/^on/, '')
+                .replace(/^./, (firstLetter) => firstLetter.toLowerCase())
+                .replace(/([A-Z])/g, '-$1')
+                .toLowerCase()
+
+            modalContext.value.on(snakeCaseKey, $attrs[key])
+        })
 }
 
 watch(modalContext, (value, oldValue) => {
@@ -116,6 +122,9 @@ watch(modalContext, (value, oldValue) => {
         if (props.fragment && modalContext.value.index === 0) {
             window.location.hash = props.fragment
         }
+
+        // TODO: after unmounting, remove event listeners
+        registerEventListeners()
 
         nextTick(() => {
             modalContext.value.open = true
@@ -168,11 +177,4 @@ function handle() {
     >
         <slot :loading="loading" />
     </component>
-
-    <modalContext.component
-        v-if="modalContext?.component"
-        v-show="false"
-        v-bind="modalContext.componentProps"
-        @emit="handleEmittedEvent"
-    />
 </template>

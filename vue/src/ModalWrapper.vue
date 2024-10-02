@@ -1,9 +1,10 @@
 <script setup>
 import { getConfig, getConfigByType } from './config'
 import { computed, inject, useAttrs } from 'vue'
-import { modalPropNames } from './modalStack'
+import { modalPropNames, useModalStack } from './modalStack'
 import { only } from './helpers'
 import { TransitionRoot, TransitionChild, Dialog } from '@headlessui/vue'
+import ModalResolver from './ModalResolver.vue'
 
 const props = defineProps({
     // The slideover prop in on top because we need to know if it's a slideover
@@ -38,6 +39,7 @@ const props = defineProps({
     },
 })
 
+const modalStack = useModalStack()
 const modalContext = inject('modalContext')
 const modalProps = computed(() => {
     return {
@@ -64,6 +66,7 @@ Object.keys($attrs)
             .replace(/([A-Z])/g, '-$1')
             .toLowerCase()
 
+        // TODO: after unmounting, we need to remove the event listener
         modalContext.value.on(snakeCaseKey, $attrs[key])
     })
 </script>
@@ -112,6 +115,11 @@ Object.keys($attrs)
             <slot
                 :modal-context="modalContext"
                 :modal-props="modalProps"
+            />
+
+            <ModalResolver
+                v-if="modalContext && modalStack.stack.value[modalContext?.index + 1]"
+                :index="modalContext.index + 1"
             />
         </Dialog>
     </TransitionRoot>
