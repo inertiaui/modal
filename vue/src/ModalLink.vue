@@ -1,6 +1,6 @@
 <script setup>
 import { modalPropNames, useModalStack } from './modalStack'
-import { nextTick, ref, provide, watch, onMounted, useAttrs } from 'vue'
+import { nextTick, ref, provide, watch, onMounted, useAttrs, onBeforeUnmount } from 'vue'
 import { only, rejectNullValues } from './helpers'
 
 const props = defineProps({
@@ -95,20 +95,20 @@ watch(
 )
 
 onMounted(() => {
+    modalStack.verifyRoot()
+
     if (props.fragment && window.location.hash === `#${props.fragment}`) {
         handle()
     }
 })
 
+const unsubscribeEventListeners = ref(null)
+onBeforeUnmount(() => unsubscribeEventListeners.value?.())
+
 const $attrs = useAttrs()
 
-function handleEmittedEvent(event, ...args) {
-    // // e.g. refresh-key -> onRefreshKey
-    const kebabEvent = event.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-    const listener = `on${kebabEvent.charAt(0).toUpperCase()}${kebabEvent.slice(1)}`
-    if (listener in $attrs) {
-        $attrs[listener](...args)
-    }
+function registerEventListeners() {
+    unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs)
 }
 
 watch(modalContext, (value, oldValue) => {
@@ -116,6 +116,8 @@ watch(modalContext, (value, oldValue) => {
         if (props.fragment && modalContext.value.index === 0) {
             window.location.hash = props.fragment
         }
+
+        registerEventListeners()
 
         nextTick(() => {
             modalContext.value.open = true
@@ -168,11 +170,4 @@ function handle() {
     >
         <slot :loading="loading" />
     </component>
-
-    <modalContext.component
-        v-if="modalContext?.component"
-        v-show="false"
-        v-bind="modalContext.componentProps"
-        @emit="handleEmittedEvent"
-    />
 </template>
