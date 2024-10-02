@@ -1,7 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
 import { default as Axios } from 'axios'
-import { Modal } from 'inertiaui/modal'
+import { Modal, ModalLink } from 'inertiaui/modal'
 import { ref } from 'vue'
 
 defineProps(['headerValue'])
@@ -73,7 +73,11 @@ function submit() {
                 </div>
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex items-center justify-end">
+                <ModalLink max-width="sm" href="#another-local-modal" class="mr-auto text-sm text-pink-500">
+                    What's that?
+                </ModalLink>
+
                 <button
                     type="button"
                     class="inline-flex items-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
@@ -89,5 +93,9 @@ function submit() {
                 </button>
             </div>
         </form>
+
+        <Modal name="another-local-modal">
+             Hawaiian noises?
+        </Modal>
     </Modal>
 </template>
