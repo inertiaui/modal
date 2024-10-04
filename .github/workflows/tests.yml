@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        stack: [vue]
+        stack: [react, vue]
 
     name: Tests
 
@@ -72,15 +72,18 @@ jobs:
       - name: Build React library
         if: ${{ matrix.stack == 'react' }}
         run: |
-          cd react
+          cd vue
+          npm install
+          # we need eslint-plugin-vue for files like helpers.js
+          cd ../react
           npm install
           npm run build
 
-      - name: Test React library
-        if: ${{ matrix.stack == 'react' }}
-        run: |
-          cd react
-          npm run test
+      # - name: Test React library
+      #   if: ${{ matrix.stack == 'react' }}
+      #   run: |
+      #     cd react
+      #     npm run test
 
       - name: Build Vue library
         if: ${{ matrix.stack == 'vue' }}

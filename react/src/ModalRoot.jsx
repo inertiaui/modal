@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { default as Axios } from 'axios'
 import { except, only } from './helpers'
-import { router, usePage } from '@inertiajs/react'
+import { router } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
@@ -214,7 +214,7 @@ export const ModalStackProvider = ({ children }) => {
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-Inertia': true,
-                    // 'X-Inertia-Version': usePage().version,
+                    'X-Inertia-Version': router.page.version,
                     'X-InertiaUI-Modal': true,
                 },
             })
