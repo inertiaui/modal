@@ -138,13 +138,13 @@ function pushLocalModal(name, modalProps, onClose, afterLeave) {
 }
 
 function visit(href, method, payload = {}, headers = {}, modalProps = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = 'brackets') {
-    const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
-
     return new Promise((resolve, reject) => {
         if (href.startsWith('#')) {
             resolve(pushLocalModal(href.substring(1), modalProps, onClose, onAfterLeave))
             return
         }
+
+        const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
         Axios({
             url,

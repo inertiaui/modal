@@ -17,10 +17,9 @@ class EmitTest extends DuskTestCase
             $browser->visit('/users')
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
-                ->waitFor('.im-dialog')
-                ->assertSeeIn('.im-modal-content', 'Edit User')
+                ->waitForTextIn('.im-modal-content', 'Edit User')
                 ->clickLink('Send Message', 'button')
-                ->assertDialogOpened('Hello from EditUser.vue')
+                ->assertDialogOpened('Hello from EditUser')
                 ->dismissDialog();
         });
     }

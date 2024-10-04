@@ -17,8 +17,7 @@ class FragmentTest extends DuskTestCase
             $browser->visit('/') // start on another page first
                 ->visit('/users#edit-user-'.$firstUser->id)
                 ->waitForFirstUser()
-                ->waitFor('.im-dialog')
-                ->assertSeeIn('.im-modal-content', 'Edit User')
+                ->waitForTextIn('.im-modal-content', 'Edit User')
                 ->click('.im-close-button')
                 ->waitUntilMissing('.im-dialog')
                 ->assertFragmentIs('');

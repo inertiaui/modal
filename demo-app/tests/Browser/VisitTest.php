@@ -15,7 +15,7 @@ class VisitTest extends DuskTestCase
             $browser->visit('/visit')
                 ->waitForText('Visit programmatically')
                 ->press('Open Local Modal')
-                ->waitFor('.im-dialog')
+                ->waitFor('.im-modal-content')
                 ->assertSeeIn('.im-modal-content', 'Hi there!');
         });
     }
@@ -28,7 +28,7 @@ class VisitTest extends DuskTestCase
             $browser->visit('/visit')
                 ->waitForText('Visit programmatically')
                 ->press('Open Route Modal')
-                ->waitFor('.im-dialog')
+                ->waitFor('.im-modal-content')
                 ->assertSeeIn('.im-modal-content', 'Hi again!');
         });
     }

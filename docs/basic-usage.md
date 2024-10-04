@@ -3,12 +3,19 @@
 As described in the [introduction](/introduction.html), Inertia Modal is fairly simple to use. There are two main components: `Modal` and `ModalLink`. In the sections below, we will cover how to use these components.
 
 To use the components, you need to import them into your page:
+::: code-group
 
-```vue
+```vue [Vue]
 <script setup>
 import { Modal, ModalLink } from '@inertiaui/modal-vue'
 </script>
 ```
+
+```jsx [React]
+import { Modal, ModalLink } from '@inertiaui/modal-react'
+```
+
+:::
 
 Instead of importing the components on every page, you may also consider importing them globally in your `app.js` file:
 
@@ -30,7 +37,9 @@ createInertiaApp({
 
 The `Modal` component is used to wrap the content of the modal. You can place any content inside the `Modal` component, such as forms, tables, or other components.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <Modal>
         <h1>Create User</h1>
@@ -41,6 +50,21 @@ The `Modal` component is used to wrap the content of the modal. You can place an
 </template>
 ```
 
+```jsx [React]
+export default function CreateUserModal() {
+    return (
+        <Modal>
+            <h1>Create User</h1>
+            <form>
+                {/* Form fields */}
+            </form>
+        </Modal>
+    );
+}
+```
+
+:::
+
 ### Customizing the Modal
 
 You may add additional props to the `Modal` component to customize its behavior and style. Check out the [Configuration](/configuration.html) section for a list of all available props.
@@ -49,7 +73,9 @@ You may add additional props to the `Modal` component to customize its behavior 
 
 The `ModalLink` component is very similar to Inertia's [built-in `Link` component](https://inertiajs.com/links). You can pass an `href` prop and additional headers using the `headers` prop. The component is rendered as a regular anchor tag (`<a>`), but you can change the tag using the `as` prop.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <ModalLink href="/users/create">
         Create User
@@ -57,11 +83,25 @@ The `ModalLink` component is very similar to Inertia's [built-in `Link` componen
 </template>
 ```
 
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 ### Method and Data
 
 The `method` prop allows you to specify the HTTP method that should be used when requesting the modal. By default, the method is set to `get`. With the `data` prop, you can pass additional data to the backend.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <ModalLink
         href="/users/create"
@@ -73,11 +113,29 @@ The `method` prop allows you to specify the HTTP method that should be used when
 </template>
 ```
 
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink
+            href="/users/create"
+            method="post"
+            data={{ default_name: 'John Doe' }}
+        >
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 ### Headers
 
 The `headers` prop allows you to pass additional headers to the Inertia request. This is useful if you need to pass custom headers to the backend.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <ModalLink href="/users/create" :headers="{ 'X-Header': 'Value' }">
         Create User
@@ -85,11 +143,25 @@ The `headers` prop allows you to pass additional headers to the Inertia request.
 </template>
 ```
 
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" headers={{ 'X-Header': 'Value' }}>
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 ### Custom Tag
 
 The `as` prop allows you to change the tag that is rendered. You can use it to render a button instead of an anchor tag.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <ModalLink href="/users/create" as="button">
         Create User
@@ -97,11 +169,25 @@ The `as` prop allows you to change the tag that is rendered. You can use it to r
 </template>
 ```
 
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" as="button">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 ### Fragment
 
 The `fragment` prop allows you to specify a fragment identifier that will be appended to the URL:
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <ModalLink href="/users/create" fragment="create-user">
         Create User
@@ -109,13 +195,27 @@ The `fragment` prop allows you to specify a fragment identifier that will be app
 </template>
 ```
 
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" fragment="create-user">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 Say you are on the page `/users`, and you click the link above. The URL will change to `/users#create-user`. There are two reasons you might want to use this feature. First, when you refresh the page with the fragment in the URL, the modal will automatically open. Second, you can now share the URL with the fragment with others, and when they open the link, the modal will automatically open for them as well.
 
 ### Loading State
 
 The `ModalLink` component has a `loading` slot prop that you can use to show a loading state while the modal is being fetched. You can use this prop to display a loading spinner or text.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <ModalLink #default="{ loading }">
         {{ loading ? 'Loading...' : 'Open Modal' }}
@@ -123,11 +223,27 @@ The `ModalLink` component has a `loading` slot prop that you can use to show a l
 </template>
 ```
 
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink>
+            {({ loading }) => (
+                <span>{loading ? 'Loading...' : 'Open Modal'}</span>
+            )}
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 ### Events
 
 In addition to the `loading` prop, you can also listen to the events emitted by the `ModalLink` component. You can use the `@start` and `@success` events to show a loading spinner or text.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <script setup>
 import { ref } from 'vue'
 
@@ -141,15 +257,46 @@ const loading = ref(false)
 </template>
 ```
 
+```jsx [React]
+export default function UserIndex() {
+    const [loading, setLoading] = useState(false)
+
+    return (
+        <ModalLink
+            onStart={() => setLoading(true)}
+            onSuccess={() => setLoading(false)}
+        >
+            {/* ... */}
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 In addition to the `@start` and `@success` events, there is also a `@error` event. This event is triggered when the Inertia request fails.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <ModalLink @error="errorToast('Whoops! Something went wrong.')">
         <!-- ... -->
     </ModalLink>
 </template>
 ```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink onError={() => errorToast('Whoops! Something went wrong.')}>
+            {/* ... */}
+        </ModalLink>
+    );
+}
+```
+
+:::
 
 Then there are two more events: `@close` and `@after-leave`. The `@close` event is triggered when the modal is closed, and the `@after-leave` event is triggered after the modal has been removed from the DOM.
 
@@ -161,7 +308,9 @@ Just like the `Modal` component, you can pass additional props to the `ModalLink
 
 Instead of using the `ModalLink` component, you can also open a modal programmatically using the `visitModal` method.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <script setup>
 import { visitModal } from '@inertiaui/modal-vue'
 
@@ -174,6 +323,22 @@ function createUserModal() {
     <button @click="createUserModal">Create User</button>
 </template>
 ```
+
+```jsx [React]
+import { useModalStack } from '@inertiaui/modal-react'
+
+function UserIndex() {
+    function createUserModal() {
+        useModalStack().visitModal('/users/create')
+    }
+
+    return (
+        <button onClick={createUserModal}>Create User</button>
+    );
+}
+```
+
+:::
 
 If you want to open a [Local Modal](/local-modals.html), you must prepend the URL with a `#`:
 

@@ -6,7 +6,9 @@ To use a local modal, simply add the `Modal` component to your page and place th
 
 To open the modal, you can use the `ModalLink` component and set the `href` prop to the name of the modal you want to open, prefixed with a `#` symbol.
 
-```vue
+::: code-group
+
+```vue [Vue]
 <template>
     <!-- ... -->
 
@@ -19,3 +21,23 @@ To open the modal, you can use the `ModalLink` component and set the `href` prop
     </Modal>
 </template>
 ```
+
+```jsx [React]
+export default function Page() {
+    return (
+        <div>
+            {/* ... */}
+
+            <ModalLink href="#confirm-action">
+                Perform Action
+            </ModalLink>
+
+            <Modal name="confirm-action">
+                {/* ... */}
+            </Modal>
+        </div>
+    );
+}
+```
+
+:::
