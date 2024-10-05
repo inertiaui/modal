@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { default as Axios } from 'axios'
-import { except, only } from './helpers'
+import { except, only, resolveInteriaPageFromRouter } from './helpers'
 import { router } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -205,27 +205,29 @@ export const ModalStackProvider = ({ children }) => {
 
             const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
-            Axios({
-                url,
-                method,
-                data,
-                headers: {
-                    ...headers,
-                    Accept: 'text/html, application/xhtml+xml',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-Inertia': true,
-                    'X-Inertia-Version': router.page.version,
-                    'X-InertiaUI-Modal': true,
-                },
-            })
-                .then((response) => {
-                    router.resolveComponent(response.data.component).then((component) => {
-                        resolve(push(component, response.data, modalProps, onClose, onAfterLeave))
+            resolveInteriaPageFromRouter().then((inertiaPage) => {
+                Axios({
+                    url,
+                    method,
+                    data,
+                    headers: {
+                        ...headers,
+                        Accept: 'text/html, application/xhtml+xml',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-Inertia': true,
+                        'X-Inertia-Version': inertiaPage.version,
+                        'X-InertiaUI-Modal': true,
+                    },
+                })
+                    .then((response) => {
+                        router.resolveComponent(response.data.component).then((component) => {
+                            resolve(push(component, response.data, modalProps, onClose, onAfterLeave))
+                        })
                     })
-                })
-                .catch((error) => {
-                    reject(error)
-                })
+                    .catch((error) => {
+                        reject(error)
+                    })
+            })
         })
     }
 
