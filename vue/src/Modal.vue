@@ -3,8 +3,6 @@ import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted } from 'vue
 import { TransitionRoot, TransitionChild, Dialog } from '@headlessui/vue'
 
 import { getConfig, getConfigByType } from './config'
-import { modalPropNames } from './modalStack'
-import { only } from './helpers'
 import { useModalStack } from './modalStack'
 import ModalContent from './ModalContent.vue'
 import ModalRenderer from './ModalRenderer.vue'
