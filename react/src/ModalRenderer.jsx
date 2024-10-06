@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useModalStack } from './ModalRoot'
 
 const ModalIndexContext = React.createContext(null)
@@ -17,27 +17,15 @@ const ModalRenderer = ({ index }) => {
 
     const modalContext = stack[index]
 
-    useEffect(() => {
-        return () => {
-            if (modalContext) {
-                modalContext.afterLeave()
-            }
-        }
-    }, [modalContext])
-
     if (!modalContext || !modalContext.component) {
         return null
-    }
-
-    const handleModalEvent = (event, ...args) => {
-        modalContext.emit(event, ...args)
     }
 
     return (
         <ModalIndexContext.Provider value={index}>
             <modalContext.component
                 {...modalContext.componentProps}
-                onModalEvent={handleModalEvent}
+                onModalEvent={(...args) => modalContext.emit(...args)}
             />
         </ModalIndexContext.Provider>
     )
