@@ -4292,16 +4292,16 @@ function Jc(e, t, r, n) {
   return o.name = e, qt.value[e].callback(o), o;
 }
 function Qc(e, t, r = {}, n = {}, o = {}, a = null, i = null, l = "brackets") {
-  const [s, u] = Gc(t, e || "", r, l);
-  return new Promise((c, y) => {
+  return new Promise((s, u) => {
     if (e.startsWith("#")) {
-      c(Jc(e.substring(1), o, a, i));
+      s(Jc(e.substring(1), o, a, i));
       return;
     }
+    const [c, y] = Gc(t, e || "", r, l);
     M({
-      url: s,
+      url: c,
       method: t,
-      data: u,
+      data: y,
       headers: {
         ...n,
         Accept: "text/html, application/xhtml+xml",
@@ -4312,10 +4312,10 @@ function Qc(e, t, r = {}, n = {}, o = {}, a = null, i = null, l = "brackets") {
       }
     }).then((d) => {
       Ba.resolveComponent(d.data.component).then((v) => {
-        c(sn(Fa(v), d.data, o, a, i));
+        s(sn(Fa(v), d.data, o, a, i));
       });
     }).catch((d) => {
-      y(d);
+      u(d);
     });
   });
 }
