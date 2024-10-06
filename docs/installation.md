@@ -39,7 +39,7 @@ createInertiaApp({
 ```
 
 ```jsx [React]
-import { ModalStackProvider, ModalRoot } from 'inertiaui/modal' // [!code ++]
+import { ModalStackProvider, ModalRoot } from '@inertiaui/modal-react' // [!code ++]
 
 createInertiaApp({
     setup({ el, App, props }) {
