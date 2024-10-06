@@ -16,7 +16,64 @@ npm install @inertiaui/modal-react
 
 There's no backend package required for Inertia Modal, so you don't need to install anything using Composer.
 
+## Inertia.js Configuration
 
+Inertia Modal requires a `ModalRoot` component to be mounted in your app. You can do this in the main `app.js` file where you initialize your Inertia app using the `createInertiaApp` function.
+
+You only need to change the render function to include the `ModalRoot` component and pass the `App` component as a child of `ModalRoot`. If you're using React, you also need to wrap the `ModalRoot` component with the `ModalStackProvider` component.
+
+::: code-group
+
+```js [Vue]
+import { ModalRoot } from '@inertiaui/modal-vue' // [!code ++]
+
+createInertiaApp({
+    setup({ el, App, props, plugin }) {
+        return
+            createApp({ render: () => h(App, props) }) // [!code --]
+            createApp({ render: () => h(ModalRoot, () => h(App, props)) }) // [!code ++]
+            .use(plugin)
+            .mount(el)
+    }
+})
+```
+
+```jsx [React]
+import { ModalStackProvider, ModalRoot } from 'inertiaui/modal' // [!code ++]
+
+createInertiaApp({
+    setup({ el, App, props }) {
+        const root = createRoot(el);
+
+        root.render(
+            <ModalStackProvider> // [!code ++]
+                <ModalRoot> // [!code ++]
+                    <App {...props} />
+                </ModalRoot> // [!code ++]
+            </ModalStackProvider> // [!code ++]
+        );
+    }
+});
+```
+
+:::
+
+Alternatively in Vue, you can include the `ModalRoot` component in the [layout template](https://inertiajs.com/pages#persistent-layouts) of your app:
+
+```vue
+<script setup>
+import { ModalRoot } from '@inertiaui/modal-vue'
+</script>
+
+<template>
+    <div>
+        <!-- Your layout here -->
+        <slot />
+    </div>
+
+    <ModalRoot />
+</template>
+```
 
 ## Tailwind Configuration
 
