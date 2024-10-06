@@ -13,11 +13,9 @@ class LocalModalTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/local')
                 ->clickLink('Open Local Modal')
-                ->waitFor('.im-dialog')
-                ->assertSeeIn('.im-modal-content', 'This is a local modal ')
+                ->waitForTextIn('.im-modal-content', 'This is a local modal')
                 ->clickLink('Create Role')
-                ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
-                ->assertSeeIn('.im-dialog[data-inertiaui-modal-index="1"]', 'Create Role')
+                ->waitForTextIn('.im-dialog[data-inertiaui-modal-index="1"]', 'Create Role')
                 ->click('.im-close-button')
                 ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]');
         });

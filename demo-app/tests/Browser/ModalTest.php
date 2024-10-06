@@ -17,7 +17,7 @@ class ModalTest extends DuskTestCase
             $browser->visit('/users')
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
-                ->waitFor('.im-dialog')
+                ->waitFor('.im-modal-content')
                 ->assertSeeIn('.im-modal-content', 'Edit User')
                 ->click('.im-close-button')
                 ->waitUntilMissing('.im-dialog')

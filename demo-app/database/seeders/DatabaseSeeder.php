@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
         UserFactory::new()
             ->recycle(Role::all())
-            ->count(200)
+            ->count(20)
             ->create();
     }
 }
