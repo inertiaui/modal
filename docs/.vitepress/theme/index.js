@@ -66,13 +66,10 @@ export default {
                     // Restore tab from local storage
                     const tab = localStorage.getItem('codeGroupTab')
                     if (tab) {
-                        const currentScrollY = window.scrollY
-
                         nextTick(() => {
                             preventScroll = true
                             showCodeWithLabel(tab)
                             preventScroll = false
-                            window.scrollTo({ top: currentScrollY, behavior: 'instant' })
                             bindClickEvent()
                         })
                     }
