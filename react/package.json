@@ -1,51 +1,51 @@
 {
-  "name": "inertiaui-modal",
-  "author": "Pascal Baljet <pascal@protone.media>",
-  "license": "Commercial",
-  "private": true,
-  "type": "module",
-  "files": [
-    "dist/inertiaui-modal.js",
-    "dist/inertiaui-modal.umd.js"
-  ],
-  "module": "./dist/inertiaui-modal.js",
-  "main": "./dist/inertiaui-modal.umd.js",
-  "exports": {
-    ".": {
-      "import": "./dist/inertiaui-modal.js",
-      "require": "./dist/inertiaui-modal.umd.js"
+    "name": "@inertiaui/modal-react",
+    "author": "Pascal Baljet <pascal@protone.media>",
+    "version": "0.1.0",
+    "private": false,
+    "license": "MIT",
+    "type": "module",
+    "files": [
+        "dist",
+        "src"
+    ],
+    "module": "./dist/inertiaui-modal.js",
+    "main": "./dist/inertiaui-modal.umd.js",
+    "exports": {
+        ".": {
+            "import": "./dist/inertiaui-modal.js",
+            "require": "./dist/inertiaui-modal.umd.js"
+        }
+    },
+    "scripts": {
+        "dev": "NODE_ENV=development vite build --watch",
+        "build": "vite build",
+        "build-watch": "NODE_ENV=development vite build --watch",
+        "eslint": "eslint \"src/**/*.{js,jsx}\" --fix",
+        "prettier": "prettier -w src/"
+    },
+    "dependencies": {
+        "@headlessui/react": "^2.1.0",
+        "@heroicons/react": "^2.1.4",
+        "clsx": "^2.1.1"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.3.1",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-prettier": "^5.1.0",
+        "eslint-plugin-react": "^7.34.3",
+        "eslint-plugin-react-hooks": "^4.6.2",
+        "eslint-plugin-tailwindcss": "^3.15.1",
+        "eslint-plugin-unused-imports": "^3.1.0",
+        "prettier": "^3.2.4",
+        "prettier-plugin-tailwindcss": "^0.5.12",
+        "vite": "^5.0",
+        "vite-plugin-eslint": "^1.8.1"
+    },
+    "peerDependencies": {
+        "@inertiajs/react": "^1.2.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
     }
-  },
-  "scripts": {
-    "dev": "NODE_ENV=development vite build --watch",
-    "build": "vite build",
-    "build-watch": "NODE_ENV=development vite build --watch",
-    "eslint": "eslint \"src/**/*.{js,jsx}\" --fix",
-    "prettier": "prettier -w src/"
-  },
-  "dependencies": {
-    "@headlessui/react": "^2.1.0",
-    "@heroicons/react": "^2.1.4",
-    "clsx": "^2.1.1",
-    "react-day-picker": "^9.0.2"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.1.0",
-    "eslint-plugin-react": "^7.34.3",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-tailwindcss": "^3.15.1",
-    "eslint-plugin-unused-imports": "^3.1.0",
-    "prettier": "^3.2.4",
-    "prettier-plugin-tailwindcss": "^0.5.12",
-    "vite": "^5.0",
-    "vite-plugin-eslint": "^1.8.1"
-  },
-  "peerDependencies": {
-    "@inertiajs/react": "^1.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  }
 }
