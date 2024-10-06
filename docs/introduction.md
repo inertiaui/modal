@@ -4,7 +4,7 @@ Inertia Modal is part of [Inertia UI](https://inertiaui.com), a suite of package
 
 Here's a summary of the features:
 
-- Supports Vue (and soon React)
+- Supports React and Vue
 - Zero backend configuration
 - Super simple frontend API
 - Modal and slideover support

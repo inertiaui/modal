@@ -15,7 +15,7 @@ You may find the documentation at [https://inertiaui.com/inertia-modal/docs](htt
 
 ## Features
 
-- Supports Vue (and soon React)
+- Supports React and Vue
 - Zero backend configuration
 - Super simple frontend API
 - Modal and slideover support
