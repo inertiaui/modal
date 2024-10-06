@@ -19,39 +19,47 @@ const props = defineProps({
     // before we can determine the defaule value of other props
     slideover: {
         type: Boolean,
-        default: () => getConfig('type') === 'slideover',
+        default: null,
     },
     closeButton: {
         type: Boolean,
-        default: (props) => getConfigByType(props.slideover, 'closeButton'),
+        default: null,
     },
     closeExplicitly: {
         type: Boolean,
-        default: (props) => getConfigByType(props.slideover, 'closeExplicitly'),
+        default: null,
     },
     maxWidth: {
         type: String,
-        default: (props) => getConfigByType(props.slideover, 'maxWidth'),
+        default: null,
     },
     paddingClasses: {
         type: [Boolean, String],
-        default: (props) => getConfigByType(props.slideover, 'paddingClasses'),
+        default: null,
     },
     panelClasses: {
         type: [Boolean, String],
-        default: (props) => getConfigByType(props.slideover, 'panelClasses'),
+        default: null,
     },
     position: {
         type: String,
-        default: (props) => getConfigByType(props.slideover, 'position'),
+        default: null,
     },
 })
 
 const modalStack = useModalStack()
 const modalContext = props.name ? ref({}) : inject('modalContext')
 const modalProps = computed(() => {
+    const isSlideover = modalContext.value.modalProps.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
+
     return {
-        ...only(props, modalPropNames),
+        slideover: isSlideover,
+        closeButton: props.closeButton ?? getConfigByType(isSlideover, 'closeButton'),
+        closeExplicitly: props.closeExplicitly ?? getConfigByType(isSlideover, 'closeExplicitly'),
+        maxWidth: props.maxWidth ?? getConfigByType(isSlideover, 'maxWidth'),
+        paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, 'paddingClasses'),
+        panelClasses: props.panelClasses ?? getConfigByType(isSlideover, 'panelClasses'),
+        position: props.position ?? getConfigByType(isSlideover, 'position'),
         ...modalContext.value.modalProps,
     }
 })
