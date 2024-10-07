@@ -5482,5 +5482,6 @@ export {
   ns as getConfig,
   mp as putConfig,
   pp as resetConfig,
+  ip as useModalIndex,
   jn as useModalStack
 };
