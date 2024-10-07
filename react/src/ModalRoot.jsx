@@ -53,6 +53,14 @@ export const ModalStackProvider = ({ children }) => {
             })
         }
 
+        setOpen = (open) => {
+            if (open) {
+                this.open = true
+            } else {
+                this.close()
+            }
+        }
+
         close = () => {
             this.updateStack((prevStack) =>
                 prevStack.map((modal) => {
@@ -70,6 +78,10 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         afterLeave = () => {
+            if (this.open) {
+                return
+            }
+
             this.updateStack((prevStack) =>
                 prevStack.filter((modal) => {
                     if (modal.id !== this.id) {
