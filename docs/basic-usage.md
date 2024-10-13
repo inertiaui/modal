@@ -24,7 +24,7 @@ import { Modal, ModalLink } from '@inertiaui/modal-vue'
 
 createInertiaApp({
     setup({ el, App, props, plugin }) {
-        return createApp({ render: () => h(App, props) })
+        return createApp({ render: () => h(ModalRoot, () => h(App, props)) })
             .use(plugin)
             .component('Modal', Modal)
             .component('ModalLink', ModalLink)
