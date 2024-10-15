@@ -53,6 +53,17 @@ export const ModalStackProvider = ({ children }) => {
             })
         }
 
+        open = () => {
+            this.updateStack((prevStack) =>
+                prevStack.map((modal) => {
+                    if (modal.id === this.id && !modal.open) {
+                        modal.open = true
+                    }
+                    return modal
+                }),
+            )
+        }
+
         setOpen = (open) => {
             if (open) {
                 this.open = true
@@ -64,7 +75,7 @@ export const ModalStackProvider = ({ children }) => {
         close = () => {
             this.updateStack((prevStack) =>
                 prevStack.map((modal) => {
-                    if (modal.id === this.id) {
+                    if (modal.id === this.id && modal.open) {
                         Object.keys(modal.listeners).forEach((event) => {
                             modal.off(event)
                         })

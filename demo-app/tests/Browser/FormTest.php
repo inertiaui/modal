@@ -4,18 +4,20 @@ namespace Tests\Browser;
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
 class FormTest extends DuskTestCase
 {
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_can_submit_a_form_from_within_the_modal_and_show_the_validation_error()
+    public function it_can_submit_a_form_from_within_the_modal_and_show_the_validation_error(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser) use ($navigate) {
             $firstUser = User::orderBy('name')->first();
 
-            $browser->visit('/users')
+            $browser->visit('/users'.($navigate ? '?navigate=1' : ''))
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
                 ->waitForTextIn('.im-modal-content', 'Edit User')
@@ -25,13 +27,14 @@ class FormTest extends DuskTestCase
         });
     }
 
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_can_submit_a_form_a_redirect()
+    public function it_can_submit_a_form_and_redirect(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser) use ($navigate) {
             $firstUser = User::orderBy('name')->first();
 
-            $browser->visit('/users')
+            $browser->visit('/users'.($navigate ? '?navigate=1' : ''))
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
                 ->waitForTextIn('.im-modal-content', 'Edit User')

@@ -1,4 +1,4 @@
-import { ModalLink } from 'inertiaui/modal';
+import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
 
 export default function PropsFromModalLink({ users }) {

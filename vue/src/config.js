@@ -1,5 +1,6 @@
 const defaultConfig = {
     type: 'modal',
+    navigate: false,
     modal: {
         closeButton: true,
         closeExplicitly: false,

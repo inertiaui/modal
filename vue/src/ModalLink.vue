@@ -1,7 +1,8 @@
 <script setup>
 import { modalPropNames, useModalStack } from './modalStack'
-import { ref, provide, watch, onMounted, useAttrs, onBeforeUnmount } from 'vue'
+import { ref, provide, computed, watch, onMounted, useAttrs, onBeforeUnmount } from 'vue'
 import { only, rejectNullValues } from './helpers'
+import { getConfig } from './config'
 
 const props = defineProps({
     href: {
@@ -31,6 +32,10 @@ const props = defineProps({
     queryStringArrayFormat: {
         type: String,
         default: 'brackets',
+    },
+    navigate: {
+        type: Boolean,
+        default: null,
     },
     // Passthrough to Modal.vue
     closeButton: {
@@ -79,6 +84,10 @@ provide('modalContext', modalContext)
 const emit = defineEmits(['after-leave', 'blur', 'close', 'error', 'focus', 'start', 'success'])
 const isBlurred = ref(false)
 
+const shouldNavigate = computed(() => {
+    return props.navigate ?? getConfig('navigate')
+})
+
 watch(
     () => modalContext.value?.isOnTopOfStack(),
     (isOnTopOfStack) => {
@@ -97,7 +106,7 @@ watch(
 onMounted(() => {
     modalStack.verifyRoot()
 
-    if (props.fragment && window.location.hash === `#${props.fragment}`) {
+    if (!shouldNavigate.value && props.fragment && window.location.hash === `#${props.fragment}`) {
         handle()
     }
 })
@@ -113,7 +122,7 @@ function registerEventListeners() {
 
 watch(modalContext, (value, oldValue) => {
     if (value && !oldValue) {
-        if (props.fragment && modalContext.value.index === 0) {
+        if (!shouldNavigate.value && props.fragment && modalContext.value.index === 0) {
             window.location.hash = props.fragment
         }
 
@@ -123,7 +132,7 @@ watch(modalContext, (value, oldValue) => {
 })
 
 function onClose() {
-    if (props.fragment && modalContext.value.index === 0) {
+    if (!shouldNavigate.value && props.fragment && modalContext.value.index === 0) {
         window.location.hash = ''
     }
     emit('close')
@@ -154,8 +163,11 @@ function handle() {
             onClose,
             onAfterLeave,
             props.queryStringArrayFormat,
+            shouldNavigate.value,
         )
-        .then((context) => (modalContext.value = context))
+        .then((context) => {
+            modalContext.value = context
+        })
         .catch((error) => emit('error', error))
         .finally(() => (loading.value = false))
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { ModalLink } from 'inertiaui/modal';
+import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
 
 export default function Users({ users }) {

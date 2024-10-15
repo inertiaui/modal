@@ -2,16 +2,18 @@
 
 namespace Tests\Browser;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
 class EventsTest extends DuskTestCase
 {
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_can_attach_listeners_to_the_modal_link()
+    public function it_can_attach_listeners_to_the_modal_link(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/events')
+        $this->browse(function (Browser $browser) use ($navigate) {
+            $browser->visit('/events'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Events')
                 ->clickLink('Open Modal')
                 ->waitFor('.im-dialog')
@@ -21,11 +23,12 @@ class EventsTest extends DuskTestCase
         });
     }
 
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_can_attach_a_listener_for_blur()
+    public function it_can_attach_a_listener_for_blur(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/events')
+        $this->browse(function (Browser $browser) use ($navigate) {
+            $browser->visit('/events'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Events')
                 ->clickLink('Open Modal')
                 ->waitFor('.im-dialog')
