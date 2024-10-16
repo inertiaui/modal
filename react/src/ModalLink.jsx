@@ -1,6 +1,7 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState, useEffect, useMemo } from 'react'
 import { useModalStack, modalPropNames } from './ModalRoot'
 import { only, rejectNullValues } from './helpers'
+import { getConfig } from './config'
 
 const ModalLink = ({
     href,
@@ -17,12 +18,17 @@ const ModalLink = ({
     onFocus = null,
     onStart = null,
     onSuccess = null,
+    navigate = null,
     children,
     ...props
 }) => {
     const [loading, setLoading] = useState(false)
     const [modalContext, setModalContext] = useState(null)
     const { stack, visit } = useModalStack()
+
+    const shouldNavigate = useMemo(() => {
+        return navigate ?? getConfig('navigate')
+    }, [navigate])
 
     // Separate standard props from custom event handlers
     const standardProps = {}
@@ -45,7 +51,7 @@ const ModalLink = ({
     })
 
     useEffect(() => {
-        if (fragment && window.location.hash === `#${fragment}`) {
+        if (!shouldNavigate && fragment && window.location.hash === `#${fragment}`) {
             handle()
         }
     }, [fragment])
@@ -68,7 +74,7 @@ const ModalLink = ({
 
     const onCloseCallback = useCallback(
         (index) => {
-            if (fragment && index === 0) {
+            if (!shouldNavigate && fragment && index === 0) {
                 window.location.hash = ''
             }
             onClose?.()
@@ -100,10 +106,11 @@ const ModalLink = ({
                 () => onCloseCallback(stack.length),
                 onAfterLeaveCallback,
                 queryStringArrayFormat,
+                shouldNavigate
             )
                 .then((newModalContext) => {
                     setModalContext(newModalContext)
-                    if (fragment && newModalContext.index === 0) {
+                    if (!shouldNavigate && fragment && newModalContext.index === 0) {
                         window.location.hash = fragment
                     }
                     newModalContext.registerEventListenersFromProps(customEvents)

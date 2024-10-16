@@ -168,14 +168,6 @@ class Modal {
             Object.assign(this.componentProps.value, response.data.props)
         })
     }
-
-    tap = (callback) => {
-        callback(this)
-
-        stack.value[this.index] = this
-
-        return this
-    }
 }
 
 function registerLocalModal(name, callback) {
