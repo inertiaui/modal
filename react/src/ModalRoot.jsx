@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { default as Axios } from 'axios'
 import { except, only, resolveInteriaPageFromRouter } from './helpers'
-import { router, usePage } from '@inertiajs/react'
+import { router } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
@@ -12,7 +12,7 @@ ModalStackContext.displayName = 'ModalStackContext'
 
 let baseUrl = null
 let newModalOnBase = null
-let localStackCopy = [];
+let localStackCopy = []
 
 export const ModalStackProvider = ({ children }) => {
     const [stack, setStack] = useState([])
@@ -58,7 +58,7 @@ export const ModalStackProvider = ({ children }) => {
                         modal.afterLeaveCallback = afterLeave
                     }
                     return modal
-                })
+                }),
             )
         }
 
@@ -196,9 +196,7 @@ export const ModalStackProvider = ({ children }) => {
     }
 
     const pushFromResponseData = (responseData, modalProps = {}, onClose = null, onAfterLeave = null) => {
-        return router
-            .resolveComponent(responseData.component)
-            .then((component) => push(component, responseData, modalProps, onClose, onAfterLeave))
+        return router.resolveComponent(responseData.component).then((component) => push(component, responseData, modalProps, onClose, onAfterLeave))
     }
 
     const push = (component, response, modalProps, onClose, afterLeave) => {
@@ -251,7 +249,17 @@ export const ModalStackProvider = ({ children }) => {
         )
     }
 
-    const visit = (href, method, payload = {}, headers = {}, modalProps = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = 'brackets', useBrowserHistory = false) => {
+    const visit = (
+        href,
+        method,
+        payload = {},
+        headers = {},
+        modalProps = {},
+        onClose = null,
+        onAfterLeave = null,
+        queryStringArrayFormat = 'brackets',
+        useBrowserHistory = false,
+    ) => {
         return new Promise((resolve, reject) => {
             if (href.startsWith('#')) {
                 resolve(pushLocalModal(href.substring(1), modalProps, onClose, onAfterLeave))
@@ -279,7 +287,6 @@ export const ModalStackProvider = ({ children }) => {
                 headers['X-Inertia-Version'] = inertiaPage.version
 
                 if (useInertiaRouter) {
-
                     // Pushing the modal to the stack will be handled by the ModalRoot...
                     return router.visit(url, {
                         method,
@@ -308,7 +315,7 @@ export const ModalStackProvider = ({ children }) => {
                                 resolve(modal)
                                 newModalOnBase = null
                             })
-                        }
+                        },
                     })
                 }
 
@@ -320,11 +327,7 @@ export const ModalStackProvider = ({ children }) => {
                     data,
                     headers,
                 })
-                    .then((response) => {
-                        router.resolveComponent(response.data.component).then((component) => {
-                            resolve(pushFromResponseData(response.data, modalProps, onClose, onAfterLeave))
-                        })
-                    })
+                    .then((response) => resolve(pushFromResponseData(response.data, modalProps, onClose, onAfterLeave)))
                     .catch((error) => {
                         reject(error)
                     })
@@ -383,34 +386,40 @@ export const ModalRoot = ({ children }) => {
 
     let previousModalOnBase = false
 
-    useEffect(() => router.on('start', () => isNavigating = true), [])
-    useEffect(() => router.on('finish', () => isNavigating = false), [])
-    useEffect(() => router.on('navigate', function ($event) {
-        const modalOnBase = $event.detail.page.props._inertiaui_modal
+    useEffect(() => router.on('start', () => (isNavigating = true)), [])
+    useEffect(() => router.on('finish', () => (isNavigating = false)), [])
+    useEffect(
+        () =>
+            router.on('navigate', function ($event) {
+                const modalOnBase = $event.detail.page.props._inertiaui_modal
 
-        if (!modalOnBase) {
-            previousModalOnBase && context.closeAll()
-            return
-        }
+                if (!modalOnBase) {
+                    previousModalOnBase && context.closeAll()
+                    return
+                }
 
-        previousModalOnBase = modalOnBase
-        baseUrl = modalOnBase.baseUrl
+                previousModalOnBase = modalOnBase
+                baseUrl = modalOnBase.baseUrl
 
-        context.pushFromResponseData(modalOnBase, {}, () => {
-            if (!modalOnBase.baseUrl) {
-                console.error('No base url in modal response data so cannot navigate back')
-                return
-            }
-            if (!isNavigating && window.location.href !== modalOnBase.baseUrl) {
-                router.visit(modalOnBase.baseUrl, {
-                    preserveScroll: true,
-                    preserveState: true,
-                })
-            }
-        }).then((newModal) => {
-            newModalOnBase = newModal
-        })
-    }), [])
+                context
+                    .pushFromResponseData(modalOnBase, {}, () => {
+                        if (!modalOnBase.baseUrl) {
+                            console.error('No base url in modal response data so cannot navigate back')
+                            return
+                        }
+                        if (!isNavigating && window.location.href !== modalOnBase.baseUrl) {
+                            router.visit(modalOnBase.baseUrl, {
+                                preserveScroll: true,
+                                preserveState: true,
+                            })
+                        }
+                    })
+                    .then((newModal) => {
+                        newModalOnBase = newModal
+                    })
+            }),
+        [],
+    )
 
     const axiosRequestInterceptor = (config) => {
         // A Modal is opened on top of a base route, so we need to pass this base route

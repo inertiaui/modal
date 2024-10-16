@@ -67,7 +67,7 @@ class DispatchBaseUrlRequestTest extends TestCase
         $baseUrl = '/test/test';
 
         $this->app['router']->get('/test/test', function () {
-            return new class DispatchBaseUrlRequestTest Responsable
+            return new class implements Responsable
             {
                 public function toResponse($request)
                 {

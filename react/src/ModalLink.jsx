@@ -106,7 +106,7 @@ const ModalLink = ({
                 () => onCloseCallback(stack.length),
                 onAfterLeaveCallback,
                 queryStringArrayFormat,
-                shouldNavigate
+                shouldNavigate,
             )
                 .then((newModalContext) => {
                     setModalContext(newModalContext)
