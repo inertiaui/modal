@@ -3,7 +3,7 @@ import { except, only, waitFor } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
-import { default as axios } from 'axios'
+import { default as Axios } from 'axios'
 
 const baseUrl = ref(null)
 const stack = ref([])
@@ -154,9 +154,7 @@ class Modal {
             return
         }
 
-        axios({
-            method: 'get',
-            url: this.response.url,
+        Axios.get(this.response.url, {
             headers: {
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Inertia': true,
@@ -267,7 +265,7 @@ function visit(
             })
         }
 
-        axios({ url, method, data, headers })
+        Axios({ url, method, data, headers })
             .then((response) => resolve(pushFromResponseData(response.data, modalProps, onClose, onAfterLeave)))
             .catch(reject)
     })
