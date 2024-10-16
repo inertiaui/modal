@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        inertia: [v1]
+        inertia: [v1, v2]
         stack: [react, vue]
 
     name: Dusk Test Inertia ${{ matrix.inertia }} - Stack ${{ matrix.stack }}
@@ -69,11 +69,13 @@ jobs:
       - name: Build React library
         if: ${{ matrix.stack == 'react' }}
         run: |
-          cd vue
-          npm install
           # we need eslint-plugin-vue for files like helpers.js
+          cd vue
+          npm ci
+          npm install @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }}
           cd ../react
-          npm install
+          npm ci
+          npm install @inertiajs/react@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }}
           npm run build
 
       # - name: Test React library
@@ -86,7 +88,8 @@ jobs:
         if: ${{ matrix.stack == 'vue' }}
         run: |
           cd vue
-          npm install
+          npm ci
+          npm install @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }}
           npm run build
 
       - name: Test Vue library
@@ -99,7 +102,10 @@ jobs:
         run: |
           cd demo-app
           composer install --no-progress --prefer-dist --optimize-autoloader
-          npm install
+          composer require inertiajs/inertia-laravel:${{ matrix.inertia == 'v1' && '^1.3' || '2.x-dev' }}
+          php artisan about
+          npm ci
+          npm install @inertiajs/react@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }} @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }}
           npm install --install-links ../react
           npm install --install-links ../vue
           test -d node_modules/@inertiaui/modal-react || exit 1
