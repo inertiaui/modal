@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { Modal, ModalLink } from 'inertiaui/modal';
+import { Modal, ModalLink } from '@inertiaui/modal-vue';
 import { ref } from 'vue';
 
 const props = defineProps({

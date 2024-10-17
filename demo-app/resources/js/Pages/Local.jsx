@@ -1,4 +1,4 @@
-import { Modal, ModalLink } from 'inertiaui/modal';
+import { Modal, ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
 
 export default function Local() {

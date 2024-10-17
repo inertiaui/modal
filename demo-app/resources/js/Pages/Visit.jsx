@@ -1,4 +1,4 @@
-import { Modal, useModalStack } from 'inertiaui/modal';
+import { Modal, useModalStack } from '@inertiaui/modal-react';
 import Container from './Container';
 
 export default function Visit() {

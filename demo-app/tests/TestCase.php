@@ -9,15 +9,8 @@ use Illuminate\Support\Carbon;
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use ModalTestCase;
     use RefreshDatabase;
-
-    public static function booleanProvider(): array
-    {
-        return [
-            [true],
-            [false],
-        ];
-    }
 
     public function setUp(): void
     {

@@ -15,6 +15,7 @@ use Tests\Browser\Browser;
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use ModalTestCase;
 
     /**
      * Indicates if the browser should be across between test classes.

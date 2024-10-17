@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Modal, ModalLink } from 'inertiaui/modal';
+import { Modal, ModalLink } from '@inertiaui/modal-react';
 
 export default function CreateRole({ headerValue }) {
     const { data, setData, errors, post } = useForm({

@@ -1,9 +1,13 @@
 <script setup>
 import { ref } from 'vue';
 import Container from './Container.vue'
-import { ModalLink } from 'inertiaui/modal'
+import { ModalLink } from '@inertiaui/modal-vue'
 
 const log = ref([])
+
+defineProps({
+    navigate: Boolean,
+})
 </script>
 
 <template>
@@ -15,6 +19,7 @@ const log = ref([])
         </div>
 
         <ModalLink
+            :navigate="navigate"
             dusk="modal-link"
             href="/users/1/edit"
             class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"

@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useModalStack, modalPropNames } from './../src/modalStack'
 import axios from 'axios'
-import { usePage, router } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
 
 vi.mock('@inertiajs/vue3', () => ({
     router: {
@@ -91,6 +92,7 @@ describe('modalStack', () => {
         it('should close a modal', () => {
             const onClose = vi.fn()
             const modal = modalStack.push({}, {}, {}, onClose)
+            modal.show() // can't close a modal that is not open
             modal.close()
 
             expect(modal.open).toBe(false)
@@ -145,6 +147,8 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,another',
+                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
 
@@ -174,6 +178,8 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test',
+                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
 
@@ -203,6 +209,8 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,third',
+                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
 
@@ -248,6 +256,7 @@ describe('modalStack', () => {
                     'X-Inertia': true,
                     'X-Inertia-Version': '1.0',
                     'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
 

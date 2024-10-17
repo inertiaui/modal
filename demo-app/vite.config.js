@@ -7,11 +7,15 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 const env = dotenv.parse(fs.readFileSync('.env'));
 const reactStack = env.APP_STACK === 'react';
+const packagesAreInstalled = fs.existsSync('node_modules/@inertiaui/modal-react') && fs.existsSync('node_modules/@inertiaui/modal-vue');
 
 export default defineConfig({
-    resolve: {
-        dedupe: ['@inertiajs/react', '@inertiajs/vue3'],
-        alias: {'inertiaui/modal': reactStack ? '/../react' : '/../vue'}
+    resolve: packagesAreInstalled ? {} : {
+        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios'],
+        alias: {
+            '@inertiaui/modal-react': '/../react',
+            '@inertiaui/modal-vue': '/../vue'
+        }
     },
 
     plugins: [

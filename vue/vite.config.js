@@ -20,7 +20,7 @@ export default defineConfig({
             fileName: 'inertiaui-modal',
         },
         rollupOptions: {
-            external: ['@inertiajs/vue3', 'vue'],
+            external: ['@inertiajs/vue3', 'vue', 'axios'],
         },
     },
 })

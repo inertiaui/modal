@@ -1,7 +1,7 @@
 // EditUser.jsx
 import React, { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Modal, ModalLink } from 'inertiaui/modal';
+import { Modal, ModalLink } from '@inertiaui/modal-react';
 
 export default function EditUser({ user, roles }) {
     const [message, setMessage] = useState('');

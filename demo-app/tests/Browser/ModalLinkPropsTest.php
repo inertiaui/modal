@@ -2,16 +2,18 @@
 
 namespace Tests\Browser;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
 class ModalLinkPropsTest extends DuskTestCase
 {
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_passes_the_props_from_the_modal_link()
+    public function it_passes_the_props_from_the_modal_link(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/props-from-modal-link')
+        $this->browse(function (Browser $browser) use ($navigate) {
+            $browser->visit('/props-from-modal-link'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Prop from ModalLink')
                 ->clickLink('Edit User 1')
                 ->waitFor('.im-dialog')

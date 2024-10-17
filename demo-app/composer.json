@@ -2,11 +2,12 @@
     "name": "inertiaui/modal-demo-app",
     "type": "project",
     "description": "The Inertia Modal Demo App",
-    "license": "Commercial",
+    "license": "MIT",
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^1.0",
+        "inertiaui/modal": "*",
         "laravel/framework": "^10.48|^11.11",
         "laravel/sanctum": "^3.2|^4.0",
         "laravel/tinker": "^2.8",
@@ -20,6 +21,12 @@
         "nunomaduro/collision": "^7.0|^8.0",
         "phpunit/phpunit": "^10.0"
     },
+    "repositories": [
+        {
+            "url": "./../",
+            "type": "path"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "App\\": "app/",

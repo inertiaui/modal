@@ -1,6 +1,6 @@
 <script setup>
 import Container from './Container.vue'
-import { Modal, visitModal } from 'inertiaui/modal'
+import { Modal, visitModal } from '@inertiaui/modal-vue'
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup>
-import { Modal } from 'inertiaui/modal';
+import { Modal } from '@inertiaui/modal-vue';
 </script>
 
 <template>

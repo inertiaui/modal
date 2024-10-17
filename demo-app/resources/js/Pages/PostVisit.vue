@@ -1,6 +1,6 @@
 <script setup>
 import Container from './Container.vue'
-import {  ModalLink } from 'inertiaui/modal'
+import {  ModalLink } from '@inertiaui/modal-vue'
 </script>
 
 <template>

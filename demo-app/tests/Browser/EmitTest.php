@@ -3,18 +3,20 @@
 namespace Tests\Browser;
 
 use App\Models\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
 class EmitTest extends DuskTestCase
 {
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_can_dispatch_an_event_from_the_modal_to_the_modal_link()
+    public function it_can_dispatch_an_event_from_the_modal_to_the_modal_link(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser) use ($navigate) {
             $firstUser = User::orderBy('name')->first();
 
-            $browser->visit('/users')
+            $browser->visit('/users'.($navigate ? '?navigate=1' : ''))
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
                 ->waitForTextIn('.im-modal-content', 'Edit User')
@@ -24,11 +26,12 @@ class EmitTest extends DuskTestCase
         });
     }
 
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_can_dispatch_events_back_and_forth_between_nested_modals()
+    public function it_can_dispatch_events_back_and_forth_between_nested_modals(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/emit')
+        $this->browse(function (Browser $browser) use ($navigate) {
+            $browser->visit('/emit'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Emit')
                 ->clickLink('Open Modal')
                 ->waitFor('.im-dialog')
