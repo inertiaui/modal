@@ -1,6 +1,6 @@
 <script setup>
 import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted } from 'vue'
-import { TransitionRoot, TransitionChild, Dialog } from '@headlessui/vue'
+import { DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle, DialogTrigger } from 'radix-vue'
 
 import { getConfig, getConfigByType } from './config'
 import { useModalStack } from './modalStack'
@@ -48,6 +48,7 @@ const props = defineProps({
 const modalStack = useModalStack()
 const modalContext = props.name ? ref({}) : inject('modalContext')
 const modalProps = computed(() => {
+    // TODO: why does this break on nested modals?
     const isSlideover = modalContext.value.modalProps.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
 
     return {
@@ -111,71 +112,74 @@ defineExpose({
     modalContext: modalContext.value,
     reload: modalContext.value.reload,
 })
+
+// TODO: how was this handled before?
+defineOptions({
+    inheritAttrs: false,
+})
 </script>
 
 <template>
-    <TransitionRoot
-        :unmount="false"
-        :show="modalContext.open ?? false"
-        enter="transition transform ease-in-out duration-300"
-        enter-from="opacity-0 scale-95"
-        enter-to="opacity-100 scale-100"
-        leave="transition transform ease-in-out duration-300"
-        leave-from="opacity-100 scale-100"
-        leave-to="opacity-0 scale-95"
+    <DialogRoot
+        v-slot="{ open }"
+        :open="modalContext.open"
     >
-        <Dialog
+        <!-- <DialogPortal> -->
+        <div
             :data-inertiaui-modal-id="modalContext.id"
             :data-inertiaui-modal-index="modalContext.index"
             class="im-dialog relative z-20"
-            @close="closeDialog"
         >
-            <!-- Only transition the backdrop for the first modal in the stack -->
-            <TransitionChild
+            <Transition
                 v-if="modalContext.index === 0"
-                as="template"
-                enter="transition transform ease-in-out duration-300"
-                enter-from="opacity-0"
-                enter-to="opacity-100"
-                leave="transition transform ease-in-out duration-300"
-                leave-from="opacity-100"
-                leave-to="opacity-0"
+                enter-active-class="transition transform ease-in-out duration-300"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition transform ease-in-out duration-300"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
             >
-                <div
+                <DialogOverlay
                     v-show="modalContext.onTopOfStack"
                     class="im-backdrop fixed inset-0 z-30 bg-black/75"
-                    aria-hidden="true"
                 />
-            </TransitionChild>
+            </Transition>
 
             <!-- On multiple modals, only show a backdrop for the modal that is on top of the stack -->
-            <div
+            <DialogOverlay
                 v-if="modalContext.index > 0 && modalContext.onTopOfStack"
                 class="im-backdrop fixed inset-0 z-30 bg-black/75"
             />
 
-            <!-- The modal/slideover content itself -->
-            <component
-                :is="modalProps.slideover ? SlideoverContent : ModalContent"
-                :modal-context="modalContext"
-                :modal-props="modalProps"
+            <DialogContent
+                :disable-outside-pointer-events="modalProps.closeExplicitly"
+                @escape-key-down="closeDialog"
+                @close-auto-focus="modalContext.afterLeave"
             >
-                <slot
-                    :close="modalContext.close"
-                    :emit="emit"
-                    :get-child-modal="modalContext.getChildModal"
-                    :get-parent-modal="modalContext.getParentModal"
+                <!-- The modal/slideover content itself -->
+                <component
+                    :is="modalProps.slideover ? SlideoverContent : ModalContent"
                     :modal-context="modalContext"
                     :modal-props="modalProps"
-                    :reload="modalContext.reload"
-                />
-            </component>
+                >
+                    <slot
+                        :close="modalContext.close"
+                        :emit="emit"
+                        :get-child-modal="modalContext.getChildModal"
+                        :get-parent-modal="modalContext.getParentModal"
+                        :modal-context="modalContext"
+                        :modal-props="modalProps"
+                        :reload="modalContext.reload"
+                    />
+                </component>
+            </DialogContent>
+        </div>
+        <!-- </DialogPortal> -->
+    </DialogRoot>
 
-            <!-- The next modal in the stack -->
-            <ModalRenderer
-                v-if="modalStack.stack.value[modalContext.index + 1]"
-                :index="modalContext.index + 1"
-            />
-        </Dialog>
-    </TransitionRoot>
+    <!-- The next modal in the stack -->
+    <ModalRenderer
+        v-if="modalStack.stack.value[modalContext.index + 1]"
+        :index="modalContext.index + 1"
+    />
 </template>

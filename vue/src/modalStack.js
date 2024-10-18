@@ -56,6 +56,7 @@ class Modal {
     }
 
     show = () => {
+        console.log('calling show')
         const index = this.index.value
 
         if (index > -1) {
@@ -69,6 +70,7 @@ class Modal {
     }
 
     close = () => {
+        console.log('calling close')
         const index = this.index.value
 
         if (index > -1) {
@@ -87,7 +89,12 @@ class Modal {
         }
     }
 
+    setOpen = (open) => {
+        open ? this.show() : this.close()
+    }
+
     afterLeave = () => {
+        console.log('calling afterLeave')
         const index = this.index.value
 
         if (index > -1) {
