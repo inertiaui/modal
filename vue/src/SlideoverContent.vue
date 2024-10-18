@@ -27,7 +27,7 @@ defineProps({
                 :leave-to-class="'opacity-0 ' + (modalProps.position === 'left' ? '-translate-x-full' : 'translate-x-full')"
                 @after-leave="modalContext.afterLeave"
             >
-               <DialogContent
+                <DialogContent
                     :aria-describedby="undefined"
                     :trap-focus="modalProps?.closeExplicitly"
                     :class="{
