@@ -26,7 +26,6 @@
         "test": "vitest"
     },
     "devDependencies": {
-        "@headlessui/vue": "^1.7.22",
         "@vitejs/plugin-vue": "^5.0.0",
         "@vitest/coverage-v8": "^2.1.1",
         "@vitest/ui": "^2.1.1",
@@ -40,6 +39,7 @@
         "happy-dom": "^15.7.4",
         "prettier": "^3.2.4",
         "prettier-plugin-tailwindcss": "^0.5.12",
+        "radix-vue": "^1.9.7",
         "vite": "^5.0",
         "vite-plugin-eslint": "^1.8.1",
         "vitest": "^2.1.1"

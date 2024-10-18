@@ -1,5 +1,6 @@
 <script setup>
 import CloseButton from './CloseButton.vue'
+import { DialogContent, DialogTitle, VisuallyHidden } from 'radix-vue'
 
 defineProps({
     modalContext: Object,
@@ -19,17 +20,18 @@ defineProps({
             }"
         >
             <Transition
+                appear
                 :enter-from-class="'opacity-0 ' + (modalProps.position === 'left' ? '-translate-x-full' : 'translate-x-full')"
-                enter-active-class="transition transform ease-in-out duration-300"
                 enter-to-class="opacity-100 translate-x-0"
                 leave-from-class="opacity-100 translate-x-0"
                 :leave-to-class="'opacity-0 ' + (modalProps.position === 'left' ? '-translate-x-full' : 'translate-x-full')"
-                leave-active-class="transition transform ease-in-out duration-300"
+                @after-leave="modalContext.afterLeave"
             >
-                <div
-                    v-show="modalContext.show"
+               <DialogContent
+                    :aria-describedby="undefined"
+                    :trap-focus="modalProps?.closeExplicitly"
                     :class="{
-                        'im-slideover-wrapper w-full': true,
+                        'im-slideover-wrapper w-full transition duration-300 ease-in-out': true,
                         'blur-sm': !modalContext.onTopOfStack,
                         'sm:max-w-sm': modalProps.maxWidth == 'sm',
                         'sm:max-w-md': modalProps.maxWidth == 'md',
@@ -43,7 +45,11 @@ defineProps({
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': modalProps.maxWidth == '7xl',
                     }"
                 >
-                    <DialogPanel
+                    <VisuallyHidden as-child>
+                        <DialogTitle />
+                    </VisuallyHidden>
+
+                    <div
                         class="im-slideover-content relative"
                         :class="[modalProps.paddingClasses, modalProps.panelClasses]"
                     >
@@ -51,15 +57,15 @@ defineProps({
                             v-if="modalProps.closeButton"
                             class="absolute right-0 top-0 pr-3 pt-3"
                         >
-                            <CloseButton @click="modalContext.close" />
+                            <CloseButton />
                         </div>
 
                         <slot
                             :modal-context="modalContext"
                             :modal-props="modalProps"
                         />
-                    </DialogPanel>
-                </div>
+                    </div>
+                </DialogContent>
             </Transition>
         </div>
     </div>

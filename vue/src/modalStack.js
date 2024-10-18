@@ -13,6 +13,7 @@ class Modal {
     constructor(component, response, modalProps, onClose, afterLeave) {
         this.id = Modal.generateId()
         this.open = false
+        this.render = false
         this.listeners = {}
 
         this.component = component
@@ -52,7 +53,13 @@ class Modal {
     }
 
     isOnTopOfStack = () => {
-        return stack.value.length < 2 || stack.value[stack.value.length - 1].id === this.id
+        if (stack.value.length < 2) {
+            return true
+        }
+
+        const modals = stack.value.map((modal) => ({ id: modal.id, open: modal.open, render: modal.render }))
+        const lastRendered = modals.reverse().find((modal) => modal.open)
+        return lastRendered?.id === this.id
     }
 
     show = () => {
@@ -66,6 +73,7 @@ class Modal {
             }
 
             stack.value[index].open = true
+            stack.value[index].render = true
         }
     }
 
@@ -94,8 +102,8 @@ class Modal {
     }
 
     afterLeave = () => {
-        console.log('calling afterLeave')
         const index = this.index.value
+        console.log('calling afterLeave', index)
 
         if (index > -1) {
             if (stack.value[index].open) {
@@ -103,9 +111,13 @@ class Modal {
                 return
             }
 
-            stack.value = stack.value.filter((m) => m.id !== this.id)
+            stack.value[index].render = false
             this.afterLeaveCallback?.()
             this.afterLeaveCallback = null
+        }
+
+        if (index === 0) {
+            stack.value = []
         }
     }
 
