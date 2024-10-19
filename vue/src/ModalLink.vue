@@ -89,16 +89,16 @@ const shouldNavigate = computed(() => {
 })
 
 watch(
-    () => modalContext.value?.isOnTopOfStack(),
-    (isOnTopOfStack) => {
+    () => modalContext.value?.onTopOfStack,
+    (onTopOfStack) => {
         if (modalContext.value) {
-            if (isOnTopOfStack && isBlurred.value) {
+            if (onTopOfStack && isBlurred.value) {
                 emit('focus')
-            } else if (!isOnTopOfStack) {
+            } else if (!onTopOfStack) {
                 emit('blur')
             }
 
-            isBlurred.value = !isOnTopOfStack
+            isBlurred.value = !onTopOfStack
         }
     },
 )

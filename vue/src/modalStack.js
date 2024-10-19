@@ -12,8 +12,8 @@ const localModals = ref({})
 class Modal {
     constructor(component, response, modalProps, onClose, afterLeave) {
         this.id = Modal.generateId()
-        this.open = false
-        this.render = false
+        this.isOpen = false
+        this.shouldRender = false
         this.listeners = {}
 
         this.component = component
@@ -24,9 +24,15 @@ class Modal {
         this.afterLeaveCallback = afterLeave
 
         this.index = computed(() => stack.value.findIndex((m) => m.id === this.id))
-        this.getParentModal = () => this.getAdjacentModal(-1)
-        this.getChildModal = () => this.getAdjacentModal(1)
-        this.onTopOfStack = computed(() => this.isOnTopOfStack())
+        this.onTopOfStack = computed(() => {
+            if (stack.value.length < 2) {
+                return true
+            }
+
+            const modals = stack.value.map((modal) => ({ id: modal.id, isOpen: modal.isOpen }))
+
+            return modals.reverse().find((modal) => modal.isOpen)?.id === this.id
+        })
     }
 
     update = (modalProps, onClose, afterLeave) => {
@@ -47,42 +53,52 @@ class Modal {
         return `inertiaui_modal_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
     }
 
-    getAdjacentModal = (offset) => {
+    getParentModal = () => {
         const index = this.index.value
-        return stack.value[index + offset] ?? null
-    }
 
-    isOnTopOfStack = () => {
-        if (stack.value.length < 2) {
-            return true
+        if (index < 1) {
+            // This is the first modal in the stack
+            return null
         }
 
-        const modals = stack.value.map((modal) => ({ id: modal.id, open: modal.open, render: modal.render }))
-        const lastRendered = modals.reverse().find((modal) => modal.open)
-        return lastRendered?.id === this.id
+        // Find the first open modal before this one
+        return stack.value
+            .slice(0, index)
+            .reverse()
+            .find((modal) => modal.isOpen)
+    }
+
+    getChildModal = () => {
+        const index = this.index.value
+
+        if (index === stack.value.length - 1) {
+            // This is the last modal in the stack
+            return null
+        }
+
+        // Find the first open modal after this one
+        return stack.value.slice(index + 1).find((modal) => modal.isOpen)
     }
 
     show = () => {
-        console.log('calling show')
         const index = this.index.value
 
         if (index > -1) {
-            if (stack.value[index].open) {
+            if (stack.value[index].isOpen) {
                 // Only open if the modal is closed
                 return
             }
 
-            stack.value[index].open = true
-            stack.value[index].render = true
+            stack.value[index].isOpen = true
+            stack.value[index].shouldRender = true
         }
     }
 
     close = () => {
-        console.log('calling close')
         const index = this.index.value
 
         if (index > -1) {
-            if (!stack.value[index].open) {
+            if (!stack.value[index].isOpen) {
                 // Only close if the modal is open
                 return
             }
@@ -91,7 +107,7 @@ class Modal {
                 this.off(event)
             })
 
-            stack.value[index].open = false
+            stack.value[index].isOpen = false
             this.onCloseCallback?.()
             this.onCloseCallback = null
         }
@@ -103,15 +119,14 @@ class Modal {
 
     afterLeave = () => {
         const index = this.index.value
-        console.log('calling afterLeave', index)
 
         if (index > -1) {
-            if (stack.value[index].open) {
+            if (stack.value[index].isOpen) {
                 // Only execute the callback if the modal is closed
                 return
             }
 
-            stack.value[index].render = false
+            stack.value[index].shouldRender = false
             this.afterLeaveCallback?.()
             this.afterLeaveCallback = null
         }
