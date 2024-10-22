@@ -69,7 +69,7 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
     )
 
     return (
-        modalContext && (
+        modalContext?.shouldRender && (
             <>
                 {typeof children === 'function'
                     ? children({

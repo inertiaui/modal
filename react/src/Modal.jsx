@@ -24,7 +24,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
             {...props}
         >
             {({ afterLeave, close, emit, getChildModal, getParentModal, modalContext, modalProps, reload }) => (
-                modalContext.shouldRender ? <Transition
+                <Transition
                     appear={true}
                     show={modalContext.open ?? false}
                 >
@@ -94,7 +94,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                             </ModalContent>
                         )}
                     </Dialog>
-                </Transition> : null
+                </Transition>
             )}
         </HeadlessModal>
     )

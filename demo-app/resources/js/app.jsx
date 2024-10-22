@@ -16,7 +16,7 @@ createInertiaApp({
 
         root.render(
             <ModalStackProvider>
-                <ModalRoot>
+                <ModalRoot {...props}>
                     <App {...props} />
                 </ModalRoot>
             </ModalStackProvider>

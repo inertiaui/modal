@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { default as Axios } from 'axios'
-import { except, only, resolveInteriaPageFromRouter } from './helpers'
+import { except, only } from './helpers'
 import { router } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -10,6 +10,8 @@ import { waitFor } from './helpers'
 const ModalStackContext = createContext(null)
 ModalStackContext.displayName = 'ModalStackContext'
 
+let pageVersion = null
+let resolveComponent = null
 let baseUrl = null
 let newModalOnBase = null
 let localStackCopy = []
@@ -22,18 +24,14 @@ export const ModalStackProvider = ({ children }) => {
         setStack((prevStack) => {
             const newStack = withStack([...prevStack])
 
-            newStack.forEach((modal, index) => {
-                newStack[index].index = index
-            })
-
             const isOnTopOfStack = (modalId) => {
                 if (newStack.length < 2) {
                     return true
                 }
 
-                const modals = newStack.map((modal) => ({ id: modal.id, open: modal.open }))
-
-                return modals.reverse().find((modal) => modal.open)?.id === modalId
+                return newStack.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }))
+                    .reverse()
+                    .find((modal) => modal.shouldRender)?.id === modalId
             }
 
             newStack.forEach((modal, index) => {
@@ -236,11 +234,12 @@ export const ModalStackProvider = ({ children }) => {
     }
 
     const pushFromResponseData = (responseData, modalProps = {}, onClose = null, onAfterLeave = null) => {
-        return router.resolveComponent(responseData.component).then((component) => push(component, responseData, modalProps, onClose, onAfterLeave))
+        return resolveComponent(responseData.component).then((component) => push(component, responseData, modalProps, onClose, onAfterLeave))
     }
 
     const push = (component, response, modalProps, onClose, afterLeave) => {
         const newModal = new Modal(component, response, modalProps, onClose, afterLeave)
+        newModal.index = stack.length
 
         updateStack((prevStack) => [...prevStack, newModal])
 
@@ -260,18 +259,16 @@ export const ModalStackProvider = ({ children }) => {
         return modal
     }
 
-    const visitModal = (url, options = {}) => {
-        return visit(
-            url,
-            options.method ?? 'get',
-            options.data ?? {},
-            options.headers ?? {},
-            options.config ?? {},
-            options.onClose,
-            options.onAfterLeave,
-            options.queryStringArrayFormat ?? 'brackets',
-        )
-    }
+    const visitModal = (url, options = {}) => visit(
+        url,
+        options.method ?? 'get',
+        options.data ?? {},
+        options.headers ?? {},
+        options.config ?? {},
+        options.onClose,
+        options.onAfterLeave,
+        options.queryStringArrayFormat ?? 'brackets',
+    )
 
     const visit = (
         href,
@@ -303,59 +300,57 @@ export const ModalStackProvider = ({ children }) => {
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-Inertia': true,
+                'X-Inertia-Version': pageVersion,
                 'X-InertiaUI-Modal': true,
                 'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
             }
 
-            resolveInteriaPageFromRouter().then((inertiaPage) => {
-                headers['X-Inertia-Version'] = inertiaPage.version
 
-                if (useInertiaRouter) {
-                    // Pushing the modal to the stack will be handled by the ModalRoot...
-                    return router.visit(url, {
-                        method,
-                        data,
-                        headers,
-                        preserveScroll: true,
-                        preserveState: true,
-                        onError: reject,
-                        onFinish: () => {
-                            waitFor(() => newModalOnBase).then((modal) => {
-                                const originalOnClose = modal.onCloseCallback
-                                const originalAfterLeave = modal.afterLeaveCallback
-
-                                modal.update(
-                                    modalProps,
-                                    () => {
-                                        onClose?.()
-                                        originalOnClose?.()
-                                    },
-                                    () => {
-                                        onAfterLeave?.()
-                                        originalAfterLeave?.()
-                                    },
-                                )
-
-                                resolve(modal)
-                                newModalOnBase = null
-                            })
-                        },
-                    })
-                }
-
-                //
-
-                Axios({
-                    url,
+            if (useInertiaRouter) {
+                // Pushing the modal to the stack will be handled by the ModalRoot...
+                return router.visit(url, {
                     method,
                     data,
                     headers,
+                    preserveScroll: true,
+                    preserveState: true,
+                    onError: reject,
+                    onFinish: () => {
+                        waitFor(() => newModalOnBase).then((modal) => {
+                            const originalOnClose = modal.onCloseCallback
+                            const originalAfterLeave = modal.afterLeaveCallback
+
+                            modal.update(
+                                modalProps,
+                                () => {
+                                    onClose?.()
+                                    originalOnClose?.()
+                                },
+                                () => {
+                                    onAfterLeave?.()
+                                    originalAfterLeave?.()
+                                },
+                            )
+
+                            resolve(modal)
+                            newModalOnBase = null
+                        })
+                    },
                 })
-                    .then((response) => resolve(pushFromResponseData(response.data, modalProps, onClose, onAfterLeave)))
-                    .catch((error) => {
-                        reject(error)
-                    })
+            }
+
+            //
+
+            Axios({
+                url,
+                method,
+                data,
+                headers,
             })
+                .then((response) => resolve(pushFromResponseData(response.data, modalProps, onClose, onAfterLeave)))
+                .catch((error) => {
+                    reject(error)
+                })
         })
     }
 
@@ -374,7 +369,18 @@ export const ModalStackProvider = ({ children }) => {
         })
     }
 
+    const init = (initialPage, componentResolver) => {
+        if (initialPage) {
+            pageVersion = initialPage.version
+        }
+
+        if (componentResolver) {
+            resolveComponent = componentResolver
+        }
+    }
+
     const value = {
+        init,
         stack,
         localModals,
         push,
@@ -403,11 +409,11 @@ export const useModalStack = () => {
 
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
-export const ModalRoot = ({ children }) => {
+export const ModalRoot = ({ initialPage, resolveComponent, children }) => {
     const context = useContext(ModalStackContext)
+    context.init(initialPage, resolveComponent)
 
     let isNavigating = false
-
     let previousModalOnBase = false
 
     useEffect(() => router.on('start', () => (isNavigating = true)), [])

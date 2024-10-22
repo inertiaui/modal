@@ -1,5 +1,3 @@
-import { router } from '@inertiajs/vue3'
-
 function except(target, keys) {
     if (Array.isArray(target)) {
         return target.filter((key) => !keys.includes(key))
@@ -65,11 +63,4 @@ function waitFor(conditionFn, waitForSeconds = 3, checkIntervalMilliseconds = 10
     })
 }
 
-/**
- * Resolves router.page from the Inertia router or waits for it to be available
- */
-function resolveInteriaPageFromRouter(waitForSeconds = 3, checkIntervalMilliseconds = 100) {
-    return waitFor(() => router.page || null, waitForSeconds, checkIntervalMilliseconds)
-}
-
-export { except, only, rejectNullValues, resolveInteriaPageFromRouter, waitFor }
+export { except, only, rejectNullValues, waitFor }
