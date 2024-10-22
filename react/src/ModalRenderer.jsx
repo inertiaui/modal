@@ -20,12 +20,14 @@ const ModalRenderer = ({ index }) => {
     }, [stack, index])
 
     return (
-        modalContext?.component && <ModalIndexContext.Provider value={index}>
-            <modalContext.component
-                {...modalContext.componentProps}
-                onModalEvent={(...args) => modalContext.emit(...args)}
-            />
-        </ModalIndexContext.Provider>
+        modalContext?.component && (
+            <ModalIndexContext.Provider value={index}>
+                <modalContext.component
+                    {...modalContext.componentProps}
+                    onModalEvent={(...args) => modalContext.emit(...args)}
+                />
+            </ModalIndexContext.Provider>
+        )
     )
 }
 
