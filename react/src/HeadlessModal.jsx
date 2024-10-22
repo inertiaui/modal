@@ -9,7 +9,7 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
     const { stack, registerLocalModal, removeLocalModal } = useModalStack()
 
     const [localModalContext, setLocalModalContext] = useState(null)
-    const modalContext = useMemo(() => (name ? localModalContext : stack[modalIndex]))
+    const modalContext = useMemo(() => (name ? localModalContext : stack[modalIndex]), [name, localModalContext, modalIndex, stack])
 
     const modalPropsSlideover = useMemo(() => modalContext?.modalProps.slideover ?? props.slideover ?? getConfig('type') === 'slideover', [props.slideover])
 
@@ -69,18 +69,18 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             <>
                 {typeof children === 'function'
                     ? children({
-                          afterLeave: modalContext.afterLeave,
-                          close: modalContext.close,
-                          emit: modalContext.emit,
-                          getChildModal: modalContext.getChildModal,
-                          getParentModal: modalContext.getParentModal,
-                          index: modalContext.index,
-                          isOpen: modalContext.open,
-                          modalContext,
-                          modalProps,
-                          reload: modalContext.reload,
-                          setOpen: modalContext.setOpen,
-                      })
+                        afterLeave: modalContext.afterLeave,
+                        close: modalContext.close,
+                        emit: modalContext.emit,
+                        getChildModal: modalContext.getChildModal,
+                        getParentModal: modalContext.getParentModal,
+                        index: modalContext.index,
+                        isOpen: modalContext.open,
+                        modalContext,
+                        modalProps,
+                        reload: modalContext.reload,
+                        setOpen: modalContext.setOpen,
+                    })
                     : children}
 
                 {/* Next modal in the stack */}

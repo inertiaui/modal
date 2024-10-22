@@ -18,6 +18,54 @@ export const ModalStackProvider = ({ children }) => {
     const [stack, setStack] = useState([])
     const [localModals, setLocalModals] = useState({})
 
+    const updateStack = (withStack) => {
+        setStack((prevStack) => {
+            const newStack = withStack([...prevStack])
+
+            newStack.forEach((modal, index) => {
+                newStack[index].index = index
+            })
+
+            const isOnTopOfStack = (modalId) => {
+                if (newStack.length < 2) {
+                    return true
+                }
+
+                const modals = newStack.map((modal) => ({ id: modal.id, open: modal.open }))
+
+                return modals.reverse().find((modal) => modal.open)?.id === modalId
+            }
+
+            newStack.forEach((modal, index) => {
+                newStack[index].onTopOfStack = isOnTopOfStack(modal.id)
+                newStack[index].getParentModal = () => {
+                    if (index < 1) {
+                        // This is the first modal in the stack
+                        return null
+                    }
+
+                    // Find the first open modal before this one
+                    return newStack
+                        .slice(0, index)
+                        .reverse()
+                        .find((modal) => modal.open)
+                }
+                newStack[index].getChildModal = () => {
+                    if (index === newStack.length - 1) {
+                        // This is the last modal in the stack
+                        return null
+                    }
+
+                    // Find the first open modal after this one
+                    return newStack.slice(index + 1).find((modal) => modal.open)
+                }
+
+            })
+
+            return newStack
+        })
+    }
+
     useEffect(() => {
         localStackCopy = stack
     }, [stack])
@@ -50,7 +98,7 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         update = (modalProps, onClose, afterLeave) => {
-            this.updateStack((prevStack) =>
+            updateStack((prevStack) =>
                 prevStack.map((modal) => {
                     if (modal.id === this.id) {
                         modal.modalProps = modalProps
@@ -62,21 +110,8 @@ export const ModalStackProvider = ({ children }) => {
             )
         }
 
-        updateStack = (withStack) => {
-            setStack((prevStack) => {
-                const newStack = withStack([...prevStack])
-
-                newStack.forEach((modal, index) => {
-                    newStack[index].index = index
-                    newStack[index].onTopOfStack = index === newStack.length - 1
-                })
-
-                return newStack
-            })
-        }
-
         show = () => {
-            this.updateStack((prevStack) =>
+            updateStack((prevStack) =>
                 prevStack.map((modal) => {
                     if (modal.id === this.id && !modal.open) {
                         modal.open = true
@@ -91,7 +126,7 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         close = () => {
-            this.updateStack((prevStack) =>
+            updateStack((prevStack) =>
                 prevStack.map((modal) => {
                     if (modal.id === this.id && modal.open) {
                         Object.keys(modal.listeners).forEach((event) => {
@@ -111,7 +146,7 @@ export const ModalStackProvider = ({ children }) => {
                 return
             }
 
-            this.updateStack((prevStack) =>
+            updateStack((prevStack) =>
                 prevStack.filter((modal) => {
                     if (modal.id !== this.id) {
                         return true
@@ -190,7 +225,7 @@ export const ModalStackProvider = ({ children }) => {
                 },
             }).then((response) => {
                 Object.assign(this.componentProps, response.data.props)
-                setStack((prevStack) => [...prevStack]) // Trigger re-render
+                updateStack((prevStack) => [...prevStack]) // Trigger re-render
             })
         }
     }
@@ -202,23 +237,7 @@ export const ModalStackProvider = ({ children }) => {
     const push = (component, response, modalProps, onClose, afterLeave) => {
         const newModal = new Modal(component, response, modalProps, onClose, afterLeave)
 
-        setStack((prevStack) => {
-            const updatedStack = [...prevStack, newModal]
-
-            // Set index and update onTopOfStack for all modals
-            updatedStack.forEach((modal, index) => {
-                modal.index = index
-                modal.onTopOfStack = index === updatedStack.length - 1
-            })
-
-            // Set getParentModal and getChildModal
-            updatedStack.forEach((modal, index) => {
-                modal.getParentModal = () => (index > 0 ? updatedStack[index - 1] : null)
-                modal.getChildModal = () => (index < updatedStack.length - 1 ? updatedStack[index + 1] : null)
-            })
-
-            return updatedStack
-        })
+        updateStack((prevStack) => [...prevStack, newModal])
 
         newModal.show()
 
@@ -359,7 +378,7 @@ export const ModalStackProvider = ({ children }) => {
             console.log('Closing all modals', { stack, localStackCopy })
             localStackCopy.reverse().forEach((modal) => modal.close())
         },
-        reset: () => setStack([]),
+        reset: () => updateStack(() => []),
         visit,
         visitModal,
         registerLocalModal,
