@@ -400,7 +400,7 @@ export const useModalStack = () => {
 
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
-export const renderApp = (pageProps) => {
+export const renderApp = (App, pageProps) => {
     if (pageProps.initialPage) {
         pageVersion = pageProps.initialPage.version
     }
@@ -409,12 +409,12 @@ export const renderApp = (pageProps) => {
         resolveComponent = pageProps.resolveComponent
     }
 
-    return ({ Component, key, componentProps }) => {
+    const renderInertiaApp = ({ Component, key, componentProps }) => {
         const modalRoot = createElement(ModalRoot)
         const child = createElement(Component, { key, ...componentProps })
 
         if (typeof Component.layout === 'function') {
-            return <ModalStackProvider><>{Component.layout(child)}{modalRoot}</></ModalStackProvider>
+            return <>{Component.layout(child)}{modalRoot}</>
         }
 
         if (Array.isArray(Component.layout)) {
@@ -424,8 +424,10 @@ export const renderApp = (pageProps) => {
                 .reduce((children, Layout) => createElement(Layout, { children, ...componentProps }))
         }
 
-        return <ModalStackProvider><>{child}{modalRoot}</></ModalStackProvider>
+        return <>{child}{modalRoot}</>
     }
+
+    return <ModalStackProvider>{createElement(App, { ...pageProps, children: renderInertiaApp })}</ModalStackProvider>
 }
 
 export const ModalRoot = ({ children }) => {
