@@ -409,25 +409,39 @@ export const renderApp = (App, pageProps) => {
         resolveComponent = pageProps.resolveComponent
     }
 
-    const renderInertiaApp = ({ Component, key, componentProps }) => {
-        const modalRoot = createElement(ModalRoot)
-        const child = createElement(Component, { key, ...componentProps })
+    const renderInertiaApp = ({ Component, props, key }) => {
+        const renderComponent = () => {
+            const child = createElement(Component, { key, ...props })
 
-        if (typeof Component.layout === 'function') {
-            return <>{Component.layout(child)}{modalRoot}</>
+            if (typeof Component.layout === 'function') {
+                return Component.layout(child)
+            }
+
+            if (Array.isArray(Component.layout)) {
+                const layouts = Component.layout
+                    .concat(child)
+                    .reverse()
+                    .reduce((children, Layout) => createElement(Layout, props, children))
+
+                return layouts
+            }
+
+            return child
         }
 
-        if (Array.isArray(Component.layout)) {
-            return Component.layout
-                .concat(child)
-                .reverse()
-                .reduce((children, Layout) => createElement(Layout, { children, ...componentProps }))
-        }
-
-        return <>{child}{modalRoot}</>
+        return (
+            <>
+                {renderComponent()}
+                <ModalRoot />
+            </>
+        )
     }
 
-    return <ModalStackProvider>{createElement(App, { ...pageProps, children: renderInertiaApp })}</ModalStackProvider>
+    return (
+        <ModalStackProvider>
+            <App {...pageProps}>{renderInertiaApp}</App>
+        </ModalStackProvider>
+    )
 }
 
 export const ModalRoot = ({ children }) => {
