@@ -414,7 +414,7 @@ export const renderApp = (pageProps) => {
         const child = createElement(Component, { key, ...componentProps })
 
         if (typeof Component.layout === 'function') {
-            return <>{Component.layout(child)}{modalRoot}</>
+            return <ModalStackProvider><>{Component.layout(child)}{modalRoot}</></ModalStackProvider>
         }
 
         if (Array.isArray(Component.layout)) {
@@ -424,7 +424,7 @@ export const renderApp = (pageProps) => {
                 .reduce((children, Layout) => createElement(Layout, { children, ...componentProps }))
         }
 
-        return <>{child}{modalRoot}</>
+        return <ModalStackProvider><>{child}{modalRoot}</></ModalStackProvider>
     }
 }
 
