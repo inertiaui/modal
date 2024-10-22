@@ -11,6 +11,10 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
     const [localModalContext, setLocalModalContext] = useState(null)
     const modalContext = useMemo(() => (name ? localModalContext : stack[modalIndex]), [name, localModalContext, modalIndex, stack])
 
+    const nextIndex = useMemo(() => {
+        return stack.find((m) => m.shouldRender && m.index > modalContext?.index)?.index
+    }, [modalIndex, stack])
+
     const modalPropsSlideover = useMemo(() => modalContext?.modalProps.slideover ?? props.slideover ?? getConfig('type') === 'slideover', [props.slideover])
 
     const modalProps = useMemo(
@@ -84,7 +88,7 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
                     : children}
 
                 {/* Next modal in the stack */}
-                {stack[modalContext.index + 1] && <ModalRenderer index={modalContext.index + 1} />}
+                {nextIndex && <ModalRenderer index={nextIndex} />}
             </>
         )
     )

@@ -74,6 +74,7 @@ export const ModalStackProvider = ({ children }) => {
         constructor(component, response, modalProps, onClose, afterLeave) {
             this.id = Modal.generateId()
             this.open = false
+            this.shouldRender = false
             this.listeners = {}
 
             this.component = component
@@ -115,6 +116,7 @@ export const ModalStackProvider = ({ children }) => {
                 prevStack.map((modal) => {
                     if (modal.id === this.id && !modal.open) {
                         modal.open = true
+                        modal.shouldRender = true
                     }
                     return modal
                 }),
@@ -126,6 +128,7 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         close = () => {
+            console.log('Closing', this.id)
             updateStack((prevStack) =>
                 prevStack.map((modal) => {
                     if (modal.id === this.id && modal.open) {
@@ -142,21 +145,23 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         afterLeave = () => {
+            console.log('After leave', this.id)
             if (this.open) {
                 return
             }
 
-            updateStack((prevStack) =>
-                prevStack.filter((modal) => {
-                    if (modal.id !== this.id) {
-                        return true
+            updateStack((prevStack) => {
+                const updatedStack = prevStack.map((modal) => {
+                    if (modal.id === this.id && !modal.open) {
+                        modal.shouldRender = false
+                        modal.afterLeaveCallback?.()
+                        modal.afterLeaveCallback = null
                     }
+                    return modal
+                })
 
-                    modal.afterLeaveCallback?.()
-                    modal.afterLeaveCallback = null
-                    return false
-                }),
-            )
+                return this.index === 0 ? [] : updatedStack
+            })
         }
 
         on = (event, callback) => {
@@ -225,7 +230,7 @@ export const ModalStackProvider = ({ children }) => {
                 },
             }).then((response) => {
                 Object.assign(this.componentProps, response.data.props)
-                updateStack((prevStack) => [...prevStack]) // Trigger re-render
+                updateStack((prevStack) => prevStack) // Trigger re-render
             })
         }
     }
