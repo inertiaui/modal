@@ -29,9 +29,12 @@ export const ModalStackProvider = ({ children }) => {
                     return true
                 }
 
-                return newStack.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }))
-                    .reverse()
-                    .find((modal) => modal.shouldRender)?.id === modalId
+                return (
+                    newStack
+                        .map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }))
+                        .reverse()
+                        .find((modal) => modal.shouldRender)?.id === modalId
+                )
             }
 
             newStack.forEach((modal, index) => {
@@ -57,7 +60,6 @@ export const ModalStackProvider = ({ children }) => {
                     // Find the first open modal after this one
                     return newStack.slice(index + 1).find((modal) => modal.open)
                 }
-
             })
 
             return newStack
@@ -259,16 +261,17 @@ export const ModalStackProvider = ({ children }) => {
         return modal
     }
 
-    const visitModal = (url, options = {}) => visit(
-        url,
-        options.method ?? 'get',
-        options.data ?? {},
-        options.headers ?? {},
-        options.config ?? {},
-        options.onClose,
-        options.onAfterLeave,
-        options.queryStringArrayFormat ?? 'brackets',
-    )
+    const visitModal = (url, options = {}) =>
+        visit(
+            url,
+            options.method ?? 'get',
+            options.data ?? {},
+            options.headers ?? {},
+            options.config ?? {},
+            options.onClose,
+            options.onAfterLeave,
+            options.queryStringArrayFormat ?? 'brackets',
+        )
 
     const visit = (
         href,
@@ -304,7 +307,6 @@ export const ModalStackProvider = ({ children }) => {
                 'X-InertiaUI-Modal': true,
                 'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
             }
-
 
             if (useInertiaRouter) {
                 // Pushing the modal to the stack will be handled by the ModalRoot...
