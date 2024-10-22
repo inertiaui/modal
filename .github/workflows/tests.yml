@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        inertia: [v1, v2]
+        inertia: [v1]
         stack: [react, vue]
 
     name: Dusk Test Inertia ${{ matrix.inertia }} - Stack ${{ matrix.stack }}

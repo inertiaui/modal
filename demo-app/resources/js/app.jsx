@@ -4,7 +4,8 @@ import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { putConfig, ModalStackProvider, ModalRoot } from '@inertiaui/modal-react'
+import { putConfig, ModalStackProvider, renderApp } from '@inertiaui/modal-react'
+import { createElement } from 'react';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -14,11 +15,13 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
+
+
         root.render(
             <ModalStackProvider>
-                <ModalRoot {...props}>
-                    <App {...props} />
-                </ModalRoot>
+                <App {...props}>
+                    {renderApp(props)}
+                </App>
             </ModalStackProvider>
         );
     },

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { createElement, useEffect, useState } from 'react'
 import { default as Axios } from 'axios'
 import { except, only } from './helpers'
 import { router } from '@inertiajs/react'
@@ -369,18 +369,7 @@ export const ModalStackProvider = ({ children }) => {
         })
     }
 
-    const init = (initialPage, componentResolver) => {
-        if (initialPage) {
-            pageVersion = initialPage.version
-        }
-
-        if (componentResolver) {
-            resolveComponent = componentResolver
-        }
-    }
-
     const value = {
-        init,
         stack,
         localModals,
         push,
@@ -409,9 +398,36 @@ export const useModalStack = () => {
 
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
-export const ModalRoot = ({ initialPage, resolveComponent, children }) => {
+export const renderApp = (pageProps) => {
+    if (pageProps.initialPage) {
+        pageVersion = pageProps.initialPage.version
+    }
+
+    if (pageProps.resolveComponent) {
+        resolveComponent = pageProps.resolveComponent
+    }
+
+    return ({ Component, key, componentProps }) => {
+        const modalRoot = createElement(ModalRoot)
+        const child = createElement(Component, { key, ...componentProps })
+
+        if (typeof Component.layout === 'function') {
+            return <>{Component.layout(child)}{modalRoot}</>
+        }
+
+        if (Array.isArray(Component.layout)) {
+            return Component.layout
+                .concat(child)
+                .reverse()
+                .reduce((children, Layout) => createElement(Layout, { children, ...componentProps }))
+        }
+
+        return <>{child}{modalRoot}</>
+    }
+}
+
+export const ModalRoot = ({ children }) => {
     const context = useContext(ModalStackContext)
-    context.init(initialPage, resolveComponent)
 
     let isNavigating = false
     let previousModalOnBase = false
