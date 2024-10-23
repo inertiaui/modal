@@ -20,11 +20,11 @@ import { Modal, ModalLink } from '@inertiaui/modal-react'
 Instead of importing the components on every page, you may also consider importing them globally in your `app.js` file:
 
 ```js{7-8}
-import { Modal, ModalLink } from '@inertiaui/modal-vue'
+import { Modal, ModalLink, renderApp } from '@inertiaui/modal-vue'
 
 createInertiaApp({
     setup({ el, App, props, plugin }) {
-        return createApp({ render: () => h(ModalRoot, () => h(App, props)) })
+        return createApp({ render: renderApp(App, props) })
             .use(plugin)
             .component('Modal', Modal)
             .component('ModalLink', ModalLink)
