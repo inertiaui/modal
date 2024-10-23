@@ -11,7 +11,7 @@ Route::get('/users/{user}/edit', function (User $user) {
     return Inertia::modal('EditUser', [
         'roles' => Role::pluck('name', 'id'),
         'user' => $user,
-    ])->baseUrl(url('/users'));
+    ])->baseUrl('/users');
 })->name('users.edit');
 
 // Show a user

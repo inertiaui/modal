@@ -1,4 +1,4 @@
-# Local Modals (beta)
+# Local Modals
 
 Instead of opening a modal using a URL, you can also insert the modal content directly into the page. This is useful when you want to display a modal that is only relevant to a specific page and doesn't need to be shared across multiple pages. It's also great for simple modals that don't require a lot of logic.
 
