@@ -48,6 +48,24 @@ function closeModal() {
 </template>
 ```
 
+```vue [Vue 3.5+]
+<script setup>
+import { useTemplateRef } from 'vue';
+
+const modalRef = useTemplateRef('modalRef');
+
+function closeModal() {
+    modalRef.value.close();
+}
+</script>
+
+<template>
+    <Modal ref="modalRef">
+        <!-- ... -->
+    </Modal>
+</template>
+```
+
 ```jsx [React]
 import { useRef } from 'react';
 
