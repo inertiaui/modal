@@ -1,6 +1,30 @@
 # Installation
 
-Now you can install Inertia Modal using npm:
+There are two ways to install Inertia Modal. First, you can install the package with Composer. This package contains the Laravel package as well as the frontend packages. The advantage of installing it with Composer is that the frontend package is always in sync with the backend package. Alternatively, you can use npm to install the frontend package separately, but this requires you to manage the versions of the frontend and backend packages yourself.
+
+## Composer Installation
+
+```bash
+composer require inertiaui/modal
+```
+
+After installing the package, you can link the React or Vue package into your project. This will create a symlink in your `node_modules` directory to the package in the `vendor` directory.
+
+::: code-group
+
+```bash [React]
+npm install vendor/inertiaui/modal/react
+```
+
+```bash [Vue]
+npm install vendor/inertiaui/modal/vue
+```
+
+:::
+
+## NPM Installation
+
+You may also install the frontend packages separately.
 
 ::: code-group
 
@@ -14,13 +38,9 @@ npm install @inertiaui/modal-react
 
 :::
 
-There's no backend package required for Inertia Modal, so you don't need to install anything using Composer.
-
 ## Inertia.js Configuration
 
-Inertia Modal requires a `ModalRoot` component to be mounted in your app. You can do this in the main `app.js` file where you initialize your Inertia app using the `createInertiaApp` function.
-
-You only need to change the render function to include the `ModalRoot` component and pass the `App` component as a child of `ModalRoot`. If you're using React, you also need to wrap the `ModalRoot` component with the `ModalStackProvider` component.
+Inertia Modal requires a *root*-component to be mounted in your app. You can do this in the main `app.js` file where you initialize your Inertia app using the `createInertiaApp` function. You only need to change the render function to include the `renderApp` method and pass the `App` component and `props` object to it.
 
 ::: code-group
 
@@ -31,7 +51,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         return
             createApp({ render: () => h(App, props) }) // [!code --]
-            createApp({ render: () => h(ModalRoot, () => h(App, props)) }) // [!code ++]
+            createApp({ render: renderApp(App, props) }) // [!code ++]
             .use(plugin)
             .mount(el)
     }
@@ -80,25 +100,3 @@ export default {
 ```
 
 :::
-
-## Vite Configuration
-
-There's some additional configuration required to use Inertia Modal. In the `vite.config.js` file, add the following config to the root of the configuration object:
-
-::: code-group
-
-```js [Vue]
-resolve: {
-    dedupe: ['@inertiajs/vue3']
-}
-```
-
-```js [React]
-resolve: {
-    dedupe: ['@inertiajs/react']
-}
-```
-
-:::
-
-The `dedupe` option is required to prevent Inertia from being bundled multiple times. This is highly likely an Inertia-specific issue, and we are working on a more elegant solution for this.
