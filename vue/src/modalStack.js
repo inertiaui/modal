@@ -11,6 +11,10 @@ const baseUrl = ref(null)
 const stack = ref([])
 const localModals = ref({})
 
+const setComponentResolver = (resolver) => {
+    resolveComponent = resolver
+}
+
 class Modal {
     constructor(component, response, modalProps, onClose, afterLeave) {
         this.id = Modal.generateId()
@@ -320,6 +324,7 @@ export const renderApp = (App, props) => {
 
 export function useModalStack() {
     return {
+        setComponentResolver,
         getBaseUrl: () => baseUrl.value,
         setBaseUrl: (url) => (baseUrl.value = url),
         stack: readonly(stack),

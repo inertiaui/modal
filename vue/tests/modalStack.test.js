@@ -244,6 +244,11 @@ describe('modalStack', () => {
 
             const mockComponent = { name: 'TestComponent' }
 
+            modalStack.setComponentResolver((component) => {
+                expect(component).toBe('TestComponent')
+                return router.resolveComponent(component)
+            })
+
             vi.mocked(axios).mockResolvedValue(mockResponse)
             vi.mocked(router.resolveComponent).mockResolvedValue(mockComponent)
             vi.mocked(usePage).mockReturnValue({ version: '1.0' })
@@ -264,8 +269,6 @@ describe('modalStack', () => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
-
-            expect(router.resolveComponent).toHaveBeenCalledWith('TestComponent')
 
             expect(result).toBeDefined()
             expect(result.component).toBe(mockComponent)
