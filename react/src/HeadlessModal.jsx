@@ -76,21 +76,21 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             <>
                 {typeof children === 'function'
                     ? children({
-                        afterLeave: modalContext.afterLeave,
-                        close: modalContext.close,
-                        emit: modalContext.emit,
-                        getChildModal: modalContext.getChildModal,
-                        getParentModal: modalContext.getParentModal,
-                        id: modalContext.id,
-                        index: modalContext.index,
-                        isOpen: modalContext.isOpen,
-                        modalContext,
-                        modalProps,
-                        onTopOfStack: modalContext.onTopOfStack,
-                        reload: modalContext.reload,
-                        setOpen: modalContext.setOpen,
-                        shouldRender: modalContext.shouldRender,
-                    })
+                          afterLeave: modalContext.afterLeave,
+                          close: modalContext.close,
+                          emit: modalContext.emit,
+                          getChildModal: modalContext.getChildModal,
+                          getParentModal: modalContext.getParentModal,
+                          id: modalContext.id,
+                          index: modalContext.index,
+                          isOpen: modalContext.isOpen,
+                          modalContext,
+                          modalProps,
+                          onTopOfStack: modalContext.onTopOfStack,
+                          reload: modalContext.reload,
+                          setOpen: modalContext.setOpen,
+                          shouldRender: modalContext.shouldRender,
+                      })
                     : children}
 
                 {/* Next modal in the stack */}

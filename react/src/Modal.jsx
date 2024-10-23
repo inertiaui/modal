@@ -23,7 +23,8 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
             name={name}
             {...props}
         >
-            {({ afterLeave,
+            {({
+                afterLeave,
                 close,
                 emit,
                 getChildModal,
@@ -36,7 +37,8 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                 onTopOfStack,
                 reload,
                 setOpen,
-                shouldRender }) => (
+                shouldRender,
+            }) => (
                 <Transition
                     appear={true}
                     show={isOpen ?? false}
@@ -92,7 +94,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                     onTopOfStack,
                                     reload,
                                     setOpen,
-                                    shouldRender
+                                    shouldRender,
                                 })}
                             </SlideoverContent>
                         ) : (
@@ -114,7 +116,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                     onTopOfStack,
                                     reload,
                                     setOpen,
-                                    shouldRender
+                                    shouldRender,
                                 })}
                             </ModalContent>
                         )}
