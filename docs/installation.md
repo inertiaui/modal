@@ -25,7 +25,7 @@ You only need to change the render function to include the `ModalRoot` component
 ::: code-group
 
 ```js [Vue]
-import { ModalRoot } from '@inertiaui/modal-vue' // [!code ++]
+import { renderApp } from '@inertiaui/modal-vue' // [!code ++]
 
 createInertiaApp({
     setup({ el, App, props, plugin }) {
@@ -39,41 +39,21 @@ createInertiaApp({
 ```
 
 ```jsx [React]
-import { ModalStackProvider, ModalRoot } from '@inertiaui/modal-react' // [!code ++]
+import { renderApp } from '@inertiaui/modal-react' // [!code ++]
 
 createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
         root.render(
-            <ModalStackProvider> // [!code ++]
-                <ModalRoot> // [!code ++]
-                    <App {...props} />
-                </ModalRoot> // [!code ++]
-            </ModalStackProvider> // [!code ++]
+            <App {...props} /> // [!code --]
+            renderApp(App, props) // [!code ++]
         );
     }
 });
 ```
 
 :::
-
-Alternatively in Vue, you can include the `ModalRoot` component in the [layout template](https://inertiajs.com/pages#persistent-layouts) of your app:
-
-```vue
-<script setup>
-import { ModalRoot } from '@inertiaui/modal-vue'
-</script>
-
-<template>
-    <div>
-        <!-- Your layout here -->
-        <slot />
-    </div>
-
-    <ModalRoot />
-</template>
-```
 
 ## Tailwind Configuration
 

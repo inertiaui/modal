@@ -1,10 +1,12 @@
-import { computed, readonly, ref, markRaw, nextTick } from 'vue'
+import { computed, readonly, ref, markRaw, nextTick, h } from 'vue'
 import { except, only, waitFor } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { default as Axios } from 'axios'
+import ModalRoot from './ModalRoot.vue'
 
+let resolveComponent = null
 const baseUrl = ref(null)
 const stack = ref([])
 const localModals = ref({})
@@ -220,9 +222,7 @@ function pushLocalModal(name, modalProps, onClose, afterLeave) {
 }
 
 function pushFromResponseData(responseData, modalProps = {}, onClose = null, onAfterLeave = null) {
-    return router
-        .resolveComponent(responseData.component)
-        .then((component) => push(markRaw(component), responseData, modalProps, onClose, onAfterLeave))
+    return resolveComponent(responseData.component).then((component) => push(markRaw(component), responseData, modalProps, onClose, onAfterLeave))
 }
 
 function visit(
@@ -309,6 +309,14 @@ function push(component, response, modalProps, onClose, afterLeave) {
 export const rootPresent = ref(false)
 
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
+
+export const renderApp = (App, props) => {
+    if (props.resolveComponent) {
+        resolveComponent = props.resolveComponent
+    }
+
+    return () => h(ModalRoot, () => h(App, props))
+}
 
 export function useModalStack() {
     return {

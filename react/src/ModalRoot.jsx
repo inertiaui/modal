@@ -178,9 +178,7 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         emit = (event, ...args) => {
-            console.log('Emitting', event, 'with args', args)
             this.listeners[event]?.forEach((callback) => callback(...args))
-            return 'OK'
         }
 
         registerEventListenersFromProps = (props) => {

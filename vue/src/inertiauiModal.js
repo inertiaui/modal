@@ -1,5 +1,5 @@
 import { getConfig, putConfig, resetConfig } from './config.js'
-import { useModalStack } from './modalStack.js'
+import { useModalStack, renderApp } from './modalStack.js'
 import HeadlessModal from './HeadlessModal.vue'
 import Modal from './Modal.vue'
 import ModalLink from './ModalLink.vue'
@@ -18,4 +18,4 @@ function visitModal(url, options = {}) {
     )
 }
 
-export { HeadlessModal, Modal, ModalLink, ModalRoot, getConfig, putConfig, resetConfig, visitModal }
+export { HeadlessModal, Modal, ModalLink, ModalRoot, getConfig, putConfig, resetConfig, visitModal, renderApp }
