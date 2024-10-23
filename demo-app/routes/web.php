@@ -4,14 +4,22 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 // Edit a user
 Route::get('/users/{user}/edit', function (User $user) {
-    return inertia('EditUser', [
+    return Inertia::modal('EditUser', [
         'roles' => Role::pluck('name', 'id'),
         'user' => $user,
-    ]);
+    ])->baseUrl('/users');
 })->name('users.edit');
+
+// Show a user
+Route::get('/users/{user}', function (User $user) {
+    return Inertia::render('ShowUser', [
+        'user' => $user,
+    ]);
+})->name('users.show');
 
 // Update a user
 Route::put('/users/{user}', function (User $user) {
@@ -23,11 +31,11 @@ Route::put('/users/{user}', function (User $user) {
 
     session()->flash('message', 'User updated successfully!');
 
-    return redirect('/users');
+    return back();
 })->name('users.update');
 
 // Create a new role
-Route::get('/roles/create', fn () => inertia('CreateRole', [
+Route::get('/roles/create', fn () => Inertia::modal('CreateRole', [
     'headerValue' => request()->header('X-Test-Header'),
 ]))->name('roles.create');
 

@@ -1,7 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
 import { default as Axios } from 'axios'
-import { Modal, ModalLink } from 'inertiaui/modal'
+import { Modal, ModalLink } from '@inertiaui/modal-vue'
 import { ref } from 'vue'
 
 defineProps(['headerValue'])

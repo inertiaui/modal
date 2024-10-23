@@ -40,14 +40,15 @@ export default defineConfig({
         text: 'Usage',
         items: [
           {text: 'Basic Usage', link: '/basic-usage'},
-          {text: 'Open On Load', link: '/open-on-load'},
           {text: 'Configuration', link: '/configuration'},
+          {text: 'Base Route/URL', link: '/base-route-url'},
           {text: 'Close Modal', link: '/close-modal'},
           {text: 'Event Bus', link: '/event-bus'},
           {text: 'Nested / Stacked Modals', link: '/nested-stacked-modals'},
           {text: 'Reload Props', link: '/reload-props'},
-          {text: 'Local Modals (beta)', link: '/local-modals'},
+          {text: 'Local Modals', link: '/local-modals'},
           {text: 'Styling', link: '/styling'},
+          {text: 'Headless Mode', link: '/headless-mode'},
         ]
       }
     ],

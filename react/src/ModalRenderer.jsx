@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useModalStack } from './ModalRoot'
 
 const ModalIndexContext = React.createContext(null)
@@ -15,19 +15,19 @@ export const useModalIndex = () => {
 const ModalRenderer = ({ index }) => {
     const { stack } = useModalStack()
 
-    const modalContext = stack[index]
-
-    if (!modalContext || !modalContext.component) {
-        return null
-    }
+    const modalContext = useMemo(() => {
+        return stack[index]
+    }, [stack, index])
 
     return (
-        <ModalIndexContext.Provider value={index}>
-            <modalContext.component
-                {...modalContext.componentProps}
-                onModalEvent={(...args) => modalContext.emit(...args)}
-            />
-        </ModalIndexContext.Provider>
+        modalContext?.component && (
+            <ModalIndexContext.Provider value={index}>
+                <modalContext.component
+                    {...modalContext.componentProps}
+                    onModalEvent={(...args) => modalContext.emit(...args)}
+                />
+            </ModalIndexContext.Provider>
+        )
     )
 }
 

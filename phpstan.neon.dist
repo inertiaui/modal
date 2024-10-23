@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    reportUnmatchedIgnoredErrors: false
+
+    level: 5
+
+    paths:
+        - src
+
+    ignoreErrors:
+        - "#Access to protected property Inertia#"

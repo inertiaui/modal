@@ -181,34 +181,6 @@ export default function UserIndex() {
 
 :::
 
-### Fragment
-
-The `fragment` prop allows you to specify a fragment identifier that will be appended to the URL:
-
-::: code-group
-
-```vue [Vue]
-<template>
-    <ModalLink href="/users/create" fragment="create-user">
-        Create User
-    </ModalLink>
-</template>
-```
-
-```jsx [React]
-export default function UserIndex() {
-    return (
-        <ModalLink href="/users/create" fragment="create-user">
-            Create User
-        </ModalLink>
-    );
-}
-```
-
-:::
-
-Say you are on the page `/users`, and you click the link above. The URL will change to `/users#create-user`. There are two reasons you might want to use this feature. First, when you refresh the page with the fragment in the URL, the modal will automatically open. Second, you can now share the URL with the fragment with others, and when they open the link, the modal will automatically open for them as well.
-
 ### Loading State
 
 The `ModalLink` component has a `loading` slot prop that you can use to show a loading state while the modal is being fetched. You can use this prop to display a loading spinner or text.

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { ModalLink } from 'inertiaui/modal';
+import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
 
-export default function Users({ users }) {
+export default function Users({ users, random, navigate }) {
     const alertGreeting = (greeting) => {
         alert(greeting);
     };
@@ -22,15 +22,17 @@ export default function Users({ users }) {
                                     <div className="text-sm font-medium text-gray-900">{user.name}</div>
                                     <div className="text-sm text-gray-500">{user.email}</div>
                                 </div>
-                                <div className="ml-auto">
+                                <div className="ml-auto flex items-center space-x-2">
+                                    <Link href={`/users/${user.id}`} className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md">View</Link>
+
                                     <ModalLink
-                                        fragment={`edit-user-${user.id}`}
+                                        navigate={navigate}
                                         dusk={`edit-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                         onUserGreets={alertGreeting}
                                     >
-                                        {({ loading }) => loading ? 'Loading...' : 'Edit'}
+                                        Edit
                                     </ModalLink>
                                 </div>
                             </div>
