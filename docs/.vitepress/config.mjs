@@ -48,6 +48,7 @@ export default defineConfig({
           {text: 'Reload Props', link: '/reload-props'},
           {text: 'Local Modals', link: '/local-modals'},
           {text: 'Styling', link: '/styling'},
+          {text: 'Headless Mode', link: '/headless-mode'},
         ]
       }
     ],
