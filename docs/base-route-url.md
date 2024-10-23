@@ -7,8 +7,6 @@ By default, Inertia Modal doesn't change the URL when opening a modal. It just s
 * It makes the modal content accessible to search engines (when using [SSR](https://inertiajs.com/server-side-rendering)).
 * It allows you to open the modal in a new tab.
 
-To use this feature, there's a small change needed in the backend of your app.
-
 ## Define a Base Route
 
 To define the base route for your modal, you need to use the `Inertia::modal()` method in your controller instead of the `Inertia::render()` method. It accepts the same arguments as the `Inertia::render()` method:
@@ -34,6 +32,51 @@ Just like the regular `route()` method, the `baseRoute()` method accepts an arra
 
 > [!WARNING]Reusing the Modal URL with different Base Routes
 > The `baseRoute` and `baseUrl` methods act merely as a fallback when the modal is directly opened using a URL. If you open the modal from a different route, the URL will be generated based on the current route.
+
+## Open a Modal with a Base Route
+
+Next, the frontend needs to know that we're using the browser history to navigate between modals. To do this, you need to add the `navigate` attribute to the `ModalLink` component. Alternatively, you can configure this globally, but first, let's see how to do it on a per-link basis:
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink navigate href="/users/create">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink navigate={true} href="/users/create">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+### Configure Globally
+
+Instead of adding the `navigate` attribute to each `ModalLink` component, you can configure this globally in your main `app.js` file. Just like the other [configuration options](/configuration.html#default-configuration), you can use the `putConfig` function to set the `navigate` option to `true`:
+
+::: code-group
+
+```js [Vue]
+import { putConfig } from '@inertiaui/modal-vue'
+putConfig('navigate', true)
+```
+
+```js [React]
+import { putConfig } from '@inertiaui/modal-react'
+putConfig('navigate', true)
+```
+
+:::
+
 
 ## Redirector
 

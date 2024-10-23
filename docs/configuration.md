@@ -211,6 +211,7 @@ You can call the `putConfig` function with an object containing the configuratio
 ```js
 putConfig({
     type: 'modal',
+    navigate: false,
     modal: {
         closeButton: true,
         closeExplicitly: false,
