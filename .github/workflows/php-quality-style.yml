@@ -11,9 +11,7 @@ on:
 jobs:
   php-quality-style:
     name: PHP Quality and Style
-
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[only-tests]') && !contains(github.event.head_commit.message, '[only-dusk]') && !contains(github.event.head_commit.message, '[ci-skip]') && !contains(github.event.head_commit.message, '[skip-ci]')"
     timeout-minutes: 5
 
     steps:

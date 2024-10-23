@@ -3,7 +3,10 @@ name: Tests
 on:
   push:
     paths:
-      - "**.{js,jsx,php,vue}"
+      - "**.js"
+      - "**.jsx"
+      - "**.php"
+      - "**.vue"
       - "**/composer.json"
       - "**/package-lock.json"
       - "demo-app/{.env.example,phpunit.xml.dist}"
@@ -11,17 +14,15 @@ on:
 
 jobs:
   tests:
+    name: Dusk Test Inertia ${{ matrix.inertia }} - Stack ${{ matrix.stack }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[only-tests]') && !contains(github.event.head_commit.message, '[only-quality]') && !contains(github.event.head_commit.message, '[ci-skip]') && !contains(github.event.head_commit.message, '[skip-ci]')"
 
     strategy:
       fail-fast: true
       matrix:
         inertia: [v1, v2]
         stack: [react, vue]
-
-    name: Dusk Test Inertia ${{ matrix.inertia }} - Stack ${{ matrix.stack }}
 
     env:
       APP_URL: "http://127.0.0.1:8000"
