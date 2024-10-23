@@ -20,6 +20,14 @@ jobs:
           node-version: "18"
           registry-url: "https://registry.npmjs.org"
 
+      - name: Configure npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          npm config list
+          npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Install dependencies, build, and publish
         run: |
           cd ${{ matrix.stack }}
