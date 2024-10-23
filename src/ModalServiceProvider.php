@@ -35,7 +35,7 @@ class ModalServiceProvider extends ServiceProvider
 
         // Register a callback to reset the BladeRouteGenerator state before
         // rendering the Base Route/URL with the Modal component.
-        Modal::beforeBaseRerender(function () {
+        Modal::beforeBaseRerender(function (): void {
             if (class_exists(BladeRouteGenerator::class)) {
                 BladeRouteGenerator::$generated = false;
             }
