@@ -1,4 +1,4 @@
-import { Modal } from 'inertiaui/modal';
+import { Modal } from '@inertiaui/modal-react';
 
 export default function Slideover() {
     return (

@@ -1,181 +1,106 @@
 <script setup>
-import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted } from 'vue'
-import { TransitionRoot, TransitionChild, Dialog } from '@headlessui/vue'
-
-import { getConfig, getConfigByType } from './config'
-import { useModalStack } from './modalStack'
+import { DialogOverlay, DialogPortal, DialogRoot } from 'radix-vue'
 import ModalContent from './ModalContent.vue'
-import ModalRenderer from './ModalRenderer.vue'
+import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
+import { computed, ref } from 'vue'
 
-const props = defineProps({
-    name: {
-        type: String,
-        required: false,
-    },
-    // The slideover prop in on top because we need to know if it's a slideover
-    // before we can determine the defaule value of other props
-    slideover: {
-        type: Boolean,
-        default: null,
-    },
-    closeButton: {
-        type: Boolean,
-        default: null,
-    },
-    closeExplicitly: {
-        type: Boolean,
-        default: null,
-    },
-    maxWidth: {
-        type: String,
-        default: null,
-    },
-    paddingClasses: {
-        type: [Boolean, String],
-        default: null,
-    },
-    panelClasses: {
-        type: [Boolean, String],
-        default: null,
-    },
-    position: {
-        type: String,
-        default: null,
-    },
-})
-
-const modalStack = useModalStack()
-const modalContext = props.name ? ref({}) : inject('modalContext')
-const modalProps = computed(() => {
-    const isSlideover = modalContext.value.modalProps.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
-
-    return {
-        slideover: isSlideover,
-        closeButton: props.closeButton ?? getConfigByType(isSlideover, 'closeButton'),
-        closeExplicitly: props.closeExplicitly ?? getConfigByType(isSlideover, 'closeExplicitly'),
-        maxWidth: props.maxWidth ?? getConfigByType(isSlideover, 'maxWidth'),
-        paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, 'paddingClasses'),
-        panelClasses: props.panelClasses ?? getConfigByType(isSlideover, 'panelClasses'),
-        position: props.position ?? getConfigByType(isSlideover, 'position'),
-        ...modalContext.value.modalProps,
-    }
-})
-
-// Local Modals...
-if (props.name) {
-    modalStack.registerLocalModal(props.name, function (context) {
-        modalContext.value = context
-        registerEventListeners()
-    })
-
-    onBeforeUnmount(() => {
-        modalStack.removeLocalModal(props.name)
-    })
-}
-
-onMounted(() => {
-    modalStack.verifyRoot()
-
-    if (!props.name) {
-        registerEventListeners()
-    }
-})
-
-function closeDialog() {
-    if (!modalProps.value.closeExplicitly) {
-        modalContext.value.close()
-    }
-}
-
-const unsubscribeEventListeners = ref(null)
-onBeforeUnmount(() => unsubscribeEventListeners.value?.())
-
-const $attrs = useAttrs()
-
-function registerEventListeners() {
-    unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs)
-}
-
-const emits = defineEmits(['modal-event'])
-
-function emit(event, ...args) {
-    emits('modal-event', event, ...args)
-}
+const modal = ref(null)
+const rendered = ref(false)
 
 defineExpose({
-    close: modalContext.value.close,
-    emit,
-    getChildModal: modalContext.value.getChildModal,
-    getParentModal: modalContext.value.getParentModal,
-    modalContext: modalContext.value,
-    reload: modalContext.value.reload,
+    afterLeave: () => modal.value?.afterLeave(),
+    close: () => modal.value?.close(),
+    emit: (...args) => modal.value?.emit(...args),
+    getChildModal: () => modal.value?.getChildModal(),
+    getParentModal: () => modal.value?.getParentModal(),
+    id: computed(() => modal.value?.id),
+    index: computed(() => modal.value?.index),
+    isOpen: computed(() => modal.value?.isOpen),
+    modalContext: computed(() => modal.value?.modalContext),
+    modalProps: computed(() => modal.value?.modalProps),
+    onTopOfStack: computed(() => modal.value?.onTopOfStack),
+    reload: (...args) => modal.value?.reload(...args),
+    setOpen: (...args) => modal.value?.setOpen(...args),
+    shouldRender: computed(() => modal.value?.shouldRender),
 })
 </script>
 
 <template>
-    <TransitionRoot
-        :unmount="false"
-        :show="modalContext.open ?? false"
-        enter="transition transform ease-in-out duration-300"
-        enter-from="opacity-0 scale-95"
-        enter-to="opacity-100 scale-100"
-        leave="transition transform ease-in-out duration-300"
-        leave-from="opacity-100 scale-100"
-        leave-to="opacity-0 scale-95"
+    <HeadlessModal
+        ref="modal"
+        v-slot="{
+            afterLeave,
+            close,
+            emit,
+            getChildModal,
+            getParentModal,
+            id,
+            index,
+            isOpen,
+            modalContext,
+            modalProps,
+            onTopOfStack,
+            reload,
+            setOpen,
+            shouldRender,
+        }"
     >
-        <Dialog
-            :data-inertiaui-modal-id="modalContext.id"
-            :data-inertiaui-modal-index="modalContext.index"
-            class="im-dialog relative z-20"
-            @close="closeDialog"
+        <DialogRoot
+            :open="isOpen"
+            @update:open="setOpen"
         >
-            <!-- Only transition the backdrop for the first modal in the stack -->
-            <TransitionChild
-                v-if="modalContext.index === 0"
-                as="template"
-                enter="transition transform ease-in-out duration-300"
-                enter-from="opacity-0"
-                enter-to="opacity-100"
-                leave="transition transform ease-in-out duration-300"
-                leave-from="opacity-100"
-                leave-to="opacity-0"
-            >
+            <DialogPortal>
                 <div
-                    v-show="modalContext.onTopOfStack"
-                    class="im-backdrop fixed inset-0 z-30 bg-black/75"
-                    aria-hidden="true"
-                />
-            </TransitionChild>
+                    :data-inertiaui-modal-id="id"
+                    :data-inertiaui-modal-index="index"
+                    class="im-dialog relative z-20"
+                >
+                    <Transition
+                        v-if="index === 0 && onTopOfStack"
+                        :appear="!rendered"
+                        enter-active-class="transition transform ease-in-out duration-300"
+                        enter-from-class="opacity-0"
+                        enter-to-class="opacity-100"
+                        leave-active-class="transition transform ease-in-out duration-300"
+                        leave-from-class="opacity-100"
+                        leave-to-class="opacity-0"
+                        @after-appear="rendered = true"
+                    >
+                        <DialogOverlay class="im-backdrop fixed inset-0 z-30 bg-black/75" />
+                    </Transition>
 
-            <!-- On multiple modals, only show a backdrop for the modal that is on top of the stack -->
-            <div
-                v-if="modalContext.index > 0 && modalContext.onTopOfStack"
-                class="im-backdrop fixed inset-0 z-30 bg-black/75"
-            />
+                    <!-- On multiple modals, only show a backdrop for the modal that is on top of the stack -->
+                    <div
+                        v-if="index > 0 && onTopOfStack"
+                        class="im-backdrop fixed inset-0 z-30 bg-black/75"
+                    />
 
-            <!-- The modal/slideover content itself -->
-            <component
-                :is="modalProps.slideover ? SlideoverContent : ModalContent"
-                :modal-context="modalContext"
-                :modal-props="modalProps"
-            >
-                <slot
-                    :close="modalContext.close"
-                    :emit="emit"
-                    :get-child-modal="modalContext.getChildModal"
-                    :get-parent-modal="modalContext.getParentModal"
-                    :modal-context="modalContext"
-                    :modal-props="modalProps"
-                    :reload="modalContext.reload"
-                />
-            </component>
-
-            <!-- The next modal in the stack -->
-            <ModalRenderer
-                v-if="modalStack.stack.value[modalContext.index + 1]"
-                :index="modalContext.index + 1"
-            />
-        </Dialog>
-    </TransitionRoot>
+                    <!-- The modal/slideover content itself -->
+                    <component
+                        :is="modalProps?.slideover ? SlideoverContent : ModalContent"
+                        :modal-context="modalContext"
+                        :modal-props="modalProps"
+                    >
+                        <slot
+                            :id="id"
+                            :after-leave="afterLeave"
+                            :close="close"
+                            :emit="emit"
+                            :get-child-modal="getChildModal"
+                            :get-parent-modal="getParentModal"
+                            :index="index"
+                            :modal-context="modalContext"
+                            :modal-props="modalProps"
+                            :on-top-of-stack="onTopOfStack"
+                            :is-open="isOpen"
+                            :should-render="shouldRender"
+                            :reload="reload"
+                            :set-open="setOpen"
+                        />
+                    </component>
+                </div>
+            </DialogPortal>
+        </DialogRoot>
+    </HeadlessModal>
 </template>

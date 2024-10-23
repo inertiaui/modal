@@ -19,7 +19,6 @@ class NestedModalTest extends DuskTestCase
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
                 ->waitFor('.im-dialog')
-                ->assertFragmentIs("edit-user-{$firstUser->id}")
                 ->clickLink('Add Role')
                 ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
                 ->assertSeeIn('.im-dialog[data-inertiaui-modal-index="1"]', 'Create Role')
@@ -27,14 +26,12 @@ class NestedModalTest extends DuskTestCase
                     // The first modal should be blurred
                     $browser->assertAttributeContains('.im-modal-wrapper', 'class', 'blur-sm');
                 })
-                ->assertFragmentIs("edit-user-{$firstUser->id}")
                 ->click('.im-close-button')
                 ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]')
                 ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) {
                     // The first modal should not be blurred anymore
                     $browser->assertAttributeDoesntContain('.im-modal-wrapper', 'class', 'blur-sm');
-                })
-                ->assertFragmentIs("edit-user-{$firstUser->id}");
+                });
         });
     }
 

@@ -1,13 +1,13 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState, useEffect, useMemo } from 'react'
 import { useModalStack, modalPropNames } from './ModalRoot'
 import { only, rejectNullValues } from './helpers'
+import { getConfig } from './config'
 
 const ModalLink = ({
     href,
     method = 'get',
     data = {},
     as: Component = 'a',
-    fragment = null,
     headers = {},
     queryStringArrayFormat = 'brackets',
     onAfterLeave = null,
@@ -17,12 +17,17 @@ const ModalLink = ({
     onFocus = null,
     onStart = null,
     onSuccess = null,
+    navigate = null,
     children,
     ...props
 }) => {
     const [loading, setLoading] = useState(false)
     const [modalContext, setModalContext] = useState(null)
     const { stack, visit } = useModalStack()
+
+    const shouldNavigate = useMemo(() => {
+        return navigate ?? getConfig('navigate')
+    }, [navigate])
 
     // Separate standard props from custom event handlers
     const standardProps = {}
@@ -44,12 +49,6 @@ const ModalLink = ({
         }
     })
 
-    useEffect(() => {
-        if (fragment && window.location.hash === `#${fragment}`) {
-            handle()
-        }
-    }, [fragment])
-
     const [isBlurred, setIsBlurred] = useState(false)
 
     useEffect(() => {
@@ -66,15 +65,9 @@ const ModalLink = ({
         setIsBlurred(!modalContext.onTopOfStack)
     }, [stack])
 
-    const onCloseCallback = useCallback(
-        (index) => {
-            if (fragment && index === 0) {
-                window.location.hash = ''
-            }
-            onClose?.()
-        },
-        [onClose, fragment],
-    )
+    const onCloseCallback = useCallback(() => {
+        onClose?.()
+    }, [onClose])
 
     const onAfterLeaveCallback = useCallback(() => {
         setModalContext(null)
@@ -100,12 +93,10 @@ const ModalLink = ({
                 () => onCloseCallback(stack.length),
                 onAfterLeaveCallback,
                 queryStringArrayFormat,
+                shouldNavigate,
             )
                 .then((newModalContext) => {
                     setModalContext(newModalContext)
-                    if (fragment && newModalContext.index === 0) {
-                        window.location.hash = fragment
-                    }
                     newModalContext.registerEventListenersFromProps(customEvents)
                     onSuccess?.()
                 })

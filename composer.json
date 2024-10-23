@@ -1,0 +1,71 @@
+{
+    "name": "inertiaui/modal",
+    "description": "Inertia Modal",
+    "homepage": "https://github.com/inertiaui/modal",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "illuminate/contracts": "^10.48||^11.11",
+        "inertiajs/inertia-laravel": "^1.3|^2.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^2.9",
+        "laravel/pint": "^1.14",
+        "orchestra/testbench": "^8.23||^9.1",
+        "rector/rector": "^1.0.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "InertiaUI\\Modal\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=512M",
+        "format": "vendor/bin/pint",
+        "refactor": "vendor/bin/rector",
+        "eslint-react": "cd react && npm run eslint",
+        "eslint-vue": "cd vue && npm run eslint",
+        "build-react": "cd react && npm run build",
+        "build-vue": "cd vue && npm run build",
+        "all": [
+            "@analyse",
+            "@refactor",
+            "@format",
+            "@eslint-react",
+            "@eslint-vue"
+        ],
+        "build": [
+            "@all",
+            "@build-react",
+            "@build-vue"
+        ],
+        "update-react": "cd react && npm upgrade",
+        "update-vue": "cd vue && npm upgrade",
+        "update-demo-app": "cd demo-app && composer update && npm upgrade",
+        "update-all": [
+            "composer update",
+            "@update-react",
+            "@update-vue",
+            "@update-demo-app"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "pestphp/pest-plugin": false
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "InertiaUI\\Modal\\ModalServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

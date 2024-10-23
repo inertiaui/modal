@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useModalStack, modalPropNames } from './../src/modalStack'
 import axios from 'axios'
-import { usePage, router } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
 
 vi.mock('@inertiajs/vue3', () => ({
     router: {
@@ -61,8 +62,11 @@ describe('modalStack', () => {
 
         it('should correctly identify previous and next modals', () => {
             const modal1 = modalStack.push({}, {}, {})
+            modal1.show()
             const modal2 = modalStack.push({}, {}, {})
+            modal2.show()
             const modal3 = modalStack.push({}, {}, {})
+            modal3.show()
 
             expect(modal1.getParentModal()).toBeNull()
             expect(modal1.getChildModal().id).toBe(modal2.id)
@@ -76,24 +80,27 @@ describe('modalStack', () => {
 
         it('should correctly determine if a modal is on top of the stack', () => {
             const modal1 = modalStack.push({}, {}, {})
-            expect(modal1.isOnTopOfStack()).toBe(true)
+            expect(modal1.onTopOfStack.value).toBe(true)
 
             const modal2 = modalStack.push({}, {}, {})
-            expect(modal1.isOnTopOfStack()).toBe(false)
-            expect(modal2.isOnTopOfStack()).toBe(true)
+            modal2.show()
+            expect(modal1.onTopOfStack.value).toBe(false)
+            expect(modal2.onTopOfStack.value).toBe(true)
 
             const modal3 = modalStack.push({}, {}, {})
-            expect(modal1.isOnTopOfStack()).toBe(false)
-            expect(modal2.isOnTopOfStack()).toBe(false)
-            expect(modal3.isOnTopOfStack()).toBe(true)
+            modal3.show()
+            expect(modal1.onTopOfStack.value).toBe(false)
+            expect(modal2.onTopOfStack.value).toBe(false)
+            expect(modal3.onTopOfStack.value).toBe(true)
         })
 
         it('should close a modal', () => {
             const onClose = vi.fn()
             const modal = modalStack.push({}, {}, {}, onClose)
+            modal.show() // can't close a modal that is not open
             modal.close()
 
-            expect(modal.open).toBe(false)
+            expect(modal.isOpen).toBe(false)
             expect(onClose).toHaveBeenCalled()
             // it does not remove the modal from the stack immediately
             expect(modalStack.stack.value).toHaveLength(1)
@@ -145,6 +152,8 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,another',
+                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
 
@@ -174,6 +183,8 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test',
+                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
 
@@ -203,6 +214,8 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,third',
+                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
 
@@ -231,6 +244,11 @@ describe('modalStack', () => {
 
             const mockComponent = { name: 'TestComponent' }
 
+            modalStack.setComponentResolver((component) => {
+                expect(component).toBe('TestComponent')
+                return router.resolveComponent(component)
+            })
+
             vi.mocked(axios).mockResolvedValue(mockResponse)
             vi.mocked(router.resolveComponent).mockResolvedValue(mockComponent)
             vi.mocked(usePage).mockReturnValue({ version: '1.0' })
@@ -248,10 +266,9 @@ describe('modalStack', () => {
                     'X-Inertia': true,
                     'X-Inertia-Version': '1.0',
                     'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal-Use-Router': 0,
                 },
             })
-
-            expect(router.resolveComponent).toHaveBeenCalledWith('TestComponent')
 
             expect(result).toBeDefined()
             expect(result.component).toBe(mockComponent)

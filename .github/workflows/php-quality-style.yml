@@ -1,0 +1,48 @@
+name: PHP Quality and Style
+
+on:
+  push:
+    paths:
+      - ".github/workflows/phpstan.yml"
+      - "**.php"
+      - "phpstan.neon.dist"
+      - "rector.php"
+
+jobs:
+  php-quality-style:
+    name: PHP Quality and Style
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: json, dom, curl, libxml, mbstring, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run Rector
+        run: composer refactor
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Refactor code with Rector
+
+      - name: Run Pint
+        run: composer format
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Format code with Pint
+
+      - name: Run PHPStan
+        run: composer analyse
