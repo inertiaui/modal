@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Response;
 use Inertia\ResponseFactory;
+use Tighten\Ziggy\BladeRouteGenerator;
 
 class ModalServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,14 @@ class ModalServiceProvider extends ServiceProvider
         // Add a 'modal' macro to ResponseFactory for convenient modal creation
         // like Inertia::modal('Component', ['prop' => 'value'])
         ResponseFactory::macro('modal', fn ($component, $props = []): \InertiaUI\Modal\Modal => new Modal($component, $props));
+
+        // Register a callback to reset the BladeRouteGenerator state before
+        // rendering the Base Route/URL with the Modal component.
+        Modal::beforeBaseRerender(function () {
+            if (class_exists(BladeRouteGenerator::class)) {
+                BladeRouteGenerator::$generated = false;
+            }
+        });
 
         // Add a 'toArray' macro to Response for consistent serialization to so that
         // any response can be serialized to an array. This is used in the Modal

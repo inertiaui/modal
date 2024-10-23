@@ -23,9 +23,22 @@ class Modal implements Responsable
      */
     protected ?string $baseUrl = null;
 
+    /**
+     * @var array<int, callable> Callbacks to run before the base URL is rerendered.
+     */
+    protected static array $beforeBaseRerenderCallbacks = [];
+
     public function __construct(protected string $component, protected array $props = [])
     {
         //
+    }
+
+    /**
+     * Register a callback to run before the base URL is rerendered.
+     */
+    public static function beforeBaseRerender(callable $callback): void
+    {
+        static::$beforeBaseRerenderCallbacks[] = $callback;
     }
 
     /**
@@ -90,13 +103,13 @@ class Modal implements Responsable
 
         // Spoof the base URL to the modal's URL
         return match (true) {
-            $response instanceof JsonResponse => $this->toJsonResponse($response),
-            $response instanceof IlluminateResponse => $this->toViewResponse($response),
+            $response instanceof JsonResponse => $this->toJsonResponse($request, $response),
+            $response instanceof IlluminateResponse => $this->toViewResponse($request, $response),
             default => $response,
         };
     }
 
-    protected function toJsonResponse(JsonResponse $response): JsonResponse
+    protected function toJsonResponse(Request $request, JsonResponse $response): JsonResponse
     {
         $data = $response->getData(true);
 
@@ -106,7 +119,7 @@ class Modal implements Responsable
         ]);
     }
 
-    protected function toViewResponse(IlluminateResponse $response): IlluminateResponse
+    protected function toViewResponse(Request $request, IlluminateResponse $response): IlluminateResponse
     {
         $originalContent = $response->getOriginalContent();
 
@@ -116,6 +129,10 @@ class Modal implements Responsable
 
         $viewData = $originalContent->getData();
         $viewData['page']['url'] = $viewData['page']['props']['_inertiaui_modal']['url'];
+
+        foreach (static::$beforeBaseRerenderCallbacks as $callback) {
+            $callback($request, $response);
+        }
 
         return ResponseFactory::view($originalContent->getName(), $viewData);
     }
