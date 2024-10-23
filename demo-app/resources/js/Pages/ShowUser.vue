@@ -16,7 +16,7 @@ const props = defineProps({
             <p class="text-xl text-gray-500">{{ user.email }}</p>
         </div>
 
-        <ModalLink navigate as="button" :fragment="'edit-user-' + user.id" :dusk="'edit-user-' + user.id"
+        <ModalLink navigate as="button" :dusk="'edit-user-' + user.id"
             :href="`/users/${user.id}/edit`"
             class="mt-4 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md">
             Edit

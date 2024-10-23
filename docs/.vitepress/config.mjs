@@ -40,7 +40,6 @@ export default defineConfig({
         text: 'Usage',
         items: [
           {text: 'Basic Usage', link: '/basic-usage'},
-          {text: 'Open On Load', link: '/open-on-load'},
           {text: 'Configuration', link: '/configuration'},
           {text: 'Close Modal', link: '/close-modal'},
           {text: 'Event Bus', link: '/event-bus'},

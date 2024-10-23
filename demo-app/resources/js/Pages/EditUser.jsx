@@ -95,7 +95,6 @@ export default function EditUser({ user, roles }) {
                                 </select>
 
                                 <ModalLink
-                                    fragment="add-role"
                                     onClose={() => reload({ only: ['roles'] })}
                                     href="/roles/create"
                                     className="mt-2 text-sm text-indigo-600 hover:text-indigo-500 bg-transparent border border-indigo-500 rounded-md py-1 px-2 inline-flex items-center"

@@ -8,7 +8,6 @@ const ModalLink = ({
     method = 'get',
     data = {},
     as: Component = 'a',
-    fragment = null,
     headers = {},
     queryStringArrayFormat = 'brackets',
     onAfterLeave = null,
@@ -50,12 +49,6 @@ const ModalLink = ({
         }
     })
 
-    useEffect(() => {
-        if (!shouldNavigate && fragment && window.location.hash === `#${fragment}`) {
-            handle()
-        }
-    }, [fragment])
-
     const [isBlurred, setIsBlurred] = useState(false)
 
     useEffect(() => {
@@ -72,15 +65,9 @@ const ModalLink = ({
         setIsBlurred(!modalContext.onTopOfStack)
     }, [stack])
 
-    const onCloseCallback = useCallback(
-        (index) => {
-            if (!shouldNavigate && fragment && index === 0) {
-                window.location.hash = ''
-            }
-            onClose?.()
-        },
-        [onClose, fragment],
-    )
+    const onCloseCallback = useCallback(() => {
+        onClose?.()
+    }, [onClose])
 
     const onAfterLeaveCallback = useCallback(() => {
         setModalContext(null)
@@ -110,9 +97,6 @@ const ModalLink = ({
             )
                 .then((newModalContext) => {
                     setModalContext(newModalContext)
-                    if (!shouldNavigate && fragment && newModalContext.index === 0) {
-                        window.location.hash = fragment
-                    }
                     newModalContext.registerEventListenersFromProps(customEvents)
                     onSuccess?.()
                 })

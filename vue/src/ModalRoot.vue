@@ -21,13 +21,11 @@ const axiosRequestInterceptor = (config) => {
 }
 
 onBeforeMount(() => {
-    modalStack.rootPresent.value = true
     Axios.interceptors.request.use(axiosRequestInterceptor)
 })
 
 onUnmounted(() => {
     Axios.interceptors.request.eject(axiosRequestInterceptor)
-    modalStack.rootPresent.value = false
 })
 
 const $page = usePage()

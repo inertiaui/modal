@@ -8,7 +8,7 @@ import { Modal, ModalLink } from '@inertiaui/modal-vue'
         <div class="flex justify-between">
             <h2 class="text-lg font-medium text-gray-900">Local</h2>
 
-            <ModalLink href="#local" fragment="pre" class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md">
+            <ModalLink href="#local" class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md">
                 Open Local Modal
             </ModalLink>
         </div>

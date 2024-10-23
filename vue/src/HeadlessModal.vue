@@ -71,8 +71,6 @@ if (props.name) {
 }
 
 onMounted(() => {
-    modalStack.verifyRoot()
-
     if (!props.name) {
         registerEventListeners()
     }

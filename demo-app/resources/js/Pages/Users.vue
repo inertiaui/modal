@@ -45,7 +45,6 @@ function alertGreeting(greeting) {
                             <Link :href="`/users/${user.id}`" class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md">View</Link>
                             <ModalLink
                                 :navigate="navigate"
-                                :fragment="'edit-user-' + user.id"
                                 :dusk="'edit-user-' + user.id"
                                 :href="`/users/${user.id}/edit`"
                                 class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"

@@ -11,7 +11,6 @@ export default function UserProfile({ user }) {
             <ModalLink
                 navigate
                 as="button"
-                fragment={`edit-user-${user.id}`}
                 dusk={`edit-user-${user.id}`}
                 href={`/users/${user.id}/edit`}
                 className="mt-4 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md"

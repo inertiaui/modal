@@ -42,7 +42,6 @@ class FormTest extends DuskTestCase
                 ->press('Save')
                 ->waitForText('User updated successfully!')
                 ->waitUntilMissing('.im-dialog')
-                ->assertFragmentIsNot("edit-user-{$firstUser->id}")
                 ->assertPathIs('/users');
 
             $this->assertDatabaseHas('users', [

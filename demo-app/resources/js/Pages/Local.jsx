@@ -9,7 +9,6 @@ export default function Local() {
                     <h2 className="text-lg font-medium text-gray-900">Local</h2>
                     <ModalLink
                         href="#local"
-                        fragment="pre"
                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                     >
                         Open Local Modal

@@ -310,8 +310,6 @@ function push(component, response, modalProps, onClose, afterLeave) {
     return newModal
 }
 
-export const rootPresent = ref(false)
-
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
 export const renderApp = (App, props) => {
@@ -335,13 +333,5 @@ export function useModalStack() {
         visit,
         registerLocalModal,
         removeLocalModal: (name) => delete localModals.value[name],
-        rootPresent,
-        verifyRoot: () => {
-            if (!rootPresent.value) {
-                throw new Error(
-                    'The <ModalRoot> component is missing from your app layout. Please check the documentation for more information: https://inertiaui.com/inertia-modal/docs/installation',
-                )
-            }
-        },
     }
 }

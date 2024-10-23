@@ -1,6 +1,6 @@
 <script setup>
 import { modalPropNames, useModalStack } from './modalStack'
-import { ref, provide, computed, watch, onMounted, useAttrs, onBeforeUnmount } from 'vue'
+import { ref, provide, computed, watch, useAttrs, onBeforeUnmount } from 'vue'
 import { only, rejectNullValues } from './helpers'
 import { getConfig } from './config'
 
@@ -20,10 +20,6 @@ const props = defineProps({
     as: {
         type: String,
         default: 'a',
-    },
-    fragment: {
-        type: String,
-        default: null,
     },
     headers: {
         type: Object,
@@ -103,14 +99,6 @@ watch(
     },
 )
 
-onMounted(() => {
-    modalStack.verifyRoot()
-
-    if (!shouldNavigate.value && props.fragment && window.location.hash === `#${props.fragment}`) {
-        handle()
-    }
-})
-
 const unsubscribeEventListeners = ref(null)
 onBeforeUnmount(() => unsubscribeEventListeners.value?.())
 
@@ -122,19 +110,12 @@ function registerEventListeners() {
 
 watch(modalContext, (value, oldValue) => {
     if (value && !oldValue) {
-        if (!shouldNavigate.value && props.fragment && modalContext.value.index === 0) {
-            window.location.hash = props.fragment
-        }
-
         registerEventListeners()
         emit('success')
     }
 })
 
 function onClose() {
-    if (!shouldNavigate.value && props.fragment && modalContext.value.index === 0) {
-        window.location.hash = ''
-    }
     emit('close')
 }
 

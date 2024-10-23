@@ -27,7 +27,6 @@ export default function Users({ users, random, navigate }) {
 
                                     <ModalLink
                                         navigate={navigate}
-                                        fragment={`edit-user-${user.id}`}
                                         dusk={`edit-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"

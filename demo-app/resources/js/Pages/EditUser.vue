@@ -67,7 +67,6 @@ function onMessage(message) {
                     </select>
 
                     <ModalLink
-                        fragment="add-role"
                         @close="reload({ only: ['roles'] })"
                         href="/roles/create" class="mt-2 text-sm text-indigo-600 hover:text-indigo-500 bg-transparent border border-indigo-500 rounded-md py-1 px-2 inline-flex items-center">
                         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
