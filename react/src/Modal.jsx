@@ -23,20 +23,33 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
             name={name}
             {...props}
         >
-            {({ afterLeave, close, emit, getChildModal, getParentModal, modalContext, modalProps, reload }) => (
+            {({ afterLeave,
+                close,
+                emit,
+                getChildModal,
+                getParentModal,
+                id,
+                index,
+                isOpen,
+                modalContext,
+                modalProps,
+                onTopOfStack,
+                reload,
+                setOpen,
+                shouldRender }) => (
                 <Transition
                     appear={true}
-                    show={modalContext.open ?? false}
+                    show={isOpen ?? false}
                 >
                     <Dialog
                         as="div"
                         className="im-dialog relative z-20"
                         onClose={() => (modalProps.closeExplicitly ? null : close())}
-                        data-inertiaui-modal-id={modalContext.id}
-                        data-inertiaui-modal-index={modalContext.index}
+                        data-inertiaui-modal-id={id}
+                        data-inertiaui-modal-index={index}
                     >
                         {/* Only transition the backdrop for the first modal in the stack */}
-                        {modalContext.index === 0 ? (
+                        {index === 0 ? (
                             <TransitionChild
                                 enter="transition transform ease-in-out duration-300"
                                 enterFrom="opacity-0"
@@ -45,7 +58,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                             >
-                                {modalContext.onTopOfStack ? (
+                                {onTopOfStack ? (
                                     <div
                                         className="im-backdrop fixed inset-0 z-30 bg-black/75"
                                         aria-hidden="true"
@@ -57,7 +70,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                         ) : null}
 
                         {/* On multiple modals, only show a backdrop for the modal that is on top of the stack */}
-                        {modalContext.index > 0 && modalContext.onTopOfStack ? <div className="im-backdrop fixed inset-0 z-30 bg-black/75" /> : null}
+                        {index > 0 && onTopOfStack ? <div className="im-backdrop fixed inset-0 z-30 bg-black/75" /> : null}
 
                         {/* The modal/slideover content itself */}
                         {modalProps.slideover ? (
@@ -71,9 +84,15 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                     emit,
                                     getChildModal,
                                     getParentModal,
+                                    id,
+                                    index,
+                                    isOpen,
                                     modalContext,
                                     modalProps,
+                                    onTopOfStack,
                                     reload,
+                                    setOpen,
+                                    shouldRender
                                 })}
                             </SlideoverContent>
                         ) : (
@@ -87,9 +106,15 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                     emit,
                                     getChildModal,
                                     getParentModal,
+                                    id,
+                                    index,
+                                    isOpen,
                                     modalContext,
                                     modalProps,
+                                    onTopOfStack,
                                     reload,
+                                    setOpen,
+                                    shouldRender
                                 })}
                             </ModalContent>
                         )}

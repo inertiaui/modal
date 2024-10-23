@@ -9,20 +9,20 @@ const modal = ref(null)
 const rendered = ref(false)
 
 defineExpose({
+    afterLeave: () => modal.value?.afterLeave(),
+    close: () => modal.value?.close(),
+    emit: (...args) => modal.value?.emit(...args),
+    getChildModal: () => modal.value?.getChildModal(),
+    getParentModal: () => modal.value?.getParentModal(),
     id: computed(() => modal.value?.id),
     index: computed(() => modal.value?.index),
+    isOpen: computed(() => modal.value?.isOpen),
     modalContext: computed(() => modal.value?.modalContext),
     modalProps: computed(() => modal.value?.modalProps),
     onTopOfStack: computed(() => modal.value?.onTopOfStack),
-    isOpen: computed(() => modal.value?.isOpen),
-    shouldRender: computed(() => modal.value?.shouldRender),
-
-    close: (...args) => modal.value?.close(...args),
     reload: (...args) => modal.value?.reload(...args),
     setOpen: (...args) => modal.value?.setOpen(...args),
-    emit: (...args) => modal.value?.emit(...args),
-    getChildModal: (...args) => modal.value?.getChildModal(...args),
-    getParentModal: (...args) => modal.value?.getParentModal(...args),
+    shouldRender: computed(() => modal.value?.shouldRender),
 })
 </script>
 
@@ -30,19 +30,20 @@ defineExpose({
     <HeadlessModal
         ref="modal"
         v-slot="{
+            afterLeave,
             close,
             emit,
             getChildModal,
             getParentModal,
             id,
             index,
+            isOpen,
             modalContext,
             modalProps,
             onTopOfStack,
-            isOpen,
             reload,
-            shouldRender,
             setOpen,
+            shouldRender,
         }"
     >
         <DialogRoot
@@ -86,6 +87,7 @@ defineExpose({
                     >
                         <slot
                             :id="id"
+                            :after-leave="afterLeave"
                             :close="close"
                             :emit="emit"
                             :get-child-modal="getChildModal"

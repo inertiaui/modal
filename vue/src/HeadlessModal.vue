@@ -92,20 +92,20 @@ function emit(event, ...args) {
 }
 
 defineExpose({
-    id: modalContext.value.id,
-    index: modalContext.value.index,
-    modalContext: modalContext.value,
-    modalProps: modalProps.value,
-    onTopOfStack: modalContext.value.onTopOfStack,
-    isOpen: modalContext.value.isOpen,
-    shouldRender: modalContext.value.shouldRender,
-
+    afterLeave: modalContext.value.afterLeave,
     close: modalContext.value.close,
     emit,
     getChildModal: modalContext.value.getChildModal,
     getParentModal: modalContext.value.getParentModal,
+    id: modalContext.value.id,
+    index: modalContext.value.index,
+    isOpen: modalContext.value.isOpen,
+    modalContext: modalContext.value,
+    modalProps: modalProps.value,
+    onTopOfStack: modalContext.value.onTopOfStack,
     reload: modalContext.value.reload,
     setOpen: modalContext.value.setOpen,
+    shouldRender: modalContext.value.shouldRender,
 })
 
 const nextIndex = computed(() => {
@@ -120,18 +120,19 @@ defineOptions({
 <template>
     <slot
         :id="modalContext.id"
+        :after-leave="modalContext.afterLeave"
         :close="modalContext.close"
         :emit="emit"
         :get-child-modal="modalContext.getChildModal"
         :get-parent-modal="modalContext.getParentModal"
         :index="modalContext.index"
+        :is-open="modalContext.isOpen"
         :modal-context="modalContext"
         :modal-props="modalProps"
         :on-top-of-stack="modalContext.onTopOfStack"
-        :is-open="modalContext.isOpen"
         :reload="modalContext.reload"
-        :should-render="modalContext.shouldRender"
         :set-open="modalContext.setOpen"
+        :should-render="modalContext.shouldRender"
     />
 
     <!-- The next modal in the stack -->

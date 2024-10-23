@@ -58,12 +58,15 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             emit: (...args) => modalContext.emit(...args),
             getChildModal: () => modalContext.getChildModal(),
             getParentModal: () => modalContext.getParentModal(),
+            id: modalContext?.id,
             index: modalContext?.index,
-            isOpen: modalContext?.open,
+            isOpen: modalContext?.isOpen,
             modalContext,
             modalProps,
+            onTopOfStack: modalContext?.onTopOfStack,
             reload: () => modalContext.reload(),
             setOpen: () => modalContext.setOpen(),
+            shouldRender: modalContext?.shouldRender,
         }),
         [modalContext],
     )
@@ -73,18 +76,21 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             <>
                 {typeof children === 'function'
                     ? children({
-                          afterLeave: modalContext.afterLeave,
-                          close: modalContext.close,
-                          emit: modalContext.emit,
-                          getChildModal: modalContext.getChildModal,
-                          getParentModal: modalContext.getParentModal,
-                          index: modalContext.index,
-                          isOpen: modalContext.open,
-                          modalContext,
-                          modalProps,
-                          reload: modalContext.reload,
-                          setOpen: modalContext.setOpen,
-                      })
+                        afterLeave: modalContext.afterLeave,
+                        close: modalContext.close,
+                        emit: modalContext.emit,
+                        getChildModal: modalContext.getChildModal,
+                        getParentModal: modalContext.getParentModal,
+                        id: modalContext.id,
+                        index: modalContext.index,
+                        isOpen: modalContext.isOpen,
+                        modalContext,
+                        modalProps,
+                        onTopOfStack: modalContext.onTopOfStack,
+                        reload: modalContext.reload,
+                        setOpen: modalContext.setOpen,
+                        shouldRender: modalContext.shouldRender,
+                    })
                     : children}
 
                 {/* Next modal in the stack */}

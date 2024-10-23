@@ -49,7 +49,7 @@ export const ModalStackProvider = ({ children }) => {
                     return newStack
                         .slice(0, index)
                         .reverse()
-                        .find((modal) => modal.open)
+                        .find((modal) => modal.isOpen)
                 }
                 newStack[index].getChildModal = () => {
                     if (index === newStack.length - 1) {
@@ -58,7 +58,7 @@ export const ModalStackProvider = ({ children }) => {
                     }
 
                     // Find the first open modal after this one
-                    return newStack.slice(index + 1).find((modal) => modal.open)
+                    return newStack.slice(index + 1).find((modal) => modal.isOpen)
                 }
             })
 
@@ -73,7 +73,7 @@ export const ModalStackProvider = ({ children }) => {
     class Modal {
         constructor(component, response, modalProps, onClose, afterLeave) {
             this.id = Modal.generateId()
-            this.open = false
+            this.isOpen = false
             this.shouldRender = false
             this.listeners = {}
 
@@ -114,8 +114,8 @@ export const ModalStackProvider = ({ children }) => {
         show = () => {
             updateStack((prevStack) =>
                 prevStack.map((modal) => {
-                    if (modal.id === this.id && !modal.open) {
-                        modal.open = true
+                    if (modal.id === this.id && !modal.isOpen) {
+                        modal.isOpen = true
                         modal.shouldRender = true
                     }
                     return modal
@@ -131,12 +131,12 @@ export const ModalStackProvider = ({ children }) => {
             console.log('Closing', this.id)
             updateStack((prevStack) =>
                 prevStack.map((modal) => {
-                    if (modal.id === this.id && modal.open) {
+                    if (modal.id === this.id && modal.isOpen) {
                         Object.keys(modal.listeners).forEach((event) => {
                             modal.off(event)
                         })
 
-                        modal.open = false
+                        modal.isOpen = false
                         modal.onCloseCallback?.()
                     }
                     return modal
@@ -146,13 +146,13 @@ export const ModalStackProvider = ({ children }) => {
 
         afterLeave = () => {
             console.log('After leave', this.id)
-            if (this.open) {
+            if (this.isOpen) {
                 return
             }
 
             updateStack((prevStack) => {
                 const updatedStack = prevStack.map((modal) => {
-                    if (modal.id === this.id && !modal.open) {
+                    if (modal.id === this.id && !modal.isOpen) {
                         modal.shouldRender = false
                         modal.afterLeaveCallback?.()
                         modal.afterLeaveCallback = null
