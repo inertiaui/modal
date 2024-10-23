@@ -35,9 +35,9 @@ class Modal {
                 return true
             }
 
-            const modals = stack.value.map((modal) => ({ id: modal.id, isOpen: modal.isOpen }))
+            const modals = stack.value.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }))
 
-            return modals.reverse().find((modal) => modal.isOpen)?.id === this.id
+            return modals.reverse().find((modal) => modal.shouldRender)?.id === this.id
         })
     }
 

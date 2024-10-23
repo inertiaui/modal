@@ -119,6 +119,7 @@ defineOptions({
 
 <template>
     <slot
+        v-if="modalContext.shouldRender"
         :id="modalContext.id"
         :after-leave="modalContext.afterLeave"
         :close="modalContext.close"

@@ -21,7 +21,6 @@ The `Headless` component provides the following props:
 | onTopOfStack | Boolean indicating if the modal is on top of the stack |
 | reload | Function to [reload](/reload-props.html) props |
 | setOpen | Function to toggle the modal's open state |
-| shouldRender | Boolean indicating if the modal should render at all |
 
 Here is an example of how to use the `HeadlessModal` component:
 
@@ -54,7 +53,6 @@ function closeModal() {
             onTopOfStack,
             isOpen,
             reload,
-            shouldRender,
             setOpen,
         }"
     >
@@ -87,7 +85,6 @@ export default function UserEdit({ ...props }) {
                 onTopOfStack,
                 isOpen,
                 reload,
-                shouldRender,
                 setOpen
             }) => (
                 {/* Your custom modal here */ }
