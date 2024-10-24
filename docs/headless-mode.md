@@ -42,6 +42,7 @@ function closeModal() {
     <HeadlessModal
         ref="modalRef"
         v-slot="{
+            afterLeave,
             close,
             emit,
             getChildModal,
@@ -74,7 +75,8 @@ export default function UserEdit({ ...props }) {
 
     return (
         <HeadlessModal ref={modalRef} {...props}>
-            {({ close,
+            {({ afterLeave,
+                close,
                 emit,
                 getChildModal,
                 getParentModal,

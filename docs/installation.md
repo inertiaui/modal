@@ -12,12 +12,12 @@ After installing the package, you can link the React or Vue package into your pr
 
 ::: code-group
 
-```bash [React]
-npm install vendor/inertiaui/modal/react
-```
-
 ```bash [Vue]
 npm install vendor/inertiaui/modal/vue
+```
+
+```bash [React]
+npm install vendor/inertiaui/modal/react
 ```
 
 :::
