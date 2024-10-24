@@ -6,6 +6,7 @@ import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
 import { waitFor } from './helpers'
+import { getConfig } from './config'
 
 const ModalStackContext = createContext(null)
 ModalStackContext.displayName = 'ModalStackContext'
@@ -269,6 +270,7 @@ export const ModalStackProvider = ({ children }) => {
             options.onClose,
             options.onAfterLeave,
             options.queryStringArrayFormat ?? 'brackets',
+            options.navigate ?? getConfig('navigate'),
         )
 
     const visit = (
