@@ -35,4 +35,20 @@ class VisitTest extends DuskTestCase
                 ->assertSeeIn('.im-modal-content', 'Hi again!');
         });
     }
+
+    #[Test]
+    public function it_can_programmatically_visit_a_modal_and_use_browser_navigation()
+    {
+        $this->browse(function (Browser $browser) {
+
+            $browser->visit('/visit')
+                ->waitForText('Visit programmatically')
+                ->press('Open Route Modal With Navigate')
+                ->waitFor('.im-modal-content')
+                ->assertPathIs('/users/1/edit')
+                ->click('.im-close-button')
+                ->waitUntilMissing('.im-dialog')
+                ->waitForLocation('/visit');
+        });
+    }
 }

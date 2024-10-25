@@ -12,8 +12,12 @@ import { Modal, visitModal } from '@inertiaui/modal-vue'
                 Open Local Modal
             </button>
 
-            <button @click="visitModal('/data', { method: 'post', data: {message: 'Hi again!'}})" type="button">
+            <button @click="visitModal('/data', { method: 'post', data: { message: 'Hi again!' } })" type="button">
                 Open Route Modal
+            </button>
+
+            <button @click="visitModal('/users/1/edit', { navigate: true })" type="button">
+                Open Route Modal With Navigate
             </button>
         </div>
     </Container>
