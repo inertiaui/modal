@@ -12,3 +12,5 @@ node_modules
 /demo-app/storage/debugbar
 .DS_Store
 /demo-app/tests/Browser/downloads
+react/inertiaui-modal-react-*.tgz
+vue/inertiaui-modal-vue-*.tgz
