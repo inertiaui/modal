@@ -4,18 +4,20 @@ namespace Tests\Browser;
 
 use App\Models\Role;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
 class NestedModalTest extends DuskTestCase
 {
+    #[DataProvider('booleanProvider')]
     #[Test]
-    public function it_can_open_a_second_modal_on_top_of_the_first_one()
+    public function it_can_open_a_second_modal_on_top_of_the_first_one(bool $navigate)
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser) use ($navigate) {
             $firstUser = $browser->firstUser();
 
-            $browser->visit('/users')
+            $browser->visit('/users?'.($navigate ? 'navigate=1' : ''))
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
                 ->waitFor('.im-dialog')
@@ -31,7 +33,10 @@ class NestedModalTest extends DuskTestCase
                 ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) {
                     // The first modal should not be blurred anymore
                     $browser->assertAttributeDoesntContain('.im-modal-wrapper', 'class', 'blur-sm');
-                });
+                })
+                ->press('Save')
+                ->waitUntilMissingText('Edit User')
+                ->waitUntilMissing('.im-dialog');
         });
     }
 

@@ -5,7 +5,6 @@ import Modal from './Modal.vue'
 import ModalLink from './ModalLink.vue'
 import ModalRoot from './ModalRoot.vue'
 
-// TODO: Move this to modalStack.js + Add test for navigate option
 function visitModal(url, options = {}) {
     return useModalStack().visit(
         url,

@@ -15,7 +15,6 @@ let pageVersion = null
 let resolveComponent = null
 let baseUrl = null
 let newModalOnBase = null
-let localStackCopy = []
 
 export const ModalStackProvider = ({ children }) => {
     const [stack, setStack] = useState([])
@@ -66,10 +65,6 @@ export const ModalStackProvider = ({ children }) => {
             return newStack
         })
     }
-
-    useEffect(() => {
-        localStackCopy = stack
-    }, [stack])
 
     class Modal {
         constructor(component, response, modalProps, onClose, afterLeave) {
@@ -129,7 +124,6 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         close = () => {
-            console.log('Closing', this.id)
             updateStack((prevStack) =>
                 prevStack.map((modal) => {
                     if (modal.id === this.id && modal.isOpen) {
@@ -146,7 +140,6 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         afterLeave = () => {
-            console.log('After leave', this.id)
             if (this.isOpen) {
                 return
             }
@@ -377,8 +370,7 @@ export const ModalStackProvider = ({ children }) => {
         push,
         pushFromResponseData,
         closeAll: () => {
-            console.log('Closing all modals', { stack, localStackCopy })
-            localStackCopy.reverse().forEach((modal) => modal.close())
+            [...stack].reverse().forEach((modal) => modal.close())
         },
         reset: () => updateStack(() => []),
         visit,
