@@ -328,7 +328,7 @@ export function useModalStack() {
         stack: readonly(stack),
         push,
         pushFromResponseData,
-        closeAll: () => stack.value.reverse().forEach((modal) => modal.close()),
+        closeAll: () => [...stack.value].reverse().forEach((modal) => modal.close()),
         reset: () => (stack.value = []),
         visit,
         registerLocalModal,

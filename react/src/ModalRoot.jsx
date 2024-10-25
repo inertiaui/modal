@@ -129,7 +129,6 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         close = () => {
-            console.log('Closing', this.id)
             updateStack((prevStack) =>
                 prevStack.map((modal) => {
                     if (modal.id === this.id && modal.isOpen) {
@@ -146,7 +145,6 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         afterLeave = () => {
-            console.log('After leave', this.id)
             if (this.isOpen) {
                 return
             }
@@ -377,7 +375,6 @@ export const ModalStackProvider = ({ children }) => {
         push,
         pushFromResponseData,
         closeAll: () => {
-            console.log('Closing all modals', { stack, localStackCopy })
             localStackCopy.reverse().forEach((modal) => modal.close())
         },
         reset: () => updateStack(() => []),
