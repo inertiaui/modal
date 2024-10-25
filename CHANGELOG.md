@@ -2,6 +2,19 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.5.3 - 2024-10-25
+
+### What's Changed
+
+* Update basic-usage.md by @Froelund in https://github.com/inertiaui/modal/pull/10
+* Fix for `navigate` option in `visitModal()` by @pascalbaljet in https://github.com/inertiaui/modal/pull/21
+
+### New Contributors
+
+* @Froelund made their first contribution in https://github.com/inertiaui/modal/pull/10
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.5.2...0.5.3
+
 ## 0.5.2 - 2024-10-23
 
 * Support for callbacks before rerendering the base route/url
