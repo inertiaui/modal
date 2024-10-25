@@ -2,6 +2,15 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.5.4 - 2024-10-25
+
+### What's Changed
+
+* Session test by @pascalbaljet in https://github.com/inertiaui/modal/pull/26
+* Nested modal redirect fix by @pascalbaljet in https://github.com/inertiaui/modal/pull/27
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.5.3...0.5.4
+
 ## 0.5.3 - 2024-10-25
 
 ### What's Changed
