@@ -370,7 +370,7 @@ export const ModalStackProvider = ({ children }) => {
         push,
         pushFromResponseData,
         closeAll: () => {
-            [...stack].reverse().forEach((modal) => modal.close())
+            ;[...stack].reverse().forEach((modal) => modal.close())
         },
         reset: () => updateStack(() => []),
         visit,
