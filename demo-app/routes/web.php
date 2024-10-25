@@ -2,9 +2,16 @@
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+
+Route::get('/login', function () {
+    Auth::loginUsingId(1);
+
+    return redirect('/users');
+});
 
 // Edit a user
 Route::get('/users/{user}/edit', function (User $user) {

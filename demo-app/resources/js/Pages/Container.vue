@@ -1,4 +1,5 @@
 <template>
+    <p>Logged in as: {{ $page.props.auth.user?.id ?? '-' }}</p>
     <div class="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
         <div
             v-if="$page.props.flash.message"
