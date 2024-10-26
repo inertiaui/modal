@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import { Modal, ModalLink } from '@inertiaui/modal-react';
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
 
 export default function EditUser({ user, roles }) {
     const [message, setMessage] = useState('');
@@ -123,6 +124,7 @@ export default function EditUser({ user, roles }) {
                             </button>
                         </div>
                     </form>
+                    <ComponentThatUsesModalInstance />
                 </>
             )}
         </Modal>

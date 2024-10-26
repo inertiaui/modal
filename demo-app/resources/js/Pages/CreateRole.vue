@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3'
 import { default as Axios } from 'axios'
 import { Modal, ModalLink } from '@inertiaui/modal-vue'
 import { ref } from 'vue'
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue'
 
 defineProps(['headerValue'])
 
@@ -97,5 +98,7 @@ function submit() {
         <Modal name="another-local-modal">
              Hawaiian noises?
         </Modal>
+
+        <ComponentThatUsesModalInstance />
     </Modal>
 </template>

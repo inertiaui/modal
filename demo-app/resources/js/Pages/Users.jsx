@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
 
 export default function Users({ users, random, navigate }) {
     const alertGreeting = (greeting) => {
@@ -40,6 +41,7 @@ export default function Users({ users, random, navigate }) {
                     ))}
                 </ul>
             </div>
+            <ComponentThatUsesModalInstance />
         </Container>
     );
 };
