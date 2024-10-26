@@ -2,7 +2,7 @@
 import { useForm } from '@inertiajs/vue3';
 import { Modal, ModalLink } from '@inertiaui/modal-vue';
 import { ref } from 'vue';
-import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue';
 
 const props = defineProps({
     user: Object,
