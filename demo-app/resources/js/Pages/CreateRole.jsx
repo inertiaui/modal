@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import { Modal, ModalLink } from '@inertiaui/modal-react';
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
 
 export default function CreateRole({ headerValue }) {
     const { data, setData, errors, post } = useForm({
@@ -86,6 +87,7 @@ export default function CreateRole({ headerValue }) {
                     <Modal name="another-local-modal">
                         Hawaiian noises?
                     </Modal>
+                    <ComponentThatUsesModalInstance />
                 </>
             )}
         </Modal>

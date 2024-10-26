@@ -2,6 +2,7 @@
 import { useForm } from '@inertiajs/vue3';
 import { Modal, ModalLink } from '@inertiaui/modal-vue';
 import { ref } from 'vue';
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
 
 const props = defineProps({
     user: Object,
@@ -86,5 +87,7 @@ function onMessage(message) {
                 </button>
             </div>
         </form>
+
+        <ComponentThatUsesModalInstance />
     </Modal>
 </template>

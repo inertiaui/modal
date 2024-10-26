@@ -3,6 +3,7 @@ import { onMounted,ref } from 'vue';
 import Container from './Container.vue'
 import { ModalLink } from '@inertiaui/modal-vue'
 import { Link } from '@inertiajs/vue3'
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue';
 
 defineProps({
     users: Object,
@@ -57,5 +58,6 @@ function alertGreeting(greeting) {
                 </li>
             </ul>
         </div>
+        <ComponentThatUsesModalInstance />
     </Container>
 </template>

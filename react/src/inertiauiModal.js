@@ -4,5 +4,6 @@ import { useModalStack, ModalRoot, ModalStackProvider, renderApp } from './Modal
 import HeadlessModal from './HeadlessModal.jsx'
 import Modal from './Modal.jsx'
 import ModalLink from './ModalLink.jsx'
+import useModal from './useModal.js'
 
-export { getConfig, putConfig, resetConfig, useModalStack, useModalIndex, HeadlessModal, Modal, ModalLink, ModalRoot, ModalStackProvider, renderApp }
+export { getConfig, putConfig, resetConfig, useModalStack, useModalIndex, HeadlessModal, Modal, ModalLink, ModalRoot, ModalStackProvider, renderApp, useModal }
