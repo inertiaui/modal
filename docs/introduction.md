@@ -7,7 +7,7 @@ Here's a summary of the features:
 - Supports React and Vue
 - Zero backend configuration
 - Super simple frontend API
-- Support for Base Route/URL
+- Support for Base Route / URL
 - Modal and slideover support
 - Headless support
 - Nested/stacked modals support
