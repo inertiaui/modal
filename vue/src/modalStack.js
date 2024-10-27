@@ -16,16 +16,16 @@ const setComponentResolver = (resolver) => {
 }
 
 class Modal {
-    constructor(component, response, modalProps, onClose, afterLeave) {
+    constructor(component, response, config, onClose, afterLeave) {
         this.id = Modal.generateId()
         this.isOpen = false
         this.shouldRender = false
         this.listeners = {}
 
         this.component = component
-        this.componentProps = ref(response.props)
+        this.props = ref(response.props)
         this.response = response
-        this.modalProps = modalProps
+        this.config = config
         this.onCloseCallback = onClose
         this.afterLeaveCallback = afterLeave
 
@@ -41,11 +41,11 @@ class Modal {
         })
     }
 
-    update = (modalProps, onClose, afterLeave) => {
+    update = (config, onClose, afterLeave) => {
         const index = this.index.value
 
         if (index > -1) {
-            stack.value[index].modalProps = modalProps
+            stack.value[index].config = config
             stack.value[index].onCloseCallback = onClose
             stack.value[index].afterLeaveCallback = afterLeave
         }
@@ -205,7 +205,7 @@ class Modal {
                 'X-InertiaUI-Modal-Use-Router': 0,
             },
         }).then((response) => {
-            Object.assign(this.componentProps.value, response.data.props)
+            Object.assign(this.props.value, response.data.props)
         })
     }
 }
@@ -214,19 +214,19 @@ function registerLocalModal(name, callback) {
     localModals.value[name] = { name, callback }
 }
 
-function pushLocalModal(name, modalProps, onClose, afterLeave) {
+function pushLocalModal(name, config, onClose, afterLeave) {
     if (!localModals.value[name]) {
         throw new Error(`The local modal "${name}" has not been registered.`)
     }
 
-    const modal = push(null, {}, modalProps, onClose, afterLeave)
+    const modal = push(null, {}, config, onClose, afterLeave)
     modal.name = name
     localModals.value[name].callback(modal)
     return modal
 }
 
-function pushFromResponseData(responseData, modalProps = {}, onClose = null, onAfterLeave = null) {
-    return resolveComponent(responseData.component).then((component) => push(markRaw(component), responseData, modalProps, onClose, onAfterLeave))
+function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null) {
+    return resolveComponent(responseData.component).then((component) => push(markRaw(component), responseData, config, onClose, onAfterLeave))
 }
 
 function visit(
@@ -234,7 +234,7 @@ function visit(
     method,
     payload = {},
     headers = {},
-    modalProps = {},
+    config = {},
     onClose = null,
     onAfterLeave = null,
     queryStringArrayFormat = 'brackets',
@@ -242,7 +242,7 @@ function visit(
 ) {
     return new Promise((resolve, reject) => {
         if (href.startsWith('#')) {
-            resolve(pushLocalModal(href.substring(1), modalProps, onClose, onAfterLeave))
+            resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave))
             return
         }
 
@@ -279,7 +279,7 @@ function visit(
                         const originalAfterLeave = modal.afterLeaveCallback
 
                         modal.update(
-                            modalProps,
+                            config,
                             () => {
                                 onClose?.()
                                 originalOnClose?.()
@@ -296,13 +296,13 @@ function visit(
         }
 
         Axios({ url, method, data, headers })
-            .then((response) => resolve(pushFromResponseData(response.data, modalProps, onClose, onAfterLeave)))
+            .then((response) => resolve(pushFromResponseData(response.data, config, onClose, onAfterLeave)))
             .catch(reject)
     })
 }
 
-function push(component, response, modalProps, onClose, afterLeave) {
-    const newModal = new Modal(component, response, modalProps, onClose, afterLeave)
+function push(component, response, config, onClose, afterLeave) {
+    const newModal = new Modal(component, response, config, onClose, afterLeave)
     stack.value.push(newModal)
     nextTick(() => {
         newModal.show()

@@ -26,6 +26,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
             {({
                 afterLeave,
                 close,
+                config,
                 emit,
                 getChildModal,
                 getParentModal,
@@ -33,7 +34,6 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                 index,
                 isOpen,
                 modalContext,
-                modalProps,
                 onTopOfStack,
                 reload,
                 setOpen,
@@ -46,7 +46,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                     <Dialog
                         as="div"
                         className="im-dialog relative z-20"
-                        onClose={() => (modalProps.closeExplicitly ? null : close())}
+                        onClose={() => (config.closeExplicitly ? null : close())}
                         data-inertiaui-modal-id={id}
                         data-inertiaui-modal-index={index}
                     >
@@ -75,14 +75,15 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                         {index > 0 && onTopOfStack ? <div className="im-backdrop fixed inset-0 z-30 bg-black/75" /> : null}
 
                         {/* The modal/slideover content itself */}
-                        {modalProps.slideover ? (
+                        {config.slideover ? (
                             <SlideoverContent
                                 modalContext={modalContext}
-                                modalProps={modalProps}
+                                config={config}
                             >
                                 {renderChildren({
                                     afterLeave,
                                     close,
+                                    config,
                                     emit,
                                     getChildModal,
                                     getParentModal,
@@ -90,7 +91,6 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                     index,
                                     isOpen,
                                     modalContext,
-                                    modalProps,
                                     onTopOfStack,
                                     reload,
                                     setOpen,
@@ -100,11 +100,12 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                         ) : (
                             <ModalContent
                                 modalContext={modalContext}
-                                modalProps={modalProps}
+                                config={config}
                             >
                                 {renderChildren({
                                     afterLeave,
                                     close,
+                                    config,
                                     emit,
                                     getChildModal,
                                     getParentModal,
@@ -112,7 +113,6 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                     index,
                                     isOpen,
                                     modalContext,
-                                    modalProps,
                                     onTopOfStack,
                                     reload,
                                     setOpen,

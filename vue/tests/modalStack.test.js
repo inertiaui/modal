@@ -41,16 +41,16 @@ describe('modalStack', () => {
         it('should create a new modal and add it to the stack', () => {
             const component = { name: 'TestComponent' }
             const response = { props: {}, url: '/test', component: 'TestComponent', version: '1' }
-            const modalProps = { closeButton: true }
+            const config = { closeButton: true }
             const onClose = vi.fn()
             const afterLeave = vi.fn()
 
-            const modal = modalStack.push(component, response, modalProps, onClose, afterLeave)
+            const modal = modalStack.push(component, response, config, onClose, afterLeave)
 
             expect(modalStack.stack.value).toHaveLength(1)
             expect(modal).toHaveProperty('id')
             expect(modal.component).toBe(component)
-            expect(modal.modalProps).toBe(modalProps)
+            expect(modal.config).toBe(config)
         })
 
         it('should generate unique ids for each modal', () => {
@@ -157,8 +157,8 @@ describe('modalStack', () => {
                 },
             })
 
-            expect(modal.componentProps.value.test).toBe('updated')
-            expect(modal.componentProps.value.another).toBe('updated prop')
+            expect(modal.props.value.test).toBe('updated')
+            expect(modal.props.value.another).toBe('updated prop')
         })
 
         it('should reload modal props with "only" option', async () => {
@@ -188,8 +188,8 @@ describe('modalStack', () => {
                 },
             })
 
-            expect(modal.componentProps.value.test).toBe('updated')
-            expect(modal.componentProps.value.another).toBe('prop') // This should not change
+            expect(modal.props.value.test).toBe('updated')
+            expect(modal.props.value.another).toBe('prop') // This should not change
         })
 
         it('should reload modal props with "except" option', async () => {
@@ -219,9 +219,9 @@ describe('modalStack', () => {
                 },
             })
 
-            expect(modal.componentProps.value.test).toBe('updated')
-            expect(modal.componentProps.value.another).toBe('prop') // This should not change
-            expect(modal.componentProps.value.third).toBe('updated value')
+            expect(modal.props.value.test).toBe('updated')
+            expect(modal.props.value.another).toBe('prop') // This should not change
+            expect(modal.props.value.third).toBe('updated value')
         })
 
         it('should make an Axios request and push a new modal', async () => {
@@ -229,7 +229,7 @@ describe('modalStack', () => {
             const method = 'get'
             const data = { key: 'value' }
             const headers = { 'Custom-Header': 'Test' }
-            const modalProps = { closeButton: true }
+            const config = { closeButton: true }
             const onClose = vi.fn()
             const onAfterLeave = vi.fn()
 
@@ -253,7 +253,7 @@ describe('modalStack', () => {
             vi.mocked(router.resolveComponent).mockResolvedValue(mockComponent)
             vi.mocked(usePage).mockReturnValue({ version: '1.0' })
 
-            const result = await modalStack.visit(href, method, data, headers, modalProps, onClose, onAfterLeave)
+            const result = await modalStack.visit(href, method, data, headers, config, onClose, onAfterLeave)
 
             expect(axios).toHaveBeenCalledWith({
                 url: '/test-url?key=value',
@@ -273,7 +273,7 @@ describe('modalStack', () => {
             expect(result).toBeDefined()
             expect(result.component).toBe(mockComponent)
             expect(result.response).toEqual(mockResponse.data)
-            expect(result.modalProps).toEqual(modalProps)
+            expect(result.config).toEqual(config)
             expect(modalStack.stack.value).toHaveLength(1)
         })
 

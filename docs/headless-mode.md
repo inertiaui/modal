@@ -10,6 +10,7 @@ The `Headless` component provides the following props:
 | --- | --- |
 | afterLeave | Function to call after the modal has left the screen to remove it from the DOM |
 | close | Function to close the modal |
+| config | The [configuration](/configuration.html) passed to the modal |
 | emit | Function to emit an event |
 | getChildModal | Function to get first the child modal |
 | getParentModal | Function to get the parent modal |
@@ -17,7 +18,6 @@ The `Headless` component provides the following props:
 | index | The modal stack index |
 | isOpen | Boolean indicating if the modal is open |
 | modalContext | Object with all of the props in this table |
-| modalProps | The [props](/configuration.html) passed to the modal |
 | onTopOfStack | Boolean indicating if the modal is on top of the stack |
 | reload | Function to [reload](/reload-props.html) props |
 | setOpen | Function to toggle the modal's open state |
@@ -44,13 +44,13 @@ function closeModal() {
         v-slot="{
             afterLeave,
             close,
+            config,
             emit,
             getChildModal,
             getParentModal,
             id,
             index,
             modalContext,
-            modalProps,
             onTopOfStack,
             isOpen,
             reload,
@@ -77,13 +77,13 @@ export default function UserEdit({ ...props }) {
         <HeadlessModal ref={modalRef} {...props}>
             {({ afterLeave,
                 close,
+                config,
                 emit,
                 getChildModal,
                 getParentModal,
                 id,
                 index,
                 modalContext,
-                modalProps,
                 onTopOfStack,
                 isOpen,
                 reload,

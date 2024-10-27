@@ -6,7 +6,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
-class ModalPropsTest extends DuskTestCase
+class ConfigTest extends DuskTestCase
 {
     #[DataProvider('booleanProvider')]
     #[Test]

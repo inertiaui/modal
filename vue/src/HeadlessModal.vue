@@ -43,8 +43,8 @@ const props = defineProps({
 
 const modalStack = useModalStack()
 const modalContext = props.name ? ref({}) : inject('modalContext')
-const modalProps = computed(() => {
-    const isSlideover = modalContext.value.modalProps?.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
+const config = computed(() => {
+    const isSlideover = modalContext.value.config?.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
 
     return {
         slideover: isSlideover,
@@ -54,7 +54,7 @@ const modalProps = computed(() => {
         paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, 'paddingClasses'),
         panelClasses: props.panelClasses ?? getConfigByType(isSlideover, 'panelClasses'),
         position: props.position ?? getConfigByType(isSlideover, 'position'),
-        ...modalContext.value.modalProps,
+        ...modalContext.value.config,
     }
 })
 
@@ -94,6 +94,7 @@ function emit(event, ...args) {
 defineExpose({
     afterLeave: modalContext.value.afterLeave,
     close: modalContext.value.close,
+    config: config.value,
     emit,
     getChildModal: modalContext.value.getChildModal,
     getParentModal: modalContext.value.getParentModal,
@@ -101,7 +102,6 @@ defineExpose({
     index: modalContext.value.index,
     isOpen: modalContext.value.isOpen,
     modalContext: modalContext.value,
-    modalProps: modalProps.value,
     onTopOfStack: modalContext.value.onTopOfStack,
     reload: modalContext.value.reload,
     setOpen: modalContext.value.setOpen,
@@ -123,13 +123,13 @@ defineOptions({
         :id="modalContext.id"
         :after-leave="modalContext.afterLeave"
         :close="modalContext.close"
+        :config="config"
         :emit="emit"
         :get-child-modal="modalContext.getChildModal"
         :get-parent-modal="modalContext.getParentModal"
         :index="modalContext.index"
         :is-open="modalContext.isOpen"
         :modal-context="modalContext"
-        :modal-props="modalProps"
         :on-top-of-stack="modalContext.onTopOfStack"
         :reload="modalContext.reload"
         :set-open="modalContext.setOpen"

@@ -21,7 +21,7 @@ provide('modalContext', modalContext)
 <template>
     <modalContext.component
         v-if="modalContext?.component"
-        v-bind="modalContext.componentProps"
+        v-bind="modalContext.props"
         @modal-event="(event, ...args) => modalContext.emit(event, ...args)"
     />
 </template>

@@ -23,7 +23,7 @@ const ModalRenderer = ({ index }) => {
         modalContext?.component && (
             <ModalIndexContext.Provider value={index}>
                 <modalContext.component
-                    {...modalContext.componentProps}
+                    {...modalContext.props}
                     onModalEvent={(...args) => modalContext.emit(...args)}
                 />
             </ModalIndexContext.Provider>

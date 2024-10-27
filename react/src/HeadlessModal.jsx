@@ -15,20 +15,20 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
         return stack.find((m) => m.shouldRender && m.index > modalContext?.index)?.index
     }, [modalIndex, stack])
 
-    const modalPropsSlideover = useMemo(() => modalContext?.modalProps.slideover ?? props.slideover ?? getConfig('type') === 'slideover', [props.slideover])
+    const configSlideover = useMemo(() => modalContext?.config.slideover ?? props.slideover ?? getConfig('type') === 'slideover', [props.slideover])
 
-    const modalProps = useMemo(
+    const config = useMemo(
         () => ({
-            slideover: modalPropsSlideover,
-            closeButton: props.closeButton ?? getConfigByType(modalPropsSlideover, 'closeButton'),
-            closeExplicitly: props.closeExplicitly ?? getConfigByType(modalPropsSlideover, 'closeExplicitly'),
-            maxWidth: props.maxWidth ?? getConfigByType(modalPropsSlideover, 'maxWidth'),
-            paddingClasses: props.paddingClasses ?? getConfigByType(modalPropsSlideover, 'paddingClasses'),
-            panelClasses: props.panelClasses ?? getConfigByType(modalPropsSlideover, 'panelClasses'),
-            position: props.position ?? getConfigByType(modalPropsSlideover, 'position'),
-            ...modalContext?.modalProps,
+            slideover: configSlideover,
+            closeButton: props.closeButton ?? getConfigByType(configSlideover, 'closeButton'),
+            closeExplicitly: props.closeExplicitly ?? getConfigByType(configSlideover, 'closeExplicitly'),
+            maxWidth: props.maxWidth ?? getConfigByType(configSlideover, 'maxWidth'),
+            paddingClasses: props.paddingClasses ?? getConfigByType(configSlideover, 'paddingClasses'),
+            panelClasses: props.panelClasses ?? getConfigByType(configSlideover, 'panelClasses'),
+            position: props.position ?? getConfigByType(configSlideover, 'position'),
+            ...modalContext?.config,
         }),
-        [props, modalContext?.modalProps],
+        [props, modalContext?.config],
     )
 
     useEffect(() => {
@@ -55,6 +55,7 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
         () => ({
             afterLeave: () => modalContext.afterLeave(),
             close: () => modalContext.close(),
+            config,
             emit: (...args) => modalContext.emit(...args),
             getChildModal: () => modalContext.getChildModal(),
             getParentModal: () => modalContext.getParentModal(),
@@ -62,7 +63,6 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             index: modalContext?.index,
             isOpen: modalContext?.isOpen,
             modalContext,
-            modalProps,
             onTopOfStack: modalContext?.onTopOfStack,
             reload: () => modalContext.reload(),
             setOpen: () => modalContext.setOpen(),
@@ -76,21 +76,21 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             <>
                 {typeof children === 'function'
                     ? children({
-                          afterLeave: modalContext.afterLeave,
-                          close: modalContext.close,
-                          emit: modalContext.emit,
-                          getChildModal: modalContext.getChildModal,
-                          getParentModal: modalContext.getParentModal,
-                          id: modalContext.id,
-                          index: modalContext.index,
-                          isOpen: modalContext.isOpen,
-                          modalContext,
-                          modalProps,
-                          onTopOfStack: modalContext.onTopOfStack,
-                          reload: modalContext.reload,
-                          setOpen: modalContext.setOpen,
-                          shouldRender: modalContext.shouldRender,
-                      })
+                        afterLeave: modalContext.afterLeave,
+                        close: modalContext.close,
+                        config,
+                        emit: modalContext.emit,
+                        getChildModal: modalContext.getChildModal,
+                        getParentModal: modalContext.getParentModal,
+                        id: modalContext.id,
+                        index: modalContext.index,
+                        isOpen: modalContext.isOpen,
+                        modalContext,
+                        onTopOfStack: modalContext.onTopOfStack,
+                        reload: modalContext.reload,
+                        setOpen: modalContext.setOpen,
+                        shouldRender: modalContext.shouldRender,
+                    })
                     : children}
 
                 {/* Next modal in the stack */}
