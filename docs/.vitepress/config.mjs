@@ -41,7 +41,7 @@ export default defineConfig({
         items: [
           {text: 'Basic Usage', link: '/basic-usage'},
           {text: 'Configuration', link: '/configuration'},
-          {text: 'Base Route/URL', link: '/base-route-url'},
+          {text: 'Base Route / URL', link: '/base-route-url'},
           {text: 'Close Modal', link: '/close-modal'},
           {text: 'Event Bus', link: '/event-bus'},
           {text: 'Nested / Stacked Modals', link: '/nested-stacked-modals'},

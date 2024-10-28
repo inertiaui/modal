@@ -18,14 +18,26 @@ You may find the documentation at [https://inertiaui.com/inertia-modal/docs](htt
 - Supports React and Vue
 - Zero backend configuration
 - Super simple frontend API
+- Support for Base Route / URL
 - Modal and slideover support
+- Headless support
 - Nested/stacked modals support
-- Open modals on page load
 - Reusable modals
 - Multiple sizes and positions
 - Reload props in modals
 - Easy communication between nested/stacked modals
 - Highly configurable
+
+# Requirements
+
+Inertia Modal has the following requirements:
+
+- Tailwind CSS 3.4+
+- React 18+ or Vue 3.4+
+
+The package is designed and tested to work with Laravel and Inertia.js v1/v2. It may work with other backend frameworks and Inertia.js versions, but there is no guarantee or support for such configurations.
+
+The Base Route / URL feature is supported in both Laravel 10 and 11.
 
 ## Changelog
 

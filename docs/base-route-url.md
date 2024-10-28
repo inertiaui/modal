@@ -1,4 +1,4 @@
-# Base Route/URL
+# Base Route / URL
 
 By default, Inertia Modal doesn't change the URL when opening a modal. It just stays on the same page and displays the modal content. However, you may want to change this behavior and update the URL when opening a modal. This has a few benefits:
 

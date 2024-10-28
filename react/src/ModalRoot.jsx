@@ -72,16 +72,16 @@ export const ModalStackProvider = ({ children }) => {
     }, [stack])
 
     class Modal {
-        constructor(component, response, modalProps, onClose, afterLeave) {
+        constructor(component, response, config, onClose, afterLeave) {
             this.id = Modal.generateId()
             this.isOpen = false
             this.shouldRender = false
             this.listeners = {}
 
             this.component = component
-            this.componentProps = response.props
+            this.props = response.props
             this.response = response
-            this.modalProps = modalProps
+            this.config = config
             this.onCloseCallback = onClose
             this.afterLeaveCallback = afterLeave
 
@@ -99,11 +99,11 @@ export const ModalStackProvider = ({ children }) => {
             return `inertiaui_modal_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
         }
 
-        update = (modalProps, onClose, afterLeave) => {
+        update = (config, onClose, afterLeave) => {
             updateStack((prevStack) =>
                 prevStack.map((modal) => {
                     if (modal.id === this.id) {
-                        modal.modalProps = modalProps
+                        modal.config = config
                         modal.onCloseCallback = onClose
                         modal.afterLeaveCallback = afterLeave
                     }
@@ -226,18 +226,18 @@ export const ModalStackProvider = ({ children }) => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                 },
             }).then((response) => {
-                Object.assign(this.componentProps, response.data.props)
+                Object.assign(this.props, response.data.props)
                 updateStack((prevStack) => prevStack) // Trigger re-render
             })
         }
     }
 
-    const pushFromResponseData = (responseData, modalProps = {}, onClose = null, onAfterLeave = null) => {
-        return resolveComponent(responseData.component).then((component) => push(component, responseData, modalProps, onClose, onAfterLeave))
+    const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null) => {
+        return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave))
     }
 
-    const push = (component, response, modalProps, onClose, afterLeave) => {
-        const newModal = new Modal(component, response, modalProps, onClose, afterLeave)
+    const push = (component, response, config, onClose, afterLeave) => {
+        const newModal = new Modal(component, response, config, onClose, afterLeave)
         newModal.index = stack.length
 
         updateStack((prevStack) => [...prevStack, newModal])
@@ -247,12 +247,12 @@ export const ModalStackProvider = ({ children }) => {
         return newModal
     }
 
-    function pushLocalModal(name, modalProps, onClose, afterLeave) {
+    function pushLocalModal(name, config, onClose, afterLeave) {
         if (!localModals[name]) {
             throw new Error(`The local modal "${name}" has not been registered.`)
         }
 
-        const modal = push(null, {}, modalProps, onClose, afterLeave)
+        const modal = push(null, {}, config, onClose, afterLeave)
         modal.name = name
         localModals[name].callback(modal)
         return modal
@@ -276,7 +276,7 @@ export const ModalStackProvider = ({ children }) => {
         method,
         payload = {},
         headers = {},
-        modalProps = {},
+        config = {},
         onClose = null,
         onAfterLeave = null,
         queryStringArrayFormat = 'brackets',
@@ -284,7 +284,7 @@ export const ModalStackProvider = ({ children }) => {
     ) => {
         return new Promise((resolve, reject) => {
             if (href.startsWith('#')) {
-                resolve(pushLocalModal(href.substring(1), modalProps, onClose, onAfterLeave))
+                resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave))
                 return
             }
 
@@ -321,7 +321,7 @@ export const ModalStackProvider = ({ children }) => {
                             const originalAfterLeave = modal.afterLeaveCallback
 
                             modal.update(
-                                modalProps,
+                                config,
                                 () => {
                                     onClose?.()
                                     originalOnClose?.()
@@ -347,7 +347,7 @@ export const ModalStackProvider = ({ children }) => {
                 data,
                 headers,
             })
-                .then((response) => resolve(pushFromResponseData(response.data, modalProps, onClose, onAfterLeave)))
+                .then((response) => resolve(pushFromResponseData(response.data, config, onClose, onAfterLeave)))
                 .catch((error) => {
                     reject(error)
                 })

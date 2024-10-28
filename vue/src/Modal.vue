@@ -11,6 +11,7 @@ const rendered = ref(false)
 defineExpose({
     afterLeave: () => modal.value?.afterLeave(),
     close: () => modal.value?.close(),
+    config: computed(() => modal.value?.config),
     emit: (...args) => modal.value?.emit(...args),
     getChildModal: () => modal.value?.getChildModal(),
     getParentModal: () => modal.value?.getParentModal(),
@@ -18,7 +19,6 @@ defineExpose({
     index: computed(() => modal.value?.index),
     isOpen: computed(() => modal.value?.isOpen),
     modalContext: computed(() => modal.value?.modalContext),
-    modalProps: computed(() => modal.value?.modalProps),
     onTopOfStack: computed(() => modal.value?.onTopOfStack),
     reload: (...args) => modal.value?.reload(...args),
     setOpen: (...args) => modal.value?.setOpen(...args),
@@ -32,6 +32,7 @@ defineExpose({
         v-slot="{
             afterLeave,
             close,
+            config,
             emit,
             getChildModal,
             getParentModal,
@@ -39,7 +40,6 @@ defineExpose({
             index,
             isOpen,
             modalContext,
-            modalProps,
             onTopOfStack,
             reload,
             setOpen,
@@ -78,25 +78,25 @@ defineExpose({
 
                     <!-- The modal/slideover content itself -->
                     <component
-                        :is="modalProps?.slideover ? SlideoverContent : ModalContent"
+                        :is="config?.slideover ? SlideoverContent : ModalContent"
                         :modal-context="modalContext"
-                        :modal-props="modalProps"
+                        :config="config"
                     >
                         <slot
                             :id="id"
                             :after-leave="afterLeave"
                             :close="close"
+                            :config="config"
                             :emit="emit"
                             :get-child-modal="getChildModal"
                             :get-parent-modal="getParentModal"
                             :index="index"
-                            :modal-context="modalContext"
-                            :modal-props="modalProps"
-                            :on-top-of-stack="onTopOfStack"
                             :is-open="isOpen"
-                            :should-render="shouldRender"
+                            :modal-context="modalContext"
+                            :on-top-of-stack="onTopOfStack"
                             :reload="reload"
                             :set-open="setOpen"
+                            :should-render="shouldRender"
                         />
                     </component>
                 </div>

@@ -4,7 +4,7 @@ import { DialogContent, DialogTitle, VisuallyHidden } from 'radix-vue'
 
 defineProps({
     modalContext: Object,
-    modalProps: Object,
+    config: Object,
 })
 </script>
 
@@ -15,9 +15,9 @@ defineProps({
         <div
             class="im-modal-positioner flex min-h-full justify-center"
             :class="{
-                'items-start': modalProps.position === 'top',
-                'items-center': modalProps.position === 'center',
-                'items-end': modalProps.position === 'bottom',
+                'items-start': config.position === 'top',
+                'items-center': config.position === 'center',
+                'items-end': config.position === 'bottom',
             }"
         >
             <Transition
@@ -30,20 +30,20 @@ defineProps({
             >
                 <DialogContent
                     :aria-describedby="undefined"
-                    :trap-focus="modalProps?.closeExplicitly"
+                    :trap-focus="config?.closeExplicitly"
                     :class="{
                         'im-modal-wrapper w-full transition duration-300 ease-in-out': true,
                         'blur-sm': !modalContext.onTopOfStack,
-                        'sm:max-w-sm': modalProps.maxWidth == 'sm',
-                        'sm:max-w-md': modalProps.maxWidth == 'md',
-                        'sm:max-w-md md:max-w-lg': modalProps.maxWidth == 'lg',
-                        'sm:max-w-md md:max-w-xl': modalProps.maxWidth == 'xl',
-                        'sm:max-w-md md:max-w-xl lg:max-w-2xl': modalProps.maxWidth == '2xl',
-                        'sm:max-w-md md:max-w-xl lg:max-w-3xl': modalProps.maxWidth == '3xl',
-                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl': modalProps.maxWidth == '4xl',
-                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl': modalProps.maxWidth == '5xl',
-                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl': modalProps.maxWidth == '6xl',
-                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': modalProps.maxWidth == '7xl',
+                        'sm:max-w-sm': config.maxWidth == 'sm',
+                        'sm:max-w-md': config.maxWidth == 'md',
+                        'sm:max-w-md md:max-w-lg': config.maxWidth == 'lg',
+                        'sm:max-w-md md:max-w-xl': config.maxWidth == 'xl',
+                        'sm:max-w-md md:max-w-xl lg:max-w-2xl': config.maxWidth == '2xl',
+                        'sm:max-w-md md:max-w-xl lg:max-w-3xl': config.maxWidth == '3xl',
+                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl': config.maxWidth == '4xl',
+                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl': config.maxWidth == '5xl',
+                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl': config.maxWidth == '6xl',
+                        'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': config.maxWidth == '7xl',
                     }"
                 >
                     <VisuallyHidden as-child>
@@ -52,10 +52,10 @@ defineProps({
 
                     <div
                         class="im-modal-content relative"
-                        :class="[modalProps.paddingClasses, modalProps.panelClasses]"
+                        :class="[config.paddingClasses, config.panelClasses]"
                     >
                         <div
-                            v-if="modalProps.closeButton"
+                            v-if="config.closeButton"
                             class="absolute right-0 top-0 pr-3 pt-3"
                         >
                             <CloseButton />
@@ -63,7 +63,7 @@ defineProps({
 
                         <slot
                             :modal-context="modalContext"
-                            :modal-props="modalProps"
+                            :config="config"
                         />
                     </div>
                 </DialogContent>

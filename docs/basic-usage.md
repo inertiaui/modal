@@ -323,6 +323,7 @@ The `visitModal` method accepts a second argument, which is an object with optio
 ```js
 visitModal('/users/create', {
     method: 'post',
+    navigate: true,
     data: { default_name: 'John Doe' },
     headers: { 'X-Header': 'Value' },
     config: {
