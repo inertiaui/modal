@@ -33,6 +33,7 @@ class Config {
         if (typeof key === 'object') {
             this.config = {
                 type: key.type ?? defaultConfig.type,
+                navigate: key.navigate ?? defaultConfig.navigate,
                 modal: { ...defaultConfig.modal, ...(key.modal ?? {}) },
                 slideover: { ...defaultConfig.slideover, ...(key.slideover ?? {}) },
             }
