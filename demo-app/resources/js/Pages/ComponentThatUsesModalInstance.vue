@@ -2,6 +2,11 @@
 import { useModal } from '@inertiaui/modal-vue'
 
 const modal = useModal()
+
+if (modal) {
+    const { props } = useModal()
+    console.log(props.roles)
+}
 </script>
 
 <template>

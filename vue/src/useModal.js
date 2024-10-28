@@ -1,5 +1,5 @@
-import { inject } from 'vue'
+import { inject, toValue } from 'vue'
 
 export default function useModal() {
-    return inject('modalContext', null)
+    return toValue(inject('modalContext', null))
 }
