@@ -2,6 +2,19 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.6.0 - 2024-10-28
+
+### What's Changed
+
+* Added `useModal()` helper + renamed some props by @pascalbaljet in https://github.com/inertiaui/modal/pull/29
+* Sync React/Vue navigate hook by @pascalbaljet in https://github.com/inertiaui/modal/pull/33
+
+### New Contributors
+
+* @dependabot made their first contribution in https://github.com/inertiaui/modal/pull/30
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.5.4...0.6.0
+
 ## 0.5.4 - 2024-10-25
 
 ### What's Changed

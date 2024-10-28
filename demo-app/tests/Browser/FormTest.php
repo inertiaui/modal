@@ -23,7 +23,11 @@ class FormTest extends DuskTestCase
                 ->waitForTextIn('.im-modal-content', 'Edit User')
                 ->type('name', 'a')
                 ->press('Save')
-                ->waitForTextIn('.im-modal-content', 'The name field must be at least 3 characters.');
+                ->waitForTextIn('.im-modal-content', 'The name field must be at least 3 characters.')
+                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) {
+                    $browser->assertSee('The name field must be at least 3 characters.');
+                })
+                ->assertMissing('.im-dialog[data-inertiaui-modal-index="1"]');
         });
     }
 
