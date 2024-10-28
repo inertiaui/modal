@@ -7,8 +7,8 @@ trait ModalTestCase
     public static function booleanProvider(): array
     {
         return [
-            [true],
-            [false],
+            'true' => [true],
+            'false' => [false],
         ];
     }
 }
