@@ -41,6 +41,7 @@ export default defineConfig({
         items: [
           {text: 'Basic Usage', link: '/basic-usage'},
           {text: 'Configuration', link: '/configuration'},
+          {text: 'Modal Props', link: '/modal-props'},
           {text: 'Base Route / URL', link: '/base-route-url'},
           {text: 'Close Modal', link: '/close-modal'},
           {text: 'Event Bus', link: '/event-bus'},

@@ -20,7 +20,7 @@ defineProps({ roles: Object, user: Object })
 
 <template>
     <div>
-        <h1>E   dit User {{ user.name }}</h1>
+        <h1>Edit User {{ user.name }}</h1>
         <form>
             <!-- ... -->
         </form>
