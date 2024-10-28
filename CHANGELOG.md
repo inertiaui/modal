@@ -2,6 +2,13 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.6.1 - 2024-10-28
+
+* Fix `navigate` config option (as object) (see #35)
+* Added `rtl` classes for slideover (see #34)
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.6.0...0.6.1
+
 ## 0.6.0 - 2024-10-28
 
 ### What's Changed
