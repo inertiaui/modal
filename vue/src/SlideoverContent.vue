@@ -15,8 +15,8 @@ defineProps({
         <div
             class="im-slideover-positioner flex min-h-full items-center"
             :class="{
-                'justify-start': config.position === 'left',
-                'justify-end': config.position === 'right',
+                'justify-start rtl:justify-end': config.position === 'left',
+                'justify-end rtl:justify-start': config.position === 'right',
             }"
         >
             <Transition
