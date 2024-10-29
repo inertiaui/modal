@@ -38,6 +38,10 @@ Route::put('/users/{user}', function (User $user) {
 
     session()->flash('message', 'User updated successfully!');
 
+    if (request()->query('redirect') === 'edit') {
+        return redirect()->route('users.edit', $user);
+    }
+
     return back();
 })->name('users.update');
 

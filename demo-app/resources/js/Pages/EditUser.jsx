@@ -16,6 +16,10 @@ export default function EditUser({ user, roles }) {
         role_id: user.role_id,
     });
 
+    function updateAndRefresh() {
+        put(`/users/${user.id}?redirect=edit`)
+    }
+
     const submit = (e) => {
         e.preventDefault();
         put(`/users/${user.id}`, {
@@ -38,7 +42,7 @@ export default function EditUser({ user, roles }) {
             {({ close, reload, emit }) => (
                 <>
                     <div>
-                        <h2 className="text-lg font-medium text-gray-900">Edit User</h2>
+                        <h2 className="text-lg font-medium text-gray-900">Edit User {user.name}</h2>
                         {message && <p dusk="message" className="text-sm text-gray-500">{message}</p>}
                     </div>
 
@@ -115,6 +119,13 @@ export default function EditUser({ user, roles }) {
                                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                             >
                                 Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={updateAndRefresh}
+                                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Update and refresh
                             </button>
                             <button
                                 type="submit"

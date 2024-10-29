@@ -205,8 +205,12 @@ class Modal {
                 'X-InertiaUI-Modal-Use-Router': 0,
             },
         }).then((response) => {
-            Object.assign(this.props.value, response.data.props)
+            this.updateProps(response.data.props)
         })
+    }
+
+    updateProps = (props) => {
+        Object.assign(this.props.value, props)
     }
 }
 

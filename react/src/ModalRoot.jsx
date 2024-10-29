@@ -1,7 +1,7 @@
 import { createElement, useEffect, useState } from 'react'
 import { default as Axios } from 'axios'
 import { except, only } from './helpers'
-import { router } from '@inertiajs/react'
+import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
@@ -226,9 +226,13 @@ export const ModalStackProvider = ({ children }) => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                 },
             }).then((response) => {
-                Object.assign(this.props, response.data.props)
-                updateStack((prevStack) => prevStack) // Trigger re-render
+                this.updateProps(response.data.props)
             })
+        }
+
+        updateProps = (props) => {
+            Object.assign(this.props, props)
+            updateStack((prevStack) => prevStack) // Trigger re-render
         }
     }
 
@@ -307,6 +311,7 @@ export const ModalStackProvider = ({ children }) => {
             }
 
             if (useInertiaRouter) {
+                newModalOnBase = null
                 // Pushing the modal to the stack will be handled by the ModalRoot...
                 return router.visit(url, {
                     method,
@@ -333,7 +338,6 @@ export const ModalStackProvider = ({ children }) => {
                             )
 
                             resolve(modal)
-                            newModalOnBase = null
                         })
                     },
                 })
@@ -493,6 +497,17 @@ export const ModalRoot = ({ children }) => {
         Axios.interceptors.request.use(axiosRequestInterceptor)
         return () => Axios.interceptors.request.eject(axiosRequestInterceptor)
     }, [])
+
+    const $page = usePage()
+
+    useEffect(() => {
+        const newModal = $page.props?._inertiaui_modal
+        const previousModal = newModalOnBase?.response
+
+        if (newModal && previousModal && newModal.component === previousModal.component && newModal.url === previousModal.url) {
+            context.stack[0].updateProps(newModal.props ?? {})
+        }
+    }, [$page.props?._inertiaui_modal])
 
     return (
         <>
