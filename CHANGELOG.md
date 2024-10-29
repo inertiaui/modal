@@ -2,6 +2,15 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.6.2 - 2024-10-29
+
+### What's Changed
+
+* Update props when redirecting back to same modal by @pascalbaljet in https://github.com/inertiaui/modal/pull/39
+* Fix `close-explicitly` in Vue + update tests (see #36) by @pascalbaljet in https://github.com/inertiaui/modal/pull/40
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.6.1...0.6.2
+
 ## 0.6.1 - 2024-10-28
 
 * Fix `navigate` config option (as object) (see #35)
