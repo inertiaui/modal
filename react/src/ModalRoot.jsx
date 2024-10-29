@@ -1,4 +1,4 @@
-import { createElement, useEffect, useState } from 'react'
+import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
 import { except, only } from './helpers'
 import { router, usePage } from '@inertiajs/react'
@@ -499,10 +499,14 @@ export const ModalRoot = ({ children }) => {
     }, [])
 
     const $page = usePage()
+    const previousModalRef = useRef();
 
     useEffect(() => {
         const newModal = $page.props?._inertiaui_modal
-        const previousModal = newModalOnBase?.response
+        const previousModal = previousModalRef.current;
+
+        // Store the current value for the next render
+        previousModalRef.current = newModal;
 
         if (newModal && previousModal && newModal.component === previousModal.component && newModal.url === previousModal.url) {
             context.stack[0]?.updateProps(newModal.props ?? {})
