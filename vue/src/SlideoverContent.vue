@@ -29,7 +29,6 @@ defineProps({
             >
                 <DialogContent
                     :aria-describedby="undefined"
-                    :trap-focus="config?.closeExplicitly"
                     :class="{
                         'im-slideover-wrapper w-full transition duration-300 ease-in-out': true,
                         'blur-sm': !modalContext.onTopOfStack,
@@ -44,6 +43,8 @@ defineProps({
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl': config.maxWidth == '6xl',
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': config.maxWidth == '7xl',
                     }"
+                    @escape-key-down="($event) => config?.closeExplicitly && $event.preventDefault()"
+                    @interact-outside="($event) => config?.closeExplicitly && $event.preventDefault()"
                 >
                     <VisuallyHidden as-child>
                         <DialogTitle />
