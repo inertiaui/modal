@@ -505,7 +505,7 @@ export const ModalRoot = ({ children }) => {
         const previousModal = newModalOnBase?.response
 
         if (newModal && previousModal && newModal.component === previousModal.component && newModal.url === previousModal.url) {
-            context.stack[0].updateProps(newModal.props ?? {})
+            context.stack[0]?.updateProps(newModal.props ?? {})
         }
     }, [$page.props?._inertiaui_modal])
 
