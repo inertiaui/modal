@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { Modal, ModalLink } from '@inertiaui/modal-vue';
+import { Modal, ModalLink, useModal } from '@inertiaui/modal-vue';
 import { ref } from 'vue';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue';
 
@@ -14,6 +14,10 @@ const form = useForm({
     email: props.user.email,
     role_id: props.user.role_id,
 })
+
+function updateAndRefresh() {
+    form.put(`/users/${props.user.id}?redirect=edit`)
+}
 
 const modalRef = ref(null)
 const messageRef = ref('')
@@ -39,7 +43,7 @@ function onMessage(message) {
         #default="{ close, reload, emit }"
     >
         <div class="">
-            <h2 class="text-lg font-medium text-gray-900">Edit User</h2>
+            <h2 class="text-lg font-medium text-gray-900">Edit User {{ user.name }}</h2>
             <p dusk="message" v-text="messageRef" v-if="messageRef" class="text-sm text-gray-500" />
         </div>
 
@@ -81,6 +85,9 @@ function onMessage(message) {
             <div class="flex justify-end">
                 <button type="button" @click="close" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                     Cancel
+                </button>
+                <button type="button" @click.prevent="updateAndRefresh" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Update and refresh
                 </button>
                 <button type="submit" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Save
