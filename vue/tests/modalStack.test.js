@@ -154,6 +154,7 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Data': 'test,another',
                     'X-InertiaUI-Modal': true,
                     'X-InertiaUI-Modal-Use-Router': 0,
+                    'X-InertiaUI-Modal-Base-Url': null,
                 },
             })
 
@@ -185,6 +186,7 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Data': 'test',
                     'X-InertiaUI-Modal': true,
                     'X-InertiaUI-Modal-Use-Router': 0,
+                    'X-InertiaUI-Modal-Base-Url': null,
                 },
             })
 
@@ -216,6 +218,7 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Data': 'test,third',
                     'X-InertiaUI-Modal': true,
                     'X-InertiaUI-Modal-Use-Router': 0,
+                    'X-InertiaUI-Modal-Base-Url': null,
                 },
             })
 
@@ -267,6 +270,7 @@ describe('modalStack', () => {
                     'X-Inertia-Version': '1.0',
                     'X-InertiaUI-Modal': true,
                     'X-InertiaUI-Modal-Use-Router': 0,
+                    'X-InertiaUI-Modal-Base-Url': '',
                 },
             })
 

@@ -203,6 +203,7 @@ class Modal {
                 'X-Inertia-Partial-Data': keys.join(','),
                 'X-InertiaUI-Modal': true,
                 'X-InertiaUI-Modal-Use-Router': 0,
+                'X-InertiaUI-Modal-Base-Url': baseUrl.value,
             },
         }).then((response) => {
             this.updateProps(response.data.props)
@@ -266,6 +267,7 @@ function visit(
             'X-Inertia-Version': usePage().version,
             'X-InertiaUI-Modal': true,
             'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
+            'X-InertiaUI-Modal-Base-Url': baseUrl.value,
         }
 
         if (useInertiaRouter) {
