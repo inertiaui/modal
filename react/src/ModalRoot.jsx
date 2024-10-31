@@ -224,6 +224,7 @@ export const ModalStackProvider = ({ children }) => {
                     'X-Inertia-Partial-Data': keys.join(','),
                     'X-InertiaUI-Modal': true,
                     'X-InertiaUI-Modal-Use-Router': 0,
+                    'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
             }).then((response) => {
                 this.updateProps(response.data.props)
@@ -308,6 +309,7 @@ export const ModalStackProvider = ({ children }) => {
                 'X-Inertia-Version': pageVersion,
                 'X-InertiaUI-Modal': true,
                 'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
+                'X-InertiaUI-Modal-Base-Url': baseUrl,
             }
 
             if (useInertiaRouter) {
@@ -489,7 +491,9 @@ export const ModalRoot = ({ children }) => {
     const axiosRequestInterceptor = (config) => {
         // A Modal is opened on top of a base route, so we need to pass this base route
         // so it can redirect back with the back() helper method...
-        config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl
+        if (localStackCopy.length) {
+            config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl
+        }
         return config
     }
 
