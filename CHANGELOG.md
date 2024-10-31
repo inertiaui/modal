@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.6.3 - 2024-10-31
+
+### What's Changed
+
+* Don't send the Base URL header on unrelated Axios requests by @pascalbaljet in https://github.com/inertiaui/modal/pull/43
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.6.2...0.6.3
+
 ## 0.6.2 - 2024-10-29
 
 ### What's Changed
