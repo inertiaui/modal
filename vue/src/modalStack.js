@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, nextTick, h } from 'vue'
-import { except, only, waitFor } from './helpers'
+import { except, only, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -143,11 +143,13 @@ class Modal {
     }
 
     on = (event, callback) => {
+        event = kebabCase(event)
         this.listeners[event] = this.listeners[event] ?? []
         this.listeners[event].push(callback)
     }
 
     off = (event, callback) => {
+        event = kebabCase(event)
         if (callback) {
             this.listeners[event] = this.listeners[event]?.filter((cb) => cb !== callback) ?? []
         } else {
@@ -156,7 +158,7 @@ class Modal {
     }
 
     emit = (event, ...args) => {
-        this.listeners[event]?.forEach((callback) => callback(...args))
+        this.listeners[kebabCase(event)]?.forEach((callback) => callback(...args))
     }
 
     registerEventListenersFromAttrs = ($attrs) => {
@@ -165,15 +167,9 @@ class Modal {
         Object.keys($attrs)
             .filter((key) => key.startsWith('on'))
             .forEach((key) => {
-                // e.g. onRefreshKey -> refresh-key
-                const snakeCaseKey = key
-                    .replace(/^on/, '')
-                    .replace(/^./, (firstLetter) => firstLetter.toLowerCase())
-                    .replace(/([A-Z])/g, '-$1')
-                    .toLowerCase()
-
-                this.on(snakeCaseKey, $attrs[key])
-                unsubscribers.push(() => this.off(snakeCaseKey, $attrs[key]))
+                const eventName = kebabCase(key).replace(/^on-/, '')
+                this.on(eventName, $attrs[key])
+                unsubscribers.push(() => this.off(eventName, $attrs[key]))
             })
 
         return () => unsubscribers.forEach((unsub) => unsub())

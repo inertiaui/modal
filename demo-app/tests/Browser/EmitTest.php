@@ -28,6 +28,21 @@ class EmitTest extends DuskTestCase
 
     #[DataProvider('booleanProvider')]
     #[Test]
+    public function it_can_dispatch_an_event_from_the_modal_to_the_visit_modal_method(bool $navigate)
+    {
+        $this->browse(function (Browser $browser) use ($navigate) {
+            $browser->visit('/visit'.($navigate ? '?navigate=1' : ''))
+                ->waitForText('Visit programmatically')
+                ->press('Open Route Modal With Navigate')
+                ->waitFor('.im-modal-content')
+                ->clickLink('Send Message', 'button')
+                ->assertDialogOpened('Hello from EditUser')
+                ->dismissDialog();
+        });
+    }
+
+    #[DataProvider('booleanProvider')]
+    #[Test]
     public function it_can_dispatch_events_back_and_forth_between_nested_modals(bool $navigate)
     {
         $this->browse(function (Browser $browser) use ($navigate) {

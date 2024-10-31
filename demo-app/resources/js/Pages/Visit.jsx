@@ -8,6 +8,17 @@ export default function Visit() {
         visitModal('#local');
     };
 
+    const visitEdit = () => {
+        visitModal('/users/1/edit', {
+            navigate: true,
+            listeners: {
+                userGreets: function (greeting) {
+                    alert(greeting);
+                }
+            }
+        })
+    }
+
     return (
         <>
             <Container>
@@ -19,7 +30,7 @@ export default function Visit() {
                     <button onClick={() => visitModal('/data', { method: 'post', data: { message: 'Hi again!' } })} type="button">
                         Open Route Modal
                     </button>
-                    <button onClick={() => visitModal('/users/1/edit', { navigate: true })} type="button">
+                    <button onClick={visitEdit} type="button">
                         Open Route Modal With Navigate
                     </button>
                 </div>

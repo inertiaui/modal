@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { except, only, rejectNullValues } from '../src/helpers'
+import { except, only, rejectNullValues, kebabCase } from '../src/helpers'
 
 describe('helpers', () => {
     describe('except', () => {
@@ -95,6 +95,29 @@ describe('helpers', () => {
         it('should return an empty array if all values are null', () => {
             const arr = [null, null, null]
             expect(rejectNullValues(arr)).toEqual([])
+        })
+    })
+
+    describe('kebabCase', () => {
+        it.each([
+            // Basic camelCase/PascalCase
+            ['camelCase', 'camel-case'],
+            ['ThisIsPascalCase', 'this-is-pascal-case'],
+
+            // With numbers
+            ['user123Name', 'user123-name'],
+            ['FirstName1', 'first-name1'],
+
+            // With acronyms
+            ['parseXMLDocument', 'parse-x-m-l-document'],
+
+            // Mixed cases and special chars
+            ['snake_case_value', 'snake-case-value'],
+            ['already-kebab-case', 'already-kebab-case'],
+            ['UPPERCASE', 'u-p-p-e-r-c-a-s-e'],
+            ['multiple__underscores', 'multiple-underscores'],
+        ])('should convert %s to %s', (input, expected) => {
+            expect(kebabCase(input)).toBe(expected)
         })
     })
 })

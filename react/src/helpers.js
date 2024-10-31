@@ -1,2 +1,2 @@
-import { except, only, rejectNullValues, waitFor } from './../../vue/src/helpers.js'
-export { except, only, rejectNullValues, waitFor }
+import { except, only, rejectNullValues, waitFor, kebabCase } from './../../vue/src/helpers.js'
+export { except, only, rejectNullValues, waitFor, kebabCase }
