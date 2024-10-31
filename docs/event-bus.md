@@ -98,6 +98,8 @@ export default function MyPage() {
 }
 ```
 
+:::
+
 If you're [programmatically opening the modal](/basic-usage.html#programmatic-usage), you add listeners using the `listeners` option:
 
 ```js
