@@ -63,4 +63,30 @@ function waitFor(conditionFn, waitForSeconds = 3, checkIntervalMilliseconds = 10
     })
 }
 
-export { except, only, rejectNullValues, waitFor }
+function kebabCase(string) {
+    if (!string) return ''
+
+    // Replace all underscores with hyphens
+    string = string.replace(/_/g, '-')
+
+    // Replace all multiple consecutive hyphens with a single hyphen
+    string = string.replace(/-+/g, '-')
+
+    // Check if string is already all lowercase
+    if (!/[A-Z]/.test(string)) {
+        return string
+    }
+
+    // Remove all spaces and convert to word case
+    string = string
+        .replace(/\s+/g, '')
+        .replace(/_/g, '')
+        .replace(/(?:^|\s|-)+([A-Za-z])/g, (m, p1) => p1.toUpperCase())
+
+    // Add delimiter before uppercase letters
+    string = string.replace(/(.)(?=[A-Z])/g, '$1-')
+
+    // Convert to lowercase
+    return string.toLowerCase()
+}
+export { except, only, rejectNullValues, waitFor, kebabCase }

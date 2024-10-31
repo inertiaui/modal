@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, only } from './helpers'
+import { except, only, kebabCase } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -164,11 +164,13 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         on = (event, callback) => {
+            event = kebabCase(event)
             this.listeners[event] = this.listeners[event] ?? []
             this.listeners[event].push(callback)
         }
 
         off = (event, callback) => {
+            event = kebabCase(event)
             if (callback) {
                 this.listeners[event] = this.listeners[event]?.filter((cb) => cb !== callback) ?? []
             } else {
@@ -177,7 +179,7 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         emit = (event, ...args) => {
-            this.listeners[event]?.forEach((callback) => callback(...args))
+            this.listeners[kebabCase(event)]?.forEach((callback) => callback(...args))
         }
 
         registerEventListenersFromProps = (props) => {
@@ -187,14 +189,9 @@ export const ModalStackProvider = ({ children }) => {
                 .filter((key) => key.startsWith('on'))
                 .forEach((key) => {
                     // e.g. onRefreshKey -> refresh-key
-                    const snakeCaseKey = key
-                        .replace(/^on/, '')
-                        .replace(/^./, (firstLetter) => firstLetter.toLowerCase())
-                        .replace(/([A-Z])/g, '-$1')
-                        .toLowerCase()
-
-                    this.on(snakeCaseKey, props[key])
-                    unsubscribers.push(() => this.off(snakeCaseKey, props[key]))
+                    const eventName = kebabCase(key).replace(/^on-/, '')
+                    this.on(eventName, props[key])
+                    unsubscribers.push(() => this.off(eventName, props[key]))
                 })
 
             return () => unsubscribers.forEach((unsub) => unsub())
@@ -274,7 +271,17 @@ export const ModalStackProvider = ({ children }) => {
             options.onAfterLeave,
             options.queryStringArrayFormat ?? 'brackets',
             options.navigate ?? getConfig('navigate'),
-        )
+        ).then((modal) => {
+            const listeners = options.listeners ?? {}
+
+            Object.keys(listeners).forEach((event) => {
+                // e.g. refreshKey -> refresh-key
+                const eventName = kebabCase(event)
+                modal.on(eventName, listeners[event])
+            })
+
+            return modal
+        })
 
     const visit = (
         href,

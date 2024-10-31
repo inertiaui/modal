@@ -1,6 +1,17 @@
 <script setup>
 import Container from './Container.vue'
 import { Modal, visitModal } from '@inertiaui/modal-vue'
+
+function visitEdit() {
+    visitModal('/users/1/edit', {
+        navigate: true,
+        listeners: {
+            userGreets(greeting) {
+                alert(greeting);
+            }
+        }
+    })
+}
 </script>
 
 <template>
@@ -16,7 +27,7 @@ import { Modal, visitModal } from '@inertiaui/modal-vue'
                 Open Route Modal
             </button>
 
-            <button @click="visitModal('/users/1/edit', { navigate: true })" type="button">
+            <button @click="visitEdit" type="button">
                 Open Route Modal With Navigate
             </button>
         </div>

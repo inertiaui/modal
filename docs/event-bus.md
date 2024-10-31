@@ -72,7 +72,7 @@ export default function MyPage() {
 
 :::
 
-On the parent page, you can listen to the event like this:
+On the parent page, you can listen to the event on the `ModalLink` component:
 
 ::: code-group
 
@@ -98,7 +98,17 @@ export default function MyPage() {
 }
 ```
 
-:::
+If you're [programmatically opening the modal](/basic-usage.html#programmatic-usage), you add listeners using the `listeners` option:
+
+```js
+visitModal('/users/create', {
+    listeners: {
+        increaseBy(amount) {
+            console.log(`Increase by ${amount}`);
+        }
+    }
+})
+```
 
 ## Nested / Stacked Modals
 

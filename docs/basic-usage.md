@@ -329,6 +329,7 @@ visitModal('/users/create', {
     config: {
         slideover: true,
     }
+    listeners: {},
     onClose: () => console.log('Modal closed'),
     onAfterLeave: () => console.log('Modal removed from DOM'),
     queryStringArrayFormat: 'brackets',
