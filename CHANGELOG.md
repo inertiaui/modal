@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.7.0 - 2024-10-31
+
+### What's Changed
+
+* Listen for events using `visitModal()` by @pascalbaljet in https://github.com/inertiaui/modal/pull/44
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.6.4...0.7.0
+
 ## 0.6.4 - 2024-10-31
 
 Rerelease of v0.6.3
