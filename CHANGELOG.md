@@ -2,6 +2,12 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.8.0 - 2024-11-02
+
+* Added `ModalConfig` class
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.7.0...0.8.0
+
 ## 0.7.0 - 2024-10-31
 
 ### What's Changed
