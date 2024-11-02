@@ -172,8 +172,8 @@ class ModalConfig implements Arrayable
     {
         return [
             'type' => $this->type?->value,
-            'modal' => $this->type && $this->type === ModalType::Modal,
-            'slideover' => $this->type && $this->type === ModalType::Slideover,
+            'modal' => $this->type instanceof ModalType && $this->type === ModalType::Modal,
+            'slideover' => $this->type instanceof ModalType && $this->type === ModalType::Slideover,
             'navigate' => $this->navigate,
             'closeButton' => $this->closeButton,
             'closeExplicitly' => $this->closeExplicitly,
