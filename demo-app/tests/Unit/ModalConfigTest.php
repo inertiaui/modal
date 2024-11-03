@@ -24,7 +24,6 @@ class ModalConfigTest extends TestCase
             'type' => null,
             'modal' => null,
             'slideover' => null,
-            'navigate' => null,
             'closeButton' => null,
             'closeExplicitly' => null,
             'maxWidth' => null,
@@ -52,16 +51,6 @@ class ModalConfigTest extends TestCase
         $this->assertEquals(ModalType::Slideover->value, $config->toArray()['type']);
         $this->assertFalse($config->toArray()['modal']);
         $this->assertTrue($config->toArray()['slideover']);
-    }
-
-    #[Test]
-    public function it_can_configure_the_navigation_setting()
-    {
-        $config = ModalConfig::new()->navigate();
-        $this->assertTrue($config->toArray()['navigate']);
-
-        $config = ModalConfig::new()->navigate(false);
-        $this->assertFalse($config->toArray()['navigate']);
     }
 
     #[Test]
@@ -164,7 +153,6 @@ class ModalConfigTest extends TestCase
     {
         $config = ModalConfig::new()
             ->modal()
-            ->navigate()
             ->closeButton()
             ->maxWidth('2xl')
             ->paddingClasses('p-4')
@@ -175,7 +163,6 @@ class ModalConfigTest extends TestCase
             'type' => ModalType::Modal->value,
             'modal' => true,
             'slideover' => false,
-            'navigate' => true,
             'closeButton' => true,
             'closeExplicitly' => null,
             'maxWidth' => '2xl',

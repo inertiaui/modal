@@ -11,7 +11,6 @@ class ModalConfig implements Arrayable
 {
     public function __construct(
         protected ?ModalType $type = null,
-        protected ?bool $navigate = null,
         protected ?bool $closeButton = null,
         protected ?bool $closeExplicitly = null,
         protected ?string $maxWidth = null,
@@ -46,16 +45,6 @@ class ModalConfig implements Arrayable
     public function slideover(): self
     {
         $this->type = ModalType::Slideover;
-
-        return $this;
-    }
-
-    /**
-     * Configures whether the Base Route / URL feature should be used.
-     */
-    public function navigate(?bool $navigate = true): self
-    {
-        $this->navigate = $navigate;
 
         return $this;
     }
@@ -174,7 +163,6 @@ class ModalConfig implements Arrayable
             'type' => $this->type?->value,
             'modal' => $this->type instanceof ModalType && $this->type === ModalType::Modal,
             'slideover' => $this->type instanceof ModalType && $this->type === ModalType::Slideover,
-            'navigate' => $this->navigate,
             'closeButton' => $this->closeButton,
             'closeExplicitly' => $this->closeExplicitly,
             'maxWidth' => $this->maxWidth,
