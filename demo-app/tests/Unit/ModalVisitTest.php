@@ -103,6 +103,26 @@ class ModalVisitTest extends TestCase
     }
 
     #[Test]
+    public function it_can_set_a_modal_config_from_a_callable()
+    {
+        $visit = ModalVisit::new()->config(function (ModalConfig $config) {
+            $config->slideover()->maxWidth('3xl');
+        });
+
+        $this->assertEquals([
+            'type' => 'slideover',
+            'modal' => false,
+            'slideover' => true,
+            'closeButton' => null,
+            'closeExplicitly' => null,
+            'maxWidth' => '3xl',
+            'paddingClasses' => null,
+            'panelClasses' => null,
+            'position' => null,
+        ], $visit->toArray()['config']);
+    }
+
+    #[Test]
     public function it_can_set_a_query_string_array_format()
     {
         $format = QueryStringArrayFormat::Brackets;

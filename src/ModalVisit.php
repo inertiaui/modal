@@ -22,6 +22,14 @@ class ModalVisit implements Arrayable
     /**
      * Creates a new instance of the modal configuration.
      */
+    public static function make(): self
+    {
+        return new self;
+    }
+
+    /**
+     * Creates a new instance of the modal configuration.
+     */
     public static function new(): self
     {
         return new self;
@@ -70,8 +78,12 @@ class ModalVisit implements Arrayable
     /**
      * Sets the configuration for the modal visit.
      */
-    public function config(?ModalConfig $config): self
+    public function config(ModalConfig|callable|null $config): self
     {
+        if (is_callable($config)) {
+            $config = tap(ModalConfig::new(), $config);
+        }
+
         $this->config = $config;
 
         return $this;

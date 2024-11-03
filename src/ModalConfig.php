@@ -24,6 +24,14 @@ class ModalConfig implements Arrayable
     /**
      * Creates a new instance of the modal configuration.
      */
+    public static function make(): self
+    {
+        return new self;
+    }
+
+    /**
+     * Creates a new instance of the modal configuration.
+     */
     public static function new(): self
     {
         return new self;
