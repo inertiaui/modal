@@ -2,6 +2,12 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.9.1 - 2024-11-03
+
+* Support callable in `ModalVisit::config()`
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.9.0...0.9.1
+
 ## 0.9.0 - 2024-11-03
 
 * Introduced `ModalVisit` class
