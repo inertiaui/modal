@@ -7,6 +7,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Illuminate\Support\Collection;
+use InertiaUI\Modal\Testing\DuskModalMacros;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use PHPUnit\Framework\Attributes\AfterClass;
 use PHPUnit\Framework\Attributes\BeforeClass;
@@ -176,6 +177,8 @@ abstract class DuskTestCase extends BaseTestCase
      */
     protected function newBrowser($driver)
     {
+        Browser::mixin(new DuskModalMacros);
+
         return tap(new Browser($driver), function (Browser $browser) {
             // Save the initial window size so we can restore it later.
             static::$initialWindowSize ??= $browser->driver->manage()->window()->getSize();

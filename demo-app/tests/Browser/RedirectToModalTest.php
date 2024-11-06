@@ -22,7 +22,7 @@ class RedirectToModalTest extends DuskTestCase
                 ->type('name', $newName = Str::random(10))
                 ->press('Update and refresh')
                 ->waitForText('User updated successfully!')
-                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) use ($newName) {
+                ->withinModal(function (Browser $browser) use ($newName) {
                     $browser->assertSee('Edit User '.$newName);
                 })
                 ->assertPathIs('/users/'.$firstUser->id.'/edit');

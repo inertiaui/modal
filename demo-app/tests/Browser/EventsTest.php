@@ -16,9 +16,9 @@ class EventsTest extends DuskTestCase
             $browser->visit('/events'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Events')
                 ->clickLink('Open Modal')
-                ->waitFor('.im-dialog')
-                ->click('.im-close-button')
-                ->waitUntilMissing('.im-dialog')
+                ->waitForModal()
+                ->clickModalCloseButton()
+                ->waitUntilMissingModal()
                 ->assertSeeIn('@log', 'start,success,close,after-leave');
         });
     }
@@ -31,12 +31,12 @@ class EventsTest extends DuskTestCase
             $browser->visit('/events'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Events')
                 ->clickLink('Open Modal')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->clickLink('Add Role')
-                ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
+                ->waitForModal(1)
                 ->assertSeeIn('@log', 'start,success,blur')
-                ->click('.im-close-button')
-                ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]')
+                ->clickModalCloseButton(1)
+                ->waitUntilMissingModal(1)
                 ->assertSeeIn('@log', 'start,success,blur,focus');
         });
     }

@@ -24,7 +24,7 @@ class FormTest extends DuskTestCase
                 ->type('name', 'a')
                 ->press('Save')
                 ->waitForTextIn('.im-modal-content', 'The name field must be at least 3 characters.')
-                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) {
+                ->withinModal(function (Browser $browser) {
                     $browser->assertSee('The name field must be at least 3 characters.');
                 })
                 ->assertMissing('.im-dialog[data-inertiaui-modal-index="1"]');
@@ -45,7 +45,7 @@ class FormTest extends DuskTestCase
                 ->type('name', $newName = Str::random(10))
                 ->press('Save')
                 ->waitForText('User updated successfully!')
-                ->waitUntilMissing('.im-dialog')
+                ->waitUntilMissingModal()
                 ->assertPathIs('/users');
 
             $this->assertDatabaseHas('users', [

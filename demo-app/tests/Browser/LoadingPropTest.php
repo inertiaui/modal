@@ -17,7 +17,7 @@ class LoadingPropTest extends DuskTestCase
                 ->waitForText('Loading Prop')
                 ->clickLink('Open Slideover')
                 ->assertSeeIn('@modal-link', 'Loading...')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->assertDontSeeIn('@modal-link', 'Loading...');
         });
     }

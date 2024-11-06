@@ -18,15 +18,15 @@ class HistoryTest extends DuskTestCase
             $browser->visit('/users?navigate=1')
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
-                ->waitFor('.im-modal-content')
+                ->waitForModal()
                 ->assertSeeIn('.im-modal-content', 'Edit User')
                 ->assertRouteIs('users.edit', ['user' => $firstUser->id])
                 ->back()
-                ->waitUntilMissing('.im-dialog')
+                ->waitUntilMissingModal()
                 ->waitForLocation('/users')
                 ->assertQueryStringHas('navigate', '1')
                 ->forward()
-                ->waitFor('.im-modal-content')
+                ->waitForModal()
                 ->assertSeeIn('.im-modal-content', 'Edit User')
                 ->assertRouteIs('users.edit', ['user' => $firstUser->id]);
         });
@@ -46,7 +46,7 @@ class HistoryTest extends DuskTestCase
                 ->type('name', $newName = Str::random(10))
                 ->press('Save')
                 ->waitForText('User updated successfully!')
-                ->waitUntilMissing('.im-dialog')
+                ->waitUntilMissingModal()
                 ->assertPathIs('/users');
 
             $this->assertDatabaseHas('users', [
@@ -70,7 +70,7 @@ class HistoryTest extends DuskTestCase
                 ->type('name', $newName = Str::random(10))
                 ->press('Save')
                 ->waitForText('User updated successfully!')
-                ->waitUntilMissing('.im-dialog')
+                ->waitUntilMissingModal()
                 ->assertPathIs('/users/'.$firstUser->id);
 
             $this->assertDatabaseHas('users', [

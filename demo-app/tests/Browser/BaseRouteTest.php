@@ -20,8 +20,8 @@ class BaseRouteTest extends DuskTestCase
                 ->waitForFirstUser()
                 ->assertSeeIn('.im-modal-content', 'Edit User')
                 ->assertPresent("@edit-user-{$firstUser->id}")
-                ->click('.im-close-button')
-                ->waitUntilMissing('.im-dialog')
+                ->clickModalCloseButton()
+                ->waitUntilMissingModal()
                 ->waitForLocation('/users');
         });
     }
@@ -36,13 +36,13 @@ class BaseRouteTest extends DuskTestCase
             $browser->visit("/users/{$firstUser->id}/edit")
                 ->waitForTextIn('.im-modal-content', 'Edit User')
                 ->clickLink('Add Role')
-                ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
+                ->waitForModal(1)
                 ->assertRouteIs('users.edit', ['user' => $firstUser->id])
-                ->within('.im-dialog[data-inertiaui-modal-index="1"]', function (Browser $browser) use ($newRoleName) {
+                ->withinModal(function (Browser $browser) use ($newRoleName) {
                     $browser->type('name', $newRoleName)->press('Save');
-                })
-                ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]')
-                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) use ($newRoleName) {
+                }, 1)
+                ->waitUntilMissingModal(1)
+                ->withinModal(function (Browser $browser) use ($newRoleName) {
                     $newRole = Role::where('name', $newRoleName)->firstOr(
                         fn () => $this->fail('New role was not saved.')
                     );

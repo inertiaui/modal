@@ -16,7 +16,7 @@ class MethodTest extends DuskTestCase
             $browser->visit('/post-visit'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('POST Visit')
                 ->clickLink('Open POST Modal')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->assertSeeIn('@message', 'Hey there!');
         });
     }

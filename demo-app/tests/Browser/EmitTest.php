@@ -34,7 +34,7 @@ class EmitTest extends DuskTestCase
             $browser->visit('/visit'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Visit programmatically')
                 ->press('Open Route Modal With Navigate')
-                ->waitFor('.im-modal-content')
+                ->waitForModal()
                 ->clickLink('Send Message', 'button')
                 ->assertDialogOpened('Hello from EditUser')
                 ->dismissDialog();
@@ -49,9 +49,9 @@ class EmitTest extends DuskTestCase
             $browser->visit('/emit'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Emit')
                 ->clickLink('Open Modal')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->clickLink('Add Role')
-                ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
+                ->waitForModal(1)
                 ->clickLink('Push message to parent', 'button')
                 ->waitForTextIn('@message', 'Hello from child')
                 ->assertSeeIn('@greeting', 'Thanks from '.User::first()->name);

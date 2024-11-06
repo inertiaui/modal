@@ -16,7 +16,7 @@ class ConfigTest extends DuskTestCase
             $browser->visit('/props-from-modal'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Prop from Modal')
                 ->clickLink('Open Slideover')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->keys('', ['{escape}']) // Escape key does not close the dialog
                 ->assertAttribute('#app', 'aria-hidden', 'true')
                 ->clickLink('Open Slideover') // Clicking outside the dialog does not close it
