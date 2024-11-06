@@ -16,7 +16,7 @@ class ConfigPropsTest extends DuskTestCase
             $browser->visit('/props-from-config'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Prop from Config')
                 ->clickLink('Open')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->keys('', ['{escape}']) // Escape key does not close the dialog
                 ->assertAttribute('#app', 'aria-hidden', 'true')
                 ->clickLink('Open') // Clicking outside the dialog does not close it

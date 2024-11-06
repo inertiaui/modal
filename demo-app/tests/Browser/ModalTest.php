@@ -17,10 +17,10 @@ class ModalTest extends DuskTestCase
             $browser->visit('/users')
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
-                ->waitFor('.im-modal-content')
+                ->waitForModal()
                 ->assertSeeIn('.im-modal-content', 'Edit User')
-                ->click('.im-close-button')
-                ->waitUntilMissing('.im-dialog')
+                ->clickModalCloseButton()
+                ->waitUntilMissingModal()
                 ->assertMissing('#headlessui-portal-root');
         });
     }
@@ -35,9 +35,9 @@ class ModalTest extends DuskTestCase
                 ->resize(1024, 768)
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->clickAt(100, 100)
-                ->waitUntilMissing('.im-dialog')
+                ->waitUntilMissingModal()
                 ->assertMissing('#headlessui-portal-root');
         });
     }
@@ -52,9 +52,9 @@ class ModalTest extends DuskTestCase
                 ->resize(1024, 768)
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->press('Cancel')
-                ->waitUntilMissing('.im-dialog')
+                ->waitUntilMissingModal()
                 ->assertMissing('#headlessui-portal-root');
         });
     }

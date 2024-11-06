@@ -20,23 +20,23 @@ class NestedModalTest extends DuskTestCase
             $browser->visit('/users?'.($navigate ? 'navigate=1' : ''))
                 ->waitForFirstUser()
                 ->click("@edit-user-{$firstUser->id}")
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->clickLink('Add Role')
-                ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
+                ->waitForModal(1)
                 ->assertSeeIn('.im-dialog[data-inertiaui-modal-index="1"]', 'Create Role')
-                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) {
+                ->withinModal(function (Browser $browser) {
                     // The first modal should be blurred
                     $browser->assertAttributeContains('.im-modal-wrapper', 'class', 'blur-sm');
                 })
-                ->click('.im-close-button')
-                ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]')
-                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) {
+                ->clickModalCloseButton(1)
+                ->waitUntilMissingModal(1)
+                ->withinModal(function (Browser $browser) {
                     // The first modal should not be blurred anymore
                     $browser->assertAttributeDoesntContain('.im-modal-wrapper', 'class', 'blur-sm');
                 })
                 ->press('Save')
                 ->waitUntilMissingText('Edit User')
-                ->waitUntilMissing('.im-dialog');
+                ->waitUntilMissingModal();
         });
     }
 
@@ -49,14 +49,14 @@ class NestedModalTest extends DuskTestCase
             $browser->visit('/users')
                 ->waitForFirstUser()
                 ->click('@edit-user-'.$browser->firstUser()->id)
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->clickLink('Add Role')
-                ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
-                ->within('.im-dialog[data-inertiaui-modal-index="1"]', function (Browser $browser) use ($newRoleName) {
+                ->waitForModal(1)
+                ->withinModal(function (Browser $browser) use ($newRoleName) {
                     $browser->type('name', $newRoleName)->press('Save');
-                })
-                ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]')
-                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) use ($newRoleName) {
+                }, 1)
+                ->waitUntilMissingModal(1)
+                ->withinModal(function (Browser $browser) use ($newRoleName) {
                     $newRole = Role::where('name', $newRoleName)->firstOr(
                         fn () => $this->fail('New role was not saved.')
                     );

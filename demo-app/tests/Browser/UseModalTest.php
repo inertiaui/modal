@@ -13,17 +13,17 @@ class UseModalTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/users/1/edit')
                 ->waitForFirstUser()
-                ->waitFor('.im-dialog')
-                ->within('.im-dialog[data-inertiaui-modal-index="0"]', function (Browser $browser) {
+                ->waitForModal()
+                ->withinModal(function (Browser $browser) {
                     $browser->assertSee('Close Modal with index 0');
                 })
                 ->clickLink('Add Role')
-                ->waitFor('.im-dialog[data-inertiaui-modal-index="1"]')
-                ->within('.im-dialog[data-inertiaui-modal-index="1"]', function (Browser $browser) {
+                ->waitForModal(1)
+                ->withinModal(function (Browser $browser) {
                     $browser->assertSee('Close Modal with index 1');
-                })
+                }, 1)
                 ->press('Close Modal with index 1')
-                ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]');
+                ->waitUntilMissingModal(1);
         });
     }
 }

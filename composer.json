@@ -10,6 +10,7 @@
     },
     "require-dev": {
         "larastan/larastan": "^2.9",
+        "laravel/dusk": "^8.2",
         "laravel/pint": "^1.14",
         "orchestra/testbench": "^8.23||^9.1",
         "rector/rector": "^1.0.3"

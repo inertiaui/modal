@@ -16,8 +16,8 @@ class LocalModalTest extends DuskTestCase
                 ->waitForTextIn('.im-modal-content', 'This is a local modal')
                 ->clickLink('Create Role')
                 ->waitForTextIn('.im-dialog[data-inertiaui-modal-index="1"]', 'Create Role')
-                ->click('.im-close-button')
-                ->waitUntilMissing('.im-dialog[data-inertiaui-modal-index="1"]');
+                ->clickModalCloseButton(1)
+                ->waitUntilMissingModal(1);
         });
     }
 }

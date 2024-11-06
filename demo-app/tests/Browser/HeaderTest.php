@@ -16,7 +16,7 @@ class HeaderTest extends DuskTestCase
             $browser->visit('/header'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Header')
                 ->clickLink('Open Modal')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->assertSeeIn('@headerValue', 'Test Header Value');
         });
     }

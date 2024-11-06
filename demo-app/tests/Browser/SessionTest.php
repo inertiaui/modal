@@ -28,7 +28,7 @@ class SessionTest extends DuskTestCase
                 ->type('name', $newName = Str::random(10))
                 ->press('Save')
                 ->waitForText('User updated successfully!')
-                ->waitUntilMissing('.im-dialog')
+                ->waitUntilMissingModal()
                 ->assertPathIs('/users')
                 ->assertSee("Logged in as: {$firstUser->id}")
                 ->assertAuthenticatedAs($firstUser);

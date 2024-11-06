@@ -16,7 +16,7 @@ class ModalLinkPropsTest extends DuskTestCase
             $browser->visit('/props-from-modal-link'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Prop from ModalLink')
                 ->clickLink('Edit User 1')
-                ->waitFor('.im-dialog')
+                ->waitForModal()
                 ->keys('', ['{escape}']) // Escape key does not close the dialog
                 ->assertAttribute('#app', 'aria-hidden', 'true')
                 ->clickLink('Edit User 1') // Clicking outside the dialog does not close it

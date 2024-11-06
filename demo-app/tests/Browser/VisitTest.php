@@ -17,7 +17,7 @@ class VisitTest extends DuskTestCase
             $browser->visit('/visit'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Visit programmatically')
                 ->press('Open Local Modal')
-                ->waitFor('.im-modal-content')
+                ->waitForModal()
                 ->assertSeeIn('.im-modal-content', 'Hi there!');
         });
     }
@@ -31,7 +31,7 @@ class VisitTest extends DuskTestCase
             $browser->visit('/visit'.($navigate ? '?navigate=1' : ''))
                 ->waitForText('Visit programmatically')
                 ->press('Open Route Modal')
-                ->waitFor('.im-modal-content')
+                ->waitForModal()
                 ->assertSeeIn('.im-modal-content', 'Hi again!');
         });
     }
@@ -44,10 +44,10 @@ class VisitTest extends DuskTestCase
             $browser->visit('/visit')
                 ->waitForText('Visit programmatically')
                 ->press('Open Route Modal With Navigate')
-                ->waitFor('.im-modal-content')
+                ->waitForModal()
                 ->assertPathIs('/users/1/edit')
-                ->click('.im-close-button')
-                ->waitUntilMissing('.im-dialog')
+                ->clickModalCloseButton()
+                ->waitUntilMissingModal()
                 ->waitForLocation('/visit');
         });
     }
