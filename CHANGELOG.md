@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.10.0 - 2024-11-06
+
+### What's Changed
+
+* Introduced `DuskModalMacros` for better testing by @pascalbaljet in https://github.com/inertiaui/modal/pull/47
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.9.1...0.10.0
+
 ## 0.9.1 - 2024-11-03
 
 * Support callable in `ModalVisit::config()`
