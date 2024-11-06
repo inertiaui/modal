@@ -16,6 +16,7 @@ Here's a summary of the features:
 - Reload props in modals
 - Easy communication between nested/stacked modals
 - Highly configurable
+- Integration with [Inertia Table](https://inertiaui.com/inertia-table/docs/inertia-modal-integration)
 
 ## Example
 
