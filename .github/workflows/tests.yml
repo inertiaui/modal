@@ -74,9 +74,11 @@ jobs:
           cd vue
           npm ci
           npm install @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }}
+          npm list @inertiajs/vue3
           cd ../react
           npm ci
           npm install @inertiajs/react@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }}
+          npm list @inertiajs/react
           npm run build
 
       # - name: Test React library
@@ -91,6 +93,7 @@ jobs:
           cd vue
           npm ci
           npm install @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.2.0' || 'next' }}
+          npm list @inertiajs/vue3
           npm run build
 
       - name: Test Vue library
@@ -111,6 +114,7 @@ jobs:
           npm install --install-links ../vue
           test -d node_modules/@inertiaui/modal-react || exit 1
           test -d node_modules/@inertiaui/modal-vue || exit 1
+          npm list @inertiajs/react @inertiajs/vue3 @inertiaui/modal-react @inertiaui/modal-vue
           npm run build
           php artisan key:generate
           touch database/database.sqlite
