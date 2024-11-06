@@ -73,10 +73,10 @@ jobs:
           # we need eslint-plugin-vue for files like helpers.js
           cd vue
           npm ci
-          npm install @inertiajs/vue3@1.2.0
+          npm list @inertiajs/vue3
           cd ../react
           npm ci
-          npm install @inertiajs/react@1.2.0
+          npm list @inertiajs/react
           npm run build
 
       # - name: Test React library
@@ -90,7 +90,7 @@ jobs:
         run: |
           cd vue
           npm ci
-          npm install @inertiajs/vue3@1.2.0
+          npm list @inertiajs/vue3
           npm run build
 
       - name: Test Vue library
