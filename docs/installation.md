@@ -75,28 +75,6 @@ createInertiaApp({
 
 :::
 
-## Inertia v2 Vite Configuration
-
-If you're using the beta version of Inertia v2, you need to add some additional configuration to your `vite.config.js` file. Add the following config to the root of the configuration object:
-
-::: code-group
-
-```js [Vue]
-resolve: {
-    dedupe: ['@inertiaui/modal-vue']
-}
-```
-
-```js [React]
-resolve: {
-    dedupe: ['@inertiaui/modal-react']
-}
-```
-
-:::
-
-The `dedupe` option is required to prevent the package from being bundled multiple times. This is highly likely an Inertia-specific issue and we're working on a more elegant solution for this.
-
 ## Tailwind Configuration
 
 Inertia Modal uses Tailwind CSS for styling. You need to include the package path in the *content* array of your `tailwind.config.js` file:
