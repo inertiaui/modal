@@ -2,6 +2,10 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.11.1 - 2024-11-06
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.11.0...0.11.1
+
 ## 0.11.0 - 2024-11-06
 
 ### What's Changed
