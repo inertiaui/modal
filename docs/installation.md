@@ -75,6 +75,8 @@ createInertiaApp({
 
 :::
 
+If you need more refined control over the mounting process, you should check out the [Custom App Mounting](/custom-app-mounting.md) documentation.
+
 ## Tailwind Configuration
 
 Inertia Modal uses Tailwind CSS for styling. You need to include the package path in the *content* array of your `tailwind.config.js` file:

@@ -410,7 +410,7 @@ export const useModalStack = () => {
 
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
-export const renderApp = (App, pageProps) => {
+export const initFromPageProps = (pageProps) => {
     if (pageProps.initialPage) {
         pageVersion = pageProps.initialPage.version
     }
@@ -418,6 +418,10 @@ export const renderApp = (App, pageProps) => {
     if (pageProps.resolveComponent) {
         resolveComponent = pageProps.resolveComponent
     }
+}
+
+export const renderApp = (App, pageProps) => {
+    initFromPageProps(pageProps)
 
     const renderInertiaApp = ({ Component, props, key }) => {
         const renderComponent = () => {
