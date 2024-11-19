@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Database\Factories\UserFactory;
-use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Testing\TestResponse;
@@ -20,10 +19,7 @@ class DispatchBaseUrlRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->dispatcher = new DispatchBaseUrlRequest(
-            $this->app['router'],
-            $this->app[Kernel::class]
-        );
+        $this->dispatcher = new DispatchBaseUrlRequest($this->app['router']);
     }
 
     #[Test]
@@ -79,5 +75,26 @@ class DispatchBaseUrlRequestTest extends TestCase
         $response = ($this->dispatcher)($originalRequest, $baseUrl);
 
         $this->assertEquals('Responsable Response', $response->getContent());
+    }
+
+    #[Test]
+    public function it_disables_cookie_encryption_on_base_url()
+    {
+        $originalRequest = Request::create('/users', 'GET');
+
+        $baseUrl = '/roles';
+
+        $response = ($this->dispatcher)($originalRequest, $baseUrl);
+        $cookies = $response->headers->getCookies();
+
+        $this->assertNotEmpty($cookies);
+
+        foreach ($cookies as $cookie) {
+            $value = $cookie->getValue();
+
+            $this->assertEquals(40, strlen($value));
+            $decrypted = rescue(fn () => decrypt($value, false), report: false);
+            $this->assertNull($decrypted);
+        }
     }
 }
