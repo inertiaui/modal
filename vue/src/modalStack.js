@@ -15,6 +15,12 @@ const setComponentResolver = (resolver) => {
     resolveComponent = resolver
 }
 
+export const initFromPageProps = (pageProps) => {
+    if (pageProps.resolveComponent) {
+        resolveComponent = pageProps.resolveComponent
+    }
+}
+
 class Modal {
     constructor(component, response, config, onClose, afterLeave) {
         this.id = Modal.generateId()

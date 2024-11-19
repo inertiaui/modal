@@ -14,7 +14,7 @@ on:
 
 jobs:
   tests:
-    name: Dusk Test Inertia ${{ matrix.inertia }} - Stack ${{ matrix.stack }}
+    name: Dusk Inertia ${{ matrix.inertia }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
@@ -23,6 +23,7 @@ jobs:
       matrix:
         inertia: [v1, v2]
         stack: [react, vue]
+        app_mounting: [auto, custom]
 
     env:
       APP_URL: "http://127.0.0.1:8000"
@@ -98,6 +99,13 @@ jobs:
         run: |
           cd vue
           npm run test
+
+      - name: Switch to custom app mounting
+        if: ${{ matrix.app_mounting == 'custom' }}
+        run: |
+          cd demo-app/resources/js
+          mv app-custom-mount.js app.js
+          mv app-custom-mount.jsx app.jsx
 
       - name: Prepare Laravel app
         run: |
