@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.12.0 - 2024-11-19
+
+### What's Changed
+
+* Prevent double cookie encryption (see #20) by @pascalbaljet in https://github.com/inertiaui/modal/pull/55
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.11.1...0.12.0
+
 ## 0.11.1 - 2024-11-06
 
 **Full Changelog**: https://github.com/inertiaui/modal/compare/0.11.0...0.11.1
