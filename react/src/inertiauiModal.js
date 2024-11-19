@@ -8,7 +8,7 @@ import ModalLink from './ModalLink.jsx'
 import useModal from './useModal.js'
 
 const setPageLayout = (layout) => (module) => {
-    module.default.layout = (page) => createElement(layout, { children: page })
+    module.default.layout = (page) => createElement(layout, {}, page)
     return module
 }
 

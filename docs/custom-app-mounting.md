@@ -13,7 +13,7 @@ First, create a Layout component that renders the `ModalRoot` component after yo
 ```jsx [React]
 import { ModalRoot } from '@inertiaui/modal-react'
 
-export default function Layout({ children }) {
+export default function ModalLayout({ children }) {
     return (
         <>
             {children}
