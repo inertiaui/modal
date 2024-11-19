@@ -2,6 +2,12 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.12.1 - 2024-11-19
+
+* Allow Inertia v2 as dev dependency (see #46)
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.12.0...0.12.1
+
 ## 0.12.0 - 2024-11-19
 
 ### What's Changed
