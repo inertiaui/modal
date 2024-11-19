@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Database\Factories\UserFactory;
-use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Testing\TestResponse;
@@ -20,10 +19,7 @@ class DispatchBaseUrlRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->dispatcher = new DispatchBaseUrlRequest(
-            $this->app['router'],
-            $this->app[Kernel::class]
-        );
+        $this->dispatcher = new DispatchBaseUrlRequest($this->app['router']);
     }
 
     #[Test]
