@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.13.0 - 2024-11-19
+
+### What's Changed
+
+* Custom app mounting by @pascalbaljet in https://github.com/inertiaui/modal/pull/56
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.12.1...0.13.0
+
 ## 0.12.1 - 2024-11-19
 
 * Allow Inertia v2 as dev dependency (see #46)
