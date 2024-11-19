@@ -76,4 +76,25 @@ class DispatchBaseUrlRequestTest extends TestCase
 
         $this->assertEquals('Responsable Response', $response->getContent());
     }
+
+    #[Test]
+    public function it_disables_cookie_encryption_on_base_url()
+    {
+        $originalRequest = Request::create('/users', 'GET');
+
+        $baseUrl = '/roles';
+
+        $response = ($this->dispatcher)($originalRequest, $baseUrl);
+        $cookies = $response->headers->getCookies();
+
+        $this->assertNotEmpty($cookies);
+
+        foreach ($cookies as $cookie) {
+            $value = $cookie->getValue();
+
+            $this->assertEquals(40, strlen($value));
+            $decrypted = rescue(fn () => decrypt($value, false), report: false);
+            $this->assertNull($decrypted);
+        }
+    }
 }
