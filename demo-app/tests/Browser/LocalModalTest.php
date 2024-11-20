@@ -20,4 +20,33 @@ class LocalModalTest extends DuskTestCase
                 ->waitUntilMissingModal(1);
         });
     }
+
+    #[Test]
+    public function it_can_access_a_prop_through_a_template_ref()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/local')
+                ->clickLink('Open Local Modal')
+                ->waitForTextIn('.im-modal-content', 'This is a local modal')
+                ->press('Alert Modal ID');
+
+            $message = $browser->driver->switchTo()->alert()->getText();
+
+            $this->assertStringStartsWith('inertiaui_modal_', $message);
+
+            $browser->dismissDialog();
+        });
+    }
+
+    #[Test]
+    public function it_can_close_a_local_modal_through_a_template_ref()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/local')
+                ->clickLink('Open Local Modal')
+                ->waitForTextIn('.im-modal-content', 'This is a local modal')
+                ->press('Close Modal through Ref')
+                ->waitUntilMissingModal(1);
+        });
+    }
 }

@@ -1,7 +1,18 @@
 import { Modal, ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
+import { useRef } from 'react';
 
 export default function Local() {
+    const modalRef = useRef(null);
+
+    function closeModal() {
+        modalRef.current.close();
+    }
+
+    function alertModalId() {
+        alert(modalRef.current.id);
+    }
+
     return (
         <>
             <Container>
@@ -15,11 +26,17 @@ export default function Local() {
                     </ModalLink>
                 </div>
             </Container>
-            <Modal name="local">
+            <Modal name="local" ref={modalRef}>
                 This is a local modal
                 <ModalLink href="/roles/create">
                     Create Role
                 </ModalLink>
+                <button onClick={closeModal}>
+                    Close Modal through Ref
+                </button>
+                <button onClick={alertModalId}>
+                    Alert Modal ID
+                </button>
             </Modal>
         </>
     );

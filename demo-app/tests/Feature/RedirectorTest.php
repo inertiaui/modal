@@ -17,7 +17,7 @@ class RedirectorTest extends TestCase
 
     protected Request $request;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->urlGenerator = app(UrlGenerator::class);

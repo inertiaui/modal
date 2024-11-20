@@ -1,4 +1,4 @@
-import { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react'
+import { useMemo, useState, forwardRef, useImperativeHandle, useEffect, useRef } from 'react'
 import { getConfig, getConfigByType } from './config'
 import { useModalIndex } from './ModalRenderer.jsx'
 import { useModalStack } from './ModalRoot.jsx'
@@ -50,23 +50,46 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
         return modalContext.registerEventListenersFromProps(props)
     }, [name])
 
+    // Store the latest modalContext in a ref to maintain reference
+    const modalContextRef = useRef(modalContext)
+
+    // Update the ref whenever modalContext changes
+    useEffect(() => {
+        modalContextRef.current = modalContext
+    }, [modalContext])
+
     useImperativeHandle(
         ref,
         () => ({
-            afterLeave: () => modalContext.afterLeave(),
-            close: () => modalContext.close(),
-            config,
-            emit: (...args) => modalContext.emit(...args),
-            getChildModal: () => modalContext.getChildModal(),
-            getParentModal: () => modalContext.getParentModal(),
-            id: modalContext?.id,
-            index: modalContext?.index,
-            isOpen: modalContext?.isOpen,
-            modalContext,
-            onTopOfStack: modalContext?.onTopOfStack,
-            reload: () => modalContext.reload(),
-            setOpen: () => modalContext.setOpen(),
-            shouldRender: modalContext?.shouldRender,
+            afterLeave: () => modalContextRef.current?.afterLeave(),
+            close: () => modalContextRef.current?.close(),
+            emit: (...args) => modalContextRef.current?.emit(...args),
+            getChildModal: () => modalContextRef.current?.getChildModal(),
+            getParentModal: () => modalContextRef.current?.getParentModal(),
+            reload: (...args) => modalContextRef.current?.reload(...args),
+            setOpen: () => modalContextRef.current?.setOpen(),
+
+            get id() {
+                return modalContextRef.current?.id
+            },
+            get index() {
+                return modalContextRef.current?.index
+            },
+            get isOpen() {
+                return modalContextRef.current?.isOpen
+            },
+            get config() {
+                return modalContextRef.current?.config
+            },
+            get modalContext() {
+                return modalContextRef.current
+            },
+            get onTopOfStack() {
+                return modalContextRef.current?.onTopOfStack
+            },
+            get shouldRender() {
+                return modalContextRef.current?.shouldRender
+            },
         }),
         [modalContext],
     )

@@ -1,6 +1,17 @@
 <script setup>
 import Container from './Container.vue'
 import { Modal, ModalLink } from '@inertiaui/modal-vue'
+import { ref } from 'vue';
+
+const modalRef = ref(null);
+
+function closeModal() {
+    modalRef.value.close();
+}
+
+function alertModalId() {
+    alert(modalRef.value.id);
+}
 </script>
 
 <template>
@@ -14,11 +25,19 @@ import { Modal, ModalLink } from '@inertiaui/modal-vue'
         </div>
     </Container>
 
-    <Modal name="local">
+    <Modal name="local" ref="modalRef">
         This is a local modal
 
         <ModalLink href="/roles/create">
             Create Role
         </ModalLink>
+
+        <button @click="closeModal">
+            Close Modal through Ref
+        </button>
+
+        <button @click="alertModalId">
+            Alert Modal ID
+        </button>
     </Modal>
 </template>

@@ -3,7 +3,7 @@ import { DialogOverlay, DialogPortal, DialogRoot } from 'radix-vue'
 import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 const modal = ref(null)
 const rendered = ref(false)
@@ -11,18 +11,33 @@ const rendered = ref(false)
 defineExpose({
     afterLeave: () => modal.value?.afterLeave(),
     close: () => modal.value?.close(),
-    config: computed(() => modal.value?.config),
     emit: (...args) => modal.value?.emit(...args),
     getChildModal: () => modal.value?.getChildModal(),
     getParentModal: () => modal.value?.getParentModal(),
-    id: computed(() => modal.value?.id),
-    index: computed(() => modal.value?.index),
-    isOpen: computed(() => modal.value?.isOpen),
-    modalContext: computed(() => modal.value?.modalContext),
-    onTopOfStack: computed(() => modal.value?.onTopOfStack),
     reload: (...args) => modal.value?.reload(...args),
     setOpen: (...args) => modal.value?.setOpen(...args),
-    shouldRender: computed(() => modal.value?.shouldRender),
+
+    get config() {
+        return modal.value?.config
+    },
+    get id() {
+        return modal.value?.id
+    },
+    get index() {
+        return modal.value?.index
+    },
+    get isOpen() {
+        return modal.value?.isOpen
+    },
+    get modalContext() {
+        return modal.value?.modalContext
+    },
+    get onTopOfStack() {
+        return modal.value?.onTopOfStack
+    },
+    get shouldRender() {
+        return modal.value?.shouldRender
+    },
 })
 </script>
 
