@@ -9,6 +9,7 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
     const { stack, registerLocalModal, removeLocalModal } = useModalStack()
 
     const [localModalContext, setLocalModalContext] = useState(null)
+    let modalContextCopy = name ? localModalContext : stack[modalIndex]
     const modalContext = useMemo(() => (name ? localModalContext : stack[modalIndex]), [name, localModalContext, modalIndex, stack])
 
     const nextIndex = useMemo(() => {
@@ -38,6 +39,7 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             registerLocalModal(name, (localContext) => {
                 removeListeners = localContext.registerEventListenersFromProps(props)
                 setLocalModalContext(localContext)
+                modalContextCopy = localContext
             })
 
             return () => {
@@ -53,22 +55,22 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
     useImperativeHandle(
         ref,
         () => ({
-            afterLeave: () => modalContext.afterLeave(),
-            close: () => modalContext.close(),
+            afterLeave: () => modalContextCopy.afterLeave(),
+            close: () => modalContextCopy.close(),
             config,
-            emit: (...args) => modalContext.emit(...args),
-            getChildModal: () => modalContext.getChildModal(),
-            getParentModal: () => modalContext.getParentModal(),
-            id: modalContext?.id,
-            index: modalContext?.index,
-            isOpen: modalContext?.isOpen,
-            modalContext,
-            onTopOfStack: modalContext?.onTopOfStack,
-            reload: () => modalContext.reload(),
-            setOpen: () => modalContext.setOpen(),
-            shouldRender: modalContext?.shouldRender,
+            emit: (...args) => modalContextCopy.emit(...args),
+            getChildModal: () => modalContextCopy.getChildModal(),
+            getParentModal: () => modalContextCopy.getParentModal(),
+            id: modalContextCopy?.id,
+            index: modalContextCopy?.index,
+            isOpen: modalContextCopy?.isOpen,
+            modalContext: modalContextCopy,
+            onTopOfStack: modalContextCopy?.onTopOfStack,
+            reload: () => modalContextCopy.reload(),
+            setOpen: () => modalContextCopy.setOpen(),
+            shouldRender: modalContextCopy?.shouldRender,
         }),
-        [modalContext],
+        [modalContextCopy],
     )
 
     return (
