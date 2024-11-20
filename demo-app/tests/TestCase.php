@@ -12,7 +12,7 @@ abstract class TestCase extends BaseTestCase
     use ModalTestCase;
     use RefreshDatabase;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,7 +20,7 @@ abstract class TestCase extends BaseTestCase
         Carbon::setTestNow('2024-06-01 12:00:00');
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         Carbon::setTestNow();
         parent::tearDown();

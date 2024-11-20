@@ -15,7 +15,7 @@ class DispatchBaseUrlRequestTest extends TestCase
 {
     protected DispatchBaseUrlRequest $dispatcher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
