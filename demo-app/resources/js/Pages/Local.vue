@@ -8,6 +8,10 @@ const modalRef = ref(null);
 function closeModal() {
     modalRef.value.close();
 }
+
+function alertModalId() {
+    alert(modalRef.value.id);
+}
 </script>
 
 <template>
@@ -30,6 +34,10 @@ function closeModal() {
 
         <button @click="closeModal">
             Close Modal through Ref
+        </button>
+
+        <button @click="alertModalId">
+            Alert Modal ID
         </button>
     </Modal>
 </template>

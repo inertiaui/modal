@@ -9,6 +9,10 @@ export default function Local() {
         modalRef.current.close();
     }
 
+    function alertModalId() {
+        alert(modalRef.current.id);
+    }
+
     return (
         <>
             <Container>
@@ -29,6 +33,9 @@ export default function Local() {
                 </ModalLink>
                 <button onClick={closeModal}>
                     Close Modal through Ref
+                </button>
+                <button onClick={alertModalId}>
+                    Alert Modal ID
                 </button>
             </Modal>
         </>

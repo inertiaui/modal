@@ -92,20 +92,35 @@ function emit(event, ...args) {
 }
 
 defineExpose({
+    emit,
     afterLeave: () => modalContext.value?.afterLeave(),
     close: () => modalContext.value?.close(),
-    config: computed(() => modalContext.value?.config),
-    emit,
-    getChildModal: () => modalContext.value?.getChildModal(),
-    getParentModal: () => modalContext.value?.getParentModal(),
-    id: computed(() => modalContext.value?.id),
-    index: computed(() => modalContext.value?.index),
-    isOpen: computed(() => modalContext.value?.isOpen),
-    modalContext: computed(() => modalContext.value?.modalContext),
-    onTopOfStack: computed(() => modalContext.value?.onTopOfStack),
     reload: (...args) => modalContext.value?.reload(...args),
     setOpen: (...args) => modalContext.value?.setOpen(...args),
-    shouldRender: computed(() => modalContext.value?.shouldRender),
+    getChildModal: () => modalContext.value?.getChildModal(),
+    getParentModal: () => modalContext.value?.getParentModal(),
+
+    get config() {
+        return modalContext.value?.config
+    },
+    get id() {
+        return modalContext.value?.id
+    },
+    get index() {
+        return modalContext.value?.index
+    },
+    get isOpen() {
+        return modalContext.value?.isOpen
+    },
+    get modalContext() {
+        return modalContext.value?.modalContext
+    },
+    get onTopOfStack() {
+        return modalContext.value?.onTopOfStack
+    },
+    get shouldRender() {
+        return modalContext.value?.shouldRender
+    },
 })
 
 const nextIndex = computed(() => {

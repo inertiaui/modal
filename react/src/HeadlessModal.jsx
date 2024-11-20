@@ -1,4 +1,4 @@
-import { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react'
+import { useMemo, useState, forwardRef, useImperativeHandle, useEffect, useRef } from 'react'
 import { getConfig, getConfigByType } from './config'
 import { useModalIndex } from './ModalRenderer.jsx'
 import { useModalStack } from './ModalRoot.jsx'
@@ -9,7 +9,6 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
     const { stack, registerLocalModal, removeLocalModal } = useModalStack()
 
     const [localModalContext, setLocalModalContext] = useState(null)
-    let modalContextCopy = name ? localModalContext : stack[modalIndex]
     const modalContext = useMemo(() => (name ? localModalContext : stack[modalIndex]), [name, localModalContext, modalIndex, stack])
 
     const nextIndex = useMemo(() => {
@@ -39,7 +38,6 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
             registerLocalModal(name, (localContext) => {
                 removeListeners = localContext.registerEventListenersFromProps(props)
                 setLocalModalContext(localContext)
-                modalContextCopy = localContext
             })
 
             return () => {
@@ -52,25 +50,48 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
         return modalContext.registerEventListenersFromProps(props)
     }, [name])
 
+    // Store the latest modalContext in a ref to maintain reference
+    const modalContextRef = useRef(modalContext)
+
+    // Update the ref whenever modalContext changes
+    useEffect(() => {
+        modalContextRef.current = modalContext
+    }, [modalContext])
+
     useImperativeHandle(
         ref,
         () => ({
-            afterLeave: () => modalContextCopy.afterLeave(),
-            close: () => modalContextCopy.close(),
-            config,
-            emit: (...args) => modalContextCopy.emit(...args),
-            getChildModal: () => modalContextCopy.getChildModal(),
-            getParentModal: () => modalContextCopy.getParentModal(),
-            id: modalContextCopy?.id,
-            index: modalContextCopy?.index,
-            isOpen: modalContextCopy?.isOpen,
-            modalContext: modalContextCopy,
-            onTopOfStack: modalContextCopy?.onTopOfStack,
-            reload: () => modalContextCopy.reload(),
-            setOpen: () => modalContextCopy.setOpen(),
-            shouldRender: modalContextCopy?.shouldRender,
+            afterLeave: () => modalContextRef.current?.afterLeave(),
+            close: () => modalContextRef.current?.close(),
+            emit: (...args) => modalContextRef.current?.emit(...args),
+            getChildModal: () => modalContextRef.current?.getChildModal(),
+            getParentModal: () => modalContextRef.current?.getParentModal(),
+            reload: (...args) => modalContextRef.current?.reload(...args),
+            setOpen: () => modalContextRef.current?.setOpen(),
+
+            get id() {
+                return modalContextRef.current?.id
+            },
+            get index() {
+                return modalContextRef.current?.index
+            },
+            get isOpen() {
+                return modalContextRef.current?.isOpen
+            },
+            get config() {
+                return modalContextRef.current?.config
+            },
+            get modalContext() {
+                return modalContextRef.current
+            },
+            get onTopOfStack() {
+                return modalContextRef.current?.onTopOfStack
+            },
+            get shouldRender() {
+                return modalContextRef.current?.shouldRender
+            },
         }),
-        [modalContextCopy],
+        [modalContext],
     )
 
     return (
