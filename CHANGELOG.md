@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.13.1 - 2024-11-20
+
+### What's Changed
+
+* Fix for referring local modal (see #53) by @pascalbaljet in https://github.com/inertiaui/modal/pull/57
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.13.0...0.13.1
+
 ## 0.13.0 - 2024-11-19
 
 ### What's Changed
