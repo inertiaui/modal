@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.14.0 - 2024-12-17
+
+### What's Changed
+
+* Bump Inertia.js versions by @pascalbaljet in https://github.com/inertiaui/modal/pull/67
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.13.1...0.14.0
+
 ## 0.13.1 - 2024-11-20
 
 ### What's Changed
