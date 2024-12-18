@@ -40,7 +40,7 @@ function closeModal() {
 
 <template>
     <HeadlessModal
-        ref="modalRef"
+        ref="modal"
         v-slot="{
             afterLeave,
             close,
