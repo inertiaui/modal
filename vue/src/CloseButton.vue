@@ -1,9 +1,5 @@
-<script setup>
-import { DialogClose } from 'radix-vue'
-</script>
-
 <template>
-    <DialogClose class="im-close-button text-gray-400 hover:text-gray-500">
+    <button class="im-close-button text-gray-400 hover:text-gray-500">
         <span class="sr-only">Close</span>
         <svg
             class="size-6"
@@ -20,5 +16,5 @@ import { DialogClose } from 'radix-vue'
                 d="M6 18L18 6M6 6l12 12"
             ></path>
         </svg>
-    </DialogClose>
+    </button>
 </template>
