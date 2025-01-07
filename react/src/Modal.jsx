@@ -1,8 +1,9 @@
-import { Dialog, Transition, TransitionChild } from '@headlessui/react'
-import { forwardRef, useRef, useImperativeHandle } from 'react'
+import { Transition, TransitionChild } from '@headlessui/react'
+import { forwardRef, useRef, useImperativeHandle, useEffect } from 'react'
 import HeadlessModal from './HeadlessModal'
 import ModalContent from './ModalContent'
 import SlideoverContent from './SlideoverContent'
+import { modalDOMHandler } from './helpers'
 
 const Modal = forwardRef(({ name, children, ...props }, ref) => {
     const renderChildren = (contentProps) => {
@@ -14,6 +15,14 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
     }
 
     const headlessModalRef = useRef(null)
+
+    useEffect(() => {
+        if (headlessModalRef?.current?.index === 0) {
+            modalDOMHandler.prepare()
+
+            return () => modalDOMHandler.cleanup()
+        }
+    }, [headlessModalRef])
 
     useImperativeHandle(ref, () => headlessModalRef.current, [headlessModalRef])
 
@@ -43,10 +52,8 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                     appear={true}
                     show={isOpen ?? false}
                 >
-                    <Dialog
-                        as="div"
+                    <div
                         className="im-dialog relative z-20"
-                        onClose={() => (config.closeExplicitly ? null : close())}
                         data-inertiaui-modal-id={id}
                         data-inertiaui-modal-index={index}
                     >
@@ -120,7 +127,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                                 })}
                             </ModalContent>
                         )}
-                    </Dialog>
+                    </div>
                 </Transition>
             )}
         </HeadlessModal>

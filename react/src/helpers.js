@@ -1,2 +1,2 @@
-import { except, only, rejectNullValues, waitFor, kebabCase } from './../../vue/src/helpers.js'
-export { except, only, rejectNullValues, waitFor, kebabCase }
+import { modalDOMHandler, except, only, rejectNullValues, waitFor, kebabCase } from './../../vue/src/helpers.js'
+export { modalDOMHandler, except, only, rejectNullValues, waitFor, kebabCase }

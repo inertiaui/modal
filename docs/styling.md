@@ -8,7 +8,7 @@ You're probably the fastest if you just inspect the modal in your browser and se
 
 | Class | Description |
 | --- | --- |
-| `im-dialog` | The [Headless UI dialog](https://headlessui.com/v1/vue/dialog) component |
+| `im-dialog` | The root container for the modal |
 | `im-close-button` | The close button |
 | `im-backdrop` | The backdrop behind the modal |
 | `im-modal-container` | The screen-filling container for the modal |

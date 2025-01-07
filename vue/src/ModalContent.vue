@@ -1,11 +1,13 @@
 <script setup>
 import CloseButton from './CloseButton.vue'
-import { DialogContent, DialogTitle, VisuallyHidden } from 'radix-vue'
+import { useFocusTrap } from './useFocusTrap'
 
-defineProps({
+const props = defineProps({
     modalContext: Object,
     config: Object,
 })
+
+const { wrapper } = useFocusTrap(props.config?.closeExplicitly, () => props.modalContext.close())
 </script>
 
 <template>
@@ -28,10 +30,11 @@ defineProps({
                 leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 @after-leave="modalContext.afterLeave"
             >
-                <DialogContent
-                    :aria-describedby="undefined"
+                <div
+                    v-show="modalContext.isOpen"
+                    ref="wrapper"
                     :class="{
-                        'im-modal-wrapper w-full transition duration-300 ease-in-out': true,
+                        'im-modal-wrapper pointer-events-auto w-full transition duration-300 ease-in-out': true,
                         'blur-sm': !modalContext.onTopOfStack,
                         'sm:max-w-sm': config.maxWidth == 'sm',
                         'sm:max-w-md': config.maxWidth == 'md',
@@ -44,13 +47,7 @@ defineProps({
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl': config.maxWidth == '6xl',
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': config.maxWidth == '7xl',
                     }"
-                    @escape-key-down="($event) => config?.closeExplicitly && $event.preventDefault()"
-                    @interact-outside="($event) => config?.closeExplicitly && $event.preventDefault()"
                 >
-                    <VisuallyHidden as-child>
-                        <DialogTitle />
-                    </VisuallyHidden>
-
                     <div
                         class="im-modal-content relative"
                         :class="[config.paddingClasses, config.panelClasses]"
@@ -59,7 +56,7 @@ defineProps({
                             v-if="config.closeButton"
                             class="absolute right-0 top-0 pr-3 pt-3"
                         >
-                            <CloseButton />
+                            <CloseButton @click="modalContext.close" />
                         </div>
 
                         <slot
@@ -67,7 +64,7 @@ defineProps({
                             :config="config"
                         />
                     </div>
-                </DialogContent>
+                </div>
             </Transition>
         </div>
     </div>
