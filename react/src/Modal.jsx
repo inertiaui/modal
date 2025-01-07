@@ -1,5 +1,5 @@
 import { Transition, TransitionChild } from '@headlessui/react'
-import { forwardRef, useRef, useState, useImperativeHandle, useEffect } from 'react'
+import { forwardRef, useRef, useImperativeHandle, useEffect } from 'react'
 import HeadlessModal from './HeadlessModal'
 import ModalContent from './ModalContent'
 import SlideoverContent from './SlideoverContent'
@@ -15,12 +15,10 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
     }
 
     const headlessModalRef = useRef(null)
-    const [preparedDOM, setPreparedDOM] = useState(false)
 
     useEffect(() => {
         if (headlessModalRef?.current?.index === 0) {
             modalDOMHandler.prepare()
-            setPreparedDOM(true)
 
             return () => modalDOMHandler.cleanup()
         }
@@ -56,7 +54,6 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                 >
                     <div
                         className="im-dialog relative z-20"
-                        onClose={() => (config.closeExplicitly ? null : close())}
                         data-inertiaui-modal-id={id}
                         data-inertiaui-modal-index={index}
                     >
