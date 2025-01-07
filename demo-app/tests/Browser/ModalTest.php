@@ -21,7 +21,7 @@ class ModalTest extends DuskTestCase
                 ->assertSeeIn('.im-modal-content', 'Edit User')
                 ->clickModalCloseButton()
                 ->waitUntilMissingModal()
-                ->assertMissing('div[data-inertiaui-modal-id]');
+                ->assertMissing('#headlessui-portal-root');
         });
     }
 
@@ -38,7 +38,7 @@ class ModalTest extends DuskTestCase
                 ->waitForModal()
                 ->clickAt(100, 100)
                 ->waitUntilMissingModal()
-                ->assertMissing('div[data-inertiaui-modal-id]');
+                ->assertMissing('#headlessui-portal-root');
         });
     }
 
@@ -55,7 +55,7 @@ class ModalTest extends DuskTestCase
                 ->waitForModal()
                 ->press('Cancel')
                 ->waitUntilMissingModal()
-                ->assertMissing('div[data-inertiaui-modal-id]');
+                ->assertMissing('#headlessui-portal-root');
         });
     }
 }
