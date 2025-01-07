@@ -1,30 +1,13 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
 import CloseButton from './CloseButton.vue'
-import { createFocusTrap } from 'focus-trap'
+import { useFocusTrap } from './useFocusTrap'
 
 const props = defineProps({
     modalContext: Object,
     config: Object,
 })
 
-const wrapper = ref(null)
-const trap = ref(null)
-
-onMounted(() => {
-    trap.value = createFocusTrap(wrapper.value, {
-        clickOutsideDeactivates: !props.config?.closeExplicitly,
-        escapeDeactivates: !props.config?.closeExplicitly,
-        onDeactivate: () => {
-            props.modalContext.close()
-        },
-        fallbackFocus: () => wrapper.value,
-    })
-
-    trap.value.activate()
-})
-
-onBeforeUnmount(() => trap.value?.deactivate())
+const { wrapper } = useFocusTrap(props.config?.closeExplicitly, () => props.modalContext.close())
 </script>
 
 <template>

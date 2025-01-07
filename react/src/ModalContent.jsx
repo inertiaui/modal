@@ -1,26 +1,10 @@
 import { TransitionChild } from '@headlessui/react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
-import { createFocusTrap } from 'focus-trap'
-import { useEffect, useRef } from 'react'
+import { useFocusTrap } from './useFocusTrap'
 
 const ModalContent = ({ modalContext, config, children }) => {
-    const wrapper = useRef(null)
-
-    useEffect(() => {
-        const trap = createFocusTrap(wrapper.current, {
-            clickOutsideDeactivates: !config?.closeExplicitly,
-            escapeDeactivates: !config?.closeExplicitly,
-            onDeactivate: () => {
-                modalContext.close()
-            },
-            fallbackFocus: () => wrapper.current,
-        });
-
-        trap.activate()
-
-        return () => trap.deactivate()
-    }, [])
+    const wrapper = useFocusTrap(config?.closeExplicitly, () => modalContext.close());
 
     return (
         <div className="im-modal-container fixed inset-0 z-40 overflow-y-auto p-4">
