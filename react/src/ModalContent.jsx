@@ -1,8 +1,27 @@
-import { TransitionChild, DialogPanel } from '@headlessui/react'
+import { TransitionChild } from '@headlessui/react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
+import { createFocusTrap } from 'focus-trap'
+import { useEffect, useRef } from 'react'
 
 const ModalContent = ({ modalContext, config, children }) => {
+    const wrapper = useRef(null)
+
+    useEffect(() => {
+        const trap = createFocusTrap(wrapper.current, {
+            clickOutsideDeactivates: !config?.closeExplicitly,
+            escapeDeactivates: !config?.closeExplicitly,
+            onDeactivate: () => {
+                modalContext.close()
+            },
+            fallbackFocus: () => wrapper.current,
+        });
+
+        trap.activate()
+
+        return () => trap.deactivate()
+    }, [])
+
     return (
         <div className="im-modal-container fixed inset-0 z-40 overflow-y-auto p-4">
             <div
@@ -13,12 +32,14 @@ const ModalContent = ({ modalContext, config, children }) => {
                 })}
             >
                 <TransitionChild
+                    as="div"
+                    ref={wrapper}
                     enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     enterTo="opacity-100 translate-y-0 sm:scale-100"
                     leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     afterLeave={modalContext.afterLeave}
-                    className={clsx('im-modal-wrapper w-full transition duration-300 ease-in-out', modalContext.onTopOfStack ? '' : 'blur-sm', {
+                    className={clsx('im-modal-wrapper pointer-events-auto w-full transition duration-300 ease-in-out', modalContext.onTopOfStack ? '' : 'blur-sm', {
                         'sm:max-w-sm': config.maxWidth === 'sm',
                         'sm:max-w-md': config.maxWidth === 'md',
                         'sm:max-w-md md:max-w-lg': config.maxWidth === 'lg',
@@ -31,14 +52,14 @@ const ModalContent = ({ modalContext, config, children }) => {
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': config.maxWidth === '7xl',
                     })}
                 >
-                    <DialogPanel className={`im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`}>
+                    <div className={`im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`}>
                         {config.closeButton && (
                             <div className="absolute right-0 top-0 pr-3 pt-3">
                                 <CloseButton onClick={modalContext.close} />
                             </div>
                         )}
                         {typeof children === 'function' ? children({ modalContext, config }) : children}
-                    </DialogPanel>
+                    </div>
                 </TransitionChild>
             </div>
         </div>

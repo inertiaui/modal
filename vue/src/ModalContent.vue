@@ -18,6 +18,7 @@ onMounted(() => {
         onDeactivate: () => {
             props.modalContext.close()
         },
+        fallbackFocus: () => wrapper.value,
     })
 
     trap.value.activate()
