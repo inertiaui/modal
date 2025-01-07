@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.15.0 - 2025-01-07
+
+### What's Changed
+
+* Remove `radix-vue` dependency by @pascalbaljet in https://github.com/inertiaui/modal/pull/70
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.14.0...0.15.0
+
 ## 0.14.0 - 2024-12-17
 
 ### What's Changed
