@@ -15,7 +15,7 @@ class DuskModalMacros
      */
     public function waitForModal(): Closure
     {
-        return fn (int $index = 0, ?int $seconds = null): Browser => $this->waitFor('.im-dialog[data-inertiaui-modal-index="'.$index.'"]', $seconds);
+        return fn (int $index = 0, ?int $seconds = null): Browser => $this->waitFor('.im-dialog[data-inertiaui-modal-index="'.$index.'"] div[data-inertiaui-modal-entered="true"]', $seconds);
     }
 
     /**

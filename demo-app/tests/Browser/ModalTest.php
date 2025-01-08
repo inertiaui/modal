@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Models\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
@@ -19,6 +20,24 @@ class ModalTest extends DuskTestCase
                 ->click("@edit-user-{$firstUser->id}")
                 ->waitForModal()
                 ->assertSeeIn('.im-modal-content', 'Edit User')
+                ->clickModalCloseButton()
+                ->waitUntilMissingModal()
+                ->assertMissing('div[data-inertiaui-modal-id]');
+        });
+    }
+
+    #[DataProvider('booleanProvider')]
+    #[Test]
+    public function it_can_open_the_slideover_and_close_it_with_the_close_button(bool $navigate)
+    {
+        $this->browse(function (Browser $browser) use ($navigate) {
+            $firstUser = User::orderBy('name')->first();
+
+            $browser->visit('/users'.($navigate ? '?navigate=1' : ''))
+                ->waitForFirstUser()
+                ->click("@slideover-user-{$firstUser->id}")
+                ->waitForModal()
+                ->assertSeeIn('.im-slideover-content', 'Edit User')
                 ->clickModalCloseButton()
                 ->waitUntilMissingModal()
                 ->assertMissing('div[data-inertiaui-modal-id]');

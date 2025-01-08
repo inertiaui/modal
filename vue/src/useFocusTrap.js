@@ -1,4 +1,4 @@
-import { onBeforeUnmount, ref } from 'vue'
+import { ref } from 'vue'
 import { createFocusTrap } from 'focus-trap'
 
 export function useFocusTrap(wrapper, closeExplicitly, onDeactivateCallback) {
@@ -15,11 +15,13 @@ export function useFocusTrap(wrapper, closeExplicitly, onDeactivateCallback) {
         trap.value.activate()
     }
 
-    onBeforeUnmount(() => {
+    const deactivate = () => {
         trap.value?.deactivate()
-    })
+        trap.value = null
+    }
 
     return {
+        deactivate,
         wrapper,
     }
 }

@@ -1,4 +1,4 @@
-import { computed, readonly, ref, markRaw, nextTick, h } from 'vue'
+import { computed, readonly, ref, markRaw, h } from 'vue'
 import { generateId, except, only, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
@@ -47,14 +47,25 @@ class Modal {
                 ...(pendingModalUpdates.value[this.id].config ?? {}),
             }
 
-            this.onCloseCallback = () => {
-                onClose?.()
-                pendingModalUpdates.value[this.id].onClose?.()
+            const pendingOnClose = pendingModalUpdates.value[this.id].onClose
+            const pendingOnAfterLeave = pendingModalUpdates.value[this.id].onAfterLeave
+
+            if (pendingOnClose) {
+                this.onCloseCallback = onClose
+                    ? () => {
+                          onClose()
+                          pendingOnClose()
+                      }
+                    : pendingOnClose
             }
 
-            this.afterLeaveCallback = () => {
-                afterLeave?.()
-                pendingModalUpdates.value[this.id].afterLeave?.()
+            if (pendingOnAfterLeave) {
+                this.afterLeaveCallback = afterLeave
+                    ? () => {
+                          afterLeave()
+                          pendingOnAfterLeave()
+                      }
+                    : pendingOnAfterLeave
             }
         }
 
@@ -237,10 +248,8 @@ function pushLocalModal(name, config, onClose, afterLeave) {
     return modal
 }
 
-function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null, viaInertiaRouter = false) {
-    return resolveComponent(responseData.component).then((component) =>
-        push(markRaw(component), responseData, config, onClose, onAfterLeave, viaInertiaRouter),
-    )
+function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null) {
+    return resolveComponent(responseData.component).then((component) => push(markRaw(component), responseData, config, onClose, onAfterLeave))
 }
 
 function visit(
@@ -293,26 +302,7 @@ function visit(
                 preserveScroll: true,
                 preserveState: true,
                 onError: reject,
-                onFinish: () =>
-                    waitFor(() => stack.value[0]).then((modal) => {
-                        // const originalOnClose = modal.onCloseCallback
-                        // const originalAfterLeave = modal.afterLeaveCallback
-
-                        // modal.update(
-                        //     config,
-                        //     () => {
-                        //         onClose?.()
-                        //         originalOnClose?.()
-                        //     },
-                        //     () => {
-                        //         onAfterLeave?.()
-                        //         originalAfterLeave?.()
-                        //     },
-                        // )
-
-                        // modal.show()
-                        resolve(modal)
-                    }),
+                onFinish: () => waitFor(() => stack.value[0]).then(resolve),
             })
         }
 
@@ -322,7 +312,7 @@ function visit(
     })
 }
 
-function push(component, response, config, onClose, afterLeave, viaInertiaRouter = false) {
+function push(component, response, config, onClose, afterLeave) {
     const newModal = new Modal(component, response, config, onClose, afterLeave)
     stack.value.push(newModal)
     newModal.show()

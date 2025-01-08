@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import CloseButton from './CloseButton.vue'
 import { useFocusTrap } from './useFocusTrap'
 
@@ -8,8 +8,16 @@ const props = defineProps({
     config: Object,
 })
 
+const entered = ref(false)
 const wrapper = ref(null)
-const focusTrap = () => useFocusTrap(wrapper.value, props.config?.closeExplicitly, () => props.modalContext.close())
+let deactivate = null
+
+function afterEnter() {
+    let { deactivate } = useFocusTrap(wrapper.value, props.config?.closeExplicitly, () => props.modalContext.close())
+    entered.value = true
+}
+
+onBeforeUnmount(() => deactivate?.())
 </script>
 
 <template>
@@ -30,7 +38,7 @@ const focusTrap = () => useFocusTrap(wrapper.value, props.config?.closeExplicitl
                 enter-to-class="opacity-100 translate-y-0 sm:scale-100"
                 leave-from-class="opacity-100 translate-y-0 sm:scale-100"
                 leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                @after-enter="focusTrap"
+                @after-enter="afterEnter"
                 @after-leave="modalContext.afterLeave"
             >
                 <div
@@ -53,6 +61,7 @@ const focusTrap = () => useFocusTrap(wrapper.value, props.config?.closeExplicitl
                 >
                     <div
                         class="im-modal-content relative"
+                        :data-inertiaui-modal-entered="entered"
                         :class="[config.paddingClasses, config.panelClasses]"
                     >
                         <div
