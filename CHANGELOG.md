@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.17.0 - 2025-01-08
+
+### What's Changed
+
+* Reduce dependencies by @pascalbaljet in https://github.com/inertiaui/modal/pull/77
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.16.0...0.17.0
+
 ## 0.16.0 - 2025-01-07
 
 Revert #70
