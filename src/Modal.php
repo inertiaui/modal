@@ -14,6 +14,8 @@ use Inertia\Response as InertiaResponse;
 
 class Modal implements Responsable
 {
+    const HEADER_MODAL = 'X-InertiaUI-Modal';
+
     const HEADER_BASE_URL = 'X-InertiaUI-Modal-Base-Url';
 
     const HEADER_USE_ROUTER = 'X-InertiaUI-Modal-Use-Router';
@@ -96,6 +98,7 @@ class Modal implements Responsable
         inertia()->share('_inertiaui_modal', [
             // @phpstan-ignore-next-line
             ...$modal->toArray(),
+            'id' => $request->header(static::HEADER_MODAL),
             'baseUrl' => $baseUrl,
         ]);
 

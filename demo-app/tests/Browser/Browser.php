@@ -79,4 +79,53 @@ JS));
 
         return $this;
     }
+
+    /**
+     * Get the console log from the browser.
+     */
+    public function getConsoleLog(): array
+    {
+        return $this->driver->manage()->getLog('browser');
+    }
+
+    /**
+     * Determine if the console log contains the given message.
+     */
+    private function consoleLogContains(string $needle): bool
+    {
+        return collect($this->getConsoleLog())->contains(function (array $entry) use ($needle) {
+            // E.g.: http://[::1]:5173/@vite/client 494:8 "[vite] connecting..."
+            preg_match('/^.*\d+:\d+\s"(.+)"$/', $entry['message'], $matches);
+
+            return ! empty($matches)
+                ? str_contains($matches[1] ?? '', $needle)
+                : false;
+        });
+    }
+
+    /**
+     * Assert that the console log contains the given message.
+     */
+    public function assertConsoleLogContains(string $needle): self
+    {
+        Assert::assertTrue(
+            $this->consoleLogContains($needle),
+            "The console log does not contain the expected message: {$needle}"
+        );
+
+        return $this;
+    }
+
+    /**
+     * Wait for the console log to contain the given message.
+     */
+    public function waitForConsoleLog(string $needle, ?int $seconds = null, int $interval = 100): self
+    {
+        return $this->waitUsing(
+            $seconds,
+            $interval,
+            fn () => $this->consoleLogContains($needle),
+            "The console log does not contain the expected message: {$needle}"
+        );
+    }
 }

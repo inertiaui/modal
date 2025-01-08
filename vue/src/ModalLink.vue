@@ -100,7 +100,10 @@ watch(
 )
 
 const unsubscribeEventListeners = ref(null)
-onBeforeUnmount(() => unsubscribeEventListeners.value?.())
+
+onBeforeUnmount(() => {
+    unsubscribeEventListeners.value?.()
+})
 
 const $attrs = useAttrs()
 

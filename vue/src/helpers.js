@@ -1,3 +1,84 @@
+const modalDOMHandler = {
+    modifiedElements: [],
+    bodyState: {
+        hasOverflowHidden: false,
+        hasPointerEventsNone: false,
+        originalPaddingRight: '',
+    },
+
+    prepare() {
+        // Calculate scrollbar width
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+
+        // Store original padding-right and add scrollbar width
+        this.bodyState.originalPaddingRight = document.body.style.paddingRight
+        const currentPaddingRight = parseInt(window.getComputedStyle(document.body).paddingRight, 10)
+        document.body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`
+
+        // Handle overflow
+        if (!document.body.classList.contains('overflow-hidden')) {
+            document.body.classList.add('overflow-hidden')
+            this.bodyState.hasOverflowHidden = true
+        }
+
+        // Handle pointer events
+        if (!document.body.classList.contains('pointer-events-none')) {
+            document.body.classList.add('pointer-events-none')
+            this.bodyState.hasPointerEventsNone = true
+        }
+
+        // Set aria-hidden on non-modal elements
+        Array.from(document.body.children).forEach((element) => {
+            if (!element.classList.contains('im-dialog') && element.getAttribute('aria-hidden') !== 'true') {
+                element.setAttribute('aria-hidden', 'true')
+                this.modifiedElements.push(element)
+            }
+        })
+    },
+
+    cleanup() {
+        // Restore body classes
+        if (this.bodyState.hasOverflowHidden) {
+            document.body.classList.remove('overflow-hidden')
+            this.bodyState.hasOverflowHidden = false
+        }
+
+        if (this.bodyState.hasPointerEventsNone) {
+            document.body.classList.remove('pointer-events-none')
+            this.bodyState.hasPointerEventsNone = false
+        }
+
+        // Restore original padding-right
+        document.body.style.paddingRight = this.bodyState.originalPaddingRight
+        this.bodyState.originalPaddingRight = ''
+
+        // Remove aria-hidden
+        this.modifiedElements.forEach((element) => {
+            element.removeAttribute('aria-hidden')
+        })
+        this.modifiedElements = []
+    },
+}
+
+let generateIdUsingCallback = null
+
+function generateIdUsing(callback) {
+    generateIdUsingCallback = callback
+}
+
+function generateId(prefix = 'inertiaui_modal_') {
+    if (generateIdUsingCallback) {
+        return generateIdUsingCallback()
+    }
+
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return `${prefix}${crypto.randomUUID()}`
+    }
+
+    // Fallback for environments where crypto.randomUUID is not available
+    return `${prefix}${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
+}
+
 function except(target, keys) {
     if (Array.isArray(target)) {
         return target.filter((key) => !keys.includes(key))
@@ -89,4 +170,4 @@ function kebabCase(string) {
     // Convert to lowercase
     return string.toLowerCase()
 }
-export { except, only, rejectNullValues, waitFor, kebabCase }
+export { modalDOMHandler, generateIdUsing, generateId, except, only, rejectNullValues, waitFor, kebabCase }

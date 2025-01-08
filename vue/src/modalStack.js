@@ -1,5 +1,5 @@
-import { computed, readonly, ref, markRaw, nextTick, h } from 'vue'
-import { except, only, waitFor, kebabCase } from './helpers'
+import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
+import { generateId, except, only, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -7,6 +7,8 @@ import { default as Axios } from 'axios'
 import ModalRoot from './ModalRoot.vue'
 
 let resolveComponent = null
+
+const pendingModalUpdates = ref({})
 const baseUrl = ref(null)
 const stack = ref([])
 const localModals = ref({})
@@ -23,7 +25,7 @@ export const initFromPageProps = (pageProps) => {
 
 class Modal {
     constructor(component, response, config, onClose, afterLeave) {
-        this.id = Modal.generateId()
+        this.id = response.id ?? generateId()
         this.isOpen = false
         this.shouldRender = false
         this.listeners = {}
@@ -31,9 +33,39 @@ class Modal {
         this.component = component
         this.props = ref(response.props)
         this.response = response
-        this.config = config
+        this.config = config ?? {}
         this.onCloseCallback = onClose
         this.afterLeaveCallback = afterLeave
+
+        if (pendingModalUpdates.value[this.id]) {
+            this.config = {
+                ...this.config,
+                ...(pendingModalUpdates.value[this.id].config ?? {}),
+            }
+
+            const pendingOnClose = pendingModalUpdates.value[this.id].onClose
+            const pendingOnAfterLeave = pendingModalUpdates.value[this.id].onAfterLeave
+
+            if (pendingOnClose) {
+                this.onCloseCallback = onClose
+                    ? () => {
+                          onClose()
+                          pendingOnClose()
+                      }
+                    : pendingOnClose
+            }
+
+            if (pendingOnAfterLeave) {
+                this.afterLeaveCallback = afterLeave
+                    ? () => {
+                          afterLeave()
+                          pendingOnAfterLeave()
+                      }
+                    : pendingOnAfterLeave
+            }
+
+            delete pendingModalUpdates.value[this.id]
+        }
 
         this.index = computed(() => stack.value.findIndex((m) => m.id === this.id))
         this.onTopOfStack = computed(() => {
@@ -45,24 +77,6 @@ class Modal {
 
             return modals.reverse().find((modal) => modal.shouldRender)?.id === this.id
         })
-    }
-
-    update = (config, onClose, afterLeave) => {
-        const index = this.index.value
-
-        if (index > -1) {
-            stack.value[index].config = config
-            stack.value[index].onCloseCallback = onClose
-            stack.value[index].afterLeaveCallback = afterLeave
-        }
-    }
-
-    static generateId() {
-        if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-            return `inertiaui_modal_${crypto.randomUUID()}`
-        }
-        // Fallback for environments where crypto.randomUUID is not available
-        return `inertiaui_modal_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
     }
 
     getParentModal = () => {
@@ -203,7 +217,7 @@ class Modal {
                 'X-Inertia-Partial-Component': this.response.component,
                 'X-Inertia-Version': this.response.version,
                 'X-Inertia-Partial-Data': keys.join(','),
-                'X-InertiaUI-Modal': true,
+                'X-InertiaUI-Modal': generateId(),
                 'X-InertiaUI-Modal-Use-Router': 0,
                 'X-InertiaUI-Modal-Base-Url': baseUrl.value,
             },
@@ -247,6 +261,8 @@ function visit(
     queryStringArrayFormat = 'brackets',
     useBrowserHistory = false,
 ) {
+    const modalId = generateId()
+
     return new Promise((resolve, reject) => {
         if (href.startsWith('#')) {
             resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave))
@@ -267,12 +283,14 @@ function visit(
             'X-Requested-With': 'XMLHttpRequest',
             'X-Inertia': true,
             'X-Inertia-Version': usePage().version,
-            'X-InertiaUI-Modal': true,
+            'X-InertiaUI-Modal': modalId,
             'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
             'X-InertiaUI-Modal-Base-Url': baseUrl.value,
         }
 
         if (useInertiaRouter) {
+            pendingModalUpdates.value[modalId] = { config, onClose, onAfterLeave }
+
             // Pushing the modal to the stack will be handled by the ModalRoot...
             return router.visit(url, {
                 method,
@@ -281,25 +299,7 @@ function visit(
                 preserveScroll: true,
                 preserveState: true,
                 onError: reject,
-                onFinish: () =>
-                    waitFor(() => stack.value[0]).then((modal) => {
-                        const originalOnClose = modal.onCloseCallback
-                        const originalAfterLeave = modal.afterLeaveCallback
-
-                        modal.update(
-                            config,
-                            () => {
-                                onClose?.()
-                                originalOnClose?.()
-                            },
-                            () => {
-                                onAfterLeave?.()
-                                originalAfterLeave?.()
-                            },
-                        )
-
-                        resolve(modal)
-                    }),
+                onFinish: () => waitFor(() => stack.value[0]).then(resolve),
             })
         }
 
@@ -312,9 +312,9 @@ function visit(
 function push(component, response, config, onClose, afterLeave) {
     const newModal = new Modal(component, response, config, onClose, afterLeave)
     stack.value.push(newModal)
-    nextTick(() => {
-        newModal.show()
-    })
+
+    nextTick(() => newModal.show())
+
     return newModal
 }
 

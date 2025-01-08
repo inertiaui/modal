@@ -5,6 +5,11 @@ import { ModalLink } from '@inertiaui/modal-vue'
 
 const log = ref([])
 
+function push(value) {
+    log.value.push(value)
+}
+
+
 defineProps({
     navigate: Boolean,
 })
@@ -15,6 +20,8 @@ defineProps({
         <div class="flex justify-between">
             <h2 class="text-lg font-medium text-gray-900">Events</h2>
 
+            <p>Page ID: {{ $page.props._inertiaui_modal_page_id }}</p>
+
             <p dusk="log">{{ log.join(',') }}</p>
         </div>
 
@@ -23,12 +30,12 @@ defineProps({
             dusk="modal-link"
             href="/users/1/edit"
             class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
-            @close="log.push('close')"
-            @focus="log.push('focus')"
-            @after-leave="log.push('after-leave')"
-            @blur="log.push('blur')"
-            @start="log.push('start')"
-            @success="log.push('success')"
+            @close="push('close')"
+            @focus="push('focus')"
+            @after-leave="push('after-leave')"
+            @blur="push('blur')"
+            @start="push('start')"
+            @success="push('success')"
         >
             Open Modal
         </ModalLink>

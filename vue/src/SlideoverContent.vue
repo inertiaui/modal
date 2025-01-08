@@ -1,11 +1,30 @@
 <script setup>
+import { onBeforeUnmount, ref } from 'vue'
 import CloseButton from './CloseButton.vue'
-import { DialogContent, DialogTitle, VisuallyHidden } from 'radix-vue'
+import { useFocusTrap } from './useFocusTrap'
 
-defineProps({
+const props = defineProps({
     modalContext: Object,
     config: Object,
 })
+
+const entered = ref(false)
+const wrapper = ref(null)
+let deactivate = null
+
+const emits = defineEmits(['after-leave'])
+
+function afterEnter() {
+    deactivate = useFocusTrap(wrapper.value, props.config?.closeExplicitly, () => props.modalContext.close()).deactivate
+    entered.value = true
+}
+
+function afterLeave() {
+    props.modalContext.afterLeave?.()
+    emits('after-leave')
+}
+
+onBeforeUnmount(() => deactivate?.())
 </script>
 
 <template>
@@ -25,12 +44,14 @@ defineProps({
                 enter-to-class="opacity-100 translate-x-0"
                 leave-from-class="opacity-100 translate-x-0"
                 :leave-to-class="'opacity-0 ' + (config.position === 'left' ? '-translate-x-full' : 'translate-x-full')"
-                @after-leave="modalContext.afterLeave"
+                @after-enter="afterEnter"
+                @after-leave="afterLeave"
             >
-                <DialogContent
-                    :aria-describedby="undefined"
+                <div
+                    v-show="modalContext.isOpen"
+                    ref="wrapper"
                     :class="{
-                        'im-slideover-wrapper w-full transition duration-300 ease-in-out': true,
+                        'im-slideover-wrapper pointer-events-auto w-full transition duration-300 ease-in-out': true,
                         'blur-sm': !modalContext.onTopOfStack,
                         'sm:max-w-sm': config.maxWidth == 'sm',
                         'sm:max-w-md': config.maxWidth == 'md',
@@ -43,22 +64,17 @@ defineProps({
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl': config.maxWidth == '6xl',
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': config.maxWidth == '7xl',
                     }"
-                    @escape-key-down="($event) => config?.closeExplicitly && $event.preventDefault()"
-                    @interact-outside="($event) => config?.closeExplicitly && $event.preventDefault()"
                 >
-                    <VisuallyHidden as-child>
-                        <DialogTitle />
-                    </VisuallyHidden>
-
                     <div
                         class="im-slideover-content relative"
+                        :data-inertiaui-modal-entered="entered"
                         :class="[config.paddingClasses, config.panelClasses]"
                     >
                         <div
                             v-if="config.closeButton"
                             class="absolute right-0 top-0 pr-3 pt-3"
                         >
-                            <CloseButton />
+                            <CloseButton @click="modalContext.close" />
                         </div>
 
                         <slot
@@ -66,7 +82,7 @@ defineProps({
                             :config="config"
                         />
                     </div>
-                </DialogContent>
+                </div>
             </Transition>
         </div>
     </div>

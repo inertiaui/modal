@@ -13,6 +13,11 @@ Route::get('/login', function () {
     return redirect('/users');
 });
 
+// Modal Events
+Route::get('/modal-events', function (User $user) {
+    return Inertia::modal('ModalEvents')->baseUrl('/users');
+})->name('modal-events');
+
 // Edit a user
 Route::get('/users/{user}/edit', function (User $user) {
     return Inertia::modal('EditUser', [
