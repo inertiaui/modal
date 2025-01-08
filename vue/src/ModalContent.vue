@@ -12,9 +12,16 @@ const entered = ref(false)
 const wrapper = ref(null)
 let deactivate = null
 
+const emits = defineEmits(['after-leave'])
+
 function afterEnter() {
-    let { deactivate } = useFocusTrap(wrapper.value, props.config?.closeExplicitly, () => props.modalContext.close())
+    deactivate = useFocusTrap(wrapper.value, props.config?.closeExplicitly, () => props.modalContext.close()).deactivate
     entered.value = true
+}
+
+function afterLeave() {
+    props.modalContext.afterLeave?.()
+    emits('after-leave')
 }
 
 onBeforeUnmount(() => deactivate?.())
@@ -39,7 +46,7 @@ onBeforeUnmount(() => deactivate?.())
                 leave-from-class="opacity-100 translate-y-0 sm:scale-100"
                 leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 @after-enter="afterEnter"
-                @after-leave="modalContext.afterLeave"
+                @after-leave="afterLeave"
             >
                 <div
                     v-show="modalContext.isOpen"

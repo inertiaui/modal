@@ -5,7 +5,7 @@ import ModalContent from './ModalContent'
 import SlideoverContent from './SlideoverContent'
 import { modalDOMHandler } from './helpers'
 
-const Modal = forwardRef(({ name, children, ...props }, ref) => {
+const Modal = forwardRef(({ name, children, onFocus = null, onBlur = null, onClose = null, onSuccess = null, onAfterLeave = null, ...props }, ref) => {
     const renderChildren = (contentProps) => {
         if (typeof children === 'function') {
             return children(contentProps)
@@ -30,6 +30,10 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
         <HeadlessModal
             ref={headlessModalRef}
             name={name}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            onClose={onClose}
+            onSuccess={onSuccess}
             {...props}
         >
             {({
@@ -51,6 +55,7 @@ const Modal = forwardRef(({ name, children, ...props }, ref) => {
                 <Transition
                     appear={true}
                     show={isOpen ?? false}
+                    afterLeave={onAfterLeave}
                 >
                     <div
                         className="im-dialog relative z-20"

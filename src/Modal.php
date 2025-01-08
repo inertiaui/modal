@@ -11,7 +11,6 @@ use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 use Illuminate\View\View;
 use Inertia\Response as InertiaResponse;
-use Inertia\Support\Header;
 
 class Modal implements Responsable
 {
@@ -100,7 +99,6 @@ class Modal implements Responsable
             // @phpstan-ignore-next-line
             ...$modal->toArray(),
             'id' => $request->header(static::HEADER_MODAL),
-            'viaInertiaRouter' => (bool) $request->header(Header::INERTIA),
             'baseUrl' => $baseUrl,
         ]);
 

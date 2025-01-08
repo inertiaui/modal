@@ -3,6 +3,7 @@ import { useModalStack, modalPropNames } from './../src/modalStack'
 import axios from 'axios'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
+import { generateIdUsing } from '../src/helpers'
 
 vi.mock('@inertiajs/vue3', () => ({
     router: {
@@ -131,6 +132,8 @@ describe('modalStack', () => {
         })
 
         it('should reload modal props with correct headers', async () => {
+            generateIdUsing(() => 'inertiaui_modal_uuid')
+
             const response = {
                 props: { test: 'initial', another: 'prop' },
                 url: '/test',
@@ -152,7 +155,7 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,another',
-                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': null,
                 },
@@ -163,6 +166,8 @@ describe('modalStack', () => {
         })
 
         it('should reload modal props with "only" option', async () => {
+            generateIdUsing(() => 'inertiaui_modal_uuid')
+
             const response = {
                 props: { test: 'initial', another: 'prop' },
                 url: '/test',
@@ -184,7 +189,7 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test',
-                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': null,
                 },
@@ -195,6 +200,8 @@ describe('modalStack', () => {
         })
 
         it('should reload modal props with "except" option', async () => {
+            generateIdUsing(() => 'inertiaui_modal_uuid')
+
             const response = {
                 props: { test: 'initial', another: 'prop', third: 'value' },
                 url: '/test',
@@ -216,7 +223,7 @@ describe('modalStack', () => {
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,third',
-                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': null,
                 },
@@ -228,6 +235,8 @@ describe('modalStack', () => {
         })
 
         it('should make an Axios request and push a new modal', async () => {
+            generateIdUsing(() => 'inertiaui_modal_uuid')
+
             const href = '/test-url'
             const method = 'get'
             const data = { key: 'value' }
@@ -268,7 +277,7 @@ describe('modalStack', () => {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-Inertia': true,
                     'X-Inertia-Version': '1.0',
-                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': '',
                 },

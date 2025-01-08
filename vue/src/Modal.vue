@@ -104,7 +104,6 @@ defineExpose({
                     leave-from-class="opacity-100"
                     leave-to-class="opacity-0"
                     @after-appear="rendered = true"
-                    @after-leave="$emit('after-leave')"
                 >
                     <div
                         v-show="isOpen"
@@ -123,6 +122,7 @@ defineExpose({
                     :is="config?.slideover ? SlideoverContent : ModalContent"
                     :modal-context="modalContext"
                     :config="config"
+                    @after-leave="$emit('after-leave')"
                 >
                     <slot
                         :id="id"

@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, only, kebabCase } from './helpers'
+import { except, only, kebabCase, generateId } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -16,6 +16,7 @@ let resolveComponent = null
 let baseUrl = null
 let newModalOnBase = null
 let localStackCopy = []
+let pendingModalUpdates = {}
 
 export const ModalStackProvider = ({ children }) => {
     const [stack, setStack] = useState([])
@@ -73,7 +74,7 @@ export const ModalStackProvider = ({ children }) => {
 
     class Modal {
         constructor(component, response, config, onClose, afterLeave) {
-            this.id = response.id ?? Modal.generateId()
+            this.id = response.id ?? generateId()
             this.isOpen = false
             this.shouldRender = false
             this.listeners = {}
@@ -81,9 +82,39 @@ export const ModalStackProvider = ({ children }) => {
             this.component = component
             this.props = response.props
             this.response = response
-            this.config = config
+            this.config = config ?? {}
             this.onCloseCallback = onClose
             this.afterLeaveCallback = afterLeave
+
+            if (pendingModalUpdates[this.id]) {
+                this.config = {
+                    ...this.config,
+                    ...(pendingModalUpdates[this.id].config ?? {}),
+                }
+
+                const pendingOnClose = pendingModalUpdates[this.id].onClose
+                const pendingOnAfterLeave = pendingModalUpdates[this.id].onAfterLeave
+
+                if (pendingOnClose) {
+                    this.onCloseCallback = onClose
+                        ? () => {
+                              onClose()
+                              pendingOnClose()
+                          }
+                        : pendingOnClose
+                }
+
+                if (pendingOnAfterLeave) {
+                    this.afterLeaveCallback = afterLeave
+                        ? () => {
+                              afterLeave()
+                              pendingOnAfterLeave()
+                          }
+                        : pendingOnAfterLeave
+                }
+
+                delete pendingModalUpdates[this.id]
+            }
 
             this.index = -1 // Will be set when added to the stack
             this.getParentModal = () => null // Will be set in push()
@@ -97,19 +128,6 @@ export const ModalStackProvider = ({ children }) => {
             }
             // Fallback for environments where crypto.randomUUID is not available
             return `inertiaui_modal_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
-        }
-
-        update = (config, onClose, afterLeave) => {
-            updateStack((prevStack) =>
-                prevStack.map((modal) => {
-                    if (modal.id === this.id) {
-                        modal.config = config
-                        modal.onCloseCallback = onClose
-                        modal.afterLeaveCallback = afterLeave
-                    }
-                    return modal
-                }),
-            )
         }
 
         show = () => {
@@ -219,7 +237,7 @@ export const ModalStackProvider = ({ children }) => {
                     'X-Inertia-Partial-Component': this.response.component,
                     'X-Inertia-Version': this.response.version,
                     'X-Inertia-Partial-Data': keys.join(','),
-                    'X-InertiaUI-Modal': Modal.generateId(),
+                    'X-InertiaUI-Modal': generateId(),
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
@@ -234,11 +252,11 @@ export const ModalStackProvider = ({ children }) => {
         }
     }
 
-    const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null, viaInertiaRouter = false) => {
-        return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave, viaInertiaRouter))
+    const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null) => {
+        return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave))
     }
 
-    const push = (component, response, config, onClose, afterLeave, viaInertiaRouter = false) => {
+    const push = (component, response, config, onClose, afterLeave) => {
         const newModal = new Modal(component, response, config, onClose, afterLeave)
         newModal.index = stack.length
 
@@ -293,9 +311,8 @@ export const ModalStackProvider = ({ children }) => {
         onAfterLeave = null,
         queryStringArrayFormat = 'brackets',
         useBrowserHistory = false,
-        modalId = null,
     ) => {
-        modalId = modalId ?? generateId()
+        const modalId = generateId()
 
         return new Promise((resolve, reject) => {
             if (href.startsWith('#')) {
@@ -324,6 +341,13 @@ export const ModalStackProvider = ({ children }) => {
 
             if (useInertiaRouter) {
                 newModalOnBase = null
+
+                pendingModalUpdates[modalId] = {
+                    config,
+                    onClose,
+                    onAfterLeave,
+                }
+
                 // Pushing the modal to the stack will be handled by the ModalRoot...
                 return router.visit(url, {
                     method,
@@ -333,25 +357,7 @@ export const ModalStackProvider = ({ children }) => {
                     preserveState: true,
                     onError: reject,
                     onFinish: () => {
-                        waitFor(() => newModalOnBase).then((modal) => {
-                            // const originalOnClose = modal.onCloseCallback
-                            // const originalAfterLeave = modal.afterLeaveCallback
-
-                            // modal.update(
-                            //     config,
-                            //     () => {
-                            //         onClose?.()
-                            //         originalOnClose?.()
-                            //     },
-                            //     () => {
-                            //         onAfterLeave?.()
-                            //         originalAfterLeave?.()
-                            //     },
-                            // )
-
-                            // modal.show()
-                            // resolve(modal)
-                        })
+                        waitFor(() => newModalOnBase).then(resolve)
                     },
                 })
             }
@@ -495,7 +501,7 @@ export const ModalRoot = ({ children }) => {
                                 preserveState: true,
                             })
                         }
-                    }, null, modalOnBase.viaInertiaRouter)
+                    })
                     .then((newModal) => {
                         newModalOnBase = newModal
                     })

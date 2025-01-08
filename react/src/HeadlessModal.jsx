@@ -4,7 +4,7 @@ import { useModalIndex } from './ModalRenderer.jsx'
 import { useModalStack } from './ModalRoot.jsx'
 import ModalRenderer from './ModalRenderer'
 
-const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
+const HeadlessModal = forwardRef(({ name, children, onFocus = null, onBlur = null, onClose = null, onSuccess = null, ...props }, ref) => {
     const modalIndex = useModalIndex()
     const { stack, registerLocalModal, removeLocalModal } = useModalStack()
 
@@ -57,6 +57,22 @@ const HeadlessModal = forwardRef(({ name, children, ...props }, ref) => {
     useEffect(() => {
         modalContextRef.current = modalContext
     }, [modalContext])
+
+    useEffect(() => {
+        if (modalContext !== null) {
+            modalContext.isOpen ? onSuccess?.() : onClose?.()
+        }
+    }, [modalContext?.isOpen])
+
+    const [rendered, setRendered] = useState(false)
+
+    useEffect(() => {
+        if (rendered && modalContext !== null && modalContext.isOpen) {
+            modalContext.onTopOfStack ? onFocus?.() : onBlur?.()
+        }
+
+        setRendered(true)
+    }, [modalContext?.onTopOfStack])
 
     useImperativeHandle(
         ref,

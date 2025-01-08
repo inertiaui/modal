@@ -89,7 +89,6 @@ class ModalTest extends TestCase
                     ->where('component', 'EditUser')
                     ->has('props')
                     ->has('id')
-                    ->has('viaInertiaRouter')
                     ->where('props.user.id', $user->id)
                     ->has('version')
                     ->has('url')

@@ -1,7 +1,7 @@
 <script setup>
 import { modalPropNames, useModalStack } from './modalStack'
 import { ref, provide, computed, watch, useAttrs, onBeforeUnmount } from 'vue'
-import { generateId, only, rejectNullValues } from './helpers'
+import { only, rejectNullValues } from './helpers'
 import { getConfig } from './config'
 
 const props = defineProps({

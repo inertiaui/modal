@@ -1,12 +1,20 @@
 import { TransitionChild } from '@headlessui/react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
-import { useFocusTrap } from './useFocusTrap'
-import { useRef } from 'react'
+import { focusTrapper } from './focusTrapper'
+import { useEffect, useRef, useState } from 'react'
 
 const ModalContent = ({ modalContext, config, children }) => {
-    const wrapper = useRef(null);
-    const { activate } = useFocusTrap(config?.closeExplicitly, () => modalContext.close());
+    const [entered, setEntered] = useState(false)
+    const wrapper = useRef(null)
+    const [focusTrap, setFocusTrap] = useState(null)
+
+    function afterEnter() {
+        setFocusTrap(focusTrapper(wrapper.current, config?.closeExplicitly, () => modalContext.close()))
+        setEntered(true)
+    }
+
+    useEffect(() => () => focusTrap?.deactivate(), [focusTrap])
 
     return (
         <div className="im-modal-container fixed inset-0 z-40 overflow-y-auto p-4">
@@ -24,7 +32,7 @@ const ModalContent = ({ modalContext, config, children }) => {
                     enterTo="opacity-100 translate-y-0 sm:scale-100"
                     leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    afterEnter={() => activate(wrapper.current)}
+                    afterEnter={afterEnter}
                     afterLeave={modalContext.afterLeave}
                     className={clsx(
                         'im-modal-wrapper pointer-events-auto w-full transition duration-300 ease-in-out',
@@ -43,7 +51,10 @@ const ModalContent = ({ modalContext, config, children }) => {
                         },
                     )}
                 >
-                    <div className={`im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`}>
+                    <div
+                        className={`im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`}
+                        data-inertiaui-modal-entered={entered}
+                    >
                         {config.closeButton && (
                             <div className="absolute right-0 top-0 pr-3 pt-3">
                                 <CloseButton onClick={modalContext.close} />

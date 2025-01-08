@@ -60,7 +60,17 @@ const modalDOMHandler = {
     },
 }
 
+let generateIdUsingCallback = null
+
+function generateIdUsing(callback) {
+    generateIdUsingCallback = callback
+}
+
 function generateId(prefix = 'inertiaui_modal_') {
+    if (generateIdUsingCallback) {
+        return generateIdUsingCallback()
+    }
+
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
         return `${prefix}${crypto.randomUUID()}`
     }
@@ -160,4 +170,4 @@ function kebabCase(string) {
     // Convert to lowercase
     return string.toLowerCase()
 }
-export { modalDOMHandler, generateId, except, only, rejectNullValues, waitFor, kebabCase }
+export { modalDOMHandler, generateIdUsing, generateId, except, only, rejectNullValues, waitFor, kebabCase }

@@ -1,4 +1,4 @@
-import { computed, readonly, ref, markRaw, h } from 'vue'
+import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
 import { generateId, except, only, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
@@ -312,7 +312,8 @@ function visit(
 function push(component, response, config, onClose, afterLeave) {
     const newModal = new Modal(component, response, config, onClose, afterLeave)
     stack.value.push(newModal)
-    newModal.show()
+
+    nextTick(() => newModal.show())
 
     return newModal
 }
