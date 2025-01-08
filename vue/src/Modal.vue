@@ -9,6 +9,8 @@ const modal = ref(null)
 const rendered = ref(false)
 const preparedDOM = ref(false)
 
+defineEmits(['after-leave', 'blur', 'close', 'focus', 'success'])
+
 watch(
     () => modal.value,
     (value) => {
@@ -77,6 +79,10 @@ defineExpose({
             setOpen,
             shouldRender,
         }"
+        @success="$emit('success')"
+        @close="$emit('close')"
+        @focus="$emit('focus')"
+        @blur="$emit('blur')"
     >
         <teleport
             v-if="shouldRender"
@@ -98,6 +104,7 @@ defineExpose({
                     leave-from-class="opacity-100"
                     leave-to-class="opacity-0"
                     @after-appear="rendered = true"
+                    @after-leave="$emit('after-leave')"
                 >
                     <div
                         v-show="isOpen"

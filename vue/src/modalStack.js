@@ -13,10 +13,6 @@ const baseUrl = ref(null)
 const stack = ref([])
 const localModals = ref({})
 
-const removePendingModalUpdate = (id) => {
-    delete pendingModalUpdates.value[id]
-}
-
 const setComponentResolver = (resolver) => {
     resolveComponent = resolver
 }
@@ -67,6 +63,8 @@ class Modal {
                       }
                     : pendingOnAfterLeave
             }
+
+            delete pendingModalUpdates.value[this.id]
         }
 
         this.index = computed(() => stack.value.findIndex((m) => m.id === this.id))
@@ -262,9 +260,8 @@ function visit(
     onAfterLeave = null,
     queryStringArrayFormat = 'brackets',
     useBrowserHistory = false,
-    modalId = null,
 ) {
-    modalId = modalId ?? generateId()
+    const modalId = generateId()
 
     return new Promise((resolve, reject) => {
         if (href.startsWith('#')) {
@@ -332,7 +329,6 @@ export const renderApp = (App, props) => {
 
 export function useModalStack() {
     return {
-        removePendingModalUpdate,
         setComponentResolver,
         getBaseUrl: () => baseUrl.value,
         setBaseUrl: (url) => (baseUrl.value = url),

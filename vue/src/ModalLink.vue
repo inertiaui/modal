@@ -74,19 +74,6 @@ const props = defineProps({
 const loading = ref(false)
 const modalStack = useModalStack()
 const modalContext = ref(null)
-const modalId = ref()
-
-watch(
-    props,
-    () => {
-        if (modalId.value) {
-            modalStack.removePendingModalUpdate(modalId.value)
-        }
-
-        modalId.value = generateId()
-    },
-    { immediate: true },
-)
 
 provide('modalContext', modalContext)
 
@@ -161,7 +148,6 @@ function handle() {
             onAfterLeave,
             props.queryStringArrayFormat,
             shouldNavigate.value,
-            modalId.value,
         )
         .then((context) => {
             modalContext.value = context

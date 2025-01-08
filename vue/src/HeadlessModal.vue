@@ -1,6 +1,6 @@
 <script setup>
 import { getConfig, getConfigByType } from './config'
-import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted } from 'vue'
+import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, watch } from 'vue'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
 
@@ -85,7 +85,7 @@ function registerEventListeners() {
     unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs)
 }
 
-const emits = defineEmits(['modal-event'])
+const emits = defineEmits(['modal-event', 'focus', 'blur', 'close', 'success'])
 
 function emit(event, ...args) {
     emits('modal-event', event, ...args)
@@ -122,6 +122,25 @@ defineExpose({
         return modalContext.value?.shouldRender
     },
 })
+
+watch(
+    () => modalContext.value?.onTopOfStack,
+    (onTopOfStack, previousOnTopOfStack) => {
+        if (onTopOfStack && !previousOnTopOfStack) {
+            emits('focus')
+        } else if (!onTopOfStack && previousOnTopOfStack) {
+            emits('blur')
+        }
+    },
+)
+
+watch(
+    () => modalContext.value?.isOpen,
+    (isOpen) => {
+        isOpen ? emits('success') : emits('close')
+    },
+    { immediate: true },
+)
 
 const nextIndex = computed(() => {
     return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index

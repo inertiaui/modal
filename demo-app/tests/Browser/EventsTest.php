@@ -23,6 +23,23 @@ class EventsTest extends DuskTestCase
         });
     }
 
+    #[Test]
+    public function it_can_attach_listeners_to_the_modal_component()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/modal-events')
+                ->waitForConsoleLog('success')
+                ->waitForModal()
+                ->clickLink('Create role')
+                ->waitForConsoleLog('blur')
+                ->waitForModal(1)
+                ->clickModalCloseButton(1)
+                ->waitForConsoleLog('focus')
+                ->clickModalCloseButton()
+                ->waitForConsoleLog('close');
+        });
+    }
+
     #[DataProvider('booleanProvider')]
     #[Test]
     public function it_can_attach_a_listener_for_blur(bool $navigate)
