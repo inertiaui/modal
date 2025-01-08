@@ -2,16 +2,18 @@ import { TransitionChild } from '@headlessui/react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
 import { useFocusTrap } from './useFocusTrap'
+import { useRef } from 'react'
 
 const SlideoverContent = ({ modalContext, config, children }) => {
-    const wrapper = useFocusTrap(config?.closeExplicitly, () => modalContext.close())
+    const wrapper = useRef(null);
+    const { activate } = useFocusTrap(config?.closeExplicitly, () => modalContext.close());
 
     return (
         <div className="im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden">
             <div
                 className={clsx('im-slideover-positioner flex min-h-full items-center', {
-                    'justify-start': config.position === 'left',
-                    'justify-end': config.position === 'right',
+                    'justify-start rtl:justify-end': config?.position === 'left',
+                    'justify-end rtl:justify-start': config?.position === 'right',
                 })}
             >
                 <TransitionChild
@@ -21,6 +23,7 @@ const SlideoverContent = ({ modalContext, config, children }) => {
                     enterTo="opacity-100 translate-x-0"
                     leaveFrom="opacity-100 translate-x-0"
                     leaveTo={`opacity-0 ${config.position === 'left' ? '-translate-x-full' : 'translate-x-full'}`}
+                    afterEnter={() => activate(wrapper.current)}
                     afterLeave={modalContext.afterLeave}
                     className={clsx(
                         'im-slideover-wrapper pointer-events-auto w-full transition duration-300 ease-in-out',

@@ -35,6 +35,16 @@ export default function Users({ users, random, navigate }) {
                                     >
                                         Edit
                                     </ModalLink>
+                                    <ModalLink
+                                        slideover={true}
+                                        navigate={navigate}
+                                        dusk={`slideover-user-${user.id}`}
+                                        href={`/users/${user.id}/edit`}
+                                        className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                        onUserGreets={alertGreeting}
+                                    >
+                                        Slideover
+                                    </ModalLink>
                                 </div>
                             </div>
                         </li>

@@ -53,6 +53,16 @@ function alertGreeting(greeting) {
                             >
                                 Edit
                             </ModalLink>
+                            <ModalLink
+                                slideover
+                                :navigate="navigate"
+                                :dusk="'slideover-user-' + user.id"
+                                :href="`/users/${user.id}/edit`"
+                                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                @user-greets="alertGreeting"
+                            >
+                                Slideover
+                            </ModalLink>
                         </div>
                     </div>
                 </li>

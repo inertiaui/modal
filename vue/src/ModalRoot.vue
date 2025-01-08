@@ -24,19 +24,25 @@ onUnmounted(
         previousModalOnBase.value = modalOnBase
         modalStack.setBaseUrl(modalOnBase.baseUrl)
 
-        modalStack.pushFromResponseData(modalOnBase, {}, () => {
-            if (!modalOnBase.baseUrl) {
-                console.error('No base url in modal response data so cannot navigate back')
-                return
-            }
+        modalStack.pushFromResponseData(
+            modalOnBase,
+            {},
+            () => {
+                if (!modalOnBase.baseUrl) {
+                    console.error('No base url in modal response data so cannot navigate back')
+                    return
+                }
 
-            if (!isNavigating.value && window.location.href !== modalOnBase.baseUrl) {
-                router.visit(modalOnBase.baseUrl, {
-                    preserveScroll: true,
-                    preserveState: true,
-                })
-            }
-        })
+                if (!isNavigating.value && window.location.href !== modalOnBase.baseUrl) {
+                    router.visit(modalOnBase.baseUrl, {
+                        preserveScroll: true,
+                        preserveState: true,
+                    })
+                }
+            },
+            null,
+            modalOnBase.viaInertiaRouter,
+        )
     }),
 )
 

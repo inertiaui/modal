@@ -60,6 +60,15 @@ const modalDOMHandler = {
     },
 }
 
+function generateId(prefix = 'inertiaui_modal_') {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return `${prefix}${crypto.randomUUID()}`
+    }
+
+    // Fallback for environments where crypto.randomUUID is not available
+    return `${prefix}${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
+}
+
 function except(target, keys) {
     if (Array.isArray(target)) {
         return target.filter((key) => !keys.includes(key))
@@ -151,4 +160,4 @@ function kebabCase(string) {
     // Convert to lowercase
     return string.toLowerCase()
 }
-export { modalDOMHandler, except, only, rejectNullValues, waitFor, kebabCase }
+export { modalDOMHandler, generateId, except, only, rejectNullValues, waitFor, kebabCase }

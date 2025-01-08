@@ -2,24 +2,27 @@ import { useEffect, useRef } from 'react'
 import { createFocusTrap } from 'focus-trap'
 
 export function useFocusTrap(closeExplicitly, onDeactivateCallback) {
-    const wrapperRef = useRef(null)
+    const trapRef = useRef(null)
 
-    useEffect(() => {
-        if (!wrapperRef.current) {
-            return
+    const activate = (wrapper) => {
+        if (wrapper) {
+            trapRef.current = createFocusTrap(wrapper, {
+                clickOutsideDeactivates: !closeExplicitly,
+                escapeDeactivates: !closeExplicitly,
+                onDeactivate: () => onDeactivateCallback?.(),
+
+                fallbackFocus: () => wrapper,
+            })
+
+            trapRef.current.activate()
         }
+    }
 
-        const trap = createFocusTrap(wrapperRef.current, {
-            clickOutsideDeactivates: !closeExplicitly,
-            escapeDeactivates: !closeExplicitly,
-            onDeactivate: () => onDeactivateCallback?.(),
-            fallbackFocus: () => wrapperRef.current,
-        })
+    const deactivate = () => {
+        trapRef.current?.deactivate()
+    }
 
-        trap.activate()
+    useEffect(() => deactivate, [])
 
-        return () => trap.deactivate()
-    }, [])
-
-    return wrapperRef
+    return { activate, deactivate }
 }

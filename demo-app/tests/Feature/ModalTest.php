@@ -88,6 +88,7 @@ class ModalTest extends TestCase
                 ->has('_inertiaui_modal', fn (AssertableInertia $assert) => $assert
                     ->where('component', 'EditUser')
                     ->has('props')
+                    ->has('viaInertiaRouter')
                     ->where('props.user.id', $user->id)
                     ->has('version')
                     ->has('url')

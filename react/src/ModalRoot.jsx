@@ -73,7 +73,7 @@ export const ModalStackProvider = ({ children }) => {
 
     class Modal {
         constructor(component, response, config, onClose, afterLeave) {
-            this.id = Modal.generateId()
+            this.id = response.id ?? Modal.generateId()
             this.isOpen = false
             this.shouldRender = false
             this.listeners = {}
@@ -219,7 +219,7 @@ export const ModalStackProvider = ({ children }) => {
                     'X-Inertia-Partial-Component': this.response.component,
                     'X-Inertia-Version': this.response.version,
                     'X-Inertia-Partial-Data': keys.join(','),
-                    'X-InertiaUI-Modal': true,
+                    'X-InertiaUI-Modal': Modal.generateId(),
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
@@ -234,11 +234,11 @@ export const ModalStackProvider = ({ children }) => {
         }
     }
 
-    const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null) => {
-        return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave))
+    const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null, viaInertiaRouter = false) => {
+        return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave, viaInertiaRouter))
     }
 
-    const push = (component, response, config, onClose, afterLeave) => {
+    const push = (component, response, config, onClose, afterLeave, viaInertiaRouter = false) => {
         const newModal = new Modal(component, response, config, onClose, afterLeave)
         newModal.index = stack.length
 
@@ -293,7 +293,10 @@ export const ModalStackProvider = ({ children }) => {
         onAfterLeave = null,
         queryStringArrayFormat = 'brackets',
         useBrowserHistory = false,
+        modalId = null,
     ) => {
+        modalId = modalId ?? generateId()
+
         return new Promise((resolve, reject) => {
             if (href.startsWith('#')) {
                 resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave))
@@ -314,7 +317,7 @@ export const ModalStackProvider = ({ children }) => {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-Inertia': true,
                 'X-Inertia-Version': pageVersion,
-                'X-InertiaUI-Modal': true,
+                'X-InertiaUI-Modal': modalId,
                 'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
                 'X-InertiaUI-Modal-Base-Url': baseUrl,
             }
@@ -331,22 +334,23 @@ export const ModalStackProvider = ({ children }) => {
                     onError: reject,
                     onFinish: () => {
                         waitFor(() => newModalOnBase).then((modal) => {
-                            const originalOnClose = modal.onCloseCallback
-                            const originalAfterLeave = modal.afterLeaveCallback
+                            // const originalOnClose = modal.onCloseCallback
+                            // const originalAfterLeave = modal.afterLeaveCallback
 
-                            modal.update(
-                                config,
-                                () => {
-                                    onClose?.()
-                                    originalOnClose?.()
-                                },
-                                () => {
-                                    onAfterLeave?.()
-                                    originalAfterLeave?.()
-                                },
-                            )
+                            // modal.update(
+                            //     config,
+                            //     () => {
+                            //         onClose?.()
+                            //         originalOnClose?.()
+                            //     },
+                            //     () => {
+                            //         onAfterLeave?.()
+                            //         originalAfterLeave?.()
+                            //     },
+                            // )
 
-                            resolve(modal)
+                            // modal.show()
+                            // resolve(modal)
                         })
                     },
                 })
@@ -491,7 +495,7 @@ export const ModalRoot = ({ children }) => {
                                 preserveState: true,
                             })
                         }
-                    })
+                    }, null, modalOnBase.viaInertiaRouter)
                     .then((newModal) => {
                         newModalOnBase = newModal
                     })

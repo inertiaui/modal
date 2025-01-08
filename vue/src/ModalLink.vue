@@ -1,7 +1,7 @@
 <script setup>
 import { modalPropNames, useModalStack } from './modalStack'
-import { ref, provide, computed, watch, useAttrs, onBeforeUnmount } from 'vue'
-import { only, rejectNullValues } from './helpers'
+import { ref, provide, computed, watch, useAttrs, onBeforeUnmount, watchEffect } from 'vue'
+import { generateId, only, rejectNullValues } from './helpers'
 import { getConfig } from './config'
 
 const props = defineProps({
@@ -74,6 +74,19 @@ const props = defineProps({
 const loading = ref(false)
 const modalStack = useModalStack()
 const modalContext = ref(null)
+const modalId = ref()
+
+watch(
+    props,
+    () => {
+        if (modalId.value) {
+            modalStack.removePendingModalUpdate(modalId.value)
+        }
+
+        modalId.value = generateId()
+    },
+    { immediate: true },
+)
 
 provide('modalContext', modalContext)
 
@@ -100,7 +113,11 @@ watch(
 )
 
 const unsubscribeEventListeners = ref(null)
-onBeforeUnmount(() => unsubscribeEventListeners.value?.())
+
+onBeforeUnmount(() => {
+    modalStack.removePendingModalUpdate(modalId.value)
+    unsubscribeEventListeners.value?.()
+})
 
 const $attrs = useAttrs()
 
@@ -145,6 +162,7 @@ function handle() {
             onAfterLeave,
             props.queryStringArrayFormat,
             shouldNavigate.value,
+            modalId.value,
         )
         .then((context) => {
             modalContext.value = context

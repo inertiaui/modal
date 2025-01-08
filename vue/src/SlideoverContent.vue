@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import CloseButton from './CloseButton.vue'
 import { useFocusTrap } from './useFocusTrap'
 
@@ -7,7 +8,8 @@ const props = defineProps({
     config: Object,
 })
 
-const { wrapper } = useFocusTrap(props.config?.closeExplicitly, () => props.modalContext.close())
+const wrapper = ref(null)
+const focusTrap = () => useFocusTrap(wrapper.value, props.config?.closeExplicitly, () => props.modalContext.close())
 </script>
 
 <template>
@@ -27,6 +29,7 @@ const { wrapper } = useFocusTrap(props.config?.closeExplicitly, () => props.moda
                 enter-to-class="opacity-100 translate-x-0"
                 leave-from-class="opacity-100 translate-x-0"
                 :leave-to-class="'opacity-0 ' + (config.position === 'left' ? '-translate-x-full' : 'translate-x-full')"
+                @after-enter="focusTrap"
                 @after-leave="modalContext.afterLeave"
             >
                 <div

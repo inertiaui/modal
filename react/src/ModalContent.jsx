@@ -2,9 +2,11 @@ import { TransitionChild } from '@headlessui/react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
 import { useFocusTrap } from './useFocusTrap'
+import { useRef } from 'react'
 
 const ModalContent = ({ modalContext, config, children }) => {
-    const wrapper = useFocusTrap(config?.closeExplicitly, () => modalContext.close())
+    const wrapper = useRef(null);
+    const { activate } = useFocusTrap(config?.closeExplicitly, () => modalContext.close());
 
     return (
         <div className="im-modal-container fixed inset-0 z-40 overflow-y-auto p-4">
@@ -22,6 +24,7 @@ const ModalContent = ({ modalContext, config, children }) => {
                     enterTo="opacity-100 translate-y-0 sm:scale-100"
                     leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    afterEnter={() => activate(wrapper.current)}
                     afterLeave={modalContext.afterLeave}
                     className={clsx(
                         'im-modal-wrapper pointer-events-auto w-full transition duration-300 ease-in-out',
