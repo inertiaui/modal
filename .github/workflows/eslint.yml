@@ -8,8 +8,10 @@ on:
       - "**.vue"
       - "react/.eslintrc.cjs"
       - "react/.prettierrc"
+      - "react/package.json"
       - "vue/.eslintrc.cjs"
       - "vue/.prettierrc"
+      - "vue/package.json"
       - ".github/workflows/eslint.yml"
 
 permissions:
