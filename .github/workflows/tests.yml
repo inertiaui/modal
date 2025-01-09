@@ -9,7 +9,7 @@ on:
       - "**.vue"
       - "**/composer.json"
       - "**/package-lock.json"
-      - "demo-app/{.env.example,phpunit.xml.dist}"
+      - "demo-app/{.env.example,composer.json,package.json,phpunit.xml.dist}"
       - ".github/workflows/tests.yml"
 
 jobs:
