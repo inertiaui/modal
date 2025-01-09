@@ -65,6 +65,38 @@ export default function CreateUserModal() {
 
 :::
 
+### `Modal` Events
+
+The `Modal` component emits several events that you can listen to:
+
+- `after-leave`: Triggered after the modal has been removed from the DOM.
+- `blur`: Triggered when the modal loses focus because another modal is opened on top of it.
+- `close`: Triggered when the modal is closed.
+- `focus`: Triggered when the modal gains focus because a modal on top of it has been closed.
+- `success`: Triggered when the modal has been successfully fetched and opened.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <Modal @close="doSomething">
+        <!-- ... -->
+    </Modal>
+</template>
+```
+
+```jsx [React]
+export default function CreateUserModal() {
+    return (
+        <Modal onClose={() => doSomething()}>
+            {/* ... */}
+        </Modal>
+    );
+}
+```
+
+:::
+
 ### Customizing the Modal
 
 You may add additional props to the `Modal` component to customize its behavior and style. Check out the [Configuration](/configuration.html) section for a list of all available props.
@@ -209,39 +241,7 @@ export default function UserIndex() {
 
 :::
 
-### Events
-
-The `Modal` component emits several events that you can listen to:
-
-`after-leave`: Triggered after the modal has been removed from the DOM.
-`blur:` Triggered when the modal loses focus because another modal is opened on top of it.
-`close:` Triggered when the modal is closed.
-`focus:` Triggered when the modal gains focus because a modal on top of it has been closed.
-`success:` Triggered when the modal has been successfully fetched and opened.
-
-::: code-group
-
-```vue [Vue]
-<template>
-    <Modal @close="doSomething">
-        <!-- ... -->
-    </Modal>
-</template>
-```
-
-```jsx [React]
-export default function CreateUserModal() {
-    return (
-        <Modal onClose={() => doSomething()}>
-            {/* ... */}
-        </Modal>
-    );
-}
-```
-
-:::
-
-#### `ModalLink` Events
+### `ModalLink` Events
 
 In addition to the `loading` prop, you can also listen to the events emitted by the `ModalLink` component. You can use the `@start` and `@success` events to show a loading spinner or text.
 
