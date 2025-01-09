@@ -109,9 +109,9 @@ jobs:
           php artisan about
           npm ci
           if [ "${{ matrix.stack }}" == "react-18" ]; then
-            npm install react@^18.2.0 react-dom@^19.2.0
+            npm install react@^18.2.0 react-dom@^18.2.0
           elif [ "${{ matrix.stack }}" == "react-19" ]; then
-            npm install react@^19.2.0 react-dom@^19.2.0
+            npm install react@^19.0.0 react-dom@^19.0.0
           fi
           npm list react react-dom
           npm install @inertiajs/react@${{ matrix.inertia == 'v1' && '1.3.0' || '2.0.0' }} @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.3.0' || '2.0.0' }}
