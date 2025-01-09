@@ -8,7 +8,7 @@ return [
     /**
      * The stack that should be used by the application. Can be 'vue' or 'react'.
      */
-    'stack' => env('APP_STACK', 'vue'),
+    'stack' => env('APP_STACK', 'vue') === 'vue' ? 'vue' : 'react',
 
     /*
     |--------------------------------------------------------------------------

@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue';
 import fs from 'fs';
 import dotenv from 'dotenv';
 const env = dotenv.parse(fs.readFileSync('.env'));
-const reactStack = env.APP_STACK === 'react';
+const reactStack = env.APP_STACK !== 'vue';
 const packagesAreInstalled = fs.existsSync('node_modules/@inertiaui/modal-react') && fs.existsSync('node_modules/@inertiaui/modal-vue');
 
 export default defineConfig({

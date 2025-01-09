@@ -28,7 +28,7 @@ jobs:
     env:
       APP_URL: "http://127.0.0.1:8000"
       DB_CONNECTION: sqlite
-      APP_STACK: ${{ matrix.stack == 'react-18' || matrix.stack == 'react-19' && 'react' || 'vue' }}
+      APP_STACK: ${{ matrix.stack }}
 
     steps:
       - name: Checkout code
