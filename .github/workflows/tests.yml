@@ -22,7 +22,7 @@ jobs:
       fail-fast: true
       matrix:
         inertia: [v1, v2]
-        stack: [react, vue]
+        stack: [react-18, react-19, vue]
         app_mounting: [auto, custom]
 
     env:
@@ -63,13 +63,13 @@ jobs:
           cp .env.example .env
 
       - name: Set React Environment Variables
-        if: ${{ matrix.stack == 'react' }}
+        if: ${{ matrix.stack == 'react-18' || matrix.stack == 'react-19' }}
         run: |
           cd demo-app
           sed -i -e "s|APP_STACK=vue|APP_STACK=react|g" .env
 
       - name: Build React library
-        if: ${{ matrix.stack == 'react' }}
+        if: ${{ matrix.stack == 'react-18' || matrix.stack == 'react-19' }}
         run: |
           # we need eslint-plugin-vue for files like helpers.js
           cd vue
@@ -79,12 +79,6 @@ jobs:
           npm ci
           npm list @inertiajs/react
           npm run build
-
-      # - name: Test React library
-      #   if: ${{ matrix.stack == 'react' }}
-      #   run: |
-      #     cd react
-      #     npm run test
 
       - name: Build Vue library
         if: ${{ matrix.stack == 'vue' }}
@@ -114,6 +108,9 @@ jobs:
           composer require inertiajs/inertia-laravel:${{ matrix.inertia == 'v1' && '^1.3' || '2.0' }}
           php artisan about
           npm ci
+          if [ "${{ matrix.stack }}" == "react-19" ]; then
+            npm install --save-exact react@^19.0.0 react-dom@^19.0.0
+          fi
           npm install @inertiajs/react@${{ matrix.inertia == 'v1' && '1.3.0' || '2.0.0' }} @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.3.0' || '2.0.0' }}
           npm install --install-links ../react
           npm install --install-links ../vue

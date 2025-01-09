@@ -21,7 +21,7 @@ export default defineConfig({
             fileName: 'inertiaui-modal',
         },
         rollupOptions: {
-            external: ['@inertiajs/core', '@inertiajs/react', 'axios', 'react', /^react\/.*/, 'react-dom', /react-dom\/.*/],
+            external: ['@inertiajs/core', '@inertiajs/react', 'axios', 'react', 'react-dom', 'react/jsx-runtime'],
         },
     },
 })
