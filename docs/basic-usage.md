@@ -211,6 +211,38 @@ export default function UserIndex() {
 
 ### Events
 
+The `Modal` component emits several events that you can listen to:
+
+`after-leave`: Triggered after the modal has been removed from the DOM.
+`blur:` Triggered when the modal loses focus because another modal is opened on top of it.
+`close:` Triggered when the modal is closed.
+`focus:` Triggered when the modal gains focus because a modal on top of it has been closed.
+`success:` Triggered when the modal has been successfully fetched and opened.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <Modal @close="doSomething">
+        <!-- ... -->
+    </Modal>
+</template>
+```
+
+```jsx [React]
+export default function CreateUserModal() {
+    return (
+        <Modal onClose={() => doSomething()}>
+            {/* ... */}
+        </Modal>
+    );
+}
+```
+
+:::
+
+#### `ModalLink` Events
+
 In addition to the `loading` prop, you can also listen to the events emitted by the `ModalLink` component. You can use the `@start` and `@success` events to show a loading spinner or text.
 
 ::: code-group
@@ -271,6 +303,9 @@ export default function UserIndex() {
 :::
 
 Then there are two more events: `@close` and `@after-leave`. The `@close` event is triggered when the modal is closed, and the `@after-leave` event is triggered after the modal has been removed from the DOM.
+
+> [!WARNING] ModalLink Events and Browser Navigation
+> The `close` and `after-leave` events are not triggered when the modal is closed after navigating to it using the browser's back or forward buttons. This is because Inertia.js rerenders the page, and therefore, the `ModalLink` components. Closing the modal will not be linked to the original `ModalLink` component.
 
 ### Customizing
 
