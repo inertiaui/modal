@@ -24,11 +24,6 @@ class ModalServiceProvider extends ServiceProvider
             ], 'config');
         }
 
-        // Give the DispatchBaseUrlRequest class the router instance
-        $this->app->when(DispatchBaseUrlRequest::class)
-            ->needs(Router::class)
-            ->give(fn () => $this->app['router']);
-
         // Add a 'modal' macro to ResponseFactory for convenient modal creation
         // like Inertia::modal('Component', ['prop' => 'value'])
         ResponseFactory::macro('modal', fn ($component, $props = []): \InertiaUI\Modal\Modal => new Modal($component, $props));
