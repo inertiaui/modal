@@ -34,7 +34,7 @@ const SlideoverContent = ({ modalContext, config, children }) => {
                     afterEnter={afterEnter}
                     afterLeave={modalContext.afterLeave}
                     className={clsx(
-                        'im-slideover-wrapper pointer-events-auto w-full transition duration-300 ease-in-out',
+                        'im-slideover-wrapper w-full transition duration-300 ease-in-out',
                         modalContext.onTopOfStack ? '' : 'blur-sm',
                         {
                             'sm:max-w-sm': config.maxWidth === 'sm',

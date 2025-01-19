@@ -52,7 +52,7 @@ onBeforeUnmount(() => deactivate?.())
                     v-show="modalContext.isOpen"
                     ref="wrapper"
                     :class="{
-                        'im-modal-wrapper pointer-events-auto w-full transition duration-300 ease-in-out': true,
+                        'im-modal-wrapper w-full transition duration-300 ease-in-out': true,
                         'blur-sm': !modalContext.onTopOfStack,
                         'sm:max-w-sm': config.maxWidth == 'sm',
                         'sm:max-w-md': config.maxWidth == 'md',

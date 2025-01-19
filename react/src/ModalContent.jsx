@@ -35,7 +35,7 @@ const ModalContent = ({ modalContext, config, children }) => {
                     afterEnter={afterEnter}
                     afterLeave={modalContext.afterLeave}
                     className={clsx(
-                        'im-modal-wrapper pointer-events-auto w-full transition duration-300 ease-in-out',
+                        'im-modal-wrapper w-full transition duration-300 ease-in-out',
                         modalContext.onTopOfStack ? '' : 'blur-sm',
                         {
                             'sm:max-w-sm': config.maxWidth === 'sm',

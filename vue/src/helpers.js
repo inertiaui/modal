@@ -2,7 +2,6 @@ const modalDOMHandler = {
     modifiedElements: [],
     bodyState: {
         hasOverflowHidden: false,
-        hasPointerEventsNone: false,
         originalPaddingRight: '',
     },
 
@@ -21,12 +20,6 @@ const modalDOMHandler = {
             this.bodyState.hasOverflowHidden = true
         }
 
-        // Handle pointer events
-        if (!document.body.classList.contains('pointer-events-none')) {
-            document.body.classList.add('pointer-events-none')
-            this.bodyState.hasPointerEventsNone = true
-        }
-
         // Set aria-hidden on non-modal elements
         Array.from(document.body.children).forEach((element) => {
             if (!element.classList.contains('im-dialog') && element.getAttribute('aria-hidden') !== 'true') {
@@ -41,11 +34,6 @@ const modalDOMHandler = {
         if (this.bodyState.hasOverflowHidden) {
             document.body.classList.remove('overflow-hidden')
             this.bodyState.hasOverflowHidden = false
-        }
-
-        if (this.bodyState.hasPointerEventsNone) {
-            document.body.classList.remove('pointer-events-none')
-            this.bodyState.hasPointerEventsNone = false
         }
 
         // Restore original padding-right
