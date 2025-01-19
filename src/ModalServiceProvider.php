@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace InertiaUI\Modal;
 
-use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Response;
