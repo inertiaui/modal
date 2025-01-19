@@ -2,6 +2,20 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.18.1 - 2025-01-19
+
+### What's Changed
+
+* Update docs by @yoeriboven in https://github.com/inertiaui/modal/pull/69
+* Remove manual `Router` binding by @pascalbaljet in 9914962
+* Remove `pointer-events*` classes by @pascalbaljet in 71d51d3
+
+### New Contributors
+
+* @yoeriboven made their first contribution in https://github.com/inertiaui/modal/pull/69
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.18.0...0.18.1
+
 ## 0.17.0 - 2025-01-08
 
 ### What's Changed
