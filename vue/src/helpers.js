@@ -1,53 +1,3 @@
-const modalDOMHandler = {
-    modifiedElements: [],
-    bodyState: {
-        hasOverflowHidden: false,
-        originalPaddingRight: '',
-    },
-
-    prepare() {
-        // Calculate scrollbar width
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
-
-        // Store original padding-right and add scrollbar width
-        this.bodyState.originalPaddingRight = document.body.style.paddingRight
-        const currentPaddingRight = parseInt(window.getComputedStyle(document.body).paddingRight, 10)
-        document.body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`
-
-        // Handle overflow
-        if (!document.body.classList.contains('overflow-hidden')) {
-            document.body.classList.add('overflow-hidden')
-            this.bodyState.hasOverflowHidden = true
-        }
-
-        // Set aria-hidden on non-modal elements
-        Array.from(document.body.children).forEach((element) => {
-            if (!element.classList.contains('im-dialog') && element.getAttribute('aria-hidden') !== 'true') {
-                element.setAttribute('aria-hidden', 'true')
-                this.modifiedElements.push(element)
-            }
-        })
-    },
-
-    cleanup() {
-        // Restore body classes
-        if (this.bodyState.hasOverflowHidden) {
-            document.body.classList.remove('overflow-hidden')
-            this.bodyState.hasOverflowHidden = false
-        }
-
-        // Restore original padding-right
-        document.body.style.paddingRight = this.bodyState.originalPaddingRight
-        this.bodyState.originalPaddingRight = ''
-
-        // Remove aria-hidden
-        this.modifiedElements.forEach((element) => {
-            element.removeAttribute('aria-hidden')
-        })
-        this.modifiedElements = []
-    },
-}
-
 let generateIdUsingCallback = null
 
 function generateIdUsing(callback) {
@@ -158,4 +108,4 @@ function kebabCase(string) {
     // Convert to lowercase
     return string.toLowerCase()
 }
-export { modalDOMHandler, generateIdUsing, generateId, except, only, rejectNullValues, waitFor, kebabCase }
+export { generateIdUsing, generateId, except, only, rejectNullValues, waitFor, kebabCase }
