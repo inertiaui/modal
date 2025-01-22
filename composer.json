@@ -43,6 +43,14 @@
             "@build-react",
             "@build-vue"
         ],
+        "version": [
+            "cd react && npm version ${VERSION}",
+            "@update-react",
+            "@build-react",
+            "cd vue && npm version ${VERSION}",
+            "@update-vue",
+            "@build-vue"
+        ],
         "update-react": "cd react && npm upgrade",
         "update-vue": "cd vue && npm upgrade",
         "update-demo-app": "cd demo-app && composer update && npm upgrade && php artisan dusk:chrome-driver --detect",
