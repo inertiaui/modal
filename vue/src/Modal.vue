@@ -3,10 +3,19 @@ import { DialogOverlay, DialogPortal, DialogRoot } from 'radix-vue'
 import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
-import { ref } from 'vue'
+import { watch, ref } from 'vue'
 
 const modal = ref(null)
 const rendered = ref(false)
+
+watch(rendered, (value) => {
+    if (value) {
+        // The radix-vue package sets 'pointer-events: none' on the body when a
+        // dialog is open, but we do not want that backdrop, as other packages
+        // rendered outside of the dialog should still be clickable.
+        document.body.style.removeProperty('pointer-events')
+    }
+})
 
 defineEmits(['after-leave', 'blur', 'close', 'focus', 'success'])
 
@@ -88,6 +97,7 @@ defineExpose({
                         leave-from-class="opacity-100"
                         leave-to-class="opacity-0"
                         @after-appear="rendered = true"
+                        @after-leave="rendered = false"
                     >
                         <DialogOverlay class="im-backdrop fixed inset-0 z-30 bg-black/75" />
                     </Transition>
