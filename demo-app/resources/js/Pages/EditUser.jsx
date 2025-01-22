@@ -1,14 +1,12 @@
 // EditUser.jsx
 import React, { useState, useRef } from 'react';
-import { useForm, usePage } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import { Modal, ModalLink } from '@inertiaui/modal-react';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
 
-export default function EditUser({ user, roles }) {
+export default function EditUser({ user, roles, randomKey }) {
     const [message, setMessage] = useState('');
     const modalRef = useRef(null);
-
-    const $pageProps = usePage();
 
     const { data, setData, put, errors } = useForm({
         name: user.name,
@@ -43,6 +41,7 @@ export default function EditUser({ user, roles }) {
                 <>
                     <div>
                         <h2 className="text-lg font-medium text-gray-900">Edit User {user.name}</h2>
+                        <p className="text-sm text-gray-500">Random key: <span dusk="randomKey">{randomKey}</span></p>
                         {message && <p dusk="message" className="text-sm text-gray-500">{message}</p>}
                     </div>
 
@@ -113,6 +112,9 @@ export default function EditUser({ user, roles }) {
                         </div>
 
                         <div className="flex justify-end">
+                            <Link href={route('users.edit', { user, navigate: 1, randomKey })}>
+                                Edit again!
+                            </Link>
                             <button
                                 type="button"
                                 onClick={close}

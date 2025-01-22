@@ -77,4 +77,41 @@ class ModalTest extends DuskTestCase
                 ->assertMissing('div[data-inertiaui-modal-id]');
         });
     }
+
+    #[Test]
+    public function it_can_refetch_the_same_base_modal()
+    {
+        $this->browse(function (Browser $browser) {
+            $firstUser = User::orderBy('name')->first();
+
+            $browser->visit('/users?navigate=1')
+                ->waitForFirstUser()
+                ->click("@edit-user-{$firstUser->id}")
+                ->waitForModal();
+
+            $randomKey = $browser->text('@randomKey');
+
+            $browser->clickLink('Edit again!')
+                ->waitUntilMissingText($randomKey);
+
+            $newRandomKey = $browser->text('@randomKey');
+
+            $this->assertNotEquals($randomKey, $newRandomKey);
+
+            $url = $browser->driver->getCurrentURL();
+            $this->assertStringContainsString($randomKey, $url);
+
+            $browser->clickModalCloseButton()
+                ->waitUntilMissingModal()
+                ->back()
+                ->waitForModal();
+
+            $url = $browser->driver->getCurrentURL();
+            $this->assertStringContainsString($randomKey, $url);
+
+            $browser->back()
+                ->waitUntilMissingModal()
+                ->assertRouteIs('page', ['page' => 'users']);
+        });
+    }
 }
