@@ -11,69 +11,6 @@ const modalStack = useModalStack()
 const isNavigating = ref(false)
 const previousModalOnBase = ref(null)
 
-onUnmounted(
-    router.on('before', ($event) => {
-        if (!sameUrlPath(window.location.href, $event.detail.visit.url)) {
-            // Not navigating to the same base url
-            return true
-        }
-
-        if ($event.detail.visit.replace) {
-            // Prevent replacing again if we are already replacing
-            return true
-        }
-
-        if (modalStack.stack.value.length !== 1) {
-            // Only replace the first modal
-            return true
-        }
-
-        if (!usePage().props?._inertiaui_modal) {
-            // No modal on base
-            return true
-        }
-
-        const {
-            method,
-            data,
-            only,
-            except,
-            headers,
-            errorBag,
-            forceFormData,
-            queryStringArrayFormat,
-            async,
-            showProgress,
-            prefetch,
-            fresh,
-            reset,
-            preserveUrl,
-        } = $event.detail.visit
-
-        router.visit($event.detail.visit.url, {
-            replace: true,
-            preserveScroll: true,
-            preserveState: true,
-            method,
-            data,
-            only,
-            except,
-            headers,
-            errorBag,
-            forceFormData,
-            queryStringArrayFormat,
-            async,
-            showProgress,
-            prefetch,
-            fresh,
-            reset,
-            preserveUrl,
-        })
-
-        return false
-    }),
-)
-
 onUnmounted(router.on('start', () => (isNavigating.value = true)))
 onUnmounted(router.on('finish', () => (isNavigating.value = false)))
 onUnmounted(
