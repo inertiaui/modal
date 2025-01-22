@@ -2,6 +2,12 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.19.1 - 2025-01-22
+
+* [Call toArray() on modal props](https://github.com/inertiaui/modal/commit/b33b6ab1cbc3ab9bedf4a43d49766ebedad476eb)
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.0...0.19.1
+
 ## 0.19.0 - 2025-01-22
 
 ### What's Changed
