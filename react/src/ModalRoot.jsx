@@ -475,6 +475,70 @@ export const ModalRoot = ({ children }) => {
     let isNavigating = false
     let previousModalOnBase = false
 
+    useEffect(
+        () =>
+            router.on('before', ($event) => {
+                if (!sameUrlPath(window.location.href, $event.detail.visit.url)) {
+                    // Not navigating to the same base url
+                    return true
+                }
+
+                if ($event.detail.visit.replace) {
+                    // Prevent replacing again if we are already replacing
+                    return true
+                }
+
+                if (context.length() !== 1) {
+                    // Only replace the first modal
+                    return true
+                }
+
+                if (!previousModalOnBase) {
+                    // No modal on base
+                    return true
+                }
+
+                const {
+                    method,
+                    data,
+                    only,
+                    except,
+                    headers,
+                    errorBag,
+                    forceFormData,
+                    queryStringArrayFormat,
+                    async,
+                    showProgress,
+                    prefetch,
+                    fresh,
+                    reset,
+                    preserveUrl,
+                } = $event.detail.visit
+
+                router.visit($event.detail.visit.url, {
+                    replace: true,
+                    preserveScroll: true,
+                    preserveState: true,
+                    method,
+                    data,
+                    only,
+                    except,
+                    headers,
+                    errorBag,
+                    forceFormData,
+                    queryStringArrayFormat,
+                    async,
+                    showProgress,
+                    prefetch,
+                    fresh,
+                    reset,
+                    preserveUrl,
+                })
+
+                return false
+            }),
+        [],
+    )
     useEffect(() => router.on('start', () => (isNavigating = true)), [])
     useEffect(() => router.on('finish', () => (isNavigating = false)), [])
     useEffect(
