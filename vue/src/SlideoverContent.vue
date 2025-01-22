@@ -1,30 +1,14 @@
 <script setup>
-import { onBeforeUnmount, ref } from 'vue'
+import { ref } from 'vue'
 import CloseButton from './CloseButton.vue'
-import { useFocusTrap } from './useFocusTrap'
+import { DialogContent, DialogTitle, VisuallyHidden } from 'radix-vue'
 
-const props = defineProps({
+defineProps({
     modalContext: Object,
     config: Object,
 })
 
 const entered = ref(false)
-const wrapper = ref(null)
-let deactivate = null
-
-const emits = defineEmits(['after-leave'])
-
-function afterEnter() {
-    deactivate = useFocusTrap(wrapper.value, props.config?.closeExplicitly, () => props.modalContext.close()).deactivate
-    entered.value = true
-}
-
-function afterLeave() {
-    props.modalContext.afterLeave?.()
-    emits('after-leave')
-}
-
-onBeforeUnmount(() => deactivate?.())
 </script>
 
 <template>
@@ -44,12 +28,11 @@ onBeforeUnmount(() => deactivate?.())
                 enter-to-class="opacity-100 translate-x-0"
                 leave-from-class="opacity-100 translate-x-0"
                 :leave-to-class="'opacity-0 ' + (config.position === 'left' ? '-translate-x-full' : 'translate-x-full')"
-                @after-enter="afterEnter"
-                @after-leave="afterLeave"
+                @after-enter="entered = true"
+                @after-leave="modalContext.afterLeave"
             >
-                <div
-                    v-show="modalContext.isOpen"
-                    ref="wrapper"
+                <DialogContent
+                    :aria-describedby="undefined"
                     :class="{
                         'im-slideover-wrapper w-full transition duration-300 ease-in-out': true,
                         'blur-sm': !modalContext.onTopOfStack,
@@ -64,7 +47,13 @@ onBeforeUnmount(() => deactivate?.())
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl': config.maxWidth == '6xl',
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': config.maxWidth == '7xl',
                     }"
+                    @escape-key-down="($event) => config?.closeExplicitly && $event.preventDefault()"
+                    @interact-outside="($event) => config?.closeExplicitly && $event.preventDefault()"
                 >
+                    <VisuallyHidden as-child>
+                        <DialogTitle />
+                    </VisuallyHidden>
+
                     <div
                         class="im-slideover-content relative"
                         :data-inertiaui-modal-entered="entered"
@@ -74,7 +63,7 @@ onBeforeUnmount(() => deactivate?.())
                             v-if="config.closeButton"
                             class="absolute right-0 top-0 pr-3 pt-3"
                         >
-                            <CloseButton @click="modalContext.close" />
+                            <CloseButton />
                         </div>
 
                         <slot
@@ -82,7 +71,7 @@ onBeforeUnmount(() => deactivate?.())
                             :config="config"
                         />
                     </div>
-                </div>
+                </DialogContent>
             </Transition>
         </div>
     </div>

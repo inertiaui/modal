@@ -1,20 +1,10 @@
-import { TransitionChild } from '@headlessui/react'
+import { TransitionChild, DialogPanel } from '@headlessui/react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
-import { focusTrapper } from './focusTrapper'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 const SlideoverContent = ({ modalContext, config, children }) => {
     const [entered, setEntered] = useState(false)
-    const wrapper = useRef(null)
-    const [focusTrap, setFocusTrap] = useState(null)
-
-    function afterEnter() {
-        setFocusTrap(focusTrapper(wrapper.current, config?.closeExplicitly, () => modalContext.close()))
-        setEntered(true)
-    }
-
-    useEffect(() => () => focusTrap?.deactivate(), [focusTrap])
 
     return (
         <div className="im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden">
@@ -26,12 +16,11 @@ const SlideoverContent = ({ modalContext, config, children }) => {
             >
                 <TransitionChild
                     as="div"
-                    ref={wrapper}
                     enterFrom={`opacity-0 ${config.position === 'left' ? '-translate-x-full' : 'translate-x-full'}`}
                     enterTo="opacity-100 translate-x-0"
                     leaveFrom="opacity-100 translate-x-0"
                     leaveTo={`opacity-0 ${config.position === 'left' ? '-translate-x-full' : 'translate-x-full'}`}
-                    afterEnter={afterEnter}
+                    afterEnter={() => setEntered(true)}
                     afterLeave={modalContext.afterLeave}
                     className={clsx('im-slideover-wrapper w-full transition duration-300 ease-in-out', modalContext.onTopOfStack ? '' : 'blur-sm', {
                         'sm:max-w-sm': config.maxWidth === 'sm',
@@ -46,7 +35,7 @@ const SlideoverContent = ({ modalContext, config, children }) => {
                         'sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl': config.maxWidth === '7xl',
                     })}
                 >
-                    <div
+                    <DialogPanel
                         className={`im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`}
                         data-inertiaui-modal-entered={entered}
                     >
@@ -56,7 +45,7 @@ const SlideoverContent = ({ modalContext, config, children }) => {
                             </div>
                         )}
                         {typeof children === 'function' ? children({ modalContext, config }) : children}
-                    </div>
+                    </DialogPanel>
                 </TransitionChild>
             </div>
         </div>

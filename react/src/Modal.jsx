@@ -1,9 +1,8 @@
-import { Transition, TransitionChild } from '@headlessui/react'
-import { forwardRef, useRef, useImperativeHandle, useEffect } from 'react'
+import { Dialog, Transition, TransitionChild } from '@headlessui/react'
+import { forwardRef, useRef, useImperativeHandle } from 'react'
 import HeadlessModal from './HeadlessModal'
 import ModalContent from './ModalContent'
 import SlideoverContent from './SlideoverContent'
-import { modalDOMHandler } from './helpers'
 
 const Modal = forwardRef(({ name, children, onFocus = null, onBlur = null, onClose = null, onSuccess = null, onAfterLeave = null, ...props }, ref) => {
     const renderChildren = (contentProps) => {
@@ -15,14 +14,6 @@ const Modal = forwardRef(({ name, children, onFocus = null, onBlur = null, onClo
     }
 
     const headlessModalRef = useRef(null)
-
-    useEffect(() => {
-        if (headlessModalRef?.current?.index === 0) {
-            modalDOMHandler.prepare()
-
-            return () => modalDOMHandler.cleanup()
-        }
-    }, [headlessModalRef])
 
     useImperativeHandle(ref, () => headlessModalRef.current, [headlessModalRef])
 
@@ -57,8 +48,10 @@ const Modal = forwardRef(({ name, children, onFocus = null, onBlur = null, onClo
                     show={isOpen ?? false}
                     afterLeave={onAfterLeave}
                 >
-                    <div
+                    <Dialog
+                        as="div"
                         className="im-dialog relative z-20"
+                        onClose={() => (config.closeExplicitly ? null : close())}
                         data-inertiaui-modal-id={id}
                         data-inertiaui-modal-index={index}
                     >
@@ -132,7 +125,7 @@ const Modal = forwardRef(({ name, children, onFocus = null, onBlur = null, onClo
                                 })}
                             </ModalContent>
                         )}
-                    </div>
+                    </Dialog>
                 </Transition>
             )}
         </HeadlessModal>
