@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.19.0 - 2025-01-22
+
+### What's Changed
+
+* Revert #77 by @pascalbaljet in https://github.com/inertiaui/modal/pull/84
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.18.1...0.19.0
+
 ## 0.18.1 - 2025-01-19
 
 ### What's Changed
