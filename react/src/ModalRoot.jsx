@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, only, kebabCase, generateId } from './helpers'
+import { except, only, kebabCase, generateId, sameUrlPath } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -397,6 +397,7 @@ export const ModalStackProvider = ({ children }) => {
         localModals,
         push,
         pushFromResponseData,
+        length: () => localStackCopy.length,
         closeAll: () => {
             localStackCopy.reverse().forEach((modal) => modal.close())
         },
@@ -474,6 +475,70 @@ export const ModalRoot = ({ children }) => {
     let isNavigating = false
     let previousModalOnBase = false
 
+    useEffect(
+        () =>
+            router.on('before', ($event) => {
+                if (!sameUrlPath(window.location.href, $event.detail.visit.url)) {
+                    // Not navigating to the same base url
+                    return true
+                }
+
+                if ($event.detail.visit.replace) {
+                    // Prevent replacing again if we are already replacing
+                    return true
+                }
+
+                if (context.length() !== 1) {
+                    // Only replace the first modal
+                    return true
+                }
+
+                if (!previousModalOnBase) {
+                    // No modal on base
+                    return true
+                }
+
+                const {
+                    method,
+                    data,
+                    only,
+                    except,
+                    headers,
+                    errorBag,
+                    forceFormData,
+                    queryStringArrayFormat,
+                    async,
+                    showProgress,
+                    prefetch,
+                    fresh,
+                    reset,
+                    preserveUrl,
+                } = $event.detail.visit
+
+                router.visit($event.detail.visit.url, {
+                    replace: true,
+                    preserveScroll: true,
+                    preserveState: true,
+                    method,
+                    data,
+                    only,
+                    except,
+                    headers,
+                    errorBag,
+                    forceFormData,
+                    queryStringArrayFormat,
+                    async,
+                    showProgress,
+                    prefetch,
+                    fresh,
+                    reset,
+                    preserveUrl,
+                })
+
+                return false
+            }),
+        [],
+    )
     useEffect(() => router.on('start', () => (isNavigating = true)), [])
     useEffect(() => router.on('finish', () => (isNavigating = false)), [])
     useEffect(
@@ -533,7 +598,7 @@ export const ModalRoot = ({ children }) => {
         // Store the current value for the next render
         previousModalRef.current = newModal
 
-        if (newModal && previousModal && newModal.component === previousModal.component && newModal.url === previousModal.url) {
+        if (newModal && previousModal && newModal.component === previousModal.component && sameUrlPath(newModal.url, previousModal.url)) {
             context.stack[0]?.updateProps(newModal.props ?? {})
         }
     }, [$page.props?._inertiaui_modal])

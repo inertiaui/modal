@@ -4,6 +4,13 @@ function generateIdUsing(callback) {
     generateIdUsingCallback = callback
 }
 
+function sameUrlPath(url1, url2) {
+    url1 = typeof url1 === 'string' ? new URL(url1, window.location.origin) : url1
+    url2 = typeof url2 === 'string' ? new URL(url2, window.location.origin) : url2
+
+    return `${url1.origin}${url1.pathname}` === `${url2.origin}${url2.pathname}`
+}
+
 function generateId(prefix = 'inertiaui_modal_') {
     if (generateIdUsingCallback) {
         return generateIdUsingCallback()
@@ -108,4 +115,4 @@ function kebabCase(string) {
     // Convert to lowercase
     return string.toLowerCase()
 }
-export { generateIdUsing, generateId, except, only, rejectNullValues, waitFor, kebabCase }
+export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, waitFor, kebabCase }

@@ -23,6 +23,7 @@ Route::get('/users/{user}/edit', function (User $user) {
     return Inertia::modal('EditUser', [
         'roles' => Role::pluck('name', 'id'),
         'user' => $user,
+        'randomKey' => Str::random(),
     ])->baseUrl('/users');
 })->name('users.edit');
 
@@ -80,4 +81,4 @@ Route::get('{page}', function ($page) {
     }
 
     return inertia(Str::studly($page));
-});
+})->name('page');

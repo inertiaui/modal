@@ -1,12 +1,13 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
-import { Modal, ModalLink, useModal } from '@inertiaui/modal-vue';
+import { Link, useForm } from '@inertiajs/vue3';
+import { Modal, ModalLink } from '@inertiaui/modal-vue';
 import { ref } from 'vue';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue';
 
 const props = defineProps({
     user: Object,
     roles: Object,
+    randomKey: String,
 });
 
 const form = useForm({
@@ -44,6 +45,7 @@ function onMessage(message) {
     >
         <div class="">
             <h2 class="text-lg font-medium text-gray-900">Edit User {{ user.name }}</h2>
+            <p class="text-sm text-gray-500">Random key: <span dusk="randomKey">{{ randomKey }}</span></p>
             <p dusk="message" v-text="messageRef" v-if="messageRef" class="text-sm text-gray-500" />
         </div>
 
@@ -83,6 +85,9 @@ function onMessage(message) {
             </div>
 
             <div class="flex justify-end">
+                <Link :href="route('users.edit', { user, navigate: 1, randomKey })">
+                    Edit again!
+                </Link>
                 <button type="button" @click="close" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                     Cancel
                 </button>
