@@ -6,10 +6,10 @@
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
-        "inertiajs/inertia-laravel": "^1.0",
+        "inertiajs/inertia-laravel": "^2.0",
         "inertiaui/modal": "*",
-        "laravel/framework": "^10.48|^11.11",
-        "laravel/sanctum": "^3.2|^4.0",
+        "laravel/framework": "^10.48||^11.11",
+        "laravel/sanctum": "^3.2||^4.0",
         "laravel/tinker": "^2.8",
         "tightenco/ziggy": "^2.0"
     },
@@ -18,7 +18,7 @@
         "laravel/dusk": "^8.2",
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^7.0|^8.0",
+        "nunomaduro/collision": "^7.0||^8.0",
         "phpunit/phpunit": "^10.0"
     },
     "repositories": [
