@@ -95,34 +95,35 @@ class Modal implements Responsable
             return $modal->toResponse($request);
         }
 
-        inertia()->share('_inertiaui_modal', [
+        $data = [
             // @phpstan-ignore-next-line
             ...$modal->toArray(),
             'id' => $request->header(static::HEADER_MODAL),
             'baseUrl' => $baseUrl,
-        ]);
+        ];
 
         $response = app(DispatchBaseUrlRequest::class)($request, $baseUrl);
 
         // Spoof the base URL to the modal's URL
         return match (true) {
-            $response instanceof JsonResponse => $this->toJsonResponse($request, $response),
-            $response instanceof IlluminateResponse => $this->toViewResponse($request, $response),
+            $response instanceof JsonResponse => $this->toJsonResponse($request, $response, $data),
+            $response instanceof IlluminateResponse => $this->toViewResponse($request, $response, $data),
             default => $response,
         };
     }
 
-    protected function toJsonResponse(Request $request, JsonResponse $response): JsonResponse
+    protected function toJsonResponse(Request $request, JsonResponse $response, array $data): JsonResponse
     {
-        $data = $response->getData(true);
+        $responseData = $response->getData(true);
 
         return $response->setData([
-            ...$data,
-            'url' => $data['props']['_inertiaui_modal']['url'],
+            ...$responseData,
+            'props' => [...$responseData['props'], '_inertiaui_modal' => $data],
+            'url' => $data['url'],
         ]);
     }
 
-    protected function toViewResponse(Request $request, IlluminateResponse $response): IlluminateResponse
+    protected function toViewResponse(Request $request, IlluminateResponse $response, array $data): IlluminateResponse
     {
         $originalContent = $response->getOriginalContent();
 
@@ -131,7 +132,8 @@ class Modal implements Responsable
         }
 
         $viewData = $originalContent->getData();
-        $viewData['page']['url'] = $viewData['page']['props']['_inertiaui_modal']['url'];
+        $viewData['page']['props'][ '_inertiaui_modal'] = $data;
+        $viewData['page']['url'] = $data['url'];
 
         foreach (static::$beforeBaseRerenderCallbacks as $callback) {
             $callback($request, $response);
