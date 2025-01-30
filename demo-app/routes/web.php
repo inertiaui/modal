@@ -34,6 +34,22 @@ Route::get('/users/{user}', function (User $user) {
     ]);
 })->name('users.show');
 
+// Show a user by deferred prop
+Route::get('/users/{user}/deferred', function(User $user) {
+    return Inertia::render('ShowUser', [
+        'user' => Inertia::defer(fn() => $user),
+    ]);
+});
+
+// Edit a user deferred
+Route::get('/users/{user}/edit-deferred', function (User $user) {
+    return Inertia::modal('EditUser', [
+        'roles' => Role::pluck('name', 'id'),
+        'user' => $user,
+        'randomKey' => Str::random(),
+    ])->baseUrl('/users/'.$user->id.'/deferred');
+})->name('users.edit-deferred');
+
 // Update a user
 Route::put('/users/{user}', function (User $user) {
     $user->update(request()->validate([
