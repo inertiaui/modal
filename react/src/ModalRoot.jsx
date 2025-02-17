@@ -215,22 +215,23 @@ export const ModalStackProvider = ({ children }) => {
             return () => unsubscribers.forEach((unsub) => unsub())
         }
 
-        reload = (options = {}) => {
+        reload = ({ only, except, ...rest }) => {
             let keys = Object.keys(this.response.props)
 
-            if (options.only) {
-                keys = only(keys, options.only)
+            if (only) {
+                keys = only(keys, only)
             }
 
-            if (options.except) {
-                keys = except(keys, options.except)
+            if (except) {
+                keys = except(keys, except)
             }
 
             if (!this.response?.url) {
                 return
             }
 
-            Axios.get(this.response.url, {
+            Axios.request(this.response.url, {
+                method: 'get',
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
@@ -241,6 +242,7 @@ export const ModalStackProvider = ({ children }) => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
+                ...rest,
             }).then((response) => {
                 this.updateProps(response.data.props)
             })
