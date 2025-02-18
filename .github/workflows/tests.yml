@@ -118,7 +118,7 @@ jobs:
       - name: Prepare Laravel app
         run: |
           cd demo-app
-          composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:${{ matrix.inertia == 'v1' && '^1.3' || '2.0' }}
+          composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:${{ matrix.inertia == 'v1' && '^1.3' || '^2.0' }}
           composer install --no-progress --prefer-dist --optimize-autoloader
           php artisan about
           npm ci
