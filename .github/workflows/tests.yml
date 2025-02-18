@@ -14,16 +14,30 @@ on:
 
 jobs:
   tests:
-    name: Dusk Inertia ${{ matrix.inertia }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}
+    name: Dusk L${{ matrix.laravel }} - Inertia ${{ matrix.inertia }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: true
       matrix:
+        laravel: [12.0, 11.0, 10.0]
         inertia: [v1, v2]
         stack: [react-18, react-19, vue]
         app_mounting: [auto, custom]
+        exclude:
+          - inertia: v2
+            laravel: 10.0
+          - inertia: v1
+            laravel: 12.0
+          - laravel: 12.0
+            stack: react-18
+          - laravel: 12.0
+            stack: react-19
+          - laravel: 11.0
+            stack: react-18
+          - laravel: 11.0
+            stack: react-19
 
     env:
       APP_URL: "http://127.0.0.1:8000"
@@ -104,8 +118,8 @@ jobs:
       - name: Prepare Laravel app
         run: |
           cd demo-app
+          composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:${{ matrix.inertia == 'v1' && '^1.3' || '^2.0' }}
           composer install --no-progress --prefer-dist --optimize-autoloader
-          composer require inertiajs/inertia-laravel:${{ matrix.inertia == 'v1' && '^1.3' || '2.0' }}
           php artisan about
           npm ci
           if [ "${{ matrix.stack }}" == "react-18" ]; then
