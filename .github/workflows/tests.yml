@@ -28,6 +28,8 @@ jobs:
         exclude:
           - inertia: v2
             laravel: 10.0
+          - inertia: v1
+            laravel: 12.0
           - laravel: 12.0
             stack: react-18
           - laravel: 12.0
