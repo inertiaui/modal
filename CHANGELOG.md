@@ -2,6 +2,15 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.19.4 - 2025-02-18
+
+### What's Changed
+
+* Bump dependabot/fetch-metadata from 2.2.0 to 2.3.0 by @dependabot in https://github.com/inertiaui/modal/pull/88
+* Support for Laravel 12 by @pascalbaljet in https://github.com/inertiaui/modal/pull/95
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.3...0.19.4
+
 ## 0.19.3 - 2025-01-22
 
 ### What's Changed
