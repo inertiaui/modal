@@ -1,12 +1,12 @@
-var ct = Object.defineProperty;
-var ft = (e, t, n) => t in e ? ct(e, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : e[t] = n;
-var D = (e, t, n) => ft(e, typeof t != "symbol" ? t + "" : t, n);
+var ft = Object.defineProperty;
+var mt = (e, t, n) => t in e ? ft(e, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : e[t] = n;
+var S = (e, t, n) => mt(e, typeof t != "symbol" ? t + "" : t, n);
 import * as ke from "vue";
-import { computed as $, provide as be, openBlock as x, createBlock as E, unref as p, mergeProps as k, createCommentVNode as N, ref as h, onUnmounted as G, onBeforeMount as mt, watch as S, createElementBlock as _, Fragment as Ee, renderSlot as O, h as R, readonly as pt, markRaw as Re, nextTick as K, inject as Ce, onBeforeUnmount as ue, onMounted as fe, useAttrs as je, defineComponent as A, Comment as vt, cloneVNode as gt, toRefs as Ue, getCurrentInstance as J, normalizeProps as yt, guardReactiveProps as ht, withCtx as w, reactive as _e, createVNode as B, watchEffect as q, effectScope as qe, Teleport as xt, toHandlerKey as wt, camelize as bt, normalizeStyle as Et, getCurrentScope as Ct, onScopeDispose as Ot, createElementVNode as j, normalizeClass as Y, Transition as Oe, resolveDynamicComponent as Ke, withModifiers as At, toValue as Mt } from "vue";
-import { router as ee, usePage as Xe } from "@inertiajs/vue3";
-import { mergeDataIntoQueryString as $t } from "@inertiajs/core";
-import de from "axios";
-const Q = {
+import { computed as $, provide as Ce, createBlock as C, createCommentVNode as L, openBlock as x, unref as p, mergeProps as N, ref as h, onUnmounted as G, onBeforeMount as pt, watch as I, createElementBlock as q, Fragment as Ee, renderSlot as O, h as F, readonly as vt, markRaw as je, nextTick as X, inject as Oe, onBeforeUnmount as de, onMounted as me, useAttrs as Ue, defineComponent as A, toRefs as _e, normalizeProps as gt, guardReactiveProps as yt, withCtx as w, createVNode as B, getCurrentInstance as Z, Teleport as ht, toHandlerKey as xt, camelize as wt, effectScope as qe, Comment as bt, cloneVNode as Ct, getCurrentScope as Et, onScopeDispose as Ot, reactive as Ke, watchEffect as K, normalizeStyle as At, createElementVNode as j, normalizeClass as J, Transition as Ae, resolveDynamicComponent as Xe, withModifiers as Mt, toValue as $t } from "vue";
+import { router as te, usePage as ze } from "@inertiajs/vue3";
+import { mergeDataIntoQueryString as Bt } from "@inertiajs/core";
+import ce from "axios";
+const ee = {
   type: "modal",
   navigate: !1,
   modal: {
@@ -26,20 +26,20 @@ const Q = {
     position: "right"
   }
 };
-class Bt {
+class It {
   constructor() {
     this.config = {}, this.reset();
   }
   reset() {
-    this.config = JSON.parse(JSON.stringify(Q));
+    this.config = JSON.parse(JSON.stringify(ee));
   }
   put(t, n) {
     if (typeof t == "object") {
       this.config = {
-        type: t.type ?? Q.type,
-        navigate: t.navigate ?? Q.navigate,
-        modal: { ...Q.modal, ...t.modal ?? {} },
-        slideover: { ...Q.slideover, ...t.slideover ?? {} }
+        type: t.type ?? ee.type,
+        navigate: t.navigate ?? ee.navigate,
+        modal: { ...ee.modal, ...t.modal ?? {} },
+        slideover: { ...ee.slideover, ...t.slideover ?? {} }
       };
       return;
     }
@@ -62,23 +62,23 @@ class Bt {
     return o;
   }
 }
-const me = new Bt(), ao = () => me.reset(), ro = (e, t) => me.put(e, t), Ae = (e) => me.get(e), z = (e, t) => me.get(e ? `slideover.${t}` : `modal.${t}`);
+const pe = new It(), ro = () => pe.reset(), so = (e, t) => pe.put(e, t), Me = (e) => pe.get(e), V = (e, t) => pe.get(e ? `slideover.${t}` : `modal.${t}`);
 function St(e, t) {
   return e = typeof e == "string" ? new URL(e, window.location.origin) : e, t = typeof t == "string" ? new URL(t, window.location.origin) : t, `${e.origin}${e.pathname}` == `${t.origin}${t.pathname}`;
 }
-function xe(e = "inertiaui_modal_") {
+function we(e = "inertiaui_modal_") {
   return typeof crypto < "u" && typeof crypto.randomUUID == "function" ? `${e}${crypto.randomUUID()}` : `${e}${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`;
 }
 function Dt(e, t) {
   return Array.isArray(e) ? e.filter((n) => !t.includes(n)) : Object.keys(e).reduce((n, o) => (t.includes(o) || (n[o] = e[o]), n), {});
 }
-function ze(e, t) {
+function Ve(e, t) {
   return Array.isArray(e) ? e.filter((n) => t.includes(n)) : t.reduce((n, o) => (o in e && (n[o] = e[o]), n), {});
 }
-function It(e) {
+function Pt(e) {
   return Array.isArray(e) ? e.filter((t) => t !== null) : Object.keys(e).reduce((t, n) => (n in e && e[n] !== null && (t[n] = e[n]), t), {});
 }
-function Pt(e, t = 3, n = 10) {
+function Nt(e, t = 3, n = 10) {
   return new Promise((o, l) => {
     const a = e();
     if (a) {
@@ -92,10 +92,10 @@ function Pt(e, t = 3, n = 10) {
     }, n);
   });
 }
-function ae(e) {
+function re(e) {
   return e ? (e = e.replace(/_/g, "-"), e = e.replace(/-+/g, "-"), /[A-Z]/.test(e) ? (e = e.replace(/\s+/g, "").replace(/_/g, "").replace(/(?:^|\s|-)+([A-Za-z])/g, (t, n) => n.toUpperCase()), e = e.replace(/(.)(?=[A-Z])/g, "$1-"), e.toLowerCase()) : e) : "";
 }
-const Ve = {
+const He = {
   __name: "ModalRenderer",
   props: {
     index: {
@@ -104,20 +104,20 @@ const Ve = {
     }
   },
   setup(e) {
-    const t = e, n = ne(), o = $(() => n.stack.value[t.index]);
-    return be("modalContext", o), (l, a) => {
+    const t = e, n = oe(), o = $(() => n.stack.value[t.index]);
+    return Ce("modalContext", o), (l, a) => {
       var r;
-      return (r = o.value) != null && r.component ? (x(), E(p(o).component, k({ key: 0 }, o.value.props, {
+      return (r = o.value) != null && r.component ? (x(), C(p(o).component, N({ key: 0 }, o.value.props, {
         onModalEvent: a[0] || (a[0] = (i, ...d) => o.value.emit(i, ...d))
-      }), null, 16)) : N("", !0);
+      }), null, 16)) : L("", !0);
     };
   }
 }, kt = {
   __name: "ModalRoot",
   setup(e) {
-    const t = ne(), n = h(!1), o = h(null);
-    G(ee.on("start", () => n.value = !0)), G(ee.on("finish", () => n.value = !1)), G(
-      ee.on("navigate", (r) => {
+    const t = oe(), n = h(!1), o = h(null);
+    G(te.on("start", () => n.value = !0)), G(te.on("finish", () => n.value = !1)), G(
+      te.on("navigate", (r) => {
         const i = r.detail.page.props._inertiaui_modal;
         if (!i) {
           o.value && t.closeAll();
@@ -128,7 +128,7 @@ const Ve = {
             console.error("No base url in modal response data so cannot navigate back");
             return;
           }
-          !n.value && window.location.href !== i.baseUrl && ee.visit(i.baseUrl, {
+          !n.value && window.location.href !== i.baseUrl && te.visit(i.baseUrl, {
             preserveScroll: !0,
             preserveState: !0
           });
@@ -136,13 +136,13 @@ const Ve = {
       })
     );
     const l = (r) => (t.stack.value.length && (r.headers["X-InertiaUI-Modal-Base-Url"] = t.getBaseUrl()), r);
-    mt(() => {
-      de.interceptors.request.use(l);
+    pt(() => {
+      ce.interceptors.request.use(l);
     }), G(() => {
-      de.interceptors.request.eject(l);
+      ce.interceptors.request.eject(l);
     });
-    const a = Xe();
-    return S(
+    const a = ze();
+    return I(
       () => {
         var r;
         return (r = a.props) == null ? void 0 : r._inertiaui_modal;
@@ -151,184 +151,184 @@ const Ve = {
         var d;
         r && i && r.component === i.component && St(r.url, i.url) && ((d = t.stack.value[0]) == null || d.updateProps(r.props ?? {}));
       }
-    ), (r, i) => (x(), _(Ee, null, [
+    ), (r, i) => (x(), q(Ee, null, [
       O(r.$slots, "default"),
-      p(t).stack.value.length ? (x(), E(Ve, {
+      p(t).stack.value.length ? (x(), C(He, {
         key: 0,
         index: 0
-      })) : N("", !0)
+      })) : L("", !0)
     ], 64));
   }
 };
-let pe = null;
-const H = h({}), te = h(null), C = h([]), ce = h({}), Lt = (e) => {
-  pe = e;
-}, so = (e) => {
-  e.resolveComponent && (pe = e.resolveComponent);
+let ve = null;
+const Y = h({}), ne = h(null), E = h([]), fe = h({}), Lt = (e) => {
+  ve = e;
+}, io = (e) => {
+  e.resolveComponent && (ve = e.resolveComponent);
 };
-class Nt {
+class Rt {
   constructor(t, n, o, l, a) {
-    D(this, "getParentModal", () => {
+    S(this, "getParentModal", () => {
       const t = this.index.value;
-      return t < 1 ? null : C.value.slice(0, t).reverse().find((n) => n.isOpen);
+      return t < 1 ? null : E.value.slice(0, t).reverse().find((n) => n.isOpen);
     });
-    D(this, "getChildModal", () => {
+    S(this, "getChildModal", () => {
       const t = this.index.value;
-      return t === C.value.length - 1 ? null : C.value.slice(t + 1).find((n) => n.isOpen);
+      return t === E.value.length - 1 ? null : E.value.slice(t + 1).find((n) => n.isOpen);
     });
-    D(this, "show", () => {
+    S(this, "show", () => {
       const t = this.index.value;
       if (t > -1) {
-        if (C.value[t].isOpen)
+        if (E.value[t].isOpen)
           return;
-        C.value[t].isOpen = !0, C.value[t].shouldRender = !0;
+        E.value[t].isOpen = !0, E.value[t].shouldRender = !0;
       }
     });
-    D(this, "close", () => {
+    S(this, "close", () => {
       var n;
       const t = this.index.value;
       if (t > -1) {
-        if (!C.value[t].isOpen)
+        if (!E.value[t].isOpen)
           return;
         Object.keys(this.listeners).forEach((o) => {
           this.off(o);
-        }), C.value[t].isOpen = !1, (n = this.onCloseCallback) == null || n.call(this), this.onCloseCallback = null;
+        }), E.value[t].isOpen = !1, (n = this.onCloseCallback) == null || n.call(this), this.onCloseCallback = null;
       }
     });
-    D(this, "setOpen", (t) => {
+    S(this, "setOpen", (t) => {
       t ? this.show() : this.close();
     });
-    D(this, "afterLeave", () => {
+    S(this, "afterLeave", () => {
       var n;
       const t = this.index.value;
       if (t > -1) {
-        if (C.value[t].isOpen)
+        if (E.value[t].isOpen)
           return;
-        C.value[t].shouldRender = !1, (n = this.afterLeaveCallback) == null || n.call(this), this.afterLeaveCallback = null;
+        E.value[t].shouldRender = !1, (n = this.afterLeaveCallback) == null || n.call(this), this.afterLeaveCallback = null;
       }
-      t === 0 && (C.value = []);
+      t === 0 && (E.value = []);
     });
-    D(this, "on", (t, n) => {
-      t = ae(t), this.listeners[t] = this.listeners[t] ?? [], this.listeners[t].push(n);
+    S(this, "on", (t, n) => {
+      t = re(t), this.listeners[t] = this.listeners[t] ?? [], this.listeners[t].push(n);
     });
-    D(this, "off", (t, n) => {
+    S(this, "off", (t, n) => {
       var o;
-      t = ae(t), n ? this.listeners[t] = ((o = this.listeners[t]) == null ? void 0 : o.filter((l) => l !== n)) ?? [] : delete this.listeners[t];
+      t = re(t), n ? this.listeners[t] = ((o = this.listeners[t]) == null ? void 0 : o.filter((l) => l !== n)) ?? [] : delete this.listeners[t];
     });
-    D(this, "emit", (t, ...n) => {
+    S(this, "emit", (t, ...n) => {
       var o;
-      (o = this.listeners[ae(t)]) == null || o.forEach((l) => l(...n));
+      (o = this.listeners[re(t)]) == null || o.forEach((l) => l(...n));
     });
-    D(this, "registerEventListenersFromAttrs", (t) => {
+    S(this, "registerEventListenersFromAttrs", (t) => {
       const n = [];
       return Object.keys(t).filter((o) => o.startsWith("on")).forEach((o) => {
-        const l = ae(o).replace(/^on-/, "");
+        const l = re(o).replace(/^on-/, "");
         this.on(l, t[o]), n.push(() => this.off(l, t[o]));
       }), () => n.forEach((o) => o());
     });
-    D(this, "reload", (t = {}) => {
+    S(this, "reload", (t = {}) => {
       var o;
       let n = Object.keys(this.response.props);
-      t.only && (n = ze(n, t.only)), t.except && (n = Dt(n, t.except)), (o = this.response) != null && o.url && de.get(this.response.url, {
+      t.only && (n = Ve(n, t.only)), t.except && (n = Dt(n, t.except)), (o = this.response) != null && o.url && ce.get(this.response.url, {
         headers: {
           Accept: "text/html, application/xhtml+xml",
           "X-Inertia": !0,
           "X-Inertia-Partial-Component": this.response.component,
           "X-Inertia-Version": this.response.version,
           "X-Inertia-Partial-Data": n.join(","),
-          "X-InertiaUI-Modal": xe(),
+          "X-InertiaUI-Modal": we(),
           "X-InertiaUI-Modal-Use-Router": 0,
-          "X-InertiaUI-Modal-Base-Url": te.value
+          "X-InertiaUI-Modal-Base-Url": ne.value
         }
       }).then((l) => {
         this.updateProps(l.data.props);
       });
     });
-    D(this, "updateProps", (t) => {
+    S(this, "updateProps", (t) => {
       Object.assign(this.props.value, t);
     });
-    if (this.id = n.id ?? xe(), this.isOpen = !1, this.shouldRender = !1, this.listeners = {}, this.component = t, this.props = h(n.props), this.response = n, this.config = o ?? {}, this.onCloseCallback = l, this.afterLeaveCallback = a, H.value[this.id]) {
+    if (this.id = n.id ?? we(), this.isOpen = !1, this.shouldRender = !1, this.listeners = {}, this.component = t, this.props = h(n.props), this.response = n, this.config = o ?? {}, this.onCloseCallback = l, this.afterLeaveCallback = a, Y.value[this.id]) {
       this.config = {
         ...this.config,
-        ...H.value[this.id].config ?? {}
+        ...Y.value[this.id].config ?? {}
       };
-      const r = H.value[this.id].onClose, i = H.value[this.id].onAfterLeave;
+      const r = Y.value[this.id].onClose, i = Y.value[this.id].onAfterLeave;
       r && (this.onCloseCallback = l ? () => {
         l(), r();
       } : r), i && (this.afterLeaveCallback = a ? () => {
         a(), i();
-      } : i), delete H.value[this.id];
+      } : i), delete Y.value[this.id];
     }
-    this.index = $(() => C.value.findIndex((r) => r.id === this.id)), this.onTopOfStack = $(() => {
+    this.index = $(() => E.value.findIndex((r) => r.id === this.id)), this.onTopOfStack = $(() => {
       var i;
-      return C.value.length < 2 ? !0 : ((i = C.value.map((d) => ({ id: d.id, shouldRender: d.shouldRender })).reverse().find((d) => d.shouldRender)) == null ? void 0 : i.id) === this.id;
+      return E.value.length < 2 ? !0 : ((i = E.value.map((d) => ({ id: d.id, shouldRender: d.shouldRender })).reverse().find((d) => d.shouldRender)) == null ? void 0 : i.id) === this.id;
     });
   }
 }
-function Ft(e, t) {
-  ce.value[e] = { name: e, callback: t };
+function Tt(e, t) {
+  fe.value[e] = { name: e, callback: t };
 }
 function Wt(e, t, n, o) {
-  if (!ce.value[e])
+  if (!fe.value[e])
     throw new Error(`The local modal "${e}" has not been registered.`);
-  const l = Me(null, {}, t, n, o);
-  return l.name = e, ce.value[e].callback(l), l;
+  const l = $e(null, {}, t, n, o);
+  return l.name = e, fe.value[e].callback(l), l;
 }
-function He(e, t = {}, n = null, o = null) {
-  return pe(e.component).then((l) => Me(Re(l), e, t, n, o));
+function Ye(e, t = {}, n = null, o = null) {
+  return ve(e.component).then((l) => $e(je(l), e, t, n, o));
 }
-function Tt(e, t, n = {}, o = {}, l = {}, a = null, r = null, i = "brackets", d = !1) {
-  const f = xe();
+function Ft(e, t, n = {}, o = {}, l = {}, a = null, r = null, i = "brackets", d = !1) {
+  const f = we();
   return new Promise((c, u) => {
     if (e.startsWith("#")) {
       c(Wt(e.substring(1), l, a, r));
       return;
     }
-    const [v, s] = $t(t, e || "", n, i);
-    let m = d && C.value.length === 0;
-    if (C.value.length === 0 && (te.value = typeof window < "u" ? window.location.href : ""), o = {
+    const [v, s] = Bt(t, e || "", n, i);
+    let m = d && E.value.length === 0;
+    if (E.value.length === 0 && (ne.value = typeof window < "u" ? window.location.href : ""), o = {
       ...o,
       Accept: "text/html, application/xhtml+xml",
       "X-Requested-With": "XMLHttpRequest",
       "X-Inertia": !0,
-      "X-Inertia-Version": Xe().version,
+      "X-Inertia-Version": ze().version,
       "X-InertiaUI-Modal": f,
       "X-InertiaUI-Modal-Use-Router": m ? 1 : 0,
-      "X-InertiaUI-Modal-Base-Url": te.value
+      "X-InertiaUI-Modal-Base-Url": ne.value
     }, m)
-      return H.value[f] = { config: l, onClose: a, onAfterLeave: r }, ee.visit(v, {
+      return Y.value[f] = { config: l, onClose: a, onAfterLeave: r }, te.visit(v, {
         method: t,
         data: s,
         headers: o,
         preserveScroll: !0,
         preserveState: !0,
         onError: u,
-        onFinish: () => Pt(() => C.value[0]).then(c)
+        onFinish: () => Nt(() => E.value[0]).then(c)
       });
-    de({ url: v, method: t, data: s, headers: o }).then((g) => c(He(g.data, l, a, r))).catch(u);
+    ce({ url: v, method: t, data: s, headers: o }).then((g) => c(Ye(g.data, l, a, r))).catch(u);
   });
 }
-function Me(e, t, n, o, l) {
-  const a = new Nt(e, t, n, o, l);
-  return C.value.push(a), K(() => a.show()), a;
+function $e(e, t, n, o, l) {
+  const a = new Rt(e, t, n, o, l);
+  return E.value.push(a), X(() => a.show()), a;
 }
-const Rt = ["closeButton", "closeExplicitly", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"], io = (e, t) => (t.resolveComponent && (pe = t.resolveComponent), () => R(kt, () => R(e, t)));
-function ne() {
+const jt = ["closeButton", "closeExplicitly", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"], uo = (e, t) => (t.resolveComponent && (ve = t.resolveComponent), () => F(kt, () => F(e, t)));
+function oe() {
   return {
     setComponentResolver: Lt,
-    getBaseUrl: () => te.value,
-    setBaseUrl: (e) => te.value = e,
-    stack: pt(C),
-    push: Me,
-    pushFromResponseData: He,
-    closeAll: () => [...C.value].reverse().forEach((e) => e.close()),
-    reset: () => C.value = [],
-    visit: Tt,
-    registerLocalModal: Ft,
-    removeLocalModal: (e) => delete ce.value[e]
+    getBaseUrl: () => ne.value,
+    setBaseUrl: (e) => ne.value = e,
+    stack: vt(E),
+    push: $e,
+    pushFromResponseData: Ye,
+    closeAll: () => [...E.value].reverse().forEach((e) => e.close()),
+    reset: () => E.value = [],
+    visit: Ft,
+    registerLocalModal: Tt,
+    removeLocalModal: (e) => delete fe.value[e]
   };
 }
-const jt = /* @__PURE__ */ Object.assign({
+const Ut = /* @__PURE__ */ Object.assign({
   inheritAttrs: !1
 }, {
   __name: "HeadlessModal",
@@ -370,33 +370,33 @@ const jt = /* @__PURE__ */ Object.assign({
   },
   emits: ["modal-event", "focus", "blur", "close", "success"],
   setup(e, { expose: t, emit: n }) {
-    const o = e, l = ne(), a = o.name ? h({}) : Ce("modalContext"), r = $(() => {
+    const o = e, l = oe(), a = o.name ? h({}) : Oe("modalContext"), r = $(() => {
       var m;
-      const s = ((m = a.value.config) == null ? void 0 : m.slideover) ?? o.slideover ?? Ae("type") === "slideover";
+      const s = ((m = a.value.config) == null ? void 0 : m.slideover) ?? o.slideover ?? Me("type") === "slideover";
       return {
         slideover: s,
-        closeButton: o.closeButton ?? z(s, "closeButton"),
-        closeExplicitly: o.closeExplicitly ?? z(s, "closeExplicitly"),
-        maxWidth: o.maxWidth ?? z(s, "maxWidth"),
-        paddingClasses: o.paddingClasses ?? z(s, "paddingClasses"),
-        panelClasses: o.panelClasses ?? z(s, "panelClasses"),
-        position: o.position ?? z(s, "position"),
+        closeButton: o.closeButton ?? V(s, "closeButton"),
+        closeExplicitly: o.closeExplicitly ?? V(s, "closeExplicitly"),
+        maxWidth: o.maxWidth ?? V(s, "maxWidth"),
+        paddingClasses: o.paddingClasses ?? V(s, "paddingClasses"),
+        panelClasses: o.panelClasses ?? V(s, "panelClasses"),
+        position: o.position ?? V(s, "position"),
         ...a.value.config
       };
     });
     o.name && (l.registerLocalModal(o.name, function(s) {
       a.value = s, f();
-    }), ue(() => {
+    }), de(() => {
       l.removeLocalModal(o.name);
-    })), fe(() => {
+    })), me(() => {
       o.name || f();
     });
     const i = h(null);
-    ue(() => {
+    de(() => {
       var s;
       return (s = i.value) == null ? void 0 : s.call(i);
     });
-    const d = je();
+    const d = Ue();
     function f() {
       i.value = a.value.registerEventListenersFromAttrs(d);
     }
@@ -458,7 +458,7 @@ const jt = /* @__PURE__ */ Object.assign({
         var s;
         return (s = a.value) == null ? void 0 : s.shouldRender;
       }
-    }), S(
+    }), I(
       () => {
         var s;
         return (s = a.value) == null ? void 0 : s.onTopOfStack;
@@ -466,7 +466,7 @@ const jt = /* @__PURE__ */ Object.assign({
       (s, m) => {
         s && !m ? c("focus") : !s && m && c("blur");
       }
-    ), S(
+    ), I(
       () => {
         var s;
         return (s = a.value) == null ? void 0 : s.isOpen;
@@ -480,7 +480,7 @@ const jt = /* @__PURE__ */ Object.assign({
       var s;
       return (s = l.stack.value.find((m) => m.shouldRender && m.index > a.value.index)) == null ? void 0 : s.index;
     });
-    return (s, m) => (x(), _(Ee, null, [
+    return (s, m) => (x(), q(Ee, null, [
       p(a).shouldRender ? O(s.$slots, "default", {
         key: 0,
         id: p(a).id,
@@ -497,18 +497,18 @@ const jt = /* @__PURE__ */ Object.assign({
         reload: p(a).reload,
         setOpen: p(a).setOpen,
         shouldRender: p(a).shouldRender
-      }) : N("", !0),
-      v.value ? (x(), E(Ve, {
+      }) : L("", !0),
+      v.value ? (x(), C(He, {
         key: 1,
         index: v.value
-      }, null, 8, ["index"])) : N("", !0)
+      }, null, 8, ["index"])) : L("", !0)
     ], 64));
   }
 });
-function $e(e, t) {
+function Be(e, t) {
   const n = typeof e == "string" && !t ? `${e}Context` : t, o = Symbol(n);
   return [(l) => {
-    const a = Ce(o, l);
+    const a = Oe(o, l);
     if (a || a === null)
       return a;
     throw new Error(
@@ -516,7 +516,7 @@ function $e(e, t) {
         ", "
       )}` : `\`${e}\``}`
     );
-  }, (l) => (be(o, l), l)];
+  }, (l) => (Ce(o, l), l)];
 }
 function Ge(e, t, n) {
   const o = n.originalEvent.target, l = new CustomEvent(e, {
@@ -526,57 +526,57 @@ function Ge(e, t, n) {
   });
   t && o.addEventListener(e, t, { once: !0 }), o.dispatchEvent(l);
 }
-function Ye(e) {
-  return Ct() ? (Ot(e), !0) : !1;
+function Je(e) {
+  return Et() ? (Ot(e), !0) : !1;
 }
-function Ut(e) {
+function _t(e) {
   let t = !1, n;
   const o = qe(!0);
   return (...l) => (t || (n = o.run(() => e(...l)), t = !0), n);
 }
-function _t(e) {
+function qt(e) {
   let t = 0, n, o;
   const l = () => {
     t -= 1, o && t <= 0 && (o.stop(), n = void 0, o = void 0);
   };
-  return (...a) => (t += 1, n || (o = qe(!0), n = o.run(() => e(...a))), Ye(l), n);
+  return (...a) => (t += 1, n || (o = qe(!0), n = o.run(() => e(...a))), Je(l), n);
 }
-function Be(e) {
+function Ie(e) {
   return typeof e == "function" ? e() : p(e);
 }
-const X = typeof window < "u" && typeof document < "u";
+const z = typeof window < "u" && typeof document < "u";
 typeof WorkerGlobalScope < "u" && globalThis instanceof WorkerGlobalScope;
-const qt = (e) => typeof e < "u", Kt = Object.prototype.toString, Xt = (e) => Kt.call(e) === "[object Object]", zt = () => {
-}, Le = /* @__PURE__ */ Vt();
-function Vt() {
+const Kt = (e) => typeof e < "u", Xt = Object.prototype.toString, zt = (e) => Xt.call(e) === "[object Object]", Vt = () => {
+}, Le = /* @__PURE__ */ Ht();
+function Ht() {
   var e, t;
-  return X && ((e = window == null ? void 0 : window.navigator) == null ? void 0 : e.userAgent) && (/iP(?:ad|hone|od)/.test(window.navigator.userAgent) || ((t = window == null ? void 0 : window.navigator) == null ? void 0 : t.maxTouchPoints) > 2 && /iPad|Macintosh/.test(window == null ? void 0 : window.navigator.userAgent));
+  return z && ((e = window == null ? void 0 : window.navigator) == null ? void 0 : e.userAgent) && (/iP(?:ad|hone|od)/.test(window.navigator.userAgent) || ((t = window == null ? void 0 : window.navigator) == null ? void 0 : t.maxTouchPoints) > 2 && /iPad|Macintosh/.test(window == null ? void 0 : window.navigator.userAgent));
 }
-function Ht(e) {
-  return J();
+function Yt(e) {
+  return Z();
 }
 function Gt(e, t) {
-  Ht() && ue(e, t);
+  Yt() && de(e, t);
 }
-function oe(e) {
+function le(e) {
   var t;
-  const n = Be(e);
+  const n = Ie(e);
   return (t = n == null ? void 0 : n.$el) != null ? t : n;
 }
-const Se = X ? window : void 0;
-function Je(...e) {
+const Se = z ? window : void 0;
+function Ze(...e) {
   let t, n, o, l;
   if (typeof e[0] == "string" || Array.isArray(e[0]) ? ([n, o, l] = e, t = Se) : [t, n, o, l] = e, !t)
-    return zt;
+    return Vt;
   Array.isArray(n) || (n = [n]), Array.isArray(o) || (o = [o]);
   const a = [], r = () => {
     a.forEach((c) => c()), a.length = 0;
-  }, i = (c, u, v, s) => (c.addEventListener(u, v, s), () => c.removeEventListener(u, v, s)), d = S(
-    () => [oe(t), Be(l)],
+  }, i = (c, u, v, s) => (c.addEventListener(u, v, s), () => c.removeEventListener(u, v, s)), d = I(
+    () => [le(t), Ie(l)],
     ([c, u]) => {
       if (r(), !c)
         return;
-      const v = Xt(u) ? { ...u } : u;
+      const v = zt(u) ? { ...u } : u;
       a.push(
         ...n.flatMap((s) => o.map((m) => i(c, s, m, v)))
       );
@@ -585,12 +585,12 @@ function Je(...e) {
   ), f = () => {
     d(), r();
   };
-  return Ye(f), f;
+  return Je(f), f;
 }
-function Yt(e) {
+function Jt(e) {
   return typeof e == "function" ? e : typeof e == "string" ? (t) => t.key === e : Array.isArray(e) ? (t) => e.includes(t.key) : () => !0;
 }
-function Jt(...e) {
+function Zt(...e) {
   let t, n, o = {};
   e.length === 3 ? (t = e[0], n = e[1], o = e[2]) : e.length === 2 ? typeof e[1] == "object" ? (t = !0, n = e[0], o = e[1]) : (t = e[0], n = e[1]) : (t = !0, n = e[0]);
   const {
@@ -598,21 +598,21 @@ function Jt(...e) {
     eventName: a = "keydown",
     passive: r = !1,
     dedupe: i = !1
-  } = o, d = Yt(t);
-  return Je(l, a, (f) => {
-    f.repeat && Be(i) || d(f) && n(f);
+  } = o, d = Jt(t);
+  return Ze(l, a, (f) => {
+    f.repeat && Ie(i) || d(f) && n(f);
   }, r);
 }
-function Zt() {
-  const e = h(!1), t = J();
-  return t && fe(() => {
+function Qt() {
+  const e = h(!1), t = Z();
+  return t && me(() => {
     e.value = !0;
   }, t), e;
 }
-function Qt(e) {
+function en(e) {
   return JSON.parse(JSON.stringify(e));
 }
-function en(e, t, n, o = {}) {
+function tn(e, t, n, o = {}) {
   var l, a, r;
   const {
     clone: i = !1,
@@ -621,55 +621,63 @@ function en(e, t, n, o = {}) {
     deep: c = !1,
     defaultValue: u,
     shouldEmit: v
-  } = o, s = J(), m = n || (s == null ? void 0 : s.emit) || ((l = s == null ? void 0 : s.$emit) == null ? void 0 : l.bind(s)) || ((r = (a = s == null ? void 0 : s.proxy) == null ? void 0 : a.$emit) == null ? void 0 : r.bind(s == null ? void 0 : s.proxy));
+  } = o, s = Z(), m = n || (s == null ? void 0 : s.emit) || ((l = s == null ? void 0 : s.$emit) == null ? void 0 : l.bind(s)) || ((r = (a = s == null ? void 0 : s.proxy) == null ? void 0 : a.$emit) == null ? void 0 : r.bind(s == null ? void 0 : s.proxy));
   let g = f;
   g = g || `update:${t.toString()}`;
-  const y = (M) => i ? typeof i == "function" ? i(M) : Qt(M) : M, b = () => qt(e[t]) ? y(e[t]) : u, I = (M) => {
+  const y = (M) => i ? typeof i == "function" ? i(M) : en(M) : M, b = () => Kt(e[t]) ? y(e[t]) : u, D = (M) => {
     v ? v(M) && m(g, M) : m(g, M);
   };
   if (d) {
-    const M = b(), F = h(M);
+    const M = b(), R = h(M);
     let P = !1;
-    return S(
+    return I(
       () => e[t],
-      (le) => {
-        P || (P = !0, F.value = y(le), K(() => P = !1));
+      (ae) => {
+        P || (P = !0, R.value = y(ae), X(() => P = !1));
       }
-    ), S(
-      F,
-      (le) => {
-        !P && (le !== e[t] || c) && I(le);
+    ), I(
+      R,
+      (ae) => {
+        !P && (ae !== e[t] || c) && D(ae);
       },
       { deep: c }
-    ), F;
+    ), R;
   } else
     return $({
       get() {
         return b();
       },
       set(M) {
-        I(M);
+        D(M);
       }
     });
 }
 function De(e) {
   return e ? e.flatMap((t) => t.type === Ee ? De(t.children) : [t]) : [];
 }
-function ve(e) {
+function U() {
+  let e = document.activeElement;
+  if (e == null)
+    return null;
+  for (; e != null && e.shadowRoot != null && e.shadowRoot.activeElement != null; )
+    e = e.shadowRoot.activeElement;
+  return e;
+}
+function ge(e) {
   if (e === null || typeof e != "object")
     return !1;
   const t = Object.getPrototypeOf(e);
   return t !== null && t !== Object.prototype && Object.getPrototypeOf(t) !== null || Symbol.iterator in e ? !1 : Symbol.toStringTag in e ? Object.prototype.toString.call(e) === "[object Module]" : !0;
 }
-function we(e, t, n = ".", o) {
-  if (!ve(t))
-    return we(e, {}, n);
+function be(e, t, n = ".", o) {
+  if (!ge(t))
+    return be(e, {}, n);
   const l = Object.assign({}, t);
   for (const a in e) {
     if (a === "__proto__" || a === "constructor")
       continue;
     const r = e[a];
-    r != null && (Array.isArray(r) && Array.isArray(l[a]) ? l[a] = [...r, ...l[a]] : ve(r) && ve(l[a]) ? l[a] = we(
+    r != null && (Array.isArray(r) && Array.isArray(l[a]) ? l[a] = [...r, ...l[a]] : ge(r) && ge(l[a]) ? l[a] = be(
       r,
       l[a],
       (n ? `${n}.` : "") + a.toString()
@@ -677,57 +685,57 @@ function we(e, t, n = ".", o) {
   }
   return l;
 }
-function tn(e) {
+function nn(e) {
   return (...t) => (
     // eslint-disable-next-line unicorn/no-array-reduce
-    t.reduce((n, o) => we(n, o, ""), {})
+    t.reduce((n, o) => be(n, o, ""), {})
   );
 }
-const nn = tn(), [Ze, uo] = $e("ConfigProvider");
-let on = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict", ln = (e = 21) => {
+const on = nn(), [Qe, co] = Be("ConfigProvider");
+let ln = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict", an = (e = 21) => {
   let t = "", n = e;
   for (; n--; )
-    t += on[Math.random() * 64 | 0];
+    t += ln[Math.random() * 64 | 0];
   return t;
 };
-const an = _t(() => {
+const rn = qt(() => {
   const e = h(/* @__PURE__ */ new Map()), t = h(), n = $(() => {
     for (const r of e.value.values())
       if (r)
         return !0;
     return !1;
-  }), o = Ze({
+  }), o = Qe({
     scrollBody: h(!0)
   });
   let l = null;
   const a = () => {
     document.body.style.paddingRight = "", document.body.style.marginRight = "", document.body.style.pointerEvents = "", document.body.style.removeProperty("--scrollbar-width"), document.body.style.overflow = t.value ?? "", Le && (l == null || l()), t.value = void 0;
   };
-  return S(n, (r, i) => {
+  return I(n, (r, i) => {
     var d;
-    if (!X)
+    if (!z)
       return;
     if (!r) {
       i && a();
       return;
     }
     t.value === void 0 && (t.value = document.body.style.overflow);
-    const f = window.innerWidth - document.documentElement.clientWidth, c = { padding: f, margin: 0 }, u = (d = o.scrollBody) != null && d.value ? typeof o.scrollBody.value == "object" ? nn({
+    const f = window.innerWidth - document.documentElement.clientWidth, c = { padding: f, margin: 0 }, u = (d = o.scrollBody) != null && d.value ? typeof o.scrollBody.value == "object" ? on({
       padding: o.scrollBody.value.padding === !0 ? f : o.scrollBody.value.padding,
       margin: o.scrollBody.value.margin === !0 ? f : o.scrollBody.value.margin
     }, c) : c : { padding: 0, margin: 0 };
-    f > 0 && (document.body.style.paddingRight = typeof u.padding == "number" ? `${u.padding}px` : String(u.padding), document.body.style.marginRight = typeof u.margin == "number" ? `${u.margin}px` : String(u.margin), document.body.style.setProperty("--scrollbar-width", `${f}px`), document.body.style.overflow = "hidden"), Le && (l = Je(
+    f > 0 && (document.body.style.paddingRight = typeof u.padding == "number" ? `${u.padding}px` : String(u.padding), document.body.style.marginRight = typeof u.margin == "number" ? `${u.margin}px` : String(u.margin), document.body.style.setProperty("--scrollbar-width", `${f}px`), document.body.style.overflow = "hidden"), Le && (l = Ze(
       document,
       "touchmove",
-      (v) => sn(v),
+      (v) => un(v),
       { passive: !1 }
-    )), K(() => {
+    )), X(() => {
       document.body.style.pointerEvents = "none", document.body.style.overflow = "hidden";
     });
   }, { immediate: !0, flush: "sync" }), e;
 });
-function rn(e) {
-  const t = ln(6), n = an();
+function sn(e) {
+  const t = an(6), n = rn();
   n.value.set(t, e);
   const o = $({
     get: () => n.value.get(t) ?? !1,
@@ -737,31 +745,31 @@ function rn(e) {
     n.value.delete(t);
   }), o;
 }
-function Qe(e) {
+function et(e) {
   const t = window.getComputedStyle(e);
   if (t.overflowX === "scroll" || t.overflowY === "scroll" || t.overflowX === "auto" && e.clientWidth < e.scrollWidth || t.overflowY === "auto" && e.clientHeight < e.scrollHeight)
     return !0;
   {
     const n = e.parentNode;
-    return !n || n.tagName === "BODY" ? !1 : Qe(n);
+    return !n || n.tagName === "BODY" ? !1 : et(n);
   }
 }
-function sn(e) {
+function un(e) {
   const t = e || window.event, n = t.target;
-  return n instanceof Element && Qe(n) ? !1 : t.touches.length > 1 ? !0 : (t.preventDefault && t.cancelable && t.preventDefault(), !1);
+  return n instanceof Element && et(n) ? !1 : t.touches.length > 1 ? !0 : (t.preventDefault && t.cancelable && t.preventDefault(), !1);
 }
-function Ie(e) {
-  const t = J(), n = t == null ? void 0 : t.type.emits, o = {};
+function Pe(e) {
+  const t = Z(), n = t == null ? void 0 : t.type.emits, o = {};
   return n != null && n.length || console.warn(
     `No emitted event found. Please check component: ${t == null ? void 0 : t.type.__name}`
   ), n == null || n.forEach((l) => {
-    o[wt(bt(l))] = (...a) => e(l, ...a);
+    o[xt(wt(l))] = (...a) => e(l, ...a);
   }), o;
 }
-function L() {
-  const e = J(), t = h(), n = $(() => {
+function k() {
+  const e = Z(), t = h(), n = $(() => {
     var r, i;
-    return ["#text", "#comment"].includes((r = t.value) == null ? void 0 : r.$el.nodeName) ? (i = t.value) == null ? void 0 : i.$el.nextElementSibling : oe(t);
+    return ["#text", "#comment"].includes((r = t.value) == null ? void 0 : r.$el.nodeName) ? (i = t.value) == null ? void 0 : i.$el.nextElementSibling : le(t);
   }), o = Object.assign({}, e.exposed), l = {};
   for (const r in e.props)
     Object.defineProperty(l, r, {
@@ -790,26 +798,26 @@ function L() {
   }
   return { forwardRef: a, currentRef: t, currentElement: n };
 }
-var un = function(e) {
+var dn = function(e) {
   if (typeof document > "u")
     return null;
   var t = Array.isArray(e) ? e[0] : e;
   return t.ownerDocument.body;
-}, V = /* @__PURE__ */ new WeakMap(), re = /* @__PURE__ */ new WeakMap(), se = {}, ge = 0, et = function(e) {
-  return e && (e.host || et(e.parentNode));
-}, dn = function(e, t) {
+}, H = /* @__PURE__ */ new WeakMap(), se = /* @__PURE__ */ new WeakMap(), ie = {}, ye = 0, tt = function(e) {
+  return e && (e.host || tt(e.parentNode));
+}, cn = function(e, t) {
   return t.map(function(n) {
     if (e.contains(n))
       return n;
-    var o = et(n);
+    var o = tt(n);
     return o && e.contains(o) ? o : (console.error("aria-hidden", n, "in not contained inside", e, ". Doing nothing"), null);
   }).filter(function(n) {
     return !!n;
   });
-}, cn = function(e, t, n, o) {
-  var l = dn(t, Array.isArray(e) ? e : [e]);
-  se[n] || (se[n] = /* @__PURE__ */ new WeakMap());
-  var a = se[n], r = [], i = /* @__PURE__ */ new Set(), d = new Set(l), f = function(u) {
+}, fn = function(e, t, n, o) {
+  var l = cn(t, Array.isArray(e) ? e : [e]);
+  ie[n] || (ie[n] = /* @__PURE__ */ new WeakMap());
+  var a = ie[n], r = [], i = /* @__PURE__ */ new Set(), d = new Set(l), f = function(u) {
     !u || i.has(u) || (i.add(u), f(u.parentNode));
   };
   l.forEach(f);
@@ -819,40 +827,40 @@ var un = function(e) {
         c(v);
       else
         try {
-          var s = v.getAttribute(o), m = s !== null && s !== "false", g = (V.get(v) || 0) + 1, y = (a.get(v) || 0) + 1;
-          V.set(v, g), a.set(v, y), r.push(v), g === 1 && m && re.set(v, !0), y === 1 && v.setAttribute(n, "true"), m || v.setAttribute(o, "true");
+          var s = v.getAttribute(o), m = s !== null && s !== "false", g = (H.get(v) || 0) + 1, y = (a.get(v) || 0) + 1;
+          H.set(v, g), a.set(v, y), r.push(v), g === 1 && m && se.set(v, !0), y === 1 && v.setAttribute(n, "true"), m || v.setAttribute(o, "true");
         } catch (b) {
           console.error("aria-hidden: cannot operate on ", v, b);
         }
     });
   };
-  return c(t), i.clear(), ge++, function() {
+  return c(t), i.clear(), ye++, function() {
     r.forEach(function(u) {
-      var v = V.get(u) - 1, s = a.get(u) - 1;
-      V.set(u, v), a.set(u, s), v || (re.has(u) || u.removeAttribute(o), re.delete(u)), s || u.removeAttribute(n);
-    }), ge--, ge || (V = /* @__PURE__ */ new WeakMap(), V = /* @__PURE__ */ new WeakMap(), re = /* @__PURE__ */ new WeakMap(), se = {});
+      var v = H.get(u) - 1, s = a.get(u) - 1;
+      H.set(u, v), a.set(u, s), v || (se.has(u) || u.removeAttribute(o), se.delete(u)), s || u.removeAttribute(n);
+    }), ye--, ye || (H = /* @__PURE__ */ new WeakMap(), H = /* @__PURE__ */ new WeakMap(), se = /* @__PURE__ */ new WeakMap(), ie = {});
   };
-}, fn = function(e, t, n) {
+}, mn = function(e, t, n) {
   n === void 0 && (n = "data-aria-hidden");
-  var o = Array.from(Array.isArray(e) ? e : [e]), l = un(e);
-  return l ? (o.push.apply(o, Array.from(l.querySelectorAll("[aria-live]"))), cn(o, l, n, "aria-hidden")) : function() {
+  var o = Array.from(Array.isArray(e) ? e : [e]), l = dn(e);
+  return l ? (o.push.apply(o, Array.from(l.querySelectorAll("[aria-live]"))), fn(o, l, n, "aria-hidden")) : function() {
     return null;
   };
 };
-function mn(e) {
+function pn(e) {
   let t;
-  S(() => oe(e), (n) => {
-    n ? t = fn(n) : t && t();
+  I(() => le(e), (n) => {
+    n ? t = mn(n) : t && t();
   }), G(() => {
     t && t();
   });
 }
-let pn = 0;
-function Ne(e, t = "radix") {
-  const n = Ze({ useId: void 0 });
-  return ke.useId ? `${t}-${ke.useId()}` : n.useId ? `${t}-${n.useId()}` : `${t}-${++pn}`;
+let vn = 0;
+function Re(e, t = "radix") {
+  const n = Qe({ useId: void 0 });
+  return ke.useId ? `${t}-${ke.useId()}` : n.useId ? `${t}-${n.useId()}` : `${t}-${++vn}`;
 }
-function vn(e, t) {
+function gn(e, t) {
   const n = h(e);
   function o(l) {
     return t[n.value][l] ?? n.value;
@@ -864,7 +872,7 @@ function vn(e, t) {
     }
   };
 }
-const Pe = A({
+const Ne = A({
   name: "PrimitiveSlot",
   inheritAttrs: !1,
   setup(e, { attrs: t, slots: n }) {
@@ -872,20 +880,20 @@ const Pe = A({
       var o, l;
       if (!n.default)
         return null;
-      const a = De(n.default()), r = a.findIndex((c) => c.type !== vt);
+      const a = De(n.default()), r = a.findIndex((c) => c.type !== bt);
       if (r === -1)
         return a;
       const i = a[r];
       (o = i.props) == null || delete o.ref;
-      const d = i.props ? k(t, i.props) : t;
+      const d = i.props ? N(t, i.props) : t;
       t.class && (l = i.props) != null && l.class && delete i.props.class;
-      const f = gt(i, d);
+      const f = Ct(i, d);
       for (const c in d)
         c.startsWith("on") && (f.props || (f.props = {}), f.props[c] = d[c]);
       return a.length === 1 ? f : (a[r] = f, a);
     };
   }
-}), Z = A({
+}), Q = A({
   name: "Primitive",
   inheritAttrs: !1,
   props: {
@@ -900,24 +908,24 @@ const Pe = A({
   },
   setup(e, { attrs: t, slots: n }) {
     const o = e.asChild ? "template" : e.as;
-    return typeof o == "string" && ["area", "img", "input"].includes(o) ? () => R(o, t) : o !== "template" ? () => R(e.as, t, { default: n.default }) : () => R(Pe, t, { default: n.default });
+    return typeof o == "string" && ["area", "img", "input"].includes(o) ? () => F(o, t) : o !== "template" ? () => F(e.as, t, { default: n.default }) : () => F(Ne, t, { default: n.default });
   }
 });
-function tt() {
+function nt() {
   const e = h(), t = $(() => {
     var n, o;
-    return ["#text", "#comment"].includes((n = e.value) == null ? void 0 : n.$el.nodeName) ? (o = e.value) == null ? void 0 : o.$el.nextElementSibling : oe(e);
+    return ["#text", "#comment"].includes((n = e.value) == null ? void 0 : n.$el.nodeName) ? (o = e.value) == null ? void 0 : o.$el.nextElementSibling : le(e);
   });
   return {
     primitiveElement: e,
     currentElement: t
   };
 }
-function gn(e, t) {
+function yn(e, t) {
   var n;
   const o = h({}), l = h("none"), a = h(e), r = e.value ? "mounted" : "unmounted";
   let i;
-  const d = ((n = t.value) == null ? void 0 : n.ownerDocument.defaultView) ?? Se, { state: f, dispatch: c } = vn(r, {
+  const d = ((n = t.value) == null ? void 0 : n.ownerDocument.defaultView) ?? Se, { state: f, dispatch: c } = gn(r, {
     mounted: {
       UNMOUNT: "unmounted",
       ANIMATION_OUT: "unmountSuspended"
@@ -931,45 +939,45 @@ function gn(e, t) {
     }
   }), u = (y) => {
     var b;
-    if (X) {
-      const I = new CustomEvent(y, { bubbles: !1, cancelable: !1 });
-      (b = t.value) == null || b.dispatchEvent(I);
+    if (z) {
+      const D = new CustomEvent(y, { bubbles: !1, cancelable: !1 });
+      (b = t.value) == null || b.dispatchEvent(D);
     }
   };
-  S(
+  I(
     e,
     async (y, b) => {
-      var I;
+      var D;
       const M = b !== y;
-      if (await K(), M) {
-        const F = l.value, P = ie(t.value);
-        y ? (c("MOUNT"), u("enter"), P === "none" && u("after-enter")) : P === "none" || ((I = o.value) == null ? void 0 : I.display) === "none" ? (c("UNMOUNT"), u("leave"), u("after-leave")) : b && F !== P ? (c("ANIMATION_OUT"), u("leave")) : (c("UNMOUNT"), u("after-leave"));
+      if (await X(), M) {
+        const R = l.value, P = ue(t.value);
+        y ? (c("MOUNT"), u("enter"), P === "none" && u("after-enter")) : P === "none" || ((D = o.value) == null ? void 0 : D.display) === "none" ? (c("UNMOUNT"), u("leave"), u("after-leave")) : b && R !== P ? (c("ANIMATION_OUT"), u("leave")) : (c("UNMOUNT"), u("after-leave"));
       }
     },
     { immediate: !0 }
   );
   const v = (y) => {
-    const b = ie(t.value), I = b.includes(
+    const b = ue(t.value), D = b.includes(
       y.animationName
     ), M = f.value === "mounted" ? "enter" : "leave";
-    if (y.target === t.value && I && (u(`after-${M}`), c("ANIMATION_END"), !a.value)) {
-      const F = t.value.style.animationFillMode;
+    if (y.target === t.value && D && (u(`after-${M}`), c("ANIMATION_END"), !a.value)) {
+      const R = t.value.style.animationFillMode;
       t.value.style.animationFillMode = "forwards", i = d == null ? void 0 : d.setTimeout(() => {
         var P;
-        ((P = t.value) == null ? void 0 : P.style.animationFillMode) === "forwards" && (t.value.style.animationFillMode = F);
+        ((P = t.value) == null ? void 0 : P.style.animationFillMode) === "forwards" && (t.value.style.animationFillMode = R);
       });
     }
     y.target === t.value && b === "none" && c("ANIMATION_END");
   }, s = (y) => {
-    y.target === t.value && (l.value = ie(t.value));
-  }, m = S(
+    y.target === t.value && (l.value = ue(t.value));
+  }, m = I(
     t,
     (y, b) => {
-      y ? (o.value = getComputedStyle(y), y.addEventListener("animationstart", s), y.addEventListener("animationcancel", v), y.addEventListener("animationend", v)) : (c("ANIMATION_END"), d == null || d.clearTimeout(i), b == null || b.removeEventListener("animationstart", s), b == null || b.removeEventListener("animationcancel", v), b == null || b.removeEventListener("animationend", v));
+      y ? (o.value = getComputedStyle(y), y.addEventListener("animationstart", s), y.addEventListener("animationcancel", v), y.addEventListener("animationend", v)) : (c("ANIMATION_END"), i !== void 0 && (d == null || d.clearTimeout(i)), b == null || b.removeEventListener("animationstart", s), b == null || b.removeEventListener("animationcancel", v), b == null || b.removeEventListener("animationend", v));
     },
     { immediate: !0 }
-  ), g = S(f, () => {
-    const y = ie(t.value);
+  ), g = I(f, () => {
+    const y = ue(t.value);
     l.value = f.value === "mounted" ? y : "none";
   });
   return G(() => {
@@ -980,10 +988,10 @@ function gn(e, t) {
     )
   };
 }
-function ie(e) {
+function ue(e) {
   return e && getComputedStyle(e).animationName || "none";
 }
-const nt = A({
+const ot = A({
   name: "Presence",
   props: {
     present: {
@@ -997,11 +1005,11 @@ const nt = A({
   slots: {},
   setup(e, { slots: t, expose: n }) {
     var o;
-    const { present: l, forceMount: a } = Ue(e), r = h(), { isPresent: i } = gn(l, r);
+    const { present: l, forceMount: a } = _e(e), r = h(), { isPresent: i } = yn(l, r);
     n({ present: i });
     let d = t.default({ present: i });
     d = De(d || []);
-    const f = J();
+    const f = Z();
     if (d && (d == null ? void 0 : d.length) > 1) {
       const c = (o = f == null ? void 0 : f.parent) != null && o.type.name ? `<${f.parent.type.name} />` : "component";
       throw new Error(
@@ -1019,14 +1027,14 @@ const nt = A({
 `)
       );
     }
-    return () => a.value || l.value || i.value ? R(t.default({ present: i })[0], {
+    return () => a.value || l.value || i.value ? F(t.default({ present: i })[0], {
       ref: (c) => {
-        const u = oe(c);
+        const u = le(c);
         return typeof (u == null ? void 0 : u.hasAttribute) > "u" || (u != null && u.hasAttribute("data-radix-popper-content-wrapper") ? r.value = u.firstElementChild : r.value = u), u;
       }
     }) : null;
   }
-}), [U, yn] = $e("DialogRoot"), hn = /* @__PURE__ */ A({
+}), [_, hn] = Be("DialogRoot"), xn = /* @__PURE__ */ A({
   inheritAttrs: !1,
   __name: "DialogRoot",
   props: {
@@ -1036,11 +1044,11 @@ const nt = A({
   },
   emits: ["update:open"],
   setup(e, { emit: t }) {
-    const n = e, o = en(n, "open", t, {
+    const n = e, o = tn(n, "open", t, {
       defaultValue: n.defaultOpen,
       passive: n.open === void 0
-    }), l = h(), a = h(), { modal: r } = Ue(n);
-    return yn({
+    }), l = h(), a = h(), { modal: r } = _e(n);
+    return hn({
       open: o,
       modal: r,
       openModal: () => {
@@ -1059,7 +1067,7 @@ const nt = A({
       contentElement: a
     }), (i, d) => O(i.$slots, "default", { open: p(o) });
   }
-}), xn = /* @__PURE__ */ A({
+}), wn = /* @__PURE__ */ A({
   __name: "Teleport",
   props: {
     to: { default: "body" },
@@ -1067,16 +1075,16 @@ const nt = A({
     forceMount: { type: Boolean }
   },
   setup(e) {
-    const t = Zt();
-    return (n, o) => p(t) || n.forceMount ? (x(), E(xt, {
+    const t = Qt();
+    return (n, o) => p(t) || n.forceMount ? (x(), C(ht, {
       key: 0,
       to: n.to,
       disabled: n.disabled
     }, [
       O(n.$slots, "default")
-    ], 8, ["to", "disabled"])) : N("", !0);
+    ], 8, ["to", "disabled"])) : L("", !0);
   }
-}), wn = /* @__PURE__ */ A({
+}), bn = /* @__PURE__ */ A({
   __name: "DialogPortal",
   props: {
     to: {},
@@ -1085,15 +1093,15 @@ const nt = A({
   },
   setup(e) {
     const t = e;
-    return (n, o) => (x(), E(p(xn), yt(ht(t)), {
+    return (n, o) => (x(), C(p(wn), gt(yt(t)), {
       default: w(() => [
         O(n.$slots, "default")
       ]),
       _: 3
     }, 16));
   }
-}), bn = "dismissableLayer.pointerDownOutside", En = "dismissableLayer.focusOutside";
-function ot(e, t) {
+}), Cn = "dismissableLayer.pointerDownOutside", En = "dismissableLayer.focusOutside";
+function lt(e, t) {
   const n = t.closest(
     "[data-dismissable-layer]"
   ), o = e.dataset.dismissableLayer === "" ? e : e.querySelector(
@@ -1103,24 +1111,24 @@ function ot(e, t) {
   );
   return !!(n && o === n || l.indexOf(o) < l.indexOf(n));
 }
-function Cn(e, t) {
+function On(e, t) {
   var n;
   const o = ((n = t == null ? void 0 : t.value) == null ? void 0 : n.ownerDocument) ?? (globalThis == null ? void 0 : globalThis.document), l = h(!1), a = h(() => {
   });
-  return q((r) => {
-    if (!X)
+  return K((r) => {
+    if (!z)
       return;
     const i = async (f) => {
       const c = f.target;
       if (t != null && t.value) {
-        if (ot(t.value, c)) {
+        if (lt(t.value, c)) {
           l.value = !1;
           return;
         }
         if (f.target && !l.value) {
           let u = function() {
             Ge(
-              bn,
+              Cn,
               e,
               v
             );
@@ -1143,14 +1151,14 @@ function Cn(e, t) {
     onPointerDownCapture: () => l.value = !0
   };
 }
-function On(e, t) {
+function An(e, t) {
   var n;
   const o = ((n = t == null ? void 0 : t.value) == null ? void 0 : n.ownerDocument) ?? (globalThis == null ? void 0 : globalThis.document), l = h(!1);
-  return q((a) => {
-    if (!X)
+  return K((a) => {
+    if (!z)
       return;
     const r = async (i) => {
-      t != null && t.value && (await K(), !(!t.value || ot(t.value, i.target)) && i.target && !l.value && Ge(
+      t != null && t.value && (await X(), !(!t.value || lt(t.value, i.target)) && i.target && !l.value && Ge(
         En,
         e,
         { originalEvent: i }
@@ -1162,11 +1170,11 @@ function On(e, t) {
     onBlurCapture: () => l.value = !1
   };
 }
-const W = _e({
+const T = Ke({
   layersRoot: /* @__PURE__ */ new Set(),
   layersWithOutsidePointerEventsDisabled: /* @__PURE__ */ new Set(),
   branches: /* @__PURE__ */ new Set()
-}), An = /* @__PURE__ */ A({
+}), Mn = /* @__PURE__ */ A({
   __name: "DismissableLayer",
   props: {
     disableOutsidePointerEvents: { type: Boolean, default: !1 },
@@ -1175,42 +1183,42 @@ const W = _e({
   },
   emits: ["escapeKeyDown", "pointerDownOutside", "focusOutside", "interactOutside", "dismiss"],
   setup(e, { emit: t }) {
-    const n = e, o = t, { forwardRef: l, currentElement: a } = L(), r = $(
+    const n = e, o = t, { forwardRef: l, currentElement: a } = k(), r = $(
       () => {
         var m;
         return ((m = a.value) == null ? void 0 : m.ownerDocument) ?? globalThis.document;
       }
-    ), i = $(() => W.layersRoot), d = $(() => a.value ? Array.from(i.value).indexOf(a.value) : -1), f = $(() => W.layersWithOutsidePointerEventsDisabled.size > 0), c = $(() => {
-      const m = Array.from(i.value), [g] = [...W.layersWithOutsidePointerEventsDisabled].slice(-1), y = m.indexOf(g);
+    ), i = $(() => T.layersRoot), d = $(() => a.value ? Array.from(i.value).indexOf(a.value) : -1), f = $(() => T.layersWithOutsidePointerEventsDisabled.size > 0), c = $(() => {
+      const m = Array.from(i.value), [g] = [...T.layersWithOutsidePointerEventsDisabled].slice(-1), y = m.indexOf(g);
       return d.value >= y;
-    }), u = Cn(async (m) => {
-      const g = [...W.branches].some(
+    }), u = On(async (m) => {
+      const g = [...T.branches].some(
         (y) => y == null ? void 0 : y.contains(m.target)
       );
-      !c.value || g || (o("pointerDownOutside", m), o("interactOutside", m), await K(), m.defaultPrevented || o("dismiss"));
-    }, a), v = On((m) => {
-      [...W.branches].some(
+      !c.value || g || (o("pointerDownOutside", m), o("interactOutside", m), await X(), m.defaultPrevented || o("dismiss"));
+    }, a), v = An((m) => {
+      [...T.branches].some(
         (g) => g == null ? void 0 : g.contains(m.target)
       ) || (o("focusOutside", m), o("interactOutside", m), m.defaultPrevented || o("dismiss"));
     }, a);
-    Jt("Escape", (m) => {
+    Zt("Escape", (m) => {
       d.value === i.value.size - 1 && (o("escapeKeyDown", m), m.defaultPrevented || o("dismiss"));
     });
     let s;
-    return q((m) => {
-      a.value && (n.disableOutsidePointerEvents && (W.layersWithOutsidePointerEventsDisabled.size === 0 && (s = r.value.body.style.pointerEvents, r.value.body.style.pointerEvents = "none"), W.layersWithOutsidePointerEventsDisabled.add(a.value)), i.value.add(a.value), m(() => {
-        n.disableOutsidePointerEvents && W.layersWithOutsidePointerEventsDisabled.size === 1 && (r.value.body.style.pointerEvents = s);
+    return K((m) => {
+      a.value && (n.disableOutsidePointerEvents && (T.layersWithOutsidePointerEventsDisabled.size === 0 && (s = r.value.body.style.pointerEvents, r.value.body.style.pointerEvents = "none"), T.layersWithOutsidePointerEventsDisabled.add(a.value)), i.value.add(a.value), m(() => {
+        n.disableOutsidePointerEvents && T.layersWithOutsidePointerEventsDisabled.size === 1 && (r.value.body.style.pointerEvents = s);
       }));
-    }), q((m) => {
+    }), K((m) => {
       m(() => {
-        a.value && (i.value.delete(a.value), W.layersWithOutsidePointerEventsDisabled.delete(a.value));
+        a.value && (i.value.delete(a.value), T.layersWithOutsidePointerEventsDisabled.delete(a.value));
       });
-    }), (m, g) => (x(), E(p(Z), {
+    }), (m, g) => (x(), C(p(Q), {
       ref: p(l),
       "as-child": m.asChild,
       as: m.as,
       "data-dismissable-layer": "",
-      style: Et({
+      style: At({
         pointerEvents: f.value ? c.value ? "auto" : "none" : void 0
       }),
       onFocusCapture: p(v).onFocusCapture,
@@ -1223,18 +1231,18 @@ const W = _e({
       _: 3
     }, 8, ["as-child", "as", "style", "onFocusCapture", "onBlurCapture", "onPointerdownCapture"]));
   }
-}), ye = "focusScope.autoFocusOnMount", he = "focusScope.autoFocusOnUnmount", Fe = { bubbles: !1, cancelable: !0 };
-function Mn(e, { select: t = !1 } = {}) {
-  const n = document.activeElement;
+}), he = "focusScope.autoFocusOnMount", xe = "focusScope.autoFocusOnUnmount", Te = { bubbles: !1, cancelable: !0 };
+function $n(e, { select: t = !1 } = {}) {
+  const n = U();
   for (const o of e)
-    if (T(o, { select: t }), document.activeElement !== n)
+    if (W(o, { select: t }), U() !== n)
       return !0;
 }
-function $n(e) {
-  const t = lt(e), n = We(t, e), o = We(t.reverse(), e);
+function Bn(e) {
+  const t = at(e), n = We(t, e), o = We(t.reverse(), e);
   return [n, o];
 }
-function lt(e) {
+function at(e) {
   const t = [], n = document.createTreeWalker(e, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (o) => {
       const l = o.tagName === "INPUT" && o.type === "hidden";
@@ -1246,10 +1254,10 @@ function lt(e) {
 }
 function We(e, t) {
   for (const n of e)
-    if (!Bn(n, { upTo: t }))
+    if (!In(n, { upTo: t }))
       return n;
 }
-function Bn(e, { upTo: t }) {
+function In(e, { upTo: t }) {
   if (getComputedStyle(e).visibility === "hidden")
     return !0;
   for (; e; ) {
@@ -1264,31 +1272,31 @@ function Bn(e, { upTo: t }) {
 function Sn(e) {
   return e instanceof HTMLInputElement && "select" in e;
 }
-function T(e, { select: t = !1 } = {}) {
+function W(e, { select: t = !1 } = {}) {
   if (e && e.focus) {
-    const n = document.activeElement;
+    const n = U();
     e.focus({ preventScroll: !0 }), e !== n && Sn(e) && t && e.select();
   }
 }
-const Dn = Ut(() => h([]));
-function In() {
+const Dn = _t(() => h([]));
+function Pn() {
   const e = Dn();
   return {
     add(t) {
       const n = e.value[0];
-      t !== n && (n == null || n.pause()), e.value = Te(e.value, t), e.value.unshift(t);
+      t !== n && (n == null || n.pause()), e.value = Fe(e.value, t), e.value.unshift(t);
     },
     remove(t) {
       var n;
-      e.value = Te(e.value, t), (n = e.value[0]) == null || n.resume();
+      e.value = Fe(e.value, t), (n = e.value[0]) == null || n.resume();
     }
   };
 }
-function Te(e, t) {
+function Fe(e, t) {
   const n = [...e], o = n.indexOf(t);
   return o !== -1 && n.splice(o, 1), n;
 }
-function Pn(e) {
+function Nn(e) {
   return e.filter((t) => t.tagName !== "A");
 }
 const kn = /* @__PURE__ */ A({
@@ -1301,7 +1309,7 @@ const kn = /* @__PURE__ */ A({
   },
   emits: ["mountAutoFocus", "unmountAutoFocus"],
   setup(e, { emit: t }) {
-    const n = e, o = t, { currentRef: l, currentElement: a } = L(), r = h(null), i = In(), d = _e({
+    const n = e, o = t, { currentRef: l, currentElement: a } = k(), r = h(null), i = Pn(), d = Ke({
       paused: !1,
       pause() {
         this.paused = !0;
@@ -1310,8 +1318,8 @@ const kn = /* @__PURE__ */ A({
         this.paused = !1;
       }
     });
-    q((c) => {
-      if (!X)
+    K((c) => {
+      if (!z)
         return;
       const u = a.value;
       if (!n.trapped)
@@ -1320,54 +1328,54 @@ const kn = /* @__PURE__ */ A({
         if (d.paused || !u)
           return;
         const b = y.target;
-        u.contains(b) ? r.value = b : T(r.value, { select: !0 });
+        u.contains(b) ? r.value = b : W(r.value, { select: !0 });
       }
       function s(y) {
         if (d.paused || !u)
           return;
         const b = y.relatedTarget;
-        b !== null && (u.contains(b) || T(r.value, { select: !0 }));
+        b !== null && (u.contains(b) || W(r.value, { select: !0 }));
       }
       function m(y) {
-        u.contains(r.value) || T(u);
+        u.contains(r.value) || W(u);
       }
       document.addEventListener("focusin", v), document.addEventListener("focusout", s);
       const g = new MutationObserver(m);
       u && g.observe(u, { childList: !0, subtree: !0 }), c(() => {
         document.removeEventListener("focusin", v), document.removeEventListener("focusout", s), g.disconnect();
       });
-    }), q(async (c) => {
+    }), K(async (c) => {
       const u = a.value;
-      if (await K(), !u)
+      if (await X(), !u)
         return;
       i.add(d);
-      const v = document.activeElement;
+      const v = U();
       if (!u.contains(v)) {
-        const s = new CustomEvent(ye, Fe);
-        u.addEventListener(ye, (m) => o("mountAutoFocus", m)), u.dispatchEvent(s), s.defaultPrevented || (Mn(Pn(lt(u)), {
+        const s = new CustomEvent(he, Te);
+        u.addEventListener(he, (m) => o("mountAutoFocus", m)), u.dispatchEvent(s), s.defaultPrevented || ($n(Nn(at(u)), {
           select: !0
-        }), document.activeElement === v && T(u));
+        }), U() === v && W(u));
       }
       c(() => {
-        u.removeEventListener(ye, (g) => o("mountAutoFocus", g));
-        const s = new CustomEvent(he, Fe), m = (g) => {
+        u.removeEventListener(he, (g) => o("mountAutoFocus", g));
+        const s = new CustomEvent(xe, Te), m = (g) => {
           o("unmountAutoFocus", g);
         };
-        u.addEventListener(he, m), u.dispatchEvent(s), setTimeout(() => {
-          s.defaultPrevented || T(v ?? document.body, { select: !0 }), u.removeEventListener(he, m), i.remove(d);
+        u.addEventListener(xe, m), u.dispatchEvent(s), setTimeout(() => {
+          s.defaultPrevented || W(v ?? document.body, { select: !0 }), u.removeEventListener(xe, m), i.remove(d);
         }, 0);
       });
     });
     function f(c) {
       if (!n.loop && !n.trapped || d.paused)
         return;
-      const u = c.key === "Tab" && !c.altKey && !c.ctrlKey && !c.metaKey, v = document.activeElement;
+      const u = c.key === "Tab" && !c.altKey && !c.ctrlKey && !c.metaKey, v = U();
       if (u && v) {
-        const s = c.currentTarget, [m, g] = $n(s);
-        m && g ? !c.shiftKey && v === g ? (c.preventDefault(), n.loop && T(m, { select: !0 })) : c.shiftKey && v === m && (c.preventDefault(), n.loop && T(g, { select: !0 })) : v === s && c.preventDefault();
+        const s = c.currentTarget, [m, g] = Bn(s);
+        m && g ? !c.shiftKey && v === g ? (c.preventDefault(), n.loop && W(m, { select: !0 })) : c.shiftKey && v === m && (c.preventDefault(), n.loop && W(g, { select: !0 })) : v === s && c.preventDefault();
       }
     }
-    return (c, u) => (x(), E(p(Z), {
+    return (c, u) => (x(), C(p(Q), {
       ref_key: "currentRef",
       ref: l,
       tabindex: "-1",
@@ -1385,10 +1393,10 @@ const kn = /* @__PURE__ */ A({
 function Ln(e) {
   return e ? "open" : "closed";
 }
-const Nn = "DialogTitle", Fn = "DialogContent";
+const Rn = "DialogTitle", Tn = "DialogContent";
 function Wn({
-  titleName: e = Nn,
-  contentName: t = Fn,
+  titleName: e = Rn,
+  contentName: t = Tn,
   componentLink: n = "dialog.html#title",
   titleId: o,
   descriptionId: l,
@@ -1399,14 +1407,14 @@ function Wn({
 If you want to hide the \`${e}\`, you can wrap it with our VisuallyHidden component.
 
 For more information, see https://www.radix-vue.com/components/${n}`, i = `Warning: Missing \`Description\` or \`aria-describedby="undefined"\` for ${t}.`;
-  fe(() => {
+  me(() => {
     var d;
     document.getElementById(o) || console.warn(r);
     const f = (d = a.value) == null ? void 0 : d.getAttribute("aria-describedby");
     l && f && (document.getElementById(l) || console.warn(i));
   });
 }
-const at = /* @__PURE__ */ A({
+const rt = /* @__PURE__ */ A({
   __name: "DialogContentImpl",
   props: {
     forceMount: { type: Boolean },
@@ -1417,9 +1425,9 @@ const at = /* @__PURE__ */ A({
   },
   emits: ["escapeKeyDown", "pointerDownOutside", "focusOutside", "interactOutside", "openAutoFocus", "closeAutoFocus"],
   setup(e, { emit: t }) {
-    const n = e, o = t, l = U(), { forwardRef: a, currentElement: r } = L();
-    return l.titleId || (l.titleId = Ne(void 0, "radix-vue-dialog-title")), l.descriptionId || (l.descriptionId = Ne(void 0, "radix-vue-dialog-description")), fe(() => {
-      l.contentElement = r, document.activeElement !== document.body && (l.triggerElement.value = document.activeElement);
+    const n = e, o = t, l = _(), { forwardRef: a, currentElement: r } = k();
+    return l.titleId || (l.titleId = Re(void 0, "radix-vue-dialog-title")), l.descriptionId || (l.descriptionId = Re(void 0, "radix-vue-dialog-description")), me(() => {
+      l.contentElement = r, U() !== document.body && (l.triggerElement.value = U());
     }), process.env.NODE_ENV !== "production" && Wn({
       titleName: "DialogTitle",
       contentName: "DialogContent",
@@ -1427,7 +1435,7 @@ const at = /* @__PURE__ */ A({
       titleId: l.titleId,
       descriptionId: l.descriptionId,
       contentElement: r
-    }), (i, d) => (x(), E(p(kn), {
+    }), (i, d) => (x(), C(p(kn), {
       "as-child": "",
       loop: "",
       trapped: n.trapFocus,
@@ -1435,7 +1443,7 @@ const at = /* @__PURE__ */ A({
       onUnmountAutoFocus: d[6] || (d[6] = (f) => o("closeAutoFocus", f))
     }, {
       default: w(() => [
-        B(p(An), k({
+        B(p(Mn), N({
           id: p(l).contentId,
           ref: p(a),
           as: i.as,
@@ -1461,7 +1469,7 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 8, ["trapped"]));
   }
-}), Tn = /* @__PURE__ */ A({
+}), Fn = /* @__PURE__ */ A({
   __name: "DialogContentModal",
   props: {
     forceMount: { type: Boolean },
@@ -1472,8 +1480,8 @@ const at = /* @__PURE__ */ A({
   },
   emits: ["escapeKeyDown", "pointerDownOutside", "focusOutside", "interactOutside", "openAutoFocus", "closeAutoFocus"],
   setup(e, { emit: t }) {
-    const n = e, o = t, l = U(), a = Ie(o), { forwardRef: r, currentElement: i } = L();
-    return mn(i), (d, f) => (x(), E(at, k({ ...n, ...p(a) }, {
+    const n = e, o = t, l = _(), a = Pe(o), { forwardRef: r, currentElement: i } = k();
+    return pn(i), (d, f) => (x(), C(rt, N({ ...n, ...p(a) }, {
       ref: p(r),
       "trap-focus": p(l).open.value,
       "disable-outside-pointer-events": !0,
@@ -1495,7 +1503,7 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 16, ["trap-focus"]));
   }
-}), Rn = /* @__PURE__ */ A({
+}), jn = /* @__PURE__ */ A({
   __name: "DialogContentNonModal",
   props: {
     forceMount: { type: Boolean },
@@ -1506,10 +1514,10 @@ const at = /* @__PURE__ */ A({
   },
   emits: ["escapeKeyDown", "pointerDownOutside", "focusOutside", "interactOutside", "openAutoFocus", "closeAutoFocus"],
   setup(e, { emit: t }) {
-    const n = e, o = Ie(t);
-    L();
-    const l = U(), a = h(!1), r = h(!1);
-    return (i, d) => (x(), E(at, k({ ...n, ...p(o) }, {
+    const n = e, o = Pe(t);
+    k();
+    const l = _(), a = h(!1), r = h(!1);
+    return (i, d) => (x(), C(rt, N({ ...n, ...p(o) }, {
       "trap-focus": !1,
       "disable-outside-pointer-events": !1,
       onCloseAutoFocus: d[0] || (d[0] = (f) => {
@@ -1529,7 +1537,7 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 16));
   }
-}), rt = /* @__PURE__ */ A({
+}), st = /* @__PURE__ */ A({
   __name: "DialogContent",
   props: {
     forceMount: { type: Boolean },
@@ -1540,12 +1548,12 @@ const at = /* @__PURE__ */ A({
   },
   emits: ["escapeKeyDown", "pointerDownOutside", "focusOutside", "interactOutside", "openAutoFocus", "closeAutoFocus"],
   setup(e, { emit: t }) {
-    const n = e, o = t, l = U(), a = Ie(o), { forwardRef: r } = L();
-    return (i, d) => (x(), E(p(nt), {
+    const n = e, o = t, l = _(), a = Pe(o), { forwardRef: r } = k();
+    return (i, d) => (x(), C(p(ot), {
       present: i.forceMount || p(l).open.value
     }, {
       default: w(() => [
-        p(l).modal.value ? (x(), E(Tn, k({
+        p(l).modal.value ? (x(), C(Fn, N({
           key: 0,
           ref: p(r)
         }, { ...n, ...p(a), ...i.$attrs }), {
@@ -1553,7 +1561,7 @@ const at = /* @__PURE__ */ A({
             O(i.$slots, "default")
           ]),
           _: 3
-        }, 16)) : (x(), E(Rn, k({
+        }, 16)) : (x(), C(jn, N({
           key: 1,
           ref: p(r)
         }, { ...n, ...p(a), ...i.$attrs }), {
@@ -1566,15 +1574,15 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 8, ["present"]));
   }
-}), jn = /* @__PURE__ */ A({
+}), Un = /* @__PURE__ */ A({
   __name: "DialogOverlayImpl",
   props: {
     asChild: { type: Boolean },
     as: {}
   },
   setup(e) {
-    const t = U();
-    return rn(!0), L(), (n, o) => (x(), E(p(Z), {
+    const t = _();
+    return sn(!0), k(), (n, o) => (x(), C(p(Q), {
       as: n.as,
       "as-child": n.asChild,
       "data-state": p(t).open.value ? "open" : "closed",
@@ -1586,7 +1594,7 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 8, ["as", "as-child", "data-state"]));
   }
-}), Un = /* @__PURE__ */ A({
+}), _n = /* @__PURE__ */ A({
   __name: "DialogOverlay",
   props: {
     forceMount: { type: Boolean },
@@ -1594,15 +1602,15 @@ const at = /* @__PURE__ */ A({
     as: {}
   },
   setup(e) {
-    const t = U(), { forwardRef: n } = L();
+    const t = _(), { forwardRef: n } = k();
     return (o, l) => {
       var a;
-      return (a = p(t)) != null && a.modal.value ? (x(), E(p(nt), {
+      return (a = p(t)) != null && a.modal.value ? (x(), C(p(ot), {
         key: 0,
         present: o.forceMount || p(t).open.value
       }, {
         default: w(() => [
-          B(jn, k(o.$attrs, {
+          B(Un, N(o.$attrs, {
             ref: p(n),
             as: o.as,
             "as-child": o.asChild
@@ -1614,10 +1622,10 @@ const at = /* @__PURE__ */ A({
           }, 16, ["as", "as-child"])
         ]),
         _: 3
-      }, 8, ["present"])) : N("", !0);
+      }, 8, ["present"])) : L("", !0);
     };
   }
-}), _n = /* @__PURE__ */ A({
+}), qn = /* @__PURE__ */ A({
   __name: "DialogClose",
   props: {
     asChild: { type: Boolean },
@@ -1625,9 +1633,9 @@ const at = /* @__PURE__ */ A({
   },
   setup(e) {
     const t = e;
-    L();
-    const n = U();
-    return (o, l) => (x(), E(p(Z), k(t, {
+    k();
+    const n = _();
+    return (o, l) => (x(), C(p(Q), N(t, {
       type: o.as === "button" ? "button" : void 0,
       onClick: l[0] || (l[0] = (a) => p(n).onOpenChange(!1))
     }), {
@@ -1637,15 +1645,15 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 16, ["type"]));
   }
-}), st = /* @__PURE__ */ A({
+}), it = /* @__PURE__ */ A({
   __name: "DialogTitle",
   props: {
     asChild: { type: Boolean },
     as: { default: "h2" }
   },
   setup(e) {
-    const t = e, n = U();
-    return L(), (o, l) => (x(), E(p(Z), k(t, {
+    const t = e, n = _();
+    return k(), (o, l) => (x(), C(p(Q), N(t, {
       id: p(n).titleId
     }), {
       default: w(() => [
@@ -1654,14 +1662,14 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 16, ["id"]));
   }
-}), it = /* @__PURE__ */ A({
+}), ut = /* @__PURE__ */ A({
   __name: "VisuallyHidden",
   props: {
     asChild: { type: Boolean },
     as: { default: "span" }
   },
   setup(e) {
-    return L(), (t, n) => (x(), E(p(Z), {
+    return k(), (t, n) => (x(), C(p(Q), {
       as: t.as,
       "as-child": t.asChild,
       style: {
@@ -1685,14 +1693,14 @@ const at = /* @__PURE__ */ A({
       _: 3
     }, 8, ["as", "as-child"]));
   }
-}), [ut, co] = $e("CollectionProvider");
+}), [dt, fo] = Be("CollectionProvider");
 A({
   name: "CollectionSlot",
   setup(e, { slots: t }) {
-    const n = ut(), { primitiveElement: o, currentElement: l } = tt();
-    return S(l, () => {
+    const n = dt(), { primitiveElement: o, currentElement: l } = nt();
+    return I(l, () => {
       n.collectionRef.value = l.value;
-    }), () => R(Pe, { ref: o }, t);
+    }), () => F(Ne, { ref: o }, t);
   }
 });
 A({
@@ -1705,24 +1713,24 @@ A({
     }
   },
   setup(e, { slots: t, attrs: n }) {
-    const o = ut(), { primitiveElement: l, currentElement: a } = tt();
-    return q((r) => {
+    const o = dt(), { primitiveElement: l, currentElement: a } = nt();
+    return K((r) => {
       if (a.value) {
-        const i = Re(a.value);
+        const i = je(a.value);
         o.itemMap.value.set(i, { ref: a.value, value: e.value }), r(() => o.itemMap.value.delete(i));
       }
-    }), () => R(Pe, { ...n, [o.attrName]: "", ref: l }, t);
+    }), () => F(Ne, { ...n, [o.attrName]: "", ref: l }, t);
   }
 });
-function qn() {
+function Kn() {
   if (typeof matchMedia == "function")
     return matchMedia("(pointer:coarse)").matches ? "coarse" : "fine";
 }
-qn();
-const dt = {
+Kn();
+const ct = {
   __name: "CloseButton",
   setup(e) {
-    return (t, n) => (x(), E(p(_n), { class: "im-close-button text-gray-400 hover:text-gray-500" }, {
+    return (t, n) => (x(), C(p(qn), { class: "im-close-button text-gray-400 hover:text-gray-500" }, {
       default: w(() => n[0] || (n[0] = [
         j("span", { class: "sr-only" }, "Close", -1),
         j("svg", {
@@ -1744,10 +1752,10 @@ const dt = {
       _: 1
     }));
   }
-}, Kn = { class: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4" }, Xn = ["data-inertiaui-modal-entered"], zn = {
+}, Xn = { class: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4" }, zn = ["data-inertiaui-modal-entered"], Vn = {
   key: 0,
   class: "absolute right-0 top-0 pr-3 pt-3"
-}, Vn = {
+}, Hn = {
   __name: "ModalContent",
   props: {
     modalContext: Object,
@@ -1755,15 +1763,15 @@ const dt = {
   },
   setup(e) {
     const t = h(!1);
-    return (n, o) => (x(), _("div", Kn, [
+    return (n, o) => (x(), q("div", Xn, [
       j("div", {
-        class: Y(["im-modal-positioner flex min-h-full justify-center", {
+        class: J(["im-modal-positioner flex min-h-full justify-center", {
           "items-start": e.config.position === "top",
           "items-center": e.config.position === "center",
           "items-end": e.config.position === "bottom"
         }])
       }, [
-        B(Oe, {
+        B(Ae, {
           appear: "",
           "enter-from-class": "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
           "enter-to-class": "opacity-100 translate-y-0 sm:scale-100",
@@ -1773,9 +1781,9 @@ const dt = {
           onAfterLeave: e.modalContext.afterLeave
         }, {
           default: w(() => [
-            B(p(rt), {
+            B(p(st), {
               "aria-describedby": void 0,
-              class: Y({
+              class: J({
                 "im-modal-wrapper w-full transition duration-300 ease-in-out": !0,
                 "blur-sm": !e.modalContext.onTopOfStack,
                 "sm:max-w-sm": e.config.maxWidth == "sm",
@@ -1799,24 +1807,24 @@ const dt = {
               })
             }, {
               default: w(() => [
-                B(p(it), { "as-child": "" }, {
+                B(p(ut), { "as-child": "" }, {
                   default: w(() => [
-                    B(p(st))
+                    B(p(it))
                   ]),
                   _: 1
                 }),
                 j("div", {
-                  class: Y(["im-modal-content relative", [e.config.paddingClasses, e.config.panelClasses]]),
+                  class: J(["im-modal-content relative", [e.config.paddingClasses, e.config.panelClasses]]),
                   "data-inertiaui-modal-entered": t.value
                 }, [
-                  e.config.closeButton ? (x(), _("div", zn, [
-                    B(dt)
-                  ])) : N("", !0),
+                  e.config.closeButton ? (x(), q("div", Vn, [
+                    B(ct)
+                  ])) : L("", !0),
                   O(n.$slots, "default", {
                     modalContext: e.modalContext,
                     config: e.config
                   })
-                ], 10, Xn)
+                ], 10, zn)
               ]),
               _: 3
             }, 8, ["class"])
@@ -1826,10 +1834,10 @@ const dt = {
       ], 2)
     ]));
   }
-}, Hn = { class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden" }, Gn = ["data-inertiaui-modal-entered"], Yn = {
+}, Yn = { class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden" }, Gn = ["data-inertiaui-modal-entered"], Jn = {
   key: 0,
   class: "absolute right-0 top-0 pr-3 pt-3"
-}, Jn = {
+}, Zn = {
   __name: "SlideoverContent",
   props: {
     modalContext: Object,
@@ -1837,14 +1845,14 @@ const dt = {
   },
   setup(e) {
     const t = h(!1);
-    return (n, o) => (x(), _("div", Hn, [
+    return (n, o) => (x(), q("div", Yn, [
       j("div", {
-        class: Y(["im-slideover-positioner flex min-h-full items-center", {
+        class: J(["im-slideover-positioner flex min-h-full items-center", {
           "justify-start rtl:justify-end": e.config.position === "left",
           "justify-end rtl:justify-start": e.config.position === "right"
         }])
       }, [
-        B(Oe, {
+        B(Ae, {
           appear: "",
           "enter-from-class": "opacity-0 " + (e.config.position === "left" ? "-translate-x-full" : "translate-x-full"),
           "enter-to-class": "opacity-100 translate-x-0",
@@ -1854,9 +1862,9 @@ const dt = {
           onAfterLeave: e.modalContext.afterLeave
         }, {
           default: w(() => [
-            B(p(rt), {
+            B(p(st), {
               "aria-describedby": void 0,
-              class: Y({
+              class: J({
                 "im-slideover-wrapper w-full transition duration-300 ease-in-out": !0,
                 "blur-sm": !e.modalContext.onTopOfStack,
                 "sm:max-w-sm": e.config.maxWidth == "sm",
@@ -1880,19 +1888,19 @@ const dt = {
               })
             }, {
               default: w(() => [
-                B(p(it), { "as-child": "" }, {
+                B(p(ut), { "as-child": "" }, {
                   default: w(() => [
-                    B(p(st))
+                    B(p(it))
                   ]),
                   _: 1
                 }),
                 j("div", {
-                  class: Y(["im-slideover-content relative", [e.config.paddingClasses, e.config.panelClasses]]),
+                  class: J(["im-slideover-content relative", [e.config.paddingClasses, e.config.panelClasses]]),
                   "data-inertiaui-modal-entered": t.value
                 }, [
-                  e.config.closeButton ? (x(), _("div", Yn, [
-                    B(dt)
-                  ])) : N("", !0),
+                  e.config.closeButton ? (x(), q("div", Jn, [
+                    B(ct)
+                  ])) : L("", !0),
                   O(n.$slots, "default", {
                     modalContext: e.modalContext,
                     config: e.config
@@ -1907,10 +1915,10 @@ const dt = {
       ], 2)
     ]));
   }
-}, Zn = ["data-inertiaui-modal-id", "data-inertiaui-modal-index", "aria-hidden"], Qn = {
+}, Qn = ["data-inertiaui-modal-id", "data-inertiaui-modal-index", "aria-hidden"], eo = {
   key: 1,
   class: "im-backdrop fixed inset-0 z-30 bg-black/75"
-}, fo = {
+}, mo = {
   __name: "Modal",
   emits: ["after-leave", "blur", "close", "focus", "success"],
   setup(e, { expose: t }) {
@@ -1972,7 +1980,7 @@ const dt = {
         var l;
         return (l = n.value) == null ? void 0 : l.shouldRender;
       }
-    }), (l, a) => (x(), E(jt, {
+    }), (l, a) => (x(), C(Ut, {
       ref_key: "modal",
       ref: n,
       onSuccess: a[2] || (a[2] = (r) => l.$emit("success")),
@@ -1993,15 +2001,15 @@ const dt = {
         modalContext: g,
         onTopOfStack: y,
         reload: b,
-        setOpen: I,
+        setOpen: D,
         shouldRender: M
       }) => [
-        B(p(hn), {
+        B(p(xn), {
           open: m,
-          "onUpdate:open": I
+          "onUpdate:open": D
         }, {
           default: w(() => [
-            B(p(wn), null, {
+            B(p(bn), null, {
               default: w(() => [
                 j("div", {
                   "data-inertiaui-modal-id": v,
@@ -2009,7 +2017,7 @@ const dt = {
                   class: "im-dialog relative z-20",
                   "aria-hidden": !y
                 }, [
-                  s === 0 && y ? (x(), E(Oe, {
+                  s === 0 && y ? (x(), C(Ae, {
                     key: 0,
                     appear: !o.value,
                     "enter-active-class": "transition transform ease-in-out duration-300",
@@ -2018,18 +2026,18 @@ const dt = {
                     "leave-active-class": "transition transform ease-in-out duration-300",
                     "leave-from-class": "opacity-100",
                     "leave-to-class": "opacity-0",
-                    onAfterAppear: a[0] || (a[0] = (F) => o.value = !0)
+                    onAfterAppear: a[0] || (a[0] = (R) => o.value = !0)
                   }, {
                     default: w(() => [
-                      B(p(Un), { class: "im-backdrop fixed inset-0 z-30 bg-black/75" })
+                      B(p(_n), { class: "im-backdrop fixed inset-0 z-30 bg-black/75" })
                     ]),
                     _: 1
-                  }, 8, ["appear"])) : N("", !0),
-                  s > 0 && y ? (x(), _("div", Qn)) : N("", !0),
-                  (x(), E(Ke(d != null && d.slideover ? Jn : Vn), {
+                  }, 8, ["appear"])) : L("", !0),
+                  s > 0 && y ? (x(), q("div", eo)) : L("", !0),
+                  (x(), C(Xe(d != null && d.slideover ? Zn : Hn), {
                     "modal-context": g,
                     config: d,
-                    onAfterLeave: a[1] || (a[1] = (F) => l.$emit("after-leave"))
+                    onAfterLeave: a[1] || (a[1] = (R) => l.$emit("after-leave"))
                   }, {
                     default: w(() => [
                       O(l.$slots, "default", {
@@ -2045,13 +2053,13 @@ const dt = {
                         modalContext: g,
                         onTopOfStack: y,
                         reload: b,
-                        setOpen: I,
+                        setOpen: D,
                         shouldRender: M
                       })
                     ]),
                     _: 2
                   }, 1064, ["modal-context", "config"]))
-                ], 8, Zn)
+                ], 8, Qn)
               ]),
               _: 2
             }, 1024)
@@ -2062,7 +2070,7 @@ const dt = {
       _: 3
     }, 512));
   }
-}, mo = {
+}, po = {
   __name: "ModalLink",
   props: {
     href: {
@@ -2132,10 +2140,10 @@ const dt = {
   },
   emits: ["after-leave", "blur", "close", "error", "focus", "start", "success"],
   setup(e, { emit: t }) {
-    const n = e, o = h(!1), l = ne(), a = h(null);
-    be("modalContext", a);
-    const r = t, i = h(!1), d = $(() => n.navigate ?? Ae("navigate"));
-    S(
+    const n = e, o = h(!1), l = oe(), a = h(null);
+    Ce("modalContext", a);
+    const r = t, i = h(!1), d = $(() => n.navigate ?? Me("navigate"));
+    I(
       () => {
         var g;
         return (g = a.value) == null ? void 0 : g.onTopOfStack;
@@ -2145,15 +2153,15 @@ const dt = {
       }
     );
     const f = h(null);
-    ue(() => {
+    de(() => {
       var g;
       (g = f.value) == null || g.call(f);
     });
-    const c = je();
+    const c = Ue();
     function u() {
       f.value = a.value.registerEventListenersFromAttrs(c);
     }
-    S(a, (g, y) => {
+    I(a, (g, y) => {
       g && !y && (u(), r("success"));
     });
     function v() {
@@ -2168,7 +2176,7 @@ const dt = {
         n.method,
         n.data,
         n.headers,
-        It(ze(n, Rt)),
+        Pt(Ve(n, jt)),
         v,
         s,
         n.queryStringArrayFormat,
@@ -2177,9 +2185,9 @@ const dt = {
         a.value = g;
       }).catch((g) => r("error", g)).finally(() => o.value = !1));
     }
-    return (g, y) => (x(), E(Ke(e.as), k(p(c), {
+    return (g, y) => (x(), C(Xe(e.as), N(p(c), {
       href: e.href,
-      onClick: At(m, ["prevent"])
+      onClick: Mt(m, ["prevent"])
     }), {
       default: w(() => [
         O(g.$slots, "default", { loading: o.value })
@@ -2188,11 +2196,11 @@ const dt = {
     }, 16, ["href"]));
   }
 };
-function po() {
-  return Mt(Ce("modalContext", null));
+function vo() {
+  return $t(Oe("modalContext", null));
 }
-function vo(e, t = {}) {
-  return ne().visit(
+function go(e, t = {}) {
+  return oe().visit(
     e,
     t.method ?? "get",
     t.data ?? {},
@@ -2201,7 +2209,7 @@ function vo(e, t = {}) {
     t.onClose,
     t.onAfterLeave,
     t.queryStringArrayFormat ?? "brackets",
-    t.navigate ?? Ae("navigate")
+    t.navigate ?? Me("navigate")
   ).then((n) => {
     const o = t.listeners ?? {};
     return Object.keys(o).forEach((l) => {
@@ -2211,15 +2219,15 @@ function vo(e, t = {}) {
   });
 }
 export {
-  jt as HeadlessModal,
-  fo as Modal,
-  mo as ModalLink,
+  Ut as HeadlessModal,
+  mo as Modal,
+  po as ModalLink,
   kt as ModalRoot,
-  Ae as getConfig,
-  so as initFromPageProps,
-  ro as putConfig,
-  io as renderApp,
-  ao as resetConfig,
-  po as useModal,
-  vo as visitModal
+  Me as getConfig,
+  io as initFromPageProps,
+  so as putConfig,
+  uo as renderApp,
+  ro as resetConfig,
+  vo as useModal,
+  go as visitModal
 };
