@@ -61,7 +61,7 @@ export default function UserIndex() {
 
 ### Configure Globally
 
-Instead of adding the `navigate` attribute to each `ModalLink` component, you can configure this globally in your main `app.js` file. Just like the other [configuration options](/configuration.html#default-configuration), you can use the `putConfig` function to set the `navigate` option to `true`:
+Instead of adding the `navigate` attribute to each `ModalLink` component, you can configure this globally in your main `app.js` file. Just like the other [configuration options](/configuration#default-configuration), you can use the `putConfig` function to set the `navigate` option to `true`:
 
 ::: code-group
 
