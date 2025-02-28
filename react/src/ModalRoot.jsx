@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, only, kebabCase, generateId, sameUrlPath } from './helpers'
+import { except as _except, only as _only, kebabCase, generateId, sameUrlPath } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -215,24 +215,27 @@ export const ModalStackProvider = ({ children }) => {
             return () => unsubscribers.forEach((unsub) => unsub())
         }
 
-        reload = ({ only, except, ...rest }) => {
+        reload = ({ only = null, except = null, method = 'get', data = null, headers = {} }) => {
             let keys = Object.keys(this.response.props)
 
             if (only) {
-                keys = only(keys, only)
+                keys = _only(keys, only)
             }
 
             if (except) {
-                keys = except(keys, except)
+                keys = _except(keys, except)
             }
 
             if (!this.response?.url) {
                 return
             }
 
-            Axios.request(this.response.url, {
-                method: 'get',
+            Axios({
+                url: this.response.url,
+                method,
+                data,
                 headers: {
+                    ...headers,
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
                     'X-Inertia-Partial-Component': this.response.component,
@@ -242,10 +245,7 @@ export const ModalStackProvider = ({ children }) => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
-                ...rest,
-            }).then((response) => {
-                this.updateProps(response.data.props)
-            })
+            }).then((response) => this.updateProps(response.data.props))
         }
 
         updateProps = (props) => {

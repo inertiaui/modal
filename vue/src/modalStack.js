@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
-import { generateId, except, only, waitFor, kebabCase } from './helpers'
+import { generateId, except as _except, only as _only, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -195,23 +195,27 @@ class Modal {
         return () => unsubscribers.forEach((unsub) => unsub())
     }
 
-    reload = (options = {}) => {
+    reload = ({ only = null, except = null, method = 'get', data = null, headers = {} }) => {
         let keys = Object.keys(this.response.props)
 
-        if (options.only) {
-            keys = only(keys, options.only)
+        if (only) {
+            keys = _only(keys, only)
         }
 
-        if (options.except) {
-            keys = except(keys, options.except)
+        if (except) {
+            keys = _except(keys, except)
         }
 
         if (!this.response?.url) {
             return
         }
 
-        Axios.get(this.response.url, {
+        Axios({
+            url: this.response.url,
+            method,
+            data,
             headers: {
+                ...headers,
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Inertia': true,
                 'X-Inertia-Partial-Component': this.response.component,
@@ -221,9 +225,7 @@ class Modal {
                 'X-InertiaUI-Modal-Use-Router': 0,
                 'X-InertiaUI-Modal-Base-Url': baseUrl.value,
             },
-        }).then((response) => {
-            this.updateProps(response.data.props)
-        })
+        }).then((response) => this.updateProps(response.data.props))
     }
 
     updateProps = (props) => {
