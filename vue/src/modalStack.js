@@ -260,6 +260,9 @@ function visit(
     onAfterLeave = null,
     queryStringArrayFormat = 'brackets',
     useBrowserHistory = false,
+    onStart = null,
+    onSuccess = null,
+    onError = null,
 ) {
     const modalId = generateId()
 
@@ -298,14 +301,27 @@ function visit(
                 headers,
                 preserveScroll: true,
                 preserveState: true,
-                onError: reject,
+                onError(...args) {
+                    onError?.(...args)
+                    reject(...args)
+                },
+                onStart: onStart,
+                onSuccess: onSuccess,
                 onFinish: () => waitFor(() => stack.value[0]).then(resolve),
             })
         }
 
+        onStart?.()
+
         Axios({ url, method, data, headers })
-            .then((response) => resolve(pushFromResponseData(response.data, config, onClose, onAfterLeave)))
-            .catch(reject)
+            .then((response) => {
+                onSuccess?.(response)
+                resolve(pushFromResponseData(response.data, config, onClose, onAfterLeave))
+            })
+            .catch((...args) => {
+                onError?.(...args)
+                reject(...args)
+            })
     })
 }
 

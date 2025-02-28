@@ -18,6 +18,9 @@ function visitModal(url, options = {}) {
             options.onAfterLeave,
             options.queryStringArrayFormat ?? 'brackets',
             options.navigate ?? getConfig('navigate'),
+            options.onStart,
+            options.onSuccess,
+            options.onError,
         )
         .then((modal) => {
             const listeners = options.listeners ?? {}

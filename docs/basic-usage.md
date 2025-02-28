@@ -365,6 +365,9 @@ visitModal('/users/create', {
         slideover: true,
     }
     listeners: {},
+    onStart: () => console.log('Start visiting modal'),
+    onSuccess: () => console.log('Modal visit successful'),
+    onError: () => console.log('Modal visit failed'),
     onClose: () => console.log('Modal closed'),
     onAfterLeave: () => console.log('Modal removed from DOM'),
     queryStringArrayFormat: 'brackets',
