@@ -53,6 +53,7 @@ Route::put('/users/{user}', function (User $user) {
 
 // Create a new role
 Route::get('/roles/create', fn () => Inertia::modal('CreateRole', [
+    'name' => 'Test Name',
     'headerValue' => request()->header('X-Test-Header'),
 ]))->name('roles.create');
 

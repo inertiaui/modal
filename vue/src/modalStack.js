@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
-import { generateId, except, only, waitFor, kebabCase, filterModalProps } from './helpers'
+import { generateId, except, only, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -31,7 +31,7 @@ class Modal {
         this.listeners = {}
 
         this.component = component
-        this.props = ref(filterModalProps(response.props))
+        this.props = ref(response.props)
         this.response = response
         this.config = config ?? {}
         this.onCloseCallback = onClose
@@ -77,6 +77,14 @@ class Modal {
 
             return modals.reverse().find((modal) => modal.shouldRender)?.id === this.id
         })
+    }
+
+    getComponentPropKeys = () => {
+        if (Array.isArray(this.component.props)) {
+            return this.component.props
+        }
+
+        return this.component.props ? Object.keys(this.component.props) : []
     }
 
     getParentModal = () => {
@@ -227,7 +235,7 @@ class Modal {
     }
 
     updateProps = (props) => {
-        Object.assign(this.props.value, filterModalProps(props))
+        Object.assign(this.props.value, props)
     }
 }
 
