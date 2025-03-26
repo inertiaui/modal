@@ -1,4 +1,5 @@
 <script setup>
+import { only } from './helpers'
 import { useModalStack } from './modalStack'
 import { computed, provide } from 'vue'
 
@@ -21,7 +22,7 @@ provide('modalContext', modalContext)
 <template>
     <modalContext.component
         v-if="modalContext?.component"
-        v-bind="modalContext.props"
+        v-bind="only(modalContext.props ?? {}, modalContext.getComponentPropKeys(), true)"
         @modal-event="(event, ...args) => modalContext.emit(event, ...args)"
     />
 </template>
