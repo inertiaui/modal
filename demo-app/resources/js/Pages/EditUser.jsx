@@ -33,7 +33,7 @@ export default function EditUser({ user, roles, randomKey }) {
     };
 
     function reloadWithData() {
-        modalRef.current.reload({ only: ['randomKey'], data: { randomKey: 'from-data' } })
+        modalRef.current.reload({ only: ['randomKey'], data: { fixedRandomKey: 'from-data' } })
     }
 
     function reloadWithHeader() {

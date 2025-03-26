@@ -37,7 +37,7 @@ function onMessage(message) {
 }
 
 function reloadWithData() {
-    modalRef.value.reload({ only: ['randomKey'], data: { randomKey: 'from-data' } })
+    modalRef.value.reload({ only: ['randomKey'], data: { fixedRandomKey: 'from-data' } })
 }
 
 function reloadWithHeader() {
