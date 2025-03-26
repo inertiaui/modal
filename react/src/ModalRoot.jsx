@@ -230,8 +230,16 @@ export const ModalStackProvider = ({ children }) => {
                 return
             }
 
-            Axios.get(this.response.url, {
+            const method = (options.method ?? 'get').toLowerCase()
+            const data = options.data ?? {}
+
+            Axios({
+                url: this.response.url,
+                method,
+                data: method === 'get' ? {} : data,
+                params: method === 'get' ? data : {},
                 headers: {
+                    ...(options.headers ?? {}),
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
                     'X-Inertia-Partial-Component': this.response.component,
