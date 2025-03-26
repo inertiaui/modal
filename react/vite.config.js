@@ -19,6 +19,7 @@ export default defineConfig({
             entry: [resolve(__dirname, 'src/inertiauiModal.js')],
             name: 'InertiaUIModal',
             fileName: 'inertiaui-modal',
+            cssFileName: 'style',
         },
         rollupOptions: {
             external: ['@inertiajs/core', '@inertiajs/react', 'axios', 'react', 'react-dom', 'react/jsx-runtime'],
