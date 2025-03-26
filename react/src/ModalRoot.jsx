@@ -233,7 +233,7 @@ export const ModalStackProvider = ({ children }) => {
             const method = (options.method ?? 'get').toLowerCase()
             const data = options.data ?? {}
 
-            Axios.request({
+            Axios({
                 url: this.response.url,
                 method,
                 data: method === 'get' ? {} : data,

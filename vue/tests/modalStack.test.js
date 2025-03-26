@@ -142,13 +142,17 @@ describe('modalStack', () => {
             }
             const modal = modalStack.push({}, response, {})
 
-            vi.mocked(axios.get).mockResolvedValue({
+            vi.mocked(axios).mockResolvedValue({
                 data: { props: { test: 'updated', another: 'updated prop' } },
             })
 
             await modal.reload()
 
-            expect(axios.get).toHaveBeenCalledWith('/test', {
+            expect(axios).toHaveBeenCalledWith({
+                method: 'get',
+                url: '/test',
+                data: {},
+                params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
@@ -176,13 +180,17 @@ describe('modalStack', () => {
             }
             const modal = modalStack.push({}, response, {})
 
-            vi.mocked(axios.get).mockResolvedValue({
+            vi.mocked(axios).mockResolvedValue({
                 data: { props: { test: 'updated' } },
             })
 
             await modal.reload({ only: ['test'] })
 
-            expect(axios.get).toHaveBeenCalledWith('/test', {
+            expect(axios).toHaveBeenCalledWith({
+                method: 'get',
+                url: '/test',
+                data: {},
+                params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
@@ -210,13 +218,17 @@ describe('modalStack', () => {
             }
             const modal = modalStack.push({}, response, {})
 
-            vi.mocked(axios.get).mockResolvedValue({
+            vi.mocked(axios).mockResolvedValue({
                 data: { props: { test: 'updated', third: 'updated value' } },
             })
 
             await modal.reload({ except: ['another'] })
 
-            expect(axios.get).toHaveBeenCalledWith('/test', {
+            expect(axios).toHaveBeenCalledWith({
+                method: 'get',
+                url: '/test',
+                data: {},
+                params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
