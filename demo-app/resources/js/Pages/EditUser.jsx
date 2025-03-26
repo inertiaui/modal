@@ -32,6 +32,14 @@ export default function EditUser({ user, roles, randomKey }) {
         modalRef.current.getChildModal().emit('greeting', `Thanks from ${user.name}`);
     };
 
+    function reloadWithData() {
+        modalRef.current.reload({ only: ['randomKey'], data: { randomKey: 'from-data' } })
+    }
+
+    function reloadWithHeader() {
+        modalRef.current.reload({ only: ['randomKey'], headers: { 'X-Random-Key': 'from-header' } })
+    }
+
     return (
         <Modal
             ref={modalRef}
@@ -45,13 +53,22 @@ export default function EditUser({ user, roles, randomKey }) {
                         {message && <p dusk="message" className="text-sm text-gray-500">{message}</p>}
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={() => emit('user-greets', 'Hello from EditUser')}
-                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        Send Message
-                    </button>
+                    <div class="mt-4 flex flex-col items-start">
+                        <button
+                            type="button"
+                            onClick={() => emit('user-greets', 'Hello from EditUser')}
+                        >
+                            Send Message
+                        </button>
+
+                        <button type="button" onClick={reloadWithData}>
+                            Random Key from Data
+                        </button>
+
+                        <button type="button" onClick={reloadWithHeader}>
+                            Random Key from Header
+                        </button>
+                    </div>
 
                     <form onSubmit={submit} className="mt-8 space-y-6">
                         <div className="grid grid-cols-3 gap-6">
@@ -139,7 +156,8 @@ export default function EditUser({ user, roles, randomKey }) {
                     </form>
                     <ComponentThatUsesModalInstance />
                 </>
-            )}
-        </Modal>
+            )
+            }
+        </Modal >
     );
 };

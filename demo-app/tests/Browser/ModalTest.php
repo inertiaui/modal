@@ -114,4 +114,21 @@ class ModalTest extends DuskTestCase
                 ->assertRouteIs('page', ['page' => 'users']);
         });
     }
+
+    #[Test]
+    public function it_can_reload_with_data_and_headers()
+    {
+        $this->browse(function (Browser $browser) {
+            $firstUser = User::orderBy('name')->first();
+
+            $browser->visit('/users?navigate=1')
+                ->waitForFirstUser()
+                ->click("@edit-user-{$firstUser->id}")
+                ->waitForModal()
+                ->press('Random Key from Data')
+                ->waitForTextIn('@randomKey', 'from-data')
+                ->press('Random Key from Header')
+                ->waitForTextIn('@randomKey', 'from-header');
+        });
+    }
 }
