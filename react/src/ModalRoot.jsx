@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, only, kebabCase, generateId, sameUrlPath } from './helpers'
+import { except, only, kebabCase, generateId, sameUrlPath, filterModalProps } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -80,7 +80,7 @@ export const ModalStackProvider = ({ children }) => {
             this.listeners = {}
 
             this.component = component
-            this.props = response.props
+            this.props = filterModalProps(response.props)
             this.response = response
             this.config = config ?? {}
             this.onCloseCallback = onClose
@@ -247,7 +247,7 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         updateProps = (props) => {
-            Object.assign(this.props, props)
+            Object.assign(this.props, filterModalProps(props))
             updateStack((prevStack) => prevStack) // Trigger re-render
         }
     }

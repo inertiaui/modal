@@ -24,15 +24,22 @@ function generateId(prefix = 'inertiaui_modal_') {
     return `${prefix}${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
 }
 
-function except(target, keys) {
+function except(target, keys, ignoreCase = false) {
+    const lowercase = (key) => (typeof key === 'string' ? key.toLowerCase() : key)
+
+    if (ignoreCase) {
+        keys = keys.map(lowercase)
+    }
+
     if (Array.isArray(target)) {
-        return target.filter((key) => !keys.includes(key))
+        return target.filter((key) => !keys.includes(ignoreCase ? lowercase(key) : key))
     }
 
     return Object.keys(target).reduce((acc, key) => {
-        if (!keys.includes(key)) {
+        if (!keys.includes(ignoreCase ? lowercase(key) : key)) {
             acc[key] = target[key] // copy the key-value pair
         }
+
         return acc
     }, {})
 }
@@ -115,4 +122,27 @@ function kebabCase(string) {
     // Convert to lowercase
     return string.toLowerCase()
 }
-export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, waitFor, kebabCase }
+
+function filterModalProps(props) {
+    return except(
+        props || {},
+        [
+            'name',
+            'slideover',
+            'closeButton',
+            'close-button',
+            'closeExplicitly',
+            'close-explicitly',
+            'maxWidth',
+            'max-width',
+            'paddingClasses',
+            'padding-classes',
+            'panelClasses',
+            'panel-classes',
+            'position',
+        ],
+        true,
+    )
+}
+
+export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, waitFor, kebabCase, filterModalProps }
