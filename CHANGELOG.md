@@ -2,6 +2,16 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.20.0 - 2025-03-26
+
+### What's Changed
+
+* Take `referer` header into account when resolving Base URL by @pascalbaljet in https://github.com/inertiaui/modal/pull/104
+* Further improvement of modal prop filtering by @pascalbaljet in https://github.com/inertiaui/modal/pull/105
+* Add support for `data` and `headers` when reloading modal props by @pascalbaljet in https://github.com/inertiaui/modal/pull/106
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.5...0.20.0
+
 ## 0.19.5 - 2025-03-26
 
 ### What's Changed
