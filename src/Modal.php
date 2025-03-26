@@ -78,7 +78,9 @@ class Modal implements Responsable
      */
     public function resolveBaseUrl(Request $request): ?string
     {
-        return $request->header(self::HEADER_BASE_URL, $this->getBaseUrl());
+        return $request->header(self::HEADER_BASE_URL)
+            ?? $request->header('referer')
+            ?? $this->getBaseUrl();
     }
 
     /**
