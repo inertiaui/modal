@@ -13,6 +13,14 @@ Route::get('/login', function () {
     return redirect('/users');
 });
 
+Route::get('/conditionally-redirect', function () {
+    if (request()->query('redirect')) {
+        return redirect('/users/1/edit');
+    }
+
+    return Inertia::render('Users');
+});
+
 // Modal Events
 Route::get('/modal-events', function (User $user) {
     return Inertia::modal('ModalEvents')->baseUrl('/users');
