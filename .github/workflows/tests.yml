@@ -139,6 +139,7 @@ jobs:
           touch database/database.sqlite
           php artisan migrate:fresh --seed
           php artisan dusk:chrome-driver --detect
+          php artisan optimize
 
       - name: Run tests
         run: |
