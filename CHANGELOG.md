@@ -2,6 +2,15 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.19.5 - 2025-03-26
+
+### What's Changed
+
+* Upgrade to Vite 6 by @pascalbaljet in https://github.com/inertiaui/modal/pull/102
+* Filter modal props (fix for #101) by @pascalbaljet in https://github.com/inertiaui/modal/pull/103
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.4...0.19.5
+
 ## 0.19.4 - 2025-02-18
 
 ### What's Changed
