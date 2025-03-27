@@ -1,18 +1,11 @@
 <script setup>
 import { ModalLink } from '@inertiaui/modal-vue';
 import Container from './Container.vue'
+import * as InertiaVue from '@inertiajs/vue3';
 
 const props = defineProps({
     user: Object,
     deferred: String
-});
-
-let DeferredComponent = 'div';
-
-import('@inertiajs/vue3').then((InertiaVue) => {
-    if (InertiaVue.Deferred) {
-        DeferredComponent = InertiaVue.Deferred
-    }
 });
 </script>
 
@@ -23,13 +16,17 @@ import('@inertiajs/vue3').then((InertiaVue) => {
             <p class="text-xl text-gray-500">{{ user.email }}</p>
         </div>
 
-        <component v-if="DeferredComponent" :is="DeferredComponent" data="deferred">
-            <template #fallback>
-                <p dusk="deferred-fallback">Loading...</p>
-            </template>
+        <div v-if="$page.props._inertiaui_modal">
+            <component v-if="InertiaVue.Deferred" :is="InertiaVue.Deferred" data="deferred">
+                <template #fallback>
+                    Loading...
+                </template>
 
-            <p dusk="deferred">{{ DeferredComponent === 'div' ? 'No Deferred Component' : deferred }}</p>
-        </component>
+                <p dusk="deferred">{{ deferred }}</p>
+            </component>
+
+            <p v-else dusk="deferred">No Deferred Component</p>
+        </div>
 
         <ModalLink navigate as="button" :dusk="'edit-user-' + user.id"
             :href="`/users/${user.id}/edit`"

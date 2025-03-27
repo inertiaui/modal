@@ -116,33 +116,32 @@ class Modal implements Responsable
         $baseUrl = $this->resolveBaseUrl($request);
 
         if (in_array($request->header(self::HEADER_USE_ROUTER), [0, '0'], true) || blank($baseUrl)) {
+            // Also used for reloading modal props...
             return $modal->toResponse($request);
         }
 
-        // @phpstan-ignore-next-line
-        $modalData = $modal->toArray();
-
-        $partialComponent = $request->header('X-Inertia-Partial-Component');
-
-        if (! $partialComponent || $modalData['component'] === $partialComponent) {
-            inertia()->share('_inertiaui_modal', [
-                ...$modalData,
-                'id' => $request->header(static::HEADER_MODAL),
-                'baseUrl' => $baseUrl,
-            ]);
-        }
+        inertia()->share('_inertiaui_modal', [
+            // @phpstan-ignore-next-line
+            ...($modalData = $modal->toArray()),
+            'id' => $request->header(static::HEADER_MODAL),
+            'baseUrl' => $baseUrl,
+        ]);
 
         $response = app(DispatchBaseUrlRequest::class)($request, $baseUrl);
 
         // Spoof the base URL to the modal's URL
         return match (true) {
-            $response instanceof JsonResponse => $this->toJsonResponse($request, $response, $modalData['url']),
+            $response instanceof JsonResponse => $this->toJsonResponse($response, $modalData['url']),
             $response instanceof IlluminateResponse => $this->toViewResponse($request, $response, $modalData['url']),
             default => $response,
         };
     }
 
-    protected function toJsonResponse(Request $request, JsonResponse $response, string $url): JsonResponse
+    /**
+     * Replace the URL in the JSON response with the modal's URL so the
+     * Inertia front-end library won't redirect back to the base URL.
+     */
+    protected function toJsonResponse(JsonResponse $response, string $url): JsonResponse
     {
         return $response->setData([
             ...$response->getData(true),
@@ -150,6 +149,10 @@ class Modal implements Responsable
         ]);
     }
 
+    /**
+     * Replace the URL in the View Response with the modal's URL so the
+     * Inertia front-end library won't redirect back to the base URL.
+     */
     protected function toViewResponse(Request $request, IlluminateResponse $response, string $url): IlluminateResponse
     {
         $originalContent = $response->getOriginalContent();

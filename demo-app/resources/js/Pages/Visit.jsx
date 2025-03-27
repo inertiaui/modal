@@ -25,7 +25,7 @@ export default function Visit() {
             <Container>
                 <div className="">
                     <h2 className="text-lg font-medium text-gray-900">Visit programmatically</h2>
-                    <div class="flex flex-col items-start">
+                    <div className="flex flex-col items-start">
                         <button onClick={openLocalModal} type="button">
                             Open Local Modal
                         </button>
