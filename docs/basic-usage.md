@@ -1,6 +1,6 @@
 # Basic Usage
 
-As described in the [introduction](/introduction.html), Inertia Modal is fairly simple to use. There are two main components: `Modal` and `ModalLink`. In the sections below, we will cover how to use these components.
+As described in the [introduction](/introduction), Inertia Modal is fairly simple to use. There are two main components: `Modal` and `ModalLink`. In the sections below, we will cover how to use these components.
 
 To use the components, you need to import them into your page:
 ::: code-group
@@ -99,7 +99,7 @@ export default function CreateUserModal() {
 
 ### Customizing the Modal
 
-You may add additional props to the `Modal` component to customize its behavior and style. Check out the [Configuration](/configuration.html) section for a list of all available props.
+You may add additional props to the `Modal` component to customize its behavior and style. Check out the [Configuration](/configuration) section for a list of all available props.
 
 ## `ModalLink` Component
 
@@ -309,7 +309,7 @@ Then there are two more events: `@close` and `@after-leave`. The `@close` event 
 
 ### Customizing
 
-Just like the `Modal` component, you can pass additional props to the `ModalLink` component to customize its behavior and style. Check out the [Configuration](/configuration.html) section for a list of all available props.
+Just like the `Modal` component, you can pass additional props to the `ModalLink` component to customize its behavior and style. Check out the [Configuration](/configuration) section for a list of all available props.
 
 ## Programmatic Usage
 
@@ -347,7 +347,7 @@ function UserIndex() {
 
 :::
 
-If you want to open a [Local Modal](/local-modals.html), you must prepend the URL with a `#`:
+If you want to open a [Local Modal](/local-modals), you must prepend the URL with a `#`:
 
 ```js
 visitModal('#confirm-action')
@@ -371,4 +371,4 @@ visitModal('/users/create', {
 })
 ```
 
-The `config` option allows you to customize the behavior and style of the modal. You should check out the [Configuration](/configuration.html#default-configuration) section for a list of all available options. The `queryStringArrayFormat` can be set to either `brackets` or `indices`.
+The `config` option allows you to customize the behavior and style of the modal. You should check out the [Configuration](/configuration#default-configuration) section for a list of all available options. The `queryStringArrayFormat` can be set to either `brackets` or `indices`.

@@ -1,6 +1,6 @@
 # Event Bus
 
-Sometimes you need to communicate from the modal to the parent page. You can use the `emit` slot prop function for this purpose. Just like [emitting events in Vue](https://vuejs.org/guide/components/events.html), you can pass a name and a payload to the `emit` function. The parent page can listen to these events using the `@` directive. Here's an example of emitting an event from the modal:
+Sometimes you need to communicate from the modal to the parent page. You can use the `emit` slot prop function for this purpose. Just like [emitting events in Vue](https://vuejs.org/guide/components/events), you can pass a name and a payload to the `emit` function. The parent page can listen to these events using the `@` directive. Here's an example of emitting an event from the modal:
 
 ::: code-group
 
@@ -100,7 +100,7 @@ export default function MyPage() {
 
 :::
 
-If you're [programmatically opening the modal](/basic-usage.html#programmatic-usage), you add listeners using the `listeners` option:
+If you're [programmatically opening the modal](/basic-usage#programmatic-usage), you add listeners using the `listeners` option:
 
 ```js
 visitModal('/users/create', {

@@ -10,7 +10,7 @@ The `Headless` component provides the following props:
 | --- | --- |
 | afterLeave | Function to call after the modal has left the screen to remove it from the DOM |
 | close | Function to close the modal |
-| config | The [configuration](/configuration.html) passed to the modal |
+| config | The [configuration](/configuration) passed to the modal |
 | emit | Function to emit an event |
 | getChildModal | Function to get first the child modal |
 | getParentModal | Function to get the parent modal |
@@ -19,7 +19,7 @@ The `Headless` component provides the following props:
 | isOpen | Boolean indicating if the modal is open |
 | modalContext | Object with all of the props in this table |
 | onTopOfStack | Boolean indicating if the modal is on top of the stack |
-| reload | Function to [reload](/reload-props.html) props |
+| reload | Function to [reload](/reload-props) props |
 | setOpen | Function to toggle the modal's open state |
 
 Here is an example of how to use the `HeadlessModal` component:

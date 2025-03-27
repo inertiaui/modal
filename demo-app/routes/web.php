@@ -13,6 +13,14 @@ Route::get('/login', function () {
     return redirect('/users');
 });
 
+Route::get('/conditionally-redirect', function () {
+    if (request()->query('redirect')) {
+        return redirect('/users/1/edit');
+    }
+
+    return Inertia::render('Users');
+});
+
 // Modal Events
 Route::get('/modal-events', function (User $user) {
     return Inertia::modal('ModalEvents')->baseUrl('/users');
@@ -23,7 +31,7 @@ Route::get('/users/{user}/edit', function (User $user) {
     return Inertia::modal('EditUser', [
         'roles' => Role::pluck('name', 'id'),
         'user' => $user,
-        'randomKey' => Str::random(),
+        'randomKey' => request()->input('fixedRandomKey') ?: request()->header('X-Random-Key') ?: Str::random(),
     ])->baseUrl('/users');
 })->name('users.edit');
 
@@ -53,6 +61,7 @@ Route::put('/users/{user}', function (User $user) {
 
 // Create a new role
 Route::get('/roles/create', fn () => Inertia::modal('CreateRole', [
+    'name' => 'Test Name',
     'headerValue' => request()->header('X-Test-Header'),
 ]))->name('roles.create');
 

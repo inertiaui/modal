@@ -2,6 +2,58 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.20.3 - 2025-03-27
+
+### What's Changed
+
+* Restore `VerifyCsrfToken` middleware
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.2...0.20.3
+
+## 0.20.2 - 2025-03-27
+
+### What's Changed
+
+* Better middleware resolving by @pascalbaljet
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.1...0.20.2
+
+## 0.20.1 - 2025-03-27
+
+### What's Changed
+
+* Improve middleware exclusion by @pascalbaljet in https://github.com/inertiaui/modal/pull/107
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.0...0.20.1
+
+## 0.20.0 - 2025-03-26
+
+### What's Changed
+
+* Take `referer` header into account when resolving Base URL by @pascalbaljet in https://github.com/inertiaui/modal/pull/104
+* Further improvement of modal prop filtering by @pascalbaljet in https://github.com/inertiaui/modal/pull/105
+* Add support for `data` and `headers` when reloading modal props by @pascalbaljet in https://github.com/inertiaui/modal/pull/106
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.5...0.20.0
+
+## 0.19.5 - 2025-03-26
+
+### What's Changed
+
+* Upgrade to Vite 6 by @pascalbaljet in https://github.com/inertiaui/modal/pull/102
+* Filter modal props (fix for #101) by @pascalbaljet in https://github.com/inertiaui/modal/pull/103
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.4...0.19.5
+
+## 0.19.4 - 2025-02-18
+
+### What's Changed
+
+* Bump dependabot/fetch-metadata from 2.2.0 to 2.3.0 by @dependabot in https://github.com/inertiaui/modal/pull/88
+* Support for Laravel 12 by @pascalbaljet in https://github.com/inertiaui/modal/pull/95
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.3...0.19.4
+
 ## 0.19.3 - 2025-01-22
 
 ### What's Changed

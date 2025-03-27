@@ -8,7 +8,7 @@ The following props can be used on both the `ModalLink` and `Modal` components. 
 
 ### `close-button`
 
-The `close-button` prop allows you to show or hide the close button in the modal. By default, the close button is shown. To render a custom close button, you can check out the [Close Modal](/close-modal.html) section.
+The `close-button` prop allows you to show or hide the close button in the modal. By default, the close button is shown. To render a custom close button, you can check out the [Close Modal](/close-modal) section.
 
 ::: code-group
 

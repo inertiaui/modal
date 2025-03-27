@@ -41,6 +41,13 @@ reload({ except: ['roles'] })
 reload({ only: ['permissions'] })
 ```
 
+Just like regular Inertia requests, you can also pass additional data and headers.
+
+```js
+reload({ data: { email: 'john.doe@example.com' } })
+reload({ headers: { 'X-Custom-Header': 'value' } })
+```
+
 Alternatively, you can use the `ref` attribute to get a reference to the modal component and call the method on it.
 
 ::: code-group
@@ -85,7 +92,7 @@ export default function MyPage({ permissions, roles }) {
 
 ## Example with Nested / Stacked Modal
 
-The `reload` function is great to combine with [nested modals](/nested-stacked-modals.html). For example, you can reload the parent modal when the child modal is closed:
+The `reload` function is great to combine with [nested modals](/nested-stacked-modals). For example, you can reload the parent modal when the child modal is closed:
 
 ::: code-group
 
