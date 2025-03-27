@@ -6,11 +6,11 @@ namespace InertiaUI\Modal;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Facade;
 use Symfony\Component\HttpFoundation\Response;
 
 class DispatchBaseUrlRequest
@@ -48,36 +48,54 @@ class DispatchBaseUrlRequest
         // Dispatch the request without encrypting cookies because that has
         // already happens in the original request. We don't want to
         // double-encrypt them, as that would nullify the cookies.
-        return $this->withoutEncryptingCookies($route, function () use ($requestForBaseUrl) {
-            $response = app()->handle($requestForBaseUrl, Application::SUB_REQUEST);
+        $this->bindRequest($requestForBaseUrl);
 
-            return $response instanceof Responsable
-               ? $response->toResponse($requestForBaseUrl)
-               : $response;
-        });
+        $response = (new Pipeline(app()))
+            ->send($requestForBaseUrl)
+            ->through($this->gatherMiddleware($route))
+            ->then(function ($request) use ($route) {
+                $this->bindRequest($request);
+
+                return $route->run();
+            });
+
+        if ($response instanceof Responsable) {
+            $response = $response->toResponse($requestForBaseUrl);
+        }
+
+        return tap($response, fn () => $this->bindRequest($originalRequest));
+    }
+
+    /**
+     * Bind the given request to the container and set it as the current request for the router.
+     */
+    private function bindRequest(Request $request): void
+    {
+        Facade::clearResolvedInstance('request');
+
+        app()->instance('request', $request);
+
+        $this->router->setCurrentRequest($request);
     }
 
     /**
      * Run the given callback with the EncryptCookies middleware disabled.
      */
-    private function withoutEncryptingCookies(Route $route, callable $callback): mixed
+    private function gatherMiddleware(Route $route): mixed
     {
-        $middleware = $this->router->resolveMiddleware($route->gatherMiddleware());
+        $excludedMiddleware = Modal::getMiddlewareToExcludeOnBaseUrl();
 
-        // Clear $route->computedMiddleware to force it to be recalculated
-        // after removing the EncryptCookies middleware
-        $route->flushController();
+        return collect($this->router->resolveMiddleware($route->gatherMiddleware()))
+            ->reject(function ($middleware) use ($excludedMiddleware) {
+                foreach ($excludedMiddleware as $excludeMiddleware) {
+                    if ($middleware === $excludeMiddleware || is_subclass_of($middleware, $excludeMiddleware)) {
+                        return true;
+                    }
+                }
 
-        // Store the original excluded middleware so we can restore it later
-        $currentExcludedMiddleware = Arr::get($route->action, 'excluded_middleware', []);
-
-        foreach ($middleware as $class) {
-            if ($class === EncryptCookies::class || is_subclass_of($class, EncryptCookies::class)) {
-                $route->withoutMiddleware($class);
-            }
-        }
-
-        // Run the callback and restore the original excluded middleware
-        return tap($callback(), fn () => $route->action['excluded_middleware'] = $currentExcludedMiddleware);
+                return false;
+            })
+            ->values()
+            ->all();
     }
 }

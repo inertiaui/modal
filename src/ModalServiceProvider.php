@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace InertiaUI\Modal;
 
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Response;
@@ -33,6 +35,13 @@ class ModalServiceProvider extends ServiceProvider
             if (class_exists(BladeRouteGenerator::class)) {
                 BladeRouteGenerator::$generated = false;
             }
+        });
+
+        Modal::excludeMiddlewareOnBaseUrl(EncryptCookies::class);
+
+        Router::macro('setCurrentRequest', function ($request): void {
+            /** @var Router $this */
+            $this->currentRequest = $request;
         });
 
         // Add a 'toArray' macro to Response for consistent serialization to so that
