@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Testing\TestResponse;
 use Inertia\Testing\AssertableInertia;
 use InertiaUI\Modal\DispatchBaseUrlRequest;
@@ -85,6 +86,7 @@ class DispatchBaseUrlRequestTest extends TestCase
         $baseUrl = '/roles';
 
         $response = ($this->dispatcher)($originalRequest, $baseUrl);
+        $this->assertInstanceOf(Response::class, $response);
         $cookies = $response->headers->getCookies();
 
         $this->assertNotEmpty($cookies);
