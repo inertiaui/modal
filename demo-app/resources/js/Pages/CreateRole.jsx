@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Modal, ModalLink } from '@inertiaui/modal-react';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
 
-export default function CreateRole({ headerValue }) {
+export default function CreateRole({ headerValue, name }) {
     const { data, setData, errors, post } = useForm({
         name: '',
     });
@@ -36,6 +36,11 @@ export default function CreateRole({ headerValue }) {
                         {headerValue && (
                             <p dusk="headerValue" className="text-sm text-gray-500">
                                 {headerValue}
+                            </p>
+                        )}
+                        {name && (
+                            <p dusk="name" className="text-sm text-gray-500">
+                                {name}
                             </p>
                         )}
                     </div>

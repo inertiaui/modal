@@ -5,7 +5,7 @@ import { Modal, ModalLink } from '@inertiaui/modal-vue'
 import { ref } from 'vue'
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue'
 
-defineProps(['headerValue'])
+defineProps(['headerValue', 'name'])
 
 const form = useForm({
     name: '',
@@ -40,6 +40,12 @@ function submit() {
                 dusk="headerValue"
                 class="text-sm text-gray-500"
                 v-text="headerValue"
+            />
+            <p
+                v-if="name"
+                dusk="name"
+                class="text-sm text-gray-500"
+                v-text="name"
             />
         </div>
 

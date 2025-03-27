@@ -24,28 +24,42 @@ function generateId(prefix = 'inertiaui_modal_') {
     return `${prefix}${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
 }
 
-function except(target, keys) {
+function strToLowercase(key) {
+    return typeof key === 'string' ? key.toLowerCase() : key
+}
+
+function except(target, keys, ignoreCase = false) {
+    if (ignoreCase) {
+        keys = keys.map(strToLowercase)
+    }
+
     if (Array.isArray(target)) {
-        return target.filter((key) => !keys.includes(key))
+        return target.filter((key) => !keys.includes(ignoreCase ? strToLowercase(key) : key))
     }
 
     return Object.keys(target).reduce((acc, key) => {
-        if (!keys.includes(key)) {
+        if (!keys.includes(ignoreCase ? strToLowercase(key) : key)) {
             acc[key] = target[key] // copy the key-value pair
         }
+
         return acc
     }, {})
 }
 
-function only(target, keys) {
-    if (Array.isArray(target)) {
-        return target.filter((key) => keys.includes(key))
+function only(target, keys, ignoreCase = false) {
+    if (ignoreCase) {
+        keys = keys.map(strToLowercase)
     }
 
-    return keys.reduce((acc, key) => {
-        if (key in target) {
-            acc[key] = target[key]
+    if (Array.isArray(target)) {
+        return target.filter((key) => keys.includes(ignoreCase ? strToLowercase(key) : key))
+    }
+
+    return Object.keys(target).reduce((acc, key) => {
+        if (keys.includes(ignoreCase ? strToLowercase(key) : key)) {
+            acc[key] = target[key] // copy the key-value pair
         }
+
         return acc
     }, {})
 }
@@ -115,4 +129,5 @@ function kebabCase(string) {
     // Convert to lowercase
     return string.toLowerCase()
 }
+
 export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, waitFor, kebabCase }

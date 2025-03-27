@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 use Illuminate\View\View;
 use Inertia\Response as InertiaResponse;
@@ -30,6 +31,11 @@ class Modal implements Responsable
      */
     protected static array $beforeBaseRerenderCallbacks = [];
 
+    /**
+     * @var array<string> Middleware to exclude when dispatching the base URL request.
+     */
+    protected static array $excludeMiddlewareOnBaseUrl = [];
+
     public function __construct(protected string $component, protected array $props = [])
     {
         //
@@ -41,6 +47,22 @@ class Modal implements Responsable
     public static function beforeBaseRerender(callable $callback): void
     {
         static::$beforeBaseRerenderCallbacks[] = $callback;
+    }
+
+    /**
+     * Register middleware to exclude when dispatching the base URL request.
+     */
+    public static function excludeMiddlewareOnBaseUrl(array|string $middleware): void
+    {
+        static::$excludeMiddlewareOnBaseUrl = array_merge(static::$excludeMiddlewareOnBaseUrl, Arr::wrap($middleware));
+    }
+
+    /**
+     * Get the middleware to exclude when dispatching the base URL request.
+     */
+    public static function getMiddlewareToExcludeOnBaseUrl(): array
+    {
+        return static::$excludeMiddlewareOnBaseUrl;
     }
 
     /**
@@ -78,7 +100,9 @@ class Modal implements Responsable
      */
     public function resolveBaseUrl(Request $request): ?string
     {
-        return $request->header(self::HEADER_BASE_URL, $this->getBaseUrl());
+        return $request->header(self::HEADER_BASE_URL)
+            ?? $request->header('referer')
+            ?? $this->getBaseUrl();
     }
 
     /**

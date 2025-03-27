@@ -1,6 +1,6 @@
 # Close Modal
 
-By default, both the modal and slideover components have a close button. You can hide this button by using the `close-button` prop, as documented in the [Configuration](/configuration.html) section. To close the modal programmatically, you can use the `close` method provided by the `Modal` component.
+By default, both the modal and slideover components have a close button. You can hide this button by using the `close-button` prop, as documented in the [Configuration](/configuration) section. To close the modal programmatically, you can use the `close` method provided by the `Modal` component.
 
 ::: code-group
 

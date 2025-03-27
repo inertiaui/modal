@@ -72,5 +72,16 @@ export default defineConfig({
       }, link: 'https://bsky.app/profile/pascalbaljet.bsky.social' },
       { icon: 'youtube', link: 'https://youtube.com/pascalbaljet' },
     ]
+  },
+  transformPageData(pageData) {
+    const canonicalUrl = `https://inertiaui.com/inertia-modal/docs/${pageData.relativePath}`
+      .replace(/index\.md$/, '')
+      .replace(/\.md$/, '')
+
+    pageData.frontmatter.head ??= []
+    pageData.frontmatter.head.push([
+      'link',
+      { rel: 'canonical', href: canonicalUrl }
+    ])
   }
 })
