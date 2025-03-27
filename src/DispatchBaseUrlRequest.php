@@ -53,8 +53,8 @@ class DispatchBaseUrlRequest
         $response = (new Pipeline(app()))
             ->send($requestForBaseUrl)
             ->through($this->gatherMiddleware($route))
-            ->then(function ($request) use ($route) {
-                $this->bindRequest($request);
+            ->then(function ($requestForBaseUrl) use ($route) {
+                $this->bindRequest($requestForBaseUrl);
 
                 return $route->run();
             });
@@ -75,6 +75,7 @@ class DispatchBaseUrlRequest
 
         app()->instance('request', $request);
 
+        // @phpstan-ignore-next-line
         $this->router->setCurrentRequest($request);
     }
 
@@ -86,7 +87,7 @@ class DispatchBaseUrlRequest
         $excludedMiddleware = Modal::getMiddlewareToExcludeOnBaseUrl();
 
         return collect($this->router->resolveMiddleware($route->gatherMiddleware()))
-            ->reject(function ($middleware) use ($excludedMiddleware) {
+            ->reject(function ($middleware) use ($excludedMiddleware): bool {
                 foreach ($excludedMiddleware as $excludeMiddleware) {
                     if ($middleware === $excludeMiddleware || is_subclass_of($middleware, $excludeMiddleware)) {
                         return true;
