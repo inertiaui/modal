@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace InertiaUI\Modal;
 
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route;
@@ -80,7 +79,7 @@ class DispatchBaseUrlRequest
     }
 
     /**
-     * Run the given callback with the EncryptCookies middleware disabled.
+     * Gather the middleware for the given route and exclude the configured middleware.
      */
     private function gatherMiddleware(Route $route): mixed
     {
