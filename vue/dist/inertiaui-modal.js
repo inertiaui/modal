@@ -123,7 +123,7 @@ const Je = {
       ne.on("navigate", (r) => {
         const i = r.detail.page.props._inertiaui_modal;
         if (!i) {
-          o.value && t.closeAll();
+          o.value && t.closeAll(), t.setBaseUrl(null);
           return;
         }
         o.value = i, t.setBaseUrl(i.baseUrl), t.pushFromResponseData(i, {}, () => {

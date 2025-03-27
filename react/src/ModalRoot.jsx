@@ -492,6 +492,7 @@ export const ModalRoot = ({ children }) => {
 
                 if (!modalOnBase) {
                     previousModalOnBase && context.closeAll()
+                    baseUrl = null
                     return
                 }
 

@@ -19,6 +19,7 @@ onUnmounted(
 
         if (!modalOnBase) {
             previousModalOnBase.value && modalStack.closeAll()
+            modalStack.setBaseUrl(null)
             return
         }
 
