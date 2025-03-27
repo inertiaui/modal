@@ -335,8 +335,10 @@ function createUserModal() {
 import { useModalStack } from '@inertiaui/modal-react'
 
 function UserIndex() {
+    const modalStack = useModalStack();
+
     function createUserModal() {
-        useModalStack().visitModal('/users/create')
+        modalStack.visitModal('/users/create')
     }
 
     return (
