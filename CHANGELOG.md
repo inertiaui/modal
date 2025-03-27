@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.20.1 - 2025-03-27
+
+### What's Changed
+
+* Improve middleware exclusion by @pascalbaljet in https://github.com/inertiaui/modal/pull/107
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.0...0.20.1
+
 ## 0.20.0 - 2025-03-26
 
 ### What's Changed
