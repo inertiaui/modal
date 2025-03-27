@@ -2,6 +2,21 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.20.4 - 2025-03-27
+
+### What's Changed
+
+* Match baseRoute parameters with Laravel route parameters by @SuperDJ in https://github.com/inertiaui/modal/pull/98
+* Fixes react programmatic usage example by @PedroAugustoRamalhoDuarte in https://github.com/inertiaui/modal/pull/108
+* Undefined array key with deferred prop by @SuperDJ in https://github.com/inertiaui/modal/pull/89
+
+### New Contributors
+
+* @SuperDJ made their first contribution in https://github.com/inertiaui/modal/pull/98
+* @PedroAugustoRamalhoDuarte made their first contribution in https://github.com/inertiaui/modal/pull/108
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.3...0.20.4
+
 ## 0.20.3 - 2025-03-27
 
 ### What's Changed
