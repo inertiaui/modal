@@ -1,7 +1,7 @@
 {
     "name": "@inertiaui/modal-react",
     "author": "Pascal Baljet <pascal@protone.media>",
-    "version": "0.20.2",
+    "version": "0.20.3",
     "private": false,
     "license": "MIT",
     "type": "module",

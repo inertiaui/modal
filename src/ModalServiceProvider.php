@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace InertiaUI\Modal;
 
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -38,10 +37,8 @@ class ModalServiceProvider extends ServiceProvider
             }
         });
 
-        Modal::excludeMiddlewareOnBaseUrl([
-            EncryptCookies::class, // Prevent double encryption of cookies in subrequests
-            VerifyCsrfToken::class, // Don't validate CSRF tokens twice
-        ]);
+        // Prevent double encryption of cookies in subrequests
+        Modal::excludeMiddlewareOnBaseUrl(EncryptCookies::class);
 
         Router::macro('setCurrentRequest', function ($request): void {
             // @phpstan-ignore-next-line

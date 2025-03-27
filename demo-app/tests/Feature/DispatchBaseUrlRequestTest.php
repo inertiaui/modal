@@ -45,8 +45,13 @@ class DispatchBaseUrlRequestTest extends TestCase
     #[Test]
     public function it_preserves_request_data()
     {
+        session()->start();
+
         $originalRequest = Request::create(
-            '/users', 'POST', [], [], [], [], json_encode(['name' => 'new-role'])
+            '/users', 'POST', [], [], [], [], json_encode([
+                '_token' => session()->token(),
+                'name' => 'new-role',
+            ])
         );
         $originalRequest->headers->set('Content-Type', 'application/json');
 
