@@ -78,9 +78,9 @@ class Modal implements Responsable
     /**
      * Set the base URL for the modal using a named route.
      */
-    public function baseRoute(string $name, array $parameters = []): static
+    public function baseRoute(BackedEnum|string $name, mixed $parameters = [], bool $absolute = true): static
     {
-        $this->baseUrl = route($name, $parameters);
+        $this->baseUrl = route($name, $parameters, $absolute);
 
         return $this;
     }
