@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.20.2 - 2025-03-27
+
+### What's Changed
+
+* Better middleware resolving by @pascalbaljet
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.1...0.20.2
+
 ## 0.20.1 - 2025-03-27
 
 ### What's Changed
