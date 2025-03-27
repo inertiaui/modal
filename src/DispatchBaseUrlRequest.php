@@ -85,7 +85,7 @@ class DispatchBaseUrlRequest
     {
         $excludedMiddleware = Modal::getMiddlewareToExcludeOnBaseUrl();
 
-        return collect($this->router->resolveMiddleware($route->gatherMiddleware()))
+        return collect($this->router->gatherRouteMiddleware($route))
             ->reject(function ($middleware) use ($excludedMiddleware): bool {
                 foreach ($excludedMiddleware as $excludeMiddleware) {
                     if ($middleware === $excludeMiddleware || is_subclass_of($middleware, $excludeMiddleware)) {
