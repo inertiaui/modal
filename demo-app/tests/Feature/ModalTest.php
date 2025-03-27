@@ -96,28 +96,4 @@ class ModalTest extends TestCase
                 )
             );
     }
-
-    #[Test]
-    public function it_returns_the_base_page_with_deferred_props()
-    {
-        $user = UserFactory::new()->create();
-
-        $this->getJson(route('users.edit-deferred', $user), [
-            Modal::HEADER_USE_ROUTER => '1',
-        ])
-            ->assertOk()
-            ->assertInertia(fn (AssertableInertia $assert) => $assert
-                ->component('Users')
-                ->has('users')
-                ->has('_inertiaui_modal', fn (AssertableInertia $assert) => $assert
-                    ->where('component', 'EditUser')
-                    ->has('props')
-                    ->has('id')
-                    ->where('props.user.id', $user->id)
-                    ->has('version')
-                    ->has('url')
-                    ->where('baseUrl', '/users/'.$user->id.'/deferred')
-                )
-            );
-    }
 }

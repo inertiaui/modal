@@ -44,9 +44,7 @@ onUnmounted(
 const axiosRequestInterceptor = (config) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
-    if (modalStack.stack.value.length) {
-        config.headers['X-InertiaUI-Modal-Base-Url'] = modalStack.getBaseUrl()
-    }
+    config.headers['X-InertiaUI-Modal-Base-Url'] = modalStack.getBaseUrl()
 
     return config
 }

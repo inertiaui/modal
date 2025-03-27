@@ -521,9 +521,8 @@ export const ModalRoot = ({ children }) => {
     const axiosRequestInterceptor = (config) => {
         // A Modal is opened on top of a base route, so we need to pass this base route
         // so it can redirect back with the back() helper method...
-        if (localStackCopy.length) {
-            config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl
-        }
+        config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl
+
         return config
     }
 
