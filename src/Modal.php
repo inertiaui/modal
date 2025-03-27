@@ -116,12 +116,13 @@ class Modal implements Responsable
         $baseUrl = $this->resolveBaseUrl($request);
 
         if (in_array($request->header(self::HEADER_USE_ROUTER), [0, '0'], true) || blank($baseUrl)) {
+            // Also used for reloading modal props...
             return $modal->toResponse($request);
         }
 
         inertia()->share('_inertiaui_modal', [
             // @phpstan-ignore-next-line
-            ...$modal->toArray(),
+            ...($modalData = $modal->toArray()),
             'id' => $request->header(static::HEADER_MODAL),
             'baseUrl' => $baseUrl,
         ]);
@@ -130,23 +131,29 @@ class Modal implements Responsable
 
         // Spoof the base URL to the modal's URL
         return match (true) {
-            $response instanceof JsonResponse => $this->toJsonResponse($request, $response),
-            $response instanceof IlluminateResponse => $this->toViewResponse($request, $response),
+            $response instanceof JsonResponse => $this->toJsonResponse($response, $modalData['url']),
+            $response instanceof IlluminateResponse => $this->toViewResponse($request, $response, $modalData['url']),
             default => $response,
         };
     }
 
-    protected function toJsonResponse(Request $request, JsonResponse $response): JsonResponse
+    /**
+     * Replace the URL in the JSON response with the modal's URL so the
+     * Inertia front-end library won't redirect back to the base URL.
+     */
+    protected function toJsonResponse(JsonResponse $response, string $url): JsonResponse
     {
-        $data = $response->getData(true);
-
         return $response->setData([
-            ...$data,
-            'url' => $data['props']['_inertiaui_modal']['url'],
+            ...$response->getData(true),
+            'url' => $url,
         ]);
     }
 
-    protected function toViewResponse(Request $request, IlluminateResponse $response): IlluminateResponse
+    /**
+     * Replace the URL in the View Response with the modal's URL so the
+     * Inertia front-end library won't redirect back to the base URL.
+     */
+    protected function toViewResponse(Request $request, IlluminateResponse $response, string $url): IlluminateResponse
     {
         $originalContent = $response->getOriginalContent();
 
@@ -155,7 +162,7 @@ class Modal implements Responsable
         }
 
         $viewData = $originalContent->getData();
-        $viewData['page']['url'] = $viewData['page']['props']['_inertiaui_modal']['url'];
+        $viewData['page']['url'] = $url;
 
         foreach (static::$beforeBaseRerenderCallbacks as $callback) {
             $callback($request, $response);

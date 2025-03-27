@@ -1,13 +1,28 @@
 import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
+import * as InertiaReact from '@inertiajs/react';
 
-export default function UserProfile({ user }) {
+export default function UserProfile({ user, deferred }) {
+    const pageProps = InertiaReact.usePage().props
+
     return (
         <Container>
             <div className="">
                 <p className="text-2xl font-medium text-gray-900">{user.name}</p>
                 <p className="text-xl text-gray-500">{user.email}</p>
             </div>
+
+            {pageProps._inertiaui_modal &&
+                (
+                    InertiaReact.Deferred ?
+                        <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
+                            <p dusk="deferred">
+                                {deferred}
+                            </p>
+                        </InertiaReact.Deferred> : <p dusk="deferred"> No Deferred Component</p>
+                )
+            }
+
             <ModalLink
                 navigate
                 as="button"
@@ -17,6 +32,6 @@ export default function UserProfile({ user }) {
             >
                 Edit
             </ModalLink>
-        </Container>
+        </Container >
     );
 };

@@ -1,6 +1,8 @@
 name: PHP Quality and Style
 
 on:
+  pull_request:
+    branches: [develop]
   push:
     paths:
       - ".github/workflows/phpstan.yml"

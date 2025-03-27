@@ -1,6 +1,8 @@
 name: Analyse with ESLint
 
 on:
+  pull_request:
+    branches: [develop]
   push:
     paths:
       - "**.js"

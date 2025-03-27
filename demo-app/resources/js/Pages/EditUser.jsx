@@ -53,7 +53,7 @@ export default function EditUser({ user, roles, randomKey }) {
                         {message && <p dusk="message" className="text-sm text-gray-500">{message}</p>}
                     </div>
 
-                    <div class="mt-4 flex flex-col items-start">
+                    <div className="mt-4 flex flex-col items-start">
                         <button
                             type="button"
                             onClick={() => emit('user-greets', 'Hello from EditUser')}

@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Inertia\DeferProp;
 use Inertia\Inertia;
 
 Route::get('/login', function () {
@@ -39,6 +40,7 @@ Route::get('/users/{user}/edit', function (User $user) {
 Route::get('/users/{user}', function (User $user) {
     return Inertia::render('ShowUser', [
         'user' => $user,
+        'deferred' => class_exists(DeferProp::class) ? Inertia::defer(fn () => 'Deferred data') : 'Deferred not supported',
     ]);
 })->name('users.show');
 

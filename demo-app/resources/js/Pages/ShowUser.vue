@@ -1,11 +1,11 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
-import { Modal, ModalLink } from '@inertiaui/modal-vue';
-import { ref } from 'vue';
+import { ModalLink } from '@inertiaui/modal-vue';
 import Container from './Container.vue'
+import * as InertiaVue from '@inertiajs/vue3';
 
 const props = defineProps({
     user: Object,
+    deferred: String
 });
 </script>
 
@@ -14,6 +14,18 @@ const props = defineProps({
         <div class="">
             <p class="text-2xl font-medium text-gray-900">{{ user.name }}</p>
             <p class="text-xl text-gray-500">{{ user.email }}</p>
+        </div>
+
+        <div v-if="$page.props._inertiaui_modal">
+            <component v-if="InertiaVue.Deferred" :is="InertiaVue.Deferred" data="deferred">
+                <template #fallback>
+                    Loading...
+                </template>
+
+                <p dusk="deferred">{{ deferred }}</p>
+            </component>
+
+            <p v-else dusk="deferred">No Deferred Component</p>
         </div>
 
         <ModalLink navigate as="button" :dusk="'edit-user-' + user.id"
