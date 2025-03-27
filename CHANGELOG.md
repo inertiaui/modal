@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.20.3 - 2025-03-27
+
+### What's Changed
+
+* Restore `VerifyCsrfToken` middleware
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.2...0.20.3
+
 ## 0.20.2 - 2025-03-27
 
 ### What's Changed
