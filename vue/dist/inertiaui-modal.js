@@ -138,7 +138,7 @@ const Je = {
         });
       })
     );
-    const l = (r) => (t.stack.value.length && (r.headers["X-InertiaUI-Modal-Base-Url"] = t.getBaseUrl()), r);
+    const l = (r) => (r.headers["X-InertiaUI-Modal-Base-Url"] = t.getBaseUrl(), r);
     vt(() => {
       fe.interceptors.request.use(l);
     }), Y(() => {
