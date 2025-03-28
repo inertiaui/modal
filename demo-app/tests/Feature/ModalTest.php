@@ -92,6 +92,7 @@ class ModalTest extends TestCase
                     ->where('props.user.id', $user->id)
                     ->has('version')
                     ->has('url')
+                    ->has('meta')
                     ->where('baseUrl', '/users')
                 )
             );
