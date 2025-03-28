@@ -5,10 +5,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Inertia\DeferProp;
 use Inertia\Inertia;
+use InertiaUI\Modal\Support;
 
-$deferred = fn (string $data) => class_exists(DeferProp::class)
+$deferred = fn (string $data) => Support::isInertiaV2()
     ? Inertia::defer(fn () => request()->header('X-InertiaUI-Modal-Base-Url')
         ? 'Deferred data with Base URL header: '.$data
         : 'Deferred data without Base URL header: '.$data
@@ -36,26 +36,30 @@ Route::get('/modal-events', function (User $user) {
 
 // Modal Props
 Route::get('/modal-props-ignore-first-load', function () {
+    $inertiaV2 = Support::isInertiaV2();
+
+    $defer = fn (int $delay, string $data, string $group) => $inertiaV2
+        ? Inertia::defer(function () use ($delay, $data) {
+            usleep($delay * 1000);
+
+            return $data;
+        }, $group) : $data;
+
+    $optional = fn (int $delay, string $data) => $inertiaV2
+        ? Inertia::lazy(function () use ($delay, $data) {
+            usleep($delay * 1000);
+
+            return $data;
+        }) : $data;
+
     return Inertia::modal('ModalPropsIgnoreFirstLoad', [
-        'deferA' => Inertia::defer(function () {
-            usleep(250 * 1000);
-
-            return 'Deferred data A- '.Str::random();
-        }, 'group-a'),
-        'deferB' => Inertia::defer(function () {
-            usleep(500 * 1000);
-
-            return 'Deferred data B- '.Str::random();
-        }, 'group-b'),
+        'deferA' => $defer(250, 'Deferred data A- '.Str::random(), 'group-a'),
+        'deferB' => $defer(500, 'Deferred data B- '.Str::random(), 'group-b'),
+        'optional' => $optional(500, 'Optional data - '.Str::random()),
         'lazy' => Inertia::lazy(function () {
             usleep(500 * 1000);
 
             return 'Lazy data - '.Str::random();
-        }),
-        'optional' => Inertia::optional(function () {
-            usleep(500 * 1000);
-
-            return 'Optional data - '.Str::random();
         }),
     ])->baseUrl('/visit');
 });
