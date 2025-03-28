@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.20.5 - 2025-03-28
+
+### What's Changed
+
+* Deferred props improvements: Added more tests + improvements for loading directly by @pascalbaljet in https://github.com/inertiaui/modal/pull/109
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.4...0.20.5
+
 ## 0.20.4 - 2025-03-27
 
 ### What's Changed
