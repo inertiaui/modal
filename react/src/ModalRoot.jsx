@@ -98,18 +98,18 @@ export const ModalStackProvider = ({ children }) => {
                 if (pendingOnClose) {
                     this.onCloseCallback = onClose
                         ? () => {
-                            onClose()
-                            pendingOnClose()
-                        }
+                              onClose()
+                              pendingOnClose()
+                          }
                         : pendingOnClose
                 }
 
                 if (pendingOnAfterLeave) {
                     this.afterLeaveCallback = afterLeave
                         ? () => {
-                            afterLeave()
-                            pendingOnAfterLeave()
-                        }
+                              afterLeave()
+                              pendingOnAfterLeave()
+                          }
                         : pendingOnAfterLeave
                 }
 
@@ -251,13 +251,15 @@ export const ModalStackProvider = ({ children }) => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
-            }).then((response) => {
-                this.updateProps(response.data.props)
-
-                options.onSuccess?.(response)
-            }).catch((error) => {
-                options.onError?.(error)
             })
+                .then((response) => {
+                    this.updateProps(response.data.props)
+
+                    options.onSuccess?.(response)
+                })
+                .catch((error) => {
+                    options.onError?.(error)
+                })
                 .finally(() => {
                     options.onFinish?.()
                 })

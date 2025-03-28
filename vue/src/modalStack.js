@@ -342,8 +342,8 @@ function loadDeferredProps(modal) {
         return
     }
 
-    Object.entries(deferred).forEach(([_, group]) => {
-        modal.reload({ only: group })
+    Object.keys(deferred).forEach((key) => {
+        modal.reload({ only: deferred[key] })
     })
 }
 
