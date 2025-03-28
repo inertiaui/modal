@@ -37,11 +37,16 @@ Route::get('/modal-events', function (User $user) {
 // Modal Props
 Route::get('/modal-props-ignore-first-load', function () {
     return Inertia::modal('ModalPropsIgnoreFirstLoad', [
-        'defer' => Inertia::defer(function () {
+        'deferA' => Inertia::defer(function () {
+            usleep(250 * 1000);
+
+            return 'Deferred data A- '.Str::random();
+        }, 'group-a'),
+        'deferB' => Inertia::defer(function () {
             usleep(500 * 1000);
 
-            return 'Deferred data - '.Str::random();
-        }),
+            return 'Deferred data B- '.Str::random();
+        }, 'group-b'),
         'lazy' => Inertia::lazy(function () {
             usleep(500 * 1000);
 

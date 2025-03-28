@@ -1,8 +1,8 @@
-import { Modal, useModalStack } from '@inertiaui/modal-react';
+import { Modal, ModalLink, useModalStack } from '@inertiaui/modal-react';
 import Container from './Container';
 import { Link } from '@inertiajs/react';
 
-export default function Visit() {
+export default function Visit({ navigate }) {
     const { visitModal } = useModalStack();
 
     const openLocalModal = () => {
@@ -43,6 +43,10 @@ export default function Visit() {
                         <Link href="/conditionally-redirect?redirect=1" dusk="conditional-redirect">
                             Open page that redirects to modal
                         </Link>
+
+                        <ModalLink navigate={navigate} href="/modal-props-ignore-first-load" dusk="modal-props-ignore-first-load">
+                            Open Modal with props that ignore first load
+                        </ModalLink>
                     </div>
                 </div>
             </Container>

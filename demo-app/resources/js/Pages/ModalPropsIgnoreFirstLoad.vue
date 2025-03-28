@@ -3,7 +3,8 @@ import { Deferred, Modal, WhenVisible } from '@inertiaui/modal-vue'
 import { ref } from 'vue';
 
 defineProps({
-    defer: String,
+    deferA: String,
+    deferB: String,
     lazy: String,
     optional: String,
 })
@@ -13,13 +14,17 @@ const visible = ref(false)
 
 <template>
     <Modal v-slot="{reload}">
-        <Deferred data="defer">
+        <Deferred :data="['deferA', 'deferB']">
             <template #fallback>
                 <p dusk="defer">Loading defer...</p>
             </template>
 
             <p dusk="defer" class="text-green-500">
-                {{ defer }}
+                {{ deferA }}
+            </p>
+
+            <p dusk="defer-b" class="text-green-500">
+                {{ deferB }}
             </p>
         </Deferred>
 
