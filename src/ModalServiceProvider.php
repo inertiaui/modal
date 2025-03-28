@@ -51,11 +51,24 @@ class ModalServiceProvider extends ServiceProvider
         Response::macro('toArray', function (): array {
             $request = app('request');
 
+            if (Support::isInertiaV2()) {
+                $props = $this->resolveProperties($request, $this->props);
+            } else {
+                $props = $this->resolvePartialProps($request, $this->props);
+                $props = $this->resolveAlwaysProps($props);
+                $props = $this->evaluateProps($props, $request);
+            }
+
             return [
                 'component' => $this->component,
-                'props' => collect($this->props)->toArray(),
+                'props' => $props,
                 'version' => $this->version,
                 'url' => Str::start(Str::after($request->fullUrl(), $request->getSchemeAndHttpHost()), '/'),
+                'meta' => Support::isInertiaV2() ? [
+                    ...$this->resolveMergeProps($request),
+                    ...$this->resolveDeferredProps($request),
+                    ...$this->resolveCacheDirections($request),
+                ] : [],
             ];
         });
 

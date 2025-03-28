@@ -12,6 +12,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 use Illuminate\View\View;
 use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class Modal implements Responsable
 {
@@ -117,7 +118,7 @@ class Modal implements Responsable
 
         if (in_array($request->header(self::HEADER_USE_ROUTER), [0, '0'], true) || blank($baseUrl)) {
             // Also used for reloading modal props...
-            return $modal->toResponse($request);
+            return $this->extractMeta($modal->toResponse($request));
         }
 
         inertia()->share('_inertiaui_modal', [
@@ -135,6 +136,34 @@ class Modal implements Responsable
             $response instanceof IlluminateResponse => $this->toViewResponse($request, $response, $modalData['url']),
             default => $response,
         };
+    }
+
+    /**
+     * Extract the meta data from the JSON response and set it in the 'meta' key.
+     */
+    protected function extractMeta(SymfonyResponse $response): SymfonyResponse
+    {
+        if (! $response instanceof JsonResponse) {
+            return $response;
+        }
+
+        $data = $response->getData(true);
+        $data['meta'] = [];
+
+        foreach (['mergeProps', 'deferredProps', 'cache'] as $key) {
+            if (! array_key_exists($key, $data)) {
+                continue;
+            }
+
+            $data['meta'][$key] = $data[$key];
+            unset($data[$key]);
+        }
+
+        if (empty($data['meta'])) {
+            $data['meta'] = (object) [];
+        }
+
+        return $response->setData($data);
     }
 
     /**

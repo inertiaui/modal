@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, only, kebabCase, generateId, sameUrlPath } from './helpers'
+import { except, kebabCase, generateId, sameUrlPath } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -219,7 +219,7 @@ export const ModalStackProvider = ({ children }) => {
             let keys = Object.keys(this.response.props)
 
             if (options.only) {
-                keys = only(keys, options.only)
+                keys = options.only
             }
 
             if (options.except) {
@@ -232,6 +232,8 @@ export const ModalStackProvider = ({ children }) => {
 
             const method = (options.method ?? 'get').toLowerCase()
             const data = options.data ?? {}
+
+            options.onStart?.()
 
             Axios({
                 url: this.response.url,
@@ -249,9 +251,18 @@ export const ModalStackProvider = ({ children }) => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
-            }).then((response) => {
-                this.updateProps(response.data.props)
             })
+                .then((response) => {
+                    this.updateProps(response.data.props)
+
+                    options.onSuccess?.(response)
+                })
+                .catch((error) => {
+                    options.onError?.(error)
+                })
+                .finally(() => {
+                    options.onFinish?.()
+                })
         }
 
         updateProps = (props) => {
@@ -264,11 +275,24 @@ export const ModalStackProvider = ({ children }) => {
         return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave))
     }
 
+    const loadDeferredProps = (modal) => {
+        const deferred = modal.response?.meta?.deferredProps
+
+        if (!deferred) {
+            return
+        }
+
+        Object.keys(deferred).forEach((key) => {
+            modal.reload({ only: deferred[key] })
+        })
+    }
+
     const push = (component, response, config, onClose, afterLeave) => {
         const newModal = new Modal(component, response, config, onClose, afterLeave)
         newModal.index = stack.length
 
         updateStack((prevStack) => [...prevStack, newModal])
+        loadDeferredProps(newModal)
 
         newModal.show()
 

@@ -34,6 +34,32 @@ Route::get('/modal-events', function (User $user) {
     return Inertia::modal('ModalEvents')->baseUrl('/users');
 })->name('modal-events');
 
+// Modal Props
+Route::get('/modal-props-ignore-first-load', function () {
+    return Inertia::modal('ModalPropsIgnoreFirstLoad', [
+        'deferA' => Inertia::defer(function () {
+            usleep(250 * 1000);
+
+            return 'Deferred data A- '.Str::random();
+        }, 'group-a'),
+        'deferB' => Inertia::defer(function () {
+            usleep(500 * 1000);
+
+            return 'Deferred data B- '.Str::random();
+        }, 'group-b'),
+        'lazy' => Inertia::lazy(function () {
+            usleep(500 * 1000);
+
+            return 'Lazy data - '.Str::random();
+        }),
+        'optional' => Inertia::optional(function () {
+            usleep(500 * 1000);
+
+            return 'Optional data - '.Str::random();
+        }),
+    ])->baseUrl('/visit');
+});
+
 // Edit a user
 Route::get('/users/{user}/edit', function (User $user) {
     return Inertia::modal('EditUser', [
