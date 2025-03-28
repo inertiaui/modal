@@ -38,19 +38,19 @@ Route::get('/modal-events', function (User $user) {
 Route::get('/modal-props-ignore-first-load', function () {
     return Inertia::modal('ModalPropsIgnoreFirstLoad', [
         'defer' => Inertia::defer(function () {
-            sleep(1);
+            usleep(500 * 1000);
 
-            return 'Deferred data';
+            return 'Deferred data - '.Str::random();
         }),
         'lazy' => Inertia::lazy(function () {
-            sleep(1);
+            usleep(500 * 1000);
 
-            return 'Lazy data';
+            return 'Lazy data - '.Str::random();
         }),
         'optional' => Inertia::optional(function () {
-            sleep(1);
+            usleep(500 * 1000);
 
-            return 'Optional data';
+            return 'Optional data - '.Str::random();
         }),
     ])->baseUrl('/visit');
 });

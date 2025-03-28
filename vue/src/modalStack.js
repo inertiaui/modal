@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
-import { generateId, except, only, waitFor, kebabCase } from './helpers'
+import { generateId, except, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -242,6 +242,10 @@ class Modal {
         })
             .then((response) => {
                 this.updateProps(response.data.props)
+                options.onSuccess?.(response)
+            })
+            .catch((error) => {
+                options.onError?.(error)
             })
             .finally(() => {
                 options.onFinish?.()
@@ -334,11 +338,13 @@ function visit(
 function loadDeferredProps(modal) {
     const deferred = modal.response?.meta?.deferredProps
 
-    if (deferred) {
-        Object.entries(deferred).forEach(([_, group]) => {
-            modal.reload({ only: group })
-        })
+    if (!deferred) {
+        return
     }
+
+    Object.entries(deferred).forEach(([_, group]) => {
+        modal.reload({ only: group })
+    })
 }
 
 function push(component, response, config, onClose, afterLeave) {

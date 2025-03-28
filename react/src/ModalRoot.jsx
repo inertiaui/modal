@@ -98,18 +98,18 @@ export const ModalStackProvider = ({ children }) => {
                 if (pendingOnClose) {
                     this.onCloseCallback = onClose
                         ? () => {
-                              onClose()
-                              pendingOnClose()
-                          }
+                            onClose()
+                            pendingOnClose()
+                        }
                         : pendingOnClose
                 }
 
                 if (pendingOnAfterLeave) {
                     this.afterLeaveCallback = afterLeave
                         ? () => {
-                              afterLeave()
-                              pendingOnAfterLeave()
-                          }
+                            afterLeave()
+                            pendingOnAfterLeave()
+                        }
                         : pendingOnAfterLeave
                 }
 
@@ -233,6 +233,8 @@ export const ModalStackProvider = ({ children }) => {
             const method = (options.method ?? 'get').toLowerCase()
             const data = options.data ?? {}
 
+            options.onStart?.()
+
             Axios({
                 url: this.response.url,
                 method,
@@ -251,7 +253,14 @@ export const ModalStackProvider = ({ children }) => {
                 },
             }).then((response) => {
                 this.updateProps(response.data.props)
+
+                options.onSuccess?.(response)
+            }).catch((error) => {
+                options.onError?.(error)
             })
+                .finally(() => {
+                    options.onFinish?.()
+                })
         }
 
         updateProps = (props) => {
