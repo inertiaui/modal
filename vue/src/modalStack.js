@@ -332,7 +332,7 @@ function visit(
 }
 
 function loadDeferredProps(modal) {
-    const deferred = modal.response?.meta.deferredProps
+    const deferred = modal.response?.meta?.deferredProps
 
     if (deferred) {
         Object.entries(deferred).forEach(([_, group]) => {
