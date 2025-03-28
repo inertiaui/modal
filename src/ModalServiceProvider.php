@@ -64,11 +64,11 @@ class ModalServiceProvider extends ServiceProvider
                 'props' => $props,
                 'version' => $this->version,
                 'url' => Str::start(Str::after($request->fullUrl(), $request->getSchemeAndHttpHost()), '/'),
-                'meta' => [
+                'meta' => Support::isInertiaV2() ? [
                     ...$this->resolveMergeProps($request),
                     ...$this->resolveDeferredProps($request),
                     ...$this->resolveCacheDirections($request),
-                ],
+                ] : [],
             ];
         });
 
