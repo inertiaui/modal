@@ -11,4 +11,5 @@ parameters:
 
     ignoreErrors:
         - "#Access to protected property Inertia#"
+        - "#Call to an undefined method Inertia\\\\Response::evaluateProps#"
         - "#Call to an undefined method Inertia\\\\Response::resolve#"
