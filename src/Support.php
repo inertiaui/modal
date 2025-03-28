@@ -8,6 +8,6 @@ class Support
 {
     public static function isInertiaV2(): bool
     {
-        return class_exists(DeferredProp::class);
+        return class_exists(\Inertia\DeferProp::class);
     }
 }
