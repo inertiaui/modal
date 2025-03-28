@@ -53,9 +53,14 @@ class ModalServiceProvider extends ServiceProvider
 
             return [
                 'component' => $this->component,
-                'props' => collect($this->props)->toArray(),
+                'props' => $this->resolveProperties($request, $this->props),
                 'version' => $this->version,
                 'url' => Str::start(Str::after($request->fullUrl(), $request->getSchemeAndHttpHost()), '/'),
+                'meta' => [
+                    ...$this->resolveMergeProps($request),
+                    ...$this->resolveDeferredProps($request),
+                    ...$this->resolveCacheDirections($request),
+                ],
             ];
         });
 

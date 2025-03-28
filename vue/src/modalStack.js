@@ -207,7 +207,7 @@ class Modal {
         let keys = Object.keys(this.response.props)
 
         if (options.only) {
-            keys = only(keys, options.only)
+            keys = options.only
         }
 
         if (options.except) {
@@ -220,6 +220,8 @@ class Modal {
 
         const method = (options.method ?? 'get').toLowerCase()
         const data = options.data ?? {}
+
+        options.onStart?.()
 
         Axios({
             url: this.response.url,
@@ -237,9 +239,13 @@ class Modal {
                 'X-InertiaUI-Modal-Use-Router': 0,
                 'X-InertiaUI-Modal-Base-Url': baseUrl.value,
             },
-        }).then((response) => {
-            this.updateProps(response.data.props)
         })
+            .then((response) => {
+                this.updateProps(response.data.props)
+            })
+            .finally(() => {
+                options.onFinish?.()
+            })
     }
 
     updateProps = (props) => {
@@ -325,9 +331,20 @@ function visit(
     })
 }
 
+function loadDeferredProps(modal) {
+    const deferred = modal.response?.meta.deferredProps
+
+    if (deferred) {
+        Object.entries(deferred).forEach(([_, group]) => {
+            modal.reload({ only: group })
+        })
+    }
+}
+
 function push(component, response, config, onClose, afterLeave) {
     const newModal = new Modal(component, response, config, onClose, afterLeave)
     stack.value.push(newModal)
+    loadDeferredProps(newModal)
 
     nextTick(() => newModal.show())
 

@@ -117,7 +117,7 @@ class Modal implements Responsable
 
         if (in_array($request->header(self::HEADER_USE_ROUTER), [0, '0'], true) || blank($baseUrl)) {
             // Also used for reloading modal props...
-            return $modal->toResponse($request);
+            return $this->extractMeta($modal->toResponse($request));
         }
 
         inertia()->share('_inertiaui_modal', [
@@ -135,6 +135,32 @@ class Modal implements Responsable
             $response instanceof IlluminateResponse => $this->toViewResponse($request, $response, $modalData['url']),
             default => $response,
         };
+    }
+
+    /**
+     * Extract the meta data from the JSON response and set it in the 'meta' key.
+     *
+     * @return void
+     */
+    protected function extractMeta(JsonResponse $response)
+    {
+        $data = $response->getData(true);
+        $data['meta'] = [];
+
+        foreach (['mergeProps', 'deferredProps', 'cache'] as $key) {
+            if (! array_key_exists($key, $data)) {
+                continue;
+            }
+
+            $data['meta'][$key] = $data[$key];
+            unset($data[$key]);
+        }
+
+        if (empty($data['meta'])) {
+            $data['meta'] = (object) [];
+        }
+
+        return $response->setData($data);
     }
 
     /**

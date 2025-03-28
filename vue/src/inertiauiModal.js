@@ -1,10 +1,12 @@
 import { getConfig, putConfig, resetConfig } from './config.js'
 import { useModalStack, initFromPageProps, renderApp } from './modalStack.js'
+import useModal from './useModal.js'
+import Deferred from './Deferred.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import Modal from './Modal.vue'
 import ModalLink from './ModalLink.vue'
 import ModalRoot from './ModalRoot.vue'
-import useModal from './useModal.js'
+import WhenVisible from './WhenVisible.vue'
 
 function visitModal(url, options = {}) {
     return useModalStack()
@@ -32,4 +34,18 @@ function visitModal(url, options = {}) {
         })
 }
 
-export { HeadlessModal, Modal, ModalLink, ModalRoot, getConfig, putConfig, resetConfig, visitModal, renderApp, useModal, initFromPageProps }
+export {
+    Deferred,
+    HeadlessModal,
+    Modal,
+    ModalLink,
+    ModalRoot,
+    WhenVisible,
+    getConfig,
+    initFromPageProps,
+    putConfig,
+    renderApp,
+    resetConfig,
+    useModal,
+    visitModal,
+}

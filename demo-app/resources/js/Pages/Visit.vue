@@ -1,7 +1,11 @@
 <script setup>
 import Container from './Container.vue'
-import { Modal, visitModal } from '@inertiaui/modal-vue'
+import { Modal, ModalLink, visitModal } from '@inertiaui/modal-vue'
 import { Link } from '@inertiajs/vue3'
+
+defineProps({
+    navigate: Boolean,
+})
 
 function visitEdit() {
     visitModal('/users/1/edit', {
@@ -40,6 +44,10 @@ function visitEdit() {
                 <Link href="/conditionally-redirect?redirect=1" dusk="conditional-redirect">
                     Open page that redirects to modal
                 </Link>
+
+                <ModalLink :navigate href="/modal-props-ignore-first-load" dusk="modal-props-ignore-first-load">
+                    Open Modal with props that ignore first load
+                </ModalLink>
             </div>
         </div>
     </Container>
