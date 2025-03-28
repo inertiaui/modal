@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Models\User;
+use InertiaUI\Modal\Support;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
@@ -13,7 +14,7 @@ class DeferredOnBaseTest extends DuskTestCase
     #[Test]
     public function it_can_perform_a_partial_request_on_a_base_url(bool $navigate)
     {
-        if (! $this->isInertiaV2()) {
+        if (Support::isInertiaV1()) {
             return $this->markTestSkipped('Deferred Props are only available in Inertia v2');
         }
 
@@ -44,7 +45,7 @@ class DeferredOnBaseTest extends DuskTestCase
     #[Test]
     public function it_can_perform_a_partial_request_on_a_base_url_when_visiting_the_modal_url_directly()
     {
-        if (! $this->isInertiaV2()) {
+        if (Support::isInertiaV1()) {
             return $this->markTestSkipped('Deferred Props are only available in Inertia v2');
         }
 
@@ -66,7 +67,7 @@ class DeferredOnBaseTest extends DuskTestCase
     #[Test]
     public function it_can_perform_a_partial_request_on_a_different_base_url()
     {
-        if (! $this->isInertiaV2()) {
+        if (Support::isInertiaV1()) {
             return $this->markTestSkipped('Deferred Props are only available in Inertia v2');
         }
 
