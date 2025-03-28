@@ -2,6 +2,15 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.21.0 - 2025-03-28
+
+### What's Changed
+
+* Support for deferred, lazy, and optional props by @pascalbaljet in https://github.com/inertiaui/modal/pull/110
+* Support lazy props in Inertia v1 by @pascalbaljet in https://github.com/inertiaui/modal/pull/111
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.5...0.21.0
+
 ## 0.20.5 - 2025-03-28
 
 ### What's Changed
