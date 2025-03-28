@@ -3,8 +3,6 @@ import Container from './Container';
 import * as InertiaReact from '@inertiajs/react';
 
 export default function UserProfile({ user, deferred }) {
-    const pageProps = InertiaReact.usePage().props
-
     return (
         <Container>
             <div className="">
@@ -12,15 +10,13 @@ export default function UserProfile({ user, deferred }) {
                 <p className="text-xl text-gray-500">{user.email}</p>
             </div>
 
-            {pageProps._inertiaui_modal &&
-                (
-                    InertiaReact.Deferred ?
-                        <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
-                            <p dusk="deferred">
-                                {deferred}
-                            </p>
-                        </InertiaReact.Deferred> : <p dusk="deferred"> No Deferred Component</p>
-                )
+            {
+                InertiaReact.Deferred ?
+                    <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
+                        <p dusk="deferred">
+                            {deferred}
+                        </p>
+                    </InertiaReact.Deferred> : <p dusk="deferred"> No Deferred Component</p>
             }
 
             <ModalLink

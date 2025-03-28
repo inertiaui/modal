@@ -8,6 +8,13 @@ use Illuminate\Support\Str;
 use Inertia\DeferProp;
 use Inertia\Inertia;
 
+$deferred = fn (string $data) => class_exists(DeferProp::class)
+    ? Inertia::defer(fn () => request()->header('X-InertiaUI-Modal-Base-Url')
+        ? 'Deferred data with Base URL header: '.$data
+        : 'Deferred data without Base URL header: '.$data
+    )
+    : 'Deferred not supported';
+
 Route::get('/login', function () {
     Auth::loginUsingId(1);
 
@@ -37,10 +44,10 @@ Route::get('/users/{user}/edit', function (User $user) {
 })->name('users.edit');
 
 // Show a user
-Route::get('/users/{user}', function (User $user) {
+Route::get('/users/{user}', function (User $user) use ($deferred) {
     return Inertia::render('ShowUser', [
         'user' => $user,
-        'deferred' => class_exists(DeferProp::class) ? Inertia::defer(fn () => 'Deferred data') : 'Deferred not supported',
+        'deferred' => $deferred('users.show'),
     ]);
 })->name('users.show');
 
@@ -86,10 +93,12 @@ Route::post('/data', function () {
 });
 
 // General pages
-Route::get('{page}', function ($page) {
+Route::get('{page}', function ($page) use ($deferred) {
     if (request()->query('slow')) {
         sleep(1);
     }
 
-    return inertia(Str::studly($page));
+    return inertia(Str::studly($page), [
+        'deferred' => $deferred('page '.$page),
+    ]);
 })->name('page');

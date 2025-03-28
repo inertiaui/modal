@@ -3,8 +3,9 @@ import { Link } from '@inertiajs/react';
 import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
+import * as InertiaReact from '@inertiajs/react';
 
-export default function Users({ users, random, navigate }) {
+export default function Users({ users, random, navigate, deferred }) {
     const alertGreeting = (greeting) => {
         alert(greeting);
     };
@@ -13,6 +14,14 @@ export default function Users({ users, random, navigate }) {
         <Container>
             <div className="flex justify-between">
                 <h2 className="text-lg font-medium text-gray-900">Users</h2>
+                {
+                    InertiaReact.Deferred ?
+                        <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
+                            <p dusk="deferred">
+                                {deferred}
+                            </p>
+                        </InertiaReact.Deferred> : <p dusk="deferred"> No Deferred Component</p>
+                }
             </div>
             <div className="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
                 <ul className="divide-y divide-gray-200">

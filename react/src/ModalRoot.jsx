@@ -479,9 +479,11 @@ export const renderApp = (App, pageProps) => {
 
 export const ModalRoot = ({ children }) => {
     const context = useContext(ModalStackContext)
+    const $page = usePage()
 
     let isNavigating = false
     let previousModalOnBase = false
+    let initialModalStillOpened = $page.props?._inertiaui_modal ? true : false
 
     useEffect(() => router.on('start', () => (isNavigating = true)), [])
     useEffect(() => router.on('finish', () => (isNavigating = false)), [])
@@ -493,6 +495,7 @@ export const ModalRoot = ({ children }) => {
                 if (!modalOnBase) {
                     previousModalOnBase && context.closeAll()
                     baseUrl = null
+                    initialModalStillOpened = false
                     return
                 }
 
@@ -522,7 +525,7 @@ export const ModalRoot = ({ children }) => {
     const axiosRequestInterceptor = (config) => {
         // A Modal is opened on top of a base route, so we need to pass this base route
         // so it can redirect back with the back() helper method...
-        config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl
+        config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
 
         return config
     }
@@ -532,7 +535,6 @@ export const ModalRoot = ({ children }) => {
         return () => Axios.interceptors.request.eject(axiosRequestInterceptor)
     }, [])
 
-    const $page = usePage()
     const previousModalRef = useRef()
 
     useEffect(() => {

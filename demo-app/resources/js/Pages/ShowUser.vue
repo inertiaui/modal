@@ -16,17 +16,15 @@ const props = defineProps({
             <p class="text-xl text-gray-500">{{ user.email }}</p>
         </div>
 
-        <div v-if="$page.props._inertiaui_modal">
-            <component v-if="InertiaVue.Deferred" :is="InertiaVue.Deferred" data="deferred">
-                <template #fallback>
-                    Loading...
-                </template>
+        <component v-if="InertiaVue.Deferred" :is="InertiaVue.Deferred" data="deferred">
+            <template #fallback>
+                Loading...
+            </template>
 
-                <p dusk="deferred">{{ deferred }}</p>
-            </component>
+            <p dusk="deferred">{{ deferred }}</p>
+        </component>
 
-            <p v-else dusk="deferred">No Deferred Component</p>
-        </div>
+        <p v-else dusk="deferred">No Deferred Component</p>
 
         <ModalLink navigate as="button" :dusk="'edit-user-' + user.id"
             :href="`/users/${user.id}/edit`"
