@@ -321,6 +321,9 @@ export const ModalStackProvider = ({ children }) => {
             options.onAfterLeave,
             options.queryStringArrayFormat ?? 'brackets',
             options.navigate ?? getConfig('navigate'),
+            options.onStart,
+            options.onSuccess,
+            options.onError,
         ).then((modal) => {
             const listeners = options.listeners ?? {}
 
@@ -343,6 +346,9 @@ export const ModalStackProvider = ({ children }) => {
         onAfterLeave = null,
         queryStringArrayFormat = 'brackets',
         useBrowserHistory = false,
+        onStart = null,
+        onSuccess = null,
+        onError = null,
     ) => {
         const modalId = generateId()
 
@@ -387,7 +393,12 @@ export const ModalStackProvider = ({ children }) => {
                     headers,
                     preserveScroll: true,
                     preserveState: true,
-                    onError: reject,
+                    onError(...args) {
+                        onError?.(...args)
+                        reject(...args)
+                    },
+                    onStart: onStart,
+                    onSuccess: onSuccess,
                     onFinish: () => {
                         waitFor(() => newModalOnBase).then(resolve)
                     },
@@ -396,15 +407,21 @@ export const ModalStackProvider = ({ children }) => {
 
             //
 
+            onStart?.()
+
             Axios({
                 url,
                 method,
                 data,
                 headers,
             })
-                .then((response) => resolve(pushFromResponseData(response.data, config, onClose, onAfterLeave)))
-                .catch((error) => {
-                    reject(error)
+                .then((response) => {
+                    onSuccess?.(response)
+                    resolve(pushFromResponseData(response.data, config, onClose, onAfterLeave))
+                })
+                .catch((...args) => {
+                    onError?.(...args)
+                    reject(...args)
                 })
         })
     }
