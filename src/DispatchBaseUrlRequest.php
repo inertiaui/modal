@@ -55,7 +55,13 @@ class DispatchBaseUrlRequest
             ->then(function ($requestForBaseUrl) use ($route) {
                 $this->bindRequest($requestForBaseUrl);
 
-                return $route->run();
+                $response = $route->run();
+
+                if ($response instanceof \Inertia\Response) {
+                    $response = $response->toResponse($requestForBaseUrl);
+                }
+
+                return $response;
             });
 
         if ($response instanceof Responsable) {
