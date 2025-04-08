@@ -97,4 +97,29 @@ class ModalTest extends TestCase
                 )
             );
     }
+
+    #[Test]
+    public function it_can_open_a_modal_with_a_different_base_route_than_the_current_page()
+    {
+        $user = UserFactory::new()->create();
+
+        $response = $this->from(route('users.show', $user->id))
+            ->get(route('users.edit', $user->id));
+
+        $response->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('ShowUser')
+                //->url(route('users.edit', $user->id))
+                ->has('_inertiaui_modal', fn (AssertableInertia $assert) => $assert
+                    ->where('component', 'EditUser')
+                    ->has('props')
+                    ->has('id')
+                    ->where('props.user.id', $user->id)
+                    ->has('version')
+                    ->has('url')
+                    ->has('meta')
+                    ->where('baseUrl', '/users')
+                )
+            );
+    }
 }
