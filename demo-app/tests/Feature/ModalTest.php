@@ -103,15 +103,13 @@ class ModalTest extends TestCase
     {
         $user = UserFactory::new()->create();
 
-        $response = $this->from(route('users.show', $user->id))
-            ->get(route('users.edit', $user->id), [
-                Modal::HEADER_USE_ROUTER => '1',
-            ]);
+        $response = $this->from('/users/'.$user->id)
+            ->get('/users/'.$user->id.'/edit');
 
         $response->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('ShowUser')
-                ->url(route('users.edit', $user->id))
+                ->url('/users/'.$user->id.'/edit')
                 ->has('_inertiaui_modal', fn (AssertableInertia $assert) => $assert
                     ->where('component', 'EditUser')
                     ->has('props')
