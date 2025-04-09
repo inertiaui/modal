@@ -6,10 +6,13 @@ namespace InertiaUI\Modal;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Facade;
+use Inertia\Response as InertiaResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class DispatchBaseUrlRequest
@@ -52,23 +55,23 @@ class DispatchBaseUrlRequest
         $response = (new Pipeline(app()))
             ->send($requestForBaseUrl)
             ->through($this->gatherMiddleware($route))
-            ->then(function ($requestForBaseUrl) use ($route) {
+            ->then(function ($requestForBaseUrl) use ($route): JsonResponse|IlluminateResponse {
                 $this->bindRequest($requestForBaseUrl);
 
                 $response = $route->run();
 
-                if ($response instanceof \Inertia\Response) {
+                if ($response instanceof InertiaResponse || $response instanceof Responsable) {
                     $response = $response->toResponse($requestForBaseUrl);
                 }
 
                 return $response;
             });
 
-        if ($response instanceof Responsable) {
-            $response = $response->toResponse($requestForBaseUrl);
+        if ($response instanceof JsonResponse || $response instanceof IlluminateResponse) {
+            return tap($response, fn () => $this->bindRequest($originalRequest));
         }
 
-        return tap($response, fn () => $this->bindRequest($originalRequest));
+        throw new \Exception('Wrong response type '.get_class($response));
     }
 
     /**
