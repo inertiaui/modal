@@ -16,7 +16,7 @@
         "rector/rector": "^1.0.3"
     },
     "conflict": {
-        "laravel/pint": ">1.21.0"
+        "friendsofphp/php-cs-fixer": "<3.74.0"
     },
     "autoload": {
         "psr-4": {
