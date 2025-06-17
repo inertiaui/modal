@@ -2,6 +2,16 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.21.1 - 2025-06-17
+
+### What's Changed
+
+* Bump dependabot/fetch-metadata from 2.3.0 to 2.4.0 by @dependabot in https://github.com/inertiaui/modal/pull/119
+* Bump stefanzweifel/git-auto-commit-action from 5 to 6 by @dependabot in https://github.com/inertiaui/modal/pull/122
+* Remove Pint conflict (see #120) by @pascalbaljet in https://github.com/inertiaui/modal/pull/123
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.21.0...0.21.1
+
 ## 0.21.0 - 2025-03-28
 
 ### What's Changed
