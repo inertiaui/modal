@@ -26,12 +26,11 @@ class DispatchBaseUrlRequest
     {
         $requestForBaseUrl = Request::create(
             $baseUrl,
-            $originalRequest->getMethod(),
+            Request::METHOD_GET,
             $originalRequest->query->all(),
             $originalRequest->cookies->all(),
             $originalRequest->files->all(),
             $originalRequest->server->all(),
-            $originalRequest->getContent()
         );
 
         $requestForBaseUrl->headers->replace($originalRequest->headers->all());
