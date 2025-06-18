@@ -146,8 +146,10 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         close = () => {
-            updateStack((prevStack) =>
-                prevStack.map((modal) => {
+            updateStack((currentStack) => {
+                let modalClosed = false
+
+                const newStack = currentStack.map((modal) => {
                     if (modal.id === this.id && modal.isOpen) {
                         Object.keys(modal.listeners).forEach((event) => {
                             modal.off(event)
@@ -155,10 +157,13 @@ export const ModalStackProvider = ({ children }) => {
 
                         modal.isOpen = false
                         modal.onCloseCallback?.()
+                        modalClosed = true
                     }
                     return modal
-                }),
-            )
+                })
+
+                return modalClosed ? newStack : currentStack
+            })
         }
 
         afterLeave = () => {
