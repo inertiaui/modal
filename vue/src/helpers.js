@@ -77,32 +77,6 @@ function rejectNullValues(target) {
     }, {})
 }
 
-function waitFor(conditionFn, waitForSeconds = 3, checkIntervalMilliseconds = 10) {
-    return new Promise((resolve, reject) => {
-        const result = conditionFn()
-
-        if (result) {
-            resolve(result)
-            return
-        }
-
-        let maxAttempts = (waitForSeconds * 1000) / checkIntervalMilliseconds
-
-        const interval = setInterval(() => {
-            const result = conditionFn()
-            if (result) {
-                clearInterval(interval)
-                resolve(result)
-            }
-
-            if (--maxAttempts <= 0) {
-                clearInterval(interval)
-                reject(new Error('Condition not met in time'))
-            }
-        }, checkIntervalMilliseconds)
-    })
-}
-
 function kebabCase(string) {
     if (!string) return ''
 
@@ -130,4 +104,4 @@ function kebabCase(string) {
     return string.toLowerCase()
 }
 
-export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, waitFor, kebabCase }
+export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase }
