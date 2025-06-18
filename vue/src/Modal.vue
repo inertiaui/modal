@@ -1,5 +1,5 @@
 <script setup>
-import { DialogOverlay, DialogPortal, DialogRoot } from 'radix-vue'
+import { DialogOverlay, DialogPortal, DialogRoot } from 'reka-ui'
 import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
