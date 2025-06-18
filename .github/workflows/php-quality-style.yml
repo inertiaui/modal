@@ -1,6 +1,8 @@
 name: PHP Quality and Style
 
 on:
+  pull_request:
+    branches: [develop]
   push:
     paths:
       - ".github/workflows/phpstan.yml"
@@ -32,7 +34,7 @@ jobs:
         run: composer refactor
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Refactor code with Rector
 
@@ -40,7 +42,7 @@ jobs:
         run: composer format
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Format code with Pint
 

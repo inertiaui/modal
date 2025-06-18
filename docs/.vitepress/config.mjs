@@ -47,6 +47,9 @@ export default defineConfig({
           {text: 'Event Bus', link: '/event-bus'},
           {text: 'Nested / Stacked Modals', link: '/nested-stacked-modals'},
           {text: 'Reload Props', link: '/reload-props'},
+          {text: 'Lazy Props', link: '/lazy-props'},
+          {text: 'Deferred Props', link: '/deferred-props'},
+          {text: 'Load When Visible', link: '/load-when-visible'},
           {text: 'Local Modals', link: '/local-modals'},
           {text: 'Styling', link: '/styling'},
         ]

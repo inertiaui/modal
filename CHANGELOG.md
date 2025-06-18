@@ -2,6 +2,91 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 0.21.1 - 2025-06-17
+
+### What's Changed
+
+* Bump dependabot/fetch-metadata from 2.3.0 to 2.4.0 by @dependabot in https://github.com/inertiaui/modal/pull/119
+* Bump stefanzweifel/git-auto-commit-action from 5 to 6 by @dependabot in https://github.com/inertiaui/modal/pull/122
+* Remove Pint conflict (see #120) by @pascalbaljet in https://github.com/inertiaui/modal/pull/123
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.21.0...0.21.1
+
+## 0.21.0 - 2025-03-28
+
+### What's Changed
+
+* Support for deferred, lazy, and optional props by @pascalbaljet in https://github.com/inertiaui/modal/pull/110
+* Support lazy props in Inertia v1 by @pascalbaljet in https://github.com/inertiaui/modal/pull/111
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.5...0.21.0
+
+## 0.20.5 - 2025-03-28
+
+### What's Changed
+
+* Deferred props improvements: Added more tests + improvements for loading directly by @pascalbaljet in https://github.com/inertiaui/modal/pull/109
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.4...0.20.5
+
+## 0.20.4 - 2025-03-27
+
+### What's Changed
+
+* Match baseRoute parameters with Laravel route parameters by @SuperDJ in https://github.com/inertiaui/modal/pull/98
+* Fixes react programmatic usage example by @PedroAugustoRamalhoDuarte in https://github.com/inertiaui/modal/pull/108
+* Undefined array key with deferred prop by @SuperDJ in https://github.com/inertiaui/modal/pull/89
+
+### New Contributors
+
+* @SuperDJ made their first contribution in https://github.com/inertiaui/modal/pull/98
+* @PedroAugustoRamalhoDuarte made their first contribution in https://github.com/inertiaui/modal/pull/108
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.3...0.20.4
+
+## 0.20.3 - 2025-03-27
+
+### What's Changed
+
+* Restore `VerifyCsrfToken` middleware
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.2...0.20.3
+
+## 0.20.2 - 2025-03-27
+
+### What's Changed
+
+* Better middleware resolving by @pascalbaljet
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.1...0.20.2
+
+## 0.20.1 - 2025-03-27
+
+### What's Changed
+
+* Improve middleware exclusion by @pascalbaljet in https://github.com/inertiaui/modal/pull/107
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.20.0...0.20.1
+
+## 0.20.0 - 2025-03-26
+
+### What's Changed
+
+* Take `referer` header into account when resolving Base URL by @pascalbaljet in https://github.com/inertiaui/modal/pull/104
+* Further improvement of modal prop filtering by @pascalbaljet in https://github.com/inertiaui/modal/pull/105
+* Add support for `data` and `headers` when reloading modal props by @pascalbaljet in https://github.com/inertiaui/modal/pull/106
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.5...0.20.0
+
+## 0.19.5 - 2025-03-26
+
+### What's Changed
+
+* Upgrade to Vite 6 by @pascalbaljet in https://github.com/inertiaui/modal/pull/102
+* Filter modal props (fix for #101) by @pascalbaljet in https://github.com/inertiaui/modal/pull/103
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/0.19.4...0.19.5
+
 ## 0.19.4 - 2025-02-18
 
 ### What's Changed

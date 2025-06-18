@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
-import { generateId, except, only, waitFor, kebabCase } from './helpers'
+import { generateId, except, waitFor, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -77,6 +77,14 @@ class Modal {
 
             return modals.reverse().find((modal) => modal.shouldRender)?.id === this.id
         })
+    }
+
+    getComponentPropKeys = () => {
+        if (Array.isArray(this.component.props)) {
+            return this.component.props
+        }
+
+        return this.component.props ? Object.keys(this.component.props) : []
     }
 
     getParentModal = () => {
@@ -199,7 +207,7 @@ class Modal {
         let keys = Object.keys(this.response.props)
 
         if (options.only) {
-            keys = only(keys, options.only)
+            keys = options.only
         }
 
         if (options.except) {
@@ -210,8 +218,18 @@ class Modal {
             return
         }
 
-        Axios.get(this.response.url, {
+        const method = (options.method ?? 'get').toLowerCase()
+        const data = options.data ?? {}
+
+        options.onStart?.()
+
+        Axios({
+            url: this.response.url,
+            method,
+            data: method === 'get' ? {} : data,
+            params: method === 'get' ? data : {},
             headers: {
+                ...(options.headers ?? {}),
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Inertia': true,
                 'X-Inertia-Partial-Component': this.response.component,
@@ -221,9 +239,17 @@ class Modal {
                 'X-InertiaUI-Modal-Use-Router': 0,
                 'X-InertiaUI-Modal-Base-Url': baseUrl.value,
             },
-        }).then((response) => {
-            this.updateProps(response.data.props)
         })
+            .then((response) => {
+                this.updateProps(response.data.props)
+                options.onSuccess?.(response)
+            })
+            .catch((error) => {
+                options.onError?.(error)
+            })
+            .finally(() => {
+                options.onFinish?.()
+            })
     }
 
     updateProps = (props) => {
@@ -325,9 +351,22 @@ function visit(
     })
 }
 
+function loadDeferredProps(modal) {
+    const deferred = modal.response?.meta?.deferredProps
+
+    if (!deferred) {
+        return
+    }
+
+    Object.keys(deferred).forEach((key) => {
+        modal.reload({ only: deferred[key] })
+    })
+}
+
 function push(component, response, config, onClose, afterLeave) {
     const newModal = new Modal(component, response, config, onClose, afterLeave)
     stack.value.push(newModal)
+    loadDeferredProps(newModal)
 
     nextTick(() => newModal.show())
 

@@ -1,14 +1,16 @@
 <script setup>
-import { onMounted,ref } from 'vue';
-import Container from './Container.vue'
-import { ModalLink } from '@inertiaui/modal-vue'
 import { Link } from '@inertiajs/vue3'
+import { ModalLink } from '@inertiaui/modal-vue'
+import { onMounted,ref } from 'vue';
+import * as InertiaVue from '@inertiajs/vue3';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue';
+import Container from './Container.vue'
 
 defineProps({
     users: Object,
     random: Number,
     navigate: Boolean,
+    deferred: String
 });
 
 const rand = () => Math.floor(Math.random() * 100000) + 1
@@ -32,6 +34,15 @@ function alertGreeting(greeting) {
             <!-- <p dusk="state-a">S: {{ random }}</p>
             <p dusk="state-a">A: {{ stateA }}</p>
             <p dusk="state-b">B: {{ stateB }}</p> -->
+            <component v-if="InertiaVue.Deferred" :is="InertiaVue.Deferred" data="deferred">
+                <template #fallback>
+                    Loading...
+                </template>
+
+                <p dusk="deferred">{{ deferred }}</p>
+            </component>
+
+            <p v-else dusk="deferred">No Deferred Component</p>
         </div>
 
         <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-md">

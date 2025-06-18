@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace InertiaUI\Modal;
 
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Response;
@@ -35,17 +37,38 @@ class ModalServiceProvider extends ServiceProvider
             }
         });
 
+        // Prevent double encryption of cookies in subrequests
+        Modal::excludeMiddlewareOnBaseUrl(EncryptCookies::class);
+
+        Router::macro('setCurrentRequest', function ($request): void {
+            // @phpstan-ignore-next-line
+            $this->currentRequest = $request;
+        });
+
         // Add a 'toArray' macro to Response for consistent serialization to so that
         // any response can be serialized to an array. This is used in the Modal
         // class to pass the modal data as a prop to the base URL.
         Response::macro('toArray', function (): array {
             $request = app('request');
 
+            if (Support::isInertiaV2()) {
+                $props = $this->resolveProperties($request, $this->props);
+            } else {
+                $props = $this->resolvePartialProps($request, $this->props);
+                $props = $this->resolveAlwaysProps($props);
+                $props = $this->evaluateProps($props, $request);
+            }
+
             return [
                 'component' => $this->component,
-                'props' => collect($this->props)->toArray(),
+                'props' => $props,
                 'version' => $this->version,
                 'url' => Str::start(Str::after($request->fullUrl(), $request->getSchemeAndHttpHost()), '/'),
+                'meta' => Support::isInertiaV2() ? [
+                    ...$this->resolveMergeProps($request),
+                    ...$this->resolveDeferredProps($request),
+                    ...$this->resolveCacheDirections($request),
+                ] : [],
             ];
         });
 

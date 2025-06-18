@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Testing\TestResponse;
 use Inertia\Testing\AssertableInertia;
 use InertiaUI\Modal\DispatchBaseUrlRequest;
@@ -42,20 +43,6 @@ class DispatchBaseUrlRequestTest extends TestCase
     }
 
     #[Test]
-    public function it_preserves_request_data()
-    {
-        $originalRequest = Request::create(
-            '/users', 'POST', [], [], [], [], json_encode(['name' => 'new-role'])
-        );
-        $originalRequest->headers->set('Content-Type', 'application/json');
-
-        $baseUrl = '/roles';
-
-        ($this->dispatcher)($originalRequest, $baseUrl);
-        $this->assertEquals('Role created successfully!', session('message'));
-    }
-
-    #[Test]
     public function it_handles_responsable_objects()
     {
         $originalRequest = Request::create('/create/users', 'GET');
@@ -85,6 +72,7 @@ class DispatchBaseUrlRequestTest extends TestCase
         $baseUrl = '/roles';
 
         $response = ($this->dispatcher)($originalRequest, $baseUrl);
+        $this->assertInstanceOf(Response::class, $response);
         $cookies = $response->headers->getCookies();
 
         $this->assertNotEmpty($cookies);

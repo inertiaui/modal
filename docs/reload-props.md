@@ -41,6 +41,13 @@ reload({ except: ['roles'] })
 reload({ only: ['permissions'] })
 ```
 
+Just like regular Inertia requests, you can also pass additional data and headers.
+
+```js
+reload({ data: { email: 'john.doe@example.com' } })
+reload({ headers: { 'X-Custom-Header': 'value' } })
+```
+
 Alternatively, you can use the `ref` attribute to get a reference to the modal component and call the method on it.
 
 ::: code-group

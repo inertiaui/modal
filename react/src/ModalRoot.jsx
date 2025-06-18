@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, only, kebabCase, generateId, sameUrlPath } from './helpers'
+import { except, kebabCase, generateId, sameUrlPath } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -219,7 +219,7 @@ export const ModalStackProvider = ({ children }) => {
             let keys = Object.keys(this.response.props)
 
             if (options.only) {
-                keys = only(keys, options.only)
+                keys = options.only
             }
 
             if (options.except) {
@@ -230,8 +230,18 @@ export const ModalStackProvider = ({ children }) => {
                 return
             }
 
-            Axios.get(this.response.url, {
+            const method = (options.method ?? 'get').toLowerCase()
+            const data = options.data ?? {}
+
+            options.onStart?.()
+
+            Axios({
+                url: this.response.url,
+                method,
+                data: method === 'get' ? {} : data,
+                params: method === 'get' ? data : {},
                 headers: {
+                    ...(options.headers ?? {}),
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': true,
                     'X-Inertia-Partial-Component': this.response.component,
@@ -241,9 +251,18 @@ export const ModalStackProvider = ({ children }) => {
                     'X-InertiaUI-Modal-Use-Router': 0,
                     'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
-            }).then((response) => {
-                this.updateProps(response.data.props)
             })
+                .then((response) => {
+                    this.updateProps(response.data.props)
+
+                    options.onSuccess?.(response)
+                })
+                .catch((error) => {
+                    options.onError?.(error)
+                })
+                .finally(() => {
+                    options.onFinish?.()
+                })
         }
 
         updateProps = (props) => {
@@ -256,11 +275,24 @@ export const ModalStackProvider = ({ children }) => {
         return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave))
     }
 
+    const loadDeferredProps = (modal) => {
+        const deferred = modal.response?.meta?.deferredProps
+
+        if (!deferred) {
+            return
+        }
+
+        Object.keys(deferred).forEach((key) => {
+            modal.reload({ only: deferred[key] })
+        })
+    }
+
     const push = (component, response, config, onClose, afterLeave) => {
         const newModal = new Modal(component, response, config, onClose, afterLeave)
         newModal.index = stack.length
 
         updateStack((prevStack) => [...prevStack, newModal])
+        loadDeferredProps(newModal)
 
         newModal.show()
 
@@ -488,9 +520,11 @@ export const renderApp = (App, pageProps) => {
 
 export const ModalRoot = ({ children }) => {
     const context = useContext(ModalStackContext)
+    const $page = usePage()
 
     let isNavigating = false
     let previousModalOnBase = false
+    let initialModalStillOpened = $page.props?._inertiaui_modal ? true : false
 
     useEffect(() => router.on('start', () => (isNavigating = true)), [])
     useEffect(() => router.on('finish', () => (isNavigating = false)), [])
@@ -501,6 +535,8 @@ export const ModalRoot = ({ children }) => {
 
                 if (!modalOnBase) {
                     previousModalOnBase && context.closeAll()
+                    baseUrl = null
+                    initialModalStillOpened = false
                     return
                 }
 
@@ -530,9 +566,8 @@ export const ModalRoot = ({ children }) => {
     const axiosRequestInterceptor = (config) => {
         // A Modal is opened on top of a base route, so we need to pass this base route
         // so it can redirect back with the back() helper method...
-        if (localStackCopy.length) {
-            config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl
-        }
+        config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
+
         return config
     }
 
@@ -541,7 +576,6 @@ export const ModalRoot = ({ children }) => {
         return () => Axios.interceptors.request.eject(axiosRequestInterceptor)
     }, [])
 
-    const $page = usePage()
     const previousModalRef = useRef()
 
     useEffect(() => {

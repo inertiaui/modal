@@ -32,6 +32,7 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            'name' => config('app.name'),
             'navigate' => (bool) request()->query('navigate'),
             'random' => rand(1, 100_000),
             'users' => User::query()->orderBy('name')->get(),

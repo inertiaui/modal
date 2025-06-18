@@ -8,9 +8,11 @@ use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 use Illuminate\View\View;
 use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class Modal implements Responsable
 {
@@ -30,6 +32,11 @@ class Modal implements Responsable
      */
     protected static array $beforeBaseRerenderCallbacks = [];
 
+    /**
+     * @var array<string> Middleware to exclude when dispatching the base URL request.
+     */
+    protected static array $excludeMiddlewareOnBaseUrl = [];
+
     public function __construct(protected string $component, protected array $props = [])
     {
         //
@@ -41,6 +48,22 @@ class Modal implements Responsable
     public static function beforeBaseRerender(callable $callback): void
     {
         static::$beforeBaseRerenderCallbacks[] = $callback;
+    }
+
+    /**
+     * Register middleware to exclude when dispatching the base URL request.
+     */
+    public static function excludeMiddlewareOnBaseUrl(array|string $middleware): void
+    {
+        static::$excludeMiddlewareOnBaseUrl = array_merge(static::$excludeMiddlewareOnBaseUrl, Arr::wrap($middleware));
+    }
+
+    /**
+     * Get the middleware to exclude when dispatching the base URL request.
+     */
+    public static function getMiddlewareToExcludeOnBaseUrl(): array
+    {
+        return static::$excludeMiddlewareOnBaseUrl;
     }
 
     /**
@@ -56,9 +79,9 @@ class Modal implements Responsable
     /**
      * Set the base URL for the modal using a named route.
      */
-    public function baseRoute(string $name, array $parameters = []): static
+    public function baseRoute(\BackedEnum|string $name, mixed $parameters = [], bool $absolute = true): static
     {
-        $this->baseUrl = route($name, $parameters);
+        $this->baseUrl = route($name, $parameters, $absolute);
 
         return $this;
     }
@@ -78,7 +101,9 @@ class Modal implements Responsable
      */
     public function resolveBaseUrl(Request $request): ?string
     {
-        return $request->header(self::HEADER_BASE_URL, $this->getBaseUrl());
+        return $request->header(self::HEADER_BASE_URL)
+            ?? $request->header('referer')
+            ?? $this->getBaseUrl();
     }
 
     /**
@@ -92,12 +117,13 @@ class Modal implements Responsable
         $baseUrl = $this->resolveBaseUrl($request);
 
         if (in_array($request->header(self::HEADER_USE_ROUTER), [0, '0'], true) || blank($baseUrl)) {
-            return $modal->toResponse($request);
+            // Also used for reloading modal props...
+            return $this->extractMeta($modal->toResponse($request));
         }
 
         inertia()->share('_inertiaui_modal', [
             // @phpstan-ignore-next-line
-            ...$modal->toArray(),
+            ...($modalData = $modal->toArray()),
             'id' => $request->header(static::HEADER_MODAL),
             'baseUrl' => $baseUrl,
         ]);
@@ -106,23 +132,57 @@ class Modal implements Responsable
 
         // Spoof the base URL to the modal's URL
         return match (true) {
-            $response instanceof JsonResponse => $this->toJsonResponse($request, $response),
-            $response instanceof IlluminateResponse => $this->toViewResponse($request, $response),
+            $response instanceof JsonResponse => $this->toJsonResponse($response, $modalData['url']),
+            $response instanceof IlluminateResponse => $this->toViewResponse($request, $response, $modalData['url']),
             default => $response,
         };
     }
 
-    protected function toJsonResponse(Request $request, JsonResponse $response): JsonResponse
+    /**
+     * Extract the meta data from the JSON response and set it in the 'meta' key.
+     */
+    protected function extractMeta(SymfonyResponse $response): SymfonyResponse
     {
-        $data = $response->getData(true);
+        if (! $response instanceof JsonResponse) {
+            return $response;
+        }
 
+        $data = $response->getData(true);
+        $data['meta'] = [];
+
+        foreach (['mergeProps', 'deferredProps', 'cache'] as $key) {
+            if (! array_key_exists($key, $data)) {
+                continue;
+            }
+
+            $data['meta'][$key] = $data[$key];
+            unset($data[$key]);
+        }
+
+        if (empty($data['meta'])) {
+            $data['meta'] = (object) [];
+        }
+
+        return $response->setData($data);
+    }
+
+    /**
+     * Replace the URL in the JSON response with the modal's URL so the
+     * Inertia front-end library won't redirect back to the base URL.
+     */
+    protected function toJsonResponse(JsonResponse $response, string $url): JsonResponse
+    {
         return $response->setData([
-            ...$data,
-            'url' => $data['props']['_inertiaui_modal']['url'],
+            ...$response->getData(true),
+            'url' => $url,
         ]);
     }
 
-    protected function toViewResponse(Request $request, IlluminateResponse $response): IlluminateResponse
+    /**
+     * Replace the URL in the View Response with the modal's URL so the
+     * Inertia front-end library won't redirect back to the base URL.
+     */
+    protected function toViewResponse(Request $request, IlluminateResponse $response, string $url): IlluminateResponse
     {
         $originalContent = $response->getOriginalContent();
 
@@ -131,7 +191,7 @@ class Modal implements Responsable
         }
 
         $viewData = $originalContent->getData();
-        $viewData['page']['url'] = $viewData['page']['props']['_inertiaui_modal']['url'];
+        $viewData['page']['url'] = $url;
 
         foreach (static::$beforeBaseRerenderCallbacks as $callback) {
             $callback($request, $response);
