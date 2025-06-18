@@ -5,7 +5,6 @@ import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
-import { waitFor } from './helpers'
 import { getConfig } from './config'
 
 const ModalStackContext = createContext(null)
@@ -14,7 +13,7 @@ ModalStackContext.displayName = 'ModalStackContext'
 let pageVersion = null
 let resolveComponent = null
 let baseUrl = null
-let newModalOnBase = null
+let baseModalsToWaitFor = {}
 let localStackCopy = []
 let pendingModalUpdates = {}
 
@@ -377,7 +376,7 @@ export const ModalStackProvider = ({ children }) => {
             }
 
             if (useInertiaRouter) {
-                newModalOnBase = null
+                baseModalsToWaitFor = {}
 
                 pendingModalUpdates[modalId] = {
                     config,
@@ -393,8 +392,8 @@ export const ModalStackProvider = ({ children }) => {
                     preserveScroll: true,
                     preserveState: true,
                     onError: reject,
-                    onFinish: () => {
-                        waitFor(() => newModalOnBase).then(resolve)
+                    onBefore: () => {
+                        baseModalsToWaitFor[modalId] = resolve
                     },
                 })
             }
@@ -443,6 +442,14 @@ export const ModalStackProvider = ({ children }) => {
         visitModal,
         registerLocalModal,
         removeLocalModal,
+        onModalOnBase: (modalOnBase) => {
+            const resolve = baseModalsToWaitFor[modalOnBase.id]
+
+            if (resolve) {
+                resolve(modalOnBase)
+                delete baseModalsToWaitFor[modalOnBase.id]
+            }
+        },
     }
 
     return <ModalStackContext.Provider value={value}>{children}</ModalStackContext.Provider>
@@ -544,9 +551,7 @@ export const ModalRoot = ({ children }) => {
                             })
                         }
                     })
-                    .then((newModal) => {
-                        newModalOnBase = newModal
-                    })
+                    .then(context.onModalOnBase)
             }),
         [],
     )
