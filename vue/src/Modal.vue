@@ -3,7 +3,7 @@ import { DialogOverlay, DialogPortal, DialogRoot } from 'reka-ui'
 import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
-import { ref } from 'vue'
+import { onBeforeMount, onUnmounted, ref } from 'vue'
 
 const modal = ref(null)
 const rendered = ref(false)
@@ -40,6 +40,26 @@ defineExpose({
     get shouldRender() {
         return modal.value?.shouldRender
     },
+})
+
+let observer
+
+onBeforeMount(() => {
+    // Workaround for: https://github.com/unovue/reka-ui/issues/1540
+    observer = new MutationObserver(() => {
+        if (document.body.style.pointerEvents === 'none') {
+            document.body.style.pointerEvents = ''
+        }
+    })
+
+    observer.observe(document.body, { attributes: true, attributeFilter: ['style'] })
+})
+
+onUnmounted(() => {
+    if (observer) {
+        observer.disconnect()
+        observer = null
+    }
 })
 </script>
 
