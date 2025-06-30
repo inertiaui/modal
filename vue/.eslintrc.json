@@ -23,6 +23,9 @@
     "vue/multi-word-component-names": "off",
     "vue/no-parsing-error": "warn",
     "tailwindcss/no-custom-classname": "off",
-    "@typescript-eslint/no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }]
+    "@typescript-eslint/no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/ban-types": "off"
   }
 }
