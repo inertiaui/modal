@@ -5,7 +5,6 @@ import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
-import { waitFor } from './helpers'
 import { getConfig } from './config'
 
 const ModalStackContext = createContext(null)
@@ -14,7 +13,7 @@ ModalStackContext.displayName = 'ModalStackContext'
 let pageVersion = null
 let resolveComponent = null
 let baseUrl = null
-let newModalOnBase = null
+let baseModalsToWaitFor = {}
 let localStackCopy = []
 let pendingModalUpdates = {}
 
@@ -98,18 +97,18 @@ export const ModalStackProvider = ({ children }) => {
                 if (pendingOnClose) {
                     this.onCloseCallback = onClose
                         ? () => {
-                              onClose()
-                              pendingOnClose()
-                          }
+                            onClose()
+                            pendingOnClose()
+                        }
                         : pendingOnClose
                 }
 
                 if (pendingOnAfterLeave) {
                     this.afterLeaveCallback = afterLeave
                         ? () => {
-                              afterLeave()
-                              pendingOnAfterLeave()
-                          }
+                            afterLeave()
+                            pendingOnAfterLeave()
+                        }
                         : pendingOnAfterLeave
                 }
 
@@ -147,8 +146,10 @@ export const ModalStackProvider = ({ children }) => {
         }
 
         close = () => {
-            updateStack((prevStack) =>
-                prevStack.map((modal) => {
+            updateStack((currentStack) => {
+                let modalClosed = false
+
+                const newStack = currentStack.map((modal) => {
                     if (modal.id === this.id && modal.isOpen) {
                         Object.keys(modal.listeners).forEach((event) => {
                             modal.off(event)
@@ -156,10 +157,13 @@ export const ModalStackProvider = ({ children }) => {
 
                         modal.isOpen = false
                         modal.onCloseCallback?.()
+                        modalClosed = true
                     }
                     return modal
-                }),
-            )
+                })
+
+                return modalClosed ? newStack : currentStack
+            })
         }
 
         afterLeave = () => {
@@ -378,7 +382,7 @@ export const ModalStackProvider = ({ children }) => {
             }
 
             if (useInertiaRouter) {
-                newModalOnBase = null
+                baseModalsToWaitFor = {}
 
                 pendingModalUpdates[modalId] = {
                     config,
@@ -399,8 +403,8 @@ export const ModalStackProvider = ({ children }) => {
                     },
                     onStart: onStart,
                     onSuccess: onSuccess,
-                    onFinish: () => {
-                        waitFor(() => newModalOnBase).then(resolve)
+                    onBefore: () => {
+                        baseModalsToWaitFor[modalId] = resolve
                     },
                 })
             }
@@ -455,6 +459,14 @@ export const ModalStackProvider = ({ children }) => {
         visitModal,
         registerLocalModal,
         removeLocalModal,
+        onModalOnBase: (modalOnBase) => {
+            const resolve = baseModalsToWaitFor[modalOnBase.id]
+
+            if (resolve) {
+                resolve(modalOnBase)
+                delete baseModalsToWaitFor[modalOnBase.id]
+            }
+        },
     }
 
     return <ModalStackContext.Provider value={value}>{children}</ModalStackContext.Provider>
@@ -556,9 +568,7 @@ export const ModalRoot = ({ children }) => {
                             })
                         }
                     })
-                    .then((newModal) => {
-                        newModalOnBase = newModal
-                    })
+                    .then(context.onModalOnBase)
             }),
         [],
     )

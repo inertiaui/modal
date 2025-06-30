@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
-import { generateId, except, waitFor, kebabCase } from './helpers'
+import { generateId, except, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -10,6 +10,7 @@ let resolveComponent = null
 
 const pendingModalUpdates = ref({})
 const baseUrl = ref(null)
+const baseModalsToWaitFor = ref({})
 const stack = ref([])
 const localModals = ref({})
 
@@ -333,7 +334,9 @@ function visit(
                 },
                 onStart: onStart,
                 onSuccess: onSuccess,
-                onFinish: () => waitFor(() => stack.value[0]).then(resolve),
+                onBefore: () => {
+                    baseModalsToWaitFor.value[modalId] = resolve
+                },
             })
         }
 
@@ -396,5 +399,13 @@ export function useModalStack() {
         visit,
         registerLocalModal,
         removeLocalModal: (name) => delete localModals.value[name],
+        onModalOnBase(baseModal) {
+            const resolve = baseModalsToWaitFor.value[baseModal.id]
+
+            if (resolve) {
+                resolve(baseModal)
+                delete baseModalsToWaitFor.value[baseModal.id]
+            }
+        },
     }
 }
