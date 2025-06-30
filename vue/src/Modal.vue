@@ -107,7 +107,7 @@ onUnmounted(() => {
                     :aria-hidden="!onTopOfStack"
                 >
                     <Transition
-                        v-if="index?.value === 0 && onTopOfStack?.value"
+                        v-if="index === 0 && onTopOfStack"
                         :appear="!rendered"
                         enter-active-class="transition transform ease-in-out duration-300"
                         enter-from-class="opacity-0"
@@ -122,7 +122,7 @@ onUnmounted(() => {
 
                     <!-- On multiple modals, only show a backdrop for the modal that is on top of the stack -->
                     <div
-                        v-if="(index?.value ?? 0) > 0 && onTopOfStack?.value"
+                        v-if="index > 0 && onTopOfStack"
                         class="im-backdrop fixed inset-0 z-30 bg-black/75"
                     />
 

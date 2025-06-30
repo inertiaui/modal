@@ -136,7 +136,7 @@ watch(
 )
 
 const nextIndex = computed(() => {
-    return modalStack.stack.value.find((m) => m.shouldRender && m.index.value > (modalContext.value?.index.value ?? -1))?.index.value
+    return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value?.index)?.index
 })
 
 defineOptions({
@@ -146,21 +146,21 @@ defineOptions({
 
 <template>
     <slot
-        v-if="modalContext.shouldRender"
-        :id="modalContext.id"
-        :after-leave="modalContext.afterLeave"
-        :close="modalContext.close"
+        v-if="modalContext?.shouldRender"
+        :id="modalContext?.id"
+        :after-leave="modalContext?.afterLeave"
+        :close="modalContext?.close"
         :config="config"
         :emit="emit"
-        :get-child-modal="modalContext.getChildModal"
-        :get-parent-modal="modalContext.getParentModal"
+        :get-child-modal="modalContext?.getChildModal"
+        :get-parent-modal="modalContext?.getParentModal"
         :index="modalContext.index"
-        :is-open="modalContext.isOpen"
+        :is-open="modalContext?.isOpen"
         :modal-context="modalContext"
         :on-top-of-stack="modalContext.onTopOfStack"
-        :reload="modalContext.reload"
-        :set-open="modalContext.setOpen"
-        :should-render="modalContext.shouldRender"
+        :reload="modalContext?.reload"
+        :set-open="modalContext?.setOpen"
+        :should-render="modalContext?.shouldRender"
     />
 
     <!-- The next modal in the stack -->
