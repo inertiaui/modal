@@ -97,18 +97,18 @@ export const ModalStackProvider = ({ children }) => {
                 if (pendingOnClose) {
                     this.onCloseCallback = onClose
                         ? () => {
-                            onClose()
-                            pendingOnClose()
-                        }
+                              onClose()
+                              pendingOnClose()
+                          }
                         : pendingOnClose
                 }
 
                 if (pendingOnAfterLeave) {
                     this.afterLeaveCallback = afterLeave
                         ? () => {
-                            afterLeave()
-                            pendingOnAfterLeave()
-                        }
+                              afterLeave()
+                              pendingOnAfterLeave()
+                          }
                         : pendingOnAfterLeave
                 }
 
