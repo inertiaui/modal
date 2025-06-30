@@ -401,8 +401,12 @@ export const ModalStackProvider = ({ children }) => {
                         onError?.(...args)
                         reject(...args)
                     },
-                    onStart: onStart,
-                    onSuccess: onSuccess,
+                    onStart(...args) {
+                        onStart?.(...args)
+                    },
+                    onSuccess(...args) {
+                        onSuccess?.(...args)
+                    },
                     onBefore: () => {
                         baseModalsToWaitFor[modalId] = resolve
                     },

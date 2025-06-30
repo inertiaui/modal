@@ -332,8 +332,12 @@ function visit(
                     onError?.(...args)
                     reject(...args)
                 },
-                onStart: onStart,
-                onSuccess: onSuccess,
+                onStart(...args) {
+                    onStart?.(...args)
+                },
+                onSuccess(...args) {
+                    onSuccess?.(...args)
+                },
                 onBefore: () => {
                     baseModalsToWaitFor.value[modalId] = resolve
                 },
