@@ -264,7 +264,7 @@ class Modal {
             headers: {
                 ...(options.headers ?? {}),
                 Accept: 'text/html, application/xhtml+xml',
-                'X-Inertia': 'true',
+                'X-Inertia': true,
                 'X-Inertia-Partial-Component': this.response.component,
                 'X-Inertia-Version': this.response.version,
                 'X-Inertia-Partial-Data': keys.join(','),
@@ -353,10 +353,10 @@ function visit(
             ...headers,
             Accept: 'text/html, application/xhtml+xml',
             'X-Requested-With': 'XMLHttpRequest',
-            'X-Inertia': 'true',
+            'X-Inertia': true,
             'X-Inertia-Version': usePage().version,
             'X-InertiaUI-Modal': modalId,
-            'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? '1' : '0',
+            'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
             'X-InertiaUI-Modal-Base-Url': baseUrl.value,
         }
 
