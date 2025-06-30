@@ -1,83 +1,60 @@
-<script setup>
+<script setup lang="ts">
 import { modalPropNames, useModalStack } from './modalStack'
 import { ref, provide, computed, watch, useAttrs, onBeforeUnmount } from 'vue'
 import { only, rejectNullValues } from './helpers'
 import { getConfig } from './config'
+import type { MaxWidth, ModalPosition, ModalInstance, ModalConfig } from './types'
+import type { Method, RequestPayload } from '@inertiajs/core'
+import type { Ref } from 'vue'
 
-const props = defineProps({
-    href: {
-        type: String,
-        required: true,
-    },
-    method: {
-        type: String,
-        default: 'get',
-    },
-    data: {
-        type: Object,
-        default: () => ({}),
-    },
-    as: {
-        type: String,
-        default: 'a',
-    },
-    headers: {
-        type: Object,
-        default: () => ({}),
-    },
-    queryStringArrayFormat: {
-        type: String,
-        default: 'brackets',
-    },
-    navigate: {
-        type: Boolean,
-        default: null,
-    },
-    // Passthrough to Modal.vue
-    closeButton: {
-        type: Boolean,
-        required: false,
-        default: null,
-    },
-    closeExplicitly: {
-        type: Boolean,
-        required: false,
-        default: null,
-    },
-    maxWidth: {
-        type: String,
-        required: false,
-        default: null,
-    },
-    paddingClasses: {
-        type: [Boolean, String],
-        required: false,
-        default: null,
-    },
-    panelClasses: {
-        type: [Boolean, String],
-        required: false,
-        default: null,
-    },
-    position: {
-        type: String,
-        required: false,
-        default: null,
-    },
-    slideover: {
-        type: Boolean,
-        required: false,
-        default: null,
-    },
+interface ModalLinkProps {
+    href: string
+    method?: Method
+    data?: RequestPayload
+    as?: string
+    headers?: Record<string, string>
+    queryStringArrayFormat?: string
+    navigate?: boolean | null
+    closeButton?: boolean | null
+    closeExplicitly?: boolean | null
+    maxWidth?: MaxWidth | null
+    paddingClasses?: boolean | string | null
+    panelClasses?: boolean | string | null
+    position?: ModalPosition | null
+    slideover?: boolean | null
+}
+
+const props = withDefaults(defineProps<ModalLinkProps>(), {
+    method: 'get',
+    data: () => ({}),
+    as: 'a',
+    headers: () => ({}),
+    queryStringArrayFormat: 'brackets',
+    navigate: null,
+    closeButton: null,
+    closeExplicitly: null,
+    maxWidth: null,
+    paddingClasses: null,
+    panelClasses: null,
+    position: null,
+    slideover: null,
 })
 
 const loading = ref(false)
 const modalStack = useModalStack()
-const modalContext = ref(null)
+const modalContext: Ref<ModalInstance | null> = ref(null)
 
 provide('modalContext', modalContext)
 
-const emit = defineEmits(['after-leave', 'blur', 'close', 'error', 'focus', 'start', 'success'])
+const emit = defineEmits<{
+    'after-leave': []
+    blur: []
+    close: []
+    error: [error: any]
+    focus: []
+    start: []
+    success: []
+}>()
 const isBlurred = ref(false)
 
 const shouldNavigate = computed(() => {
@@ -143,14 +120,14 @@ function handle() {
             props.method,
             props.data,
             props.headers,
-            rejectNullValues(only(props, modalPropNames)),
+            rejectNullValues(only(props, modalPropNames)) as ModalConfig,
             onClose,
             onAfterLeave,
             props.queryStringArrayFormat,
             shouldNavigate.value,
         )
         .then((context) => {
-            modalContext.value = context
+            modalContext.value = context as any
         })
         .catch((error) => emit('error', error))
         .finally(() => (loading.value = false))

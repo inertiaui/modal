@@ -1,14 +1,31 @@
-import { getConfig, putConfig, resetConfig } from './config.js'
-import { useModalStack, initFromPageProps, renderApp } from './modalStack.js'
-import useModal from './useModal.js'
+import { getConfig, putConfig, resetConfig } from './config'
+import { useModalStack, initFromPageProps, renderApp } from './modalStack'
+import useModal from './useModal'
 import Deferred from './Deferred.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import Modal from './Modal.vue'
 import ModalLink from './ModalLink.vue'
 import ModalRoot from './ModalRoot.vue'
 import WhenVisible from './WhenVisible.vue'
+import type { Method, RequestPayload, VisitOptions } from '@inertiajs/core'
+import type { ModalConfig } from './types'
 
-function visitModal(url, options = {}) {
+interface VisitModalOptions {
+    method?: Method
+    data?: RequestPayload
+    headers?: Record<string, string>
+    config?: ModalConfig
+    onClose?: () => void
+    onAfterLeave?: () => void
+    queryStringArrayFormat?: string
+    navigate?: boolean
+    onStart?: () => void
+    onSuccess?: (response: any) => void
+    onError?: (error: any) => void
+    listeners?: Record<string, Function>
+}
+
+function visitModal(url: string, options: VisitModalOptions = {}) {
     return useModalStack()
         .visit(
             url,
@@ -24,7 +41,7 @@ function visitModal(url, options = {}) {
             options.onSuccess,
             options.onError,
         )
-        .then((modal) => {
+        .then((modal: any) => {
             const listeners = options.listeners ?? {}
 
             Object.keys(listeners).forEach((event) => {

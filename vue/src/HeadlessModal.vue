@@ -1,50 +1,37 @@
-<script setup>
+<script setup lang="ts">
 import { getConfig, getConfigByType } from './config'
 import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, watch } from 'vue'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
+import type { MaxWidth, ModalPosition, ModalInstance } from './types'
+import type { Ref } from 'vue'
 
-const props = defineProps({
-    name: {
-        type: String,
-        required: false,
-    },
-    // The slideover prop in on top because we need to know if it's a slideover
-    // before we can determine the defaule value of other props
-    slideover: {
-        type: Boolean,
-        default: null,
-    },
-    closeButton: {
-        type: Boolean,
-        default: null,
-    },
-    closeExplicitly: {
-        type: Boolean,
-        default: null,
-    },
-    maxWidth: {
-        type: String,
-        default: null,
-    },
-    paddingClasses: {
-        type: [Boolean, String],
-        default: null,
-    },
-    panelClasses: {
-        type: [Boolean, String],
-        default: null,
-    },
-    position: {
-        type: String,
-        default: null,
-    },
+interface HeadlessModalProps {
+    name?: string
+    slideover?: boolean | null
+    closeButton?: boolean | null
+    closeExplicitly?: boolean | null
+    maxWidth?: MaxWidth | null
+    paddingClasses?: boolean | string | null
+    panelClasses?: boolean | string | null
+    position?: ModalPosition | null
+}
+
+const props = withDefaults(defineProps<HeadlessModalProps>(), {
+    name: undefined,
+    slideover: null,
+    closeButton: null,
+    closeExplicitly: null,
+    maxWidth: null,
+    paddingClasses: null,
+    panelClasses: null,
+    position: null,
 })
 
 const modalStack = useModalStack()
-const modalContext = props.name ? ref({}) : inject('modalContext')
+const modalContext: Ref<ModalInstance | null> = props.name ? ref(null) : inject('modalContext')
 const config = computed(() => {
-    const isSlideover = modalContext.value.config?.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
+    const isSlideover = modalContext.value?.config?.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
 
     return {
         slideover: isSlideover,
@@ -54,13 +41,13 @@ const config = computed(() => {
         paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, 'paddingClasses'),
         panelClasses: props.panelClasses ?? getConfigByType(isSlideover, 'panelClasses'),
         position: props.position ?? getConfigByType(isSlideover, 'position'),
-        ...modalContext.value.config,
+        ...modalContext.value?.config,
     }
 })
 
 // Local Modals...
 if (props.name) {
-    modalStack.registerLocalModal(props.name, function (context) {
+    modalStack.registerLocalModal(props.name, function (context: any) {
         modalContext.value = context
         registerEventListeners()
     })
@@ -82,12 +69,18 @@ onBeforeUnmount(() => unsubscribeEventListeners.value?.())
 const $attrs = useAttrs()
 
 function registerEventListeners() {
-    unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs)
+    unsubscribeEventListeners.value = modalContext.value?.registerEventListenersFromAttrs($attrs)
 }
 
-const emits = defineEmits(['modal-event', 'focus', 'blur', 'close', 'success'])
+const emits = defineEmits<{
+    'modal-event': [event: string, ...args: any[]]
+    focus: []
+    blur: []
+    close: []
+    success: []
+}>()
 
-function emit(event, ...args) {
+function emit(event: string, ...args: any[]) {
     emits('modal-event', event, ...args)
 }
 
@@ -95,8 +88,8 @@ defineExpose({
     emit,
     afterLeave: () => modalContext.value?.afterLeave(),
     close: () => modalContext.value?.close(),
-    reload: (...args) => modalContext.value?.reload(...args),
-    setOpen: (...args) => modalContext.value?.setOpen(...args),
+    reload: (options?: any) => modalContext.value?.reload(options),
+    setOpen: (open: boolean) => modalContext.value?.setOpen(open),
     getChildModal: () => modalContext.value?.getChildModal(),
     getParentModal: () => modalContext.value?.getParentModal(),
 
@@ -113,7 +106,7 @@ defineExpose({
         return modalContext.value?.isOpen
     },
     get modalContext() {
-        return modalContext.value?.modalContext
+        return modalContext.value
     },
     get onTopOfStack() {
         return modalContext.value?.onTopOfStack
@@ -143,7 +136,7 @@ watch(
 )
 
 const nextIndex = computed(() => {
-    return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index
+    return modalStack.stack.value.find((m) => m.shouldRender && m.index.value > (modalContext.value?.index.value ?? -1))?.index.value
 })
 
 defineOptions({

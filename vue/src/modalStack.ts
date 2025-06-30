@@ -1,42 +1,74 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
+import type { Component, ComputedRef, Ref } from 'vue'
 import { generateId, except, kebabCase } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
+import type { Method, RequestPayload, Page, VisitOptions } from '@inertiajs/core'
 import { default as Axios } from 'axios'
+import type { AxiosResponse } from 'axios'
 import ModalRoot from './ModalRoot.vue'
+import type { ModalConfig, ModalProps, ReloadOptions } from './types'
 
-let resolveComponent = null
+let resolveComponent: ((name: string) => Promise<Component>) | null = null
 
-const pendingModalUpdates = ref({})
-const baseUrl = ref(null)
-const baseModalsToWaitFor = ref({})
-const stack = ref([])
-const localModals = ref({})
+interface PendingModalUpdate {
+    config?: ModalConfig
+    onClose?: () => void
+    onAfterLeave?: () => void
+}
 
-const setComponentResolver = (resolver) => {
+interface LocalModal {
+    name: string
+    callback: (modal: Modal) => void
+}
+
+const pendingModalUpdates: Ref<Record<string, PendingModalUpdate>> = ref({})
+const baseUrl: Ref<string | null> = ref(null)
+const baseModalsToWaitFor: Ref<Record<string, (modal: Modal) => void>> = ref({})
+const stack: Ref<Modal[]> = ref([])
+const localModals: Ref<Record<string, LocalModal>> = ref({})
+
+const setComponentResolver = (resolver: (name: string) => Promise<Component>): void => {
     resolveComponent = resolver
 }
 
-export const initFromPageProps = (pageProps) => {
+export const initFromPageProps = (pageProps: any): void => {
     if (pageProps.resolveComponent) {
         resolveComponent = pageProps.resolveComponent
     }
 }
 
-class Modal {
-    constructor(component, response, config, onClose, afterLeave) {
-        this.id = response.id ?? generateId()
-        this.isOpen = false
-        this.shouldRender = false
-        this.listeners = {}
+interface ModalResponse extends Partial<Page> {
+    id?: string
+    meta?: {
+        deferredProps?: Record<string, string[]>
+    }
+}
 
+class Modal {
+    id: string
+    isOpen: boolean = false
+    shouldRender: boolean = false
+    listeners: Record<string, Function[]> = {}
+    component: Component | null
+    props: Ref<Record<string, any>>
+    response: ModalResponse
+    config: ModalConfig
+    onCloseCallback: (() => void) | null
+    afterLeaveCallback: (() => void) | null
+    index: ComputedRef<number>
+    onTopOfStack: ComputedRef<boolean>
+    name?: string
+
+    constructor(component: Component | null, response: ModalResponse, config?: ModalConfig, onClose?: () => void, afterLeave?: () => void) {
+        this.id = response.id ?? generateId()
         this.component = component
         this.props = ref(response.props)
         this.response = response
         this.config = config ?? {}
-        this.onCloseCallback = onClose
-        this.afterLeaveCallback = afterLeave
+        this.onCloseCallback = onClose || null
+        this.afterLeaveCallback = afterLeave || null
 
         if (pendingModalUpdates.value[this.id]) {
             this.config = {
@@ -81,11 +113,11 @@ class Modal {
     }
 
     getComponentPropKeys = () => {
-        if (Array.isArray(this.component.props)) {
-            return this.component.props
+        if (Array.isArray((this.component as any)?.props)) {
+            return (this.component as any).props
         }
 
-        return this.component.props ? Object.keys(this.component.props) : []
+        return (this.component as any)?.props ? Object.keys((this.component as any).props) : []
     }
 
     getParentModal = () => {
@@ -148,7 +180,7 @@ class Modal {
         }
     }
 
-    setOpen = (open) => {
+    setOpen = (open: boolean) => {
         open ? this.show() : this.close()
     }
 
@@ -171,13 +203,13 @@ class Modal {
         }
     }
 
-    on = (event, callback) => {
+    on = (event: string, callback: Function) => {
         event = kebabCase(event)
         this.listeners[event] = this.listeners[event] ?? []
         this.listeners[event].push(callback)
     }
 
-    off = (event, callback) => {
+    off = (event: string, callback?: Function) => {
         event = kebabCase(event)
         if (callback) {
             this.listeners[event] = this.listeners[event]?.filter((cb) => cb !== callback) ?? []
@@ -186,11 +218,11 @@ class Modal {
         }
     }
 
-    emit = (event, ...args) => {
+    emit = (event: string, ...args: any[]) => {
         this.listeners[kebabCase(event)]?.forEach((callback) => callback(...args))
     }
 
-    registerEventListenersFromAttrs = ($attrs) => {
+    registerEventListenersFromAttrs = ($attrs: Record<string, any>) => {
         const unsubscribers = []
 
         Object.keys($attrs)
@@ -204,7 +236,7 @@ class Modal {
         return () => unsubscribers.forEach((unsub) => unsub())
     }
 
-    reload = (options = {}) => {
+    reload = (options: ReloadOptions = {}) => {
         let keys = Object.keys(this.response.props)
 
         if (options.only) {
@@ -212,7 +244,7 @@ class Modal {
         }
 
         if (options.except) {
-            keys = except(keys, options.except)
+            keys = except(keys, options.except) as string[]
         }
 
         if (!this.response?.url) {
@@ -232,7 +264,7 @@ class Modal {
             headers: {
                 ...(options.headers ?? {}),
                 Accept: 'text/html, application/xhtml+xml',
-                'X-Inertia': true,
+                'X-Inertia': 'true',
                 'X-Inertia-Partial-Component': this.response.component,
                 'X-Inertia-Version': this.response.version,
                 'X-Inertia-Partial-Data': keys.join(','),
@@ -253,16 +285,16 @@ class Modal {
             })
     }
 
-    updateProps = (props) => {
+    updateProps = (props: Record<string, any>) => {
         Object.assign(this.props.value, props)
     }
 }
 
-function registerLocalModal(name, callback) {
+function registerLocalModal(name: string, callback: (modal: Modal) => void) {
     localModals.value[name] = { name, callback }
 }
 
-function pushLocalModal(name, config, onClose, afterLeave) {
+function pushLocalModal(name: string, config?: ModalConfig, onClose?: () => void, afterLeave?: () => void) {
     if (!localModals.value[name]) {
         throw new Error(`The local modal "${name}" has not been registered.`)
     }
@@ -273,24 +305,29 @@ function pushLocalModal(name, config, onClose, afterLeave) {
     return modal
 }
 
-function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null) {
+function pushFromResponseData(
+    responseData: ModalResponse,
+    config: ModalConfig = {},
+    onClose: (() => void) | null = null,
+    onAfterLeave: (() => void) | null = null,
+) {
     return resolveComponent(responseData.component).then((component) => push(markRaw(component), responseData, config, onClose, onAfterLeave))
 }
 
 function visit(
-    href,
-    method,
-    payload = {},
-    headers = {},
-    config = {},
-    onClose = null,
-    onAfterLeave = null,
-    queryStringArrayFormat = 'brackets',
-    useBrowserHistory = false,
-    onStart = null,
-    onSuccess = null,
-    onError = null,
-) {
+    href: string,
+    method: string,
+    payload: RequestPayload = {},
+    headers: Record<string, string> = {},
+    config: ModalConfig = {},
+    onClose: (() => void) | null = null,
+    onAfterLeave: (() => void) | null = null,
+    queryStringArrayFormat: string = 'brackets',
+    useBrowserHistory: boolean = false,
+    onStart: (() => void) | null = null,
+    onSuccess: ((response: AxiosResponse) => void) | null = null,
+    onError: ((error: any) => void) | null = null,
+): Promise<Modal> {
     const modalId = generateId()
 
     return new Promise((resolve, reject) => {
@@ -299,9 +336,14 @@ function visit(
             return
         }
 
-        const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
+        const [url, data] = mergeDataIntoQueryString(
+            method as Method,
+            href || '',
+            payload as Record<string, any>,
+            queryStringArrayFormat as 'brackets' | 'indices',
+        )
 
-        let useInertiaRouter = useBrowserHistory && stack.value.length === 0
+        const useInertiaRouter = useBrowserHistory && stack.value.length === 0
 
         if (stack.value.length === 0) {
             baseUrl.value = typeof window !== 'undefined' ? window.location.href : ''
@@ -311,10 +353,10 @@ function visit(
             ...headers,
             Accept: 'text/html, application/xhtml+xml',
             'X-Requested-With': 'XMLHttpRequest',
-            'X-Inertia': true,
+            'X-Inertia': 'true',
             'X-Inertia-Version': usePage().version,
             'X-InertiaUI-Modal': modalId,
-            'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
+            'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? '1' : '0',
             'X-InertiaUI-Modal-Base-Url': baseUrl.value,
         }
 
@@ -323,20 +365,20 @@ function visit(
 
             // Pushing the modal to the stack will be handled by the ModalRoot...
             return router.visit(url, {
-                method,
+                method: method as Method,
                 data,
                 headers,
                 preserveScroll: true,
                 preserveState: true,
-                onError(...args) {
-                    onError?.(...args)
-                    reject(...args)
+                onError(errors) {
+                    onError?.(errors)
+                    reject(errors)
                 },
-                onStart(...args) {
-                    onStart?.(...args)
+                onStart() {
+                    onStart?.()
                 },
-                onSuccess(...args) {
-                    onSuccess?.(...args)
+                onSuccess(page) {
+                    onSuccess?.(page as any)
                 },
                 onBefore: () => {
                     baseModalsToWaitFor.value[modalId] = resolve
@@ -358,7 +400,7 @@ function visit(
     })
 }
 
-function loadDeferredProps(modal) {
+function loadDeferredProps(modal: Modal) {
     const deferred = modal.response?.meta?.deferredProps
 
     if (!deferred) {
@@ -370,7 +412,13 @@ function loadDeferredProps(modal) {
     })
 }
 
-function push(component, response, config, onClose, afterLeave) {
+function push(
+    component: Component | null,
+    response: ModalResponse,
+    config?: ModalConfig,
+    onClose?: (() => void) | null,
+    afterLeave?: (() => void) | null,
+) {
     const newModal = new Modal(component, response, config, onClose, afterLeave)
     stack.value.push(newModal)
     loadDeferredProps(newModal)

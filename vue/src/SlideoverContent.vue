@@ -1,12 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import CloseButton from './CloseButton.vue'
 import { DialogContent, DialogTitle, VisuallyHidden } from 'reka-ui'
+import type { ModalConfig, ModalInstance } from './types'
 
-defineProps({
-    modalContext: Object,
-    config: Object,
-})
+interface SlideoverContentProps {
+    modalContext: ModalInstance
+    config: ModalConfig
+}
+
+defineProps<SlideoverContentProps>()
 
 const entered = ref(false)
 </script>

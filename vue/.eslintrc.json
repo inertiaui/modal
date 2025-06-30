@@ -1,0 +1,28 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:tailwindcss/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier",
+    "@typescript-eslint"
+  ],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module",
+    "ecmaVersion": 2022
+  },
+  "rules": {
+    "prettier/prettier": ["error", { "usePrettierrc": true }],
+    "vue/require-default-prop": 0,
+    "vue/no-v-html": "off",
+    "vue/multi-word-component-names": "off",
+    "vue/no-parsing-error": "warn",
+    "tailwindcss/no-custom-classname": "off",
+    "@typescript-eslint/no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }]
+  }
+}

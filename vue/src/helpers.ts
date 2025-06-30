@@ -1,17 +1,17 @@
-let generateIdUsingCallback = null
+let generateIdUsingCallback: (() => string) | null = null
 
-function generateIdUsing(callback) {
+function generateIdUsing(callback: () => string): void {
     generateIdUsingCallback = callback
 }
 
-function sameUrlPath(url1, url2) {
+function sameUrlPath(url1: string | URL, url2: string | URL): boolean {
     url1 = typeof url1 === 'string' ? new URL(url1, window.location.origin) : url1
     url2 = typeof url2 === 'string' ? new URL(url2, window.location.origin) : url2
 
     return `${url1.origin}${url1.pathname}` === `${url2.origin}${url2.pathname}`
 }
 
-function generateId(prefix = 'inertiaui_modal_') {
+function generateId(prefix: string = 'inertiaui_modal_'): string {
     if (generateIdUsingCallback) {
         return generateIdUsingCallback()
     }
@@ -24,11 +24,11 @@ function generateId(prefix = 'inertiaui_modal_') {
     return `${prefix}${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`
 }
 
-function strToLowercase(key) {
+function strToLowercase(key: any): string {
     return typeof key === 'string' ? key.toLowerCase() : key
 }
 
-function except(target, keys, ignoreCase = false) {
+function except(target: string[] | Record<string, any>, keys: string[], ignoreCase: boolean = false): string[] | Record<string, any> {
     if (ignoreCase) {
         keys = keys.map(strToLowercase)
     }
@@ -37,7 +37,7 @@ function except(target, keys, ignoreCase = false) {
         return target.filter((key) => !keys.includes(ignoreCase ? strToLowercase(key) : key))
     }
 
-    return Object.keys(target).reduce((acc, key) => {
+    return Object.keys(target).reduce((acc: Record<string, any>, key) => {
         if (!keys.includes(ignoreCase ? strToLowercase(key) : key)) {
             acc[key] = target[key] // copy the key-value pair
         }
@@ -46,7 +46,7 @@ function except(target, keys, ignoreCase = false) {
     }, {})
 }
 
-function only(target, keys, ignoreCase = false) {
+function only(target: string[] | Record<string, any>, keys: string[], ignoreCase: boolean = false): string[] | Record<string, any> {
     if (ignoreCase) {
         keys = keys.map(strToLowercase)
     }
@@ -55,7 +55,7 @@ function only(target, keys, ignoreCase = false) {
         return target.filter((key) => keys.includes(ignoreCase ? strToLowercase(key) : key))
     }
 
-    return Object.keys(target).reduce((acc, key) => {
+    return Object.keys(target).reduce((acc: Record<string, any>, key) => {
         if (keys.includes(ignoreCase ? strToLowercase(key) : key)) {
             acc[key] = target[key] // copy the key-value pair
         }
@@ -64,12 +64,12 @@ function only(target, keys, ignoreCase = false) {
     }, {})
 }
 
-function rejectNullValues(target) {
+function rejectNullValues(target: any[] | Record<string, any>): any[] | Record<string, any> {
     if (Array.isArray(target)) {
         return target.filter((item) => item !== null)
     }
 
-    return Object.keys(target).reduce((acc, key) => {
+    return Object.keys(target).reduce((acc: Record<string, any>, key) => {
         if (key in target && target[key] !== null) {
             acc[key] = target[key]
         }
@@ -77,7 +77,7 @@ function rejectNullValues(target) {
     }, {})
 }
 
-function kebabCase(string) {
+function kebabCase(string: string): string {
     if (!string) return ''
 
     // Replace all underscores with hyphens

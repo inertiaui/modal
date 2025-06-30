@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { onBeforeMount, onMounted, onUnmounted, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import { useModalStack } from './modalStack'
@@ -16,8 +16,8 @@ let initialModalStillOpened = false
 onUnmounted(router.on('start', () => (isNavigating = true)))
 onUnmounted(router.on('finish', () => (isNavigating = false)))
 onUnmounted(
-    router.on('navigate', ($event) => {
-        const modalOnBase = $event.detail.page.props._inertiaui_modal
+    router.on('navigate', ($event: any) => {
+        const modalOnBase = ($event.detail.page.props as any)._inertiaui_modal
 
         if (!modalOnBase) {
             previousModalOnBase && modalStack.closeAll()
@@ -47,20 +47,25 @@ onUnmounted(
     }),
 )
 
-const axiosRequestInterceptor = (config) => {
+const axiosRequestInterceptor = (config: any) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
-    config.headers['X-InertiaUI-Modal-Base-Url'] = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
+    config.headers['X-InertiaUI-Modal-Base-Url'] =
+        modalStack.getBaseUrl() ?? (initialModalStillOpened ? ($page.props as any)._inertiaui_modal?.baseUrl : null)
 
     return config
 }
 
-onBeforeMount(() => Axios.interceptors.request.use(axiosRequestInterceptor))
-onMounted(() => (initialModalStillOpened = !!$page.props._inertiaui_modal))
-onUnmounted(() => Axios.interceptors.request.eject(axiosRequestInterceptor))
+let interceptorId: number
+
+onBeforeMount(() => {
+    interceptorId = Axios.interceptors.request.use(axiosRequestInterceptor)
+})
+onMounted(() => (initialModalStillOpened = !!($page.props as any)._inertiaui_modal))
+onUnmounted(() => Axios.interceptors.request.eject(interceptorId))
 
 watch(
-    () => $page.props?._inertiaui_modal,
+    () => ($page.props as any)?._inertiaui_modal,
     (newModal, previousModal) => {
         if (newModal && previousModal && newModal.component === previousModal.component && sameUrlPath(newModal.url, previousModal.url)) {
             modalStack.stack.value[0]?.updateProps(newModal.props ?? {})

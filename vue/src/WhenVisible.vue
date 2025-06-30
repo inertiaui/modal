@@ -1,16 +1,23 @@
-<script setup>
+<script setup lang="ts">
 // See: https://github.com/inertiajs/inertia/blob/48bcd21fb7daf467d0df1bfde2408f161f94a579/packages/vue3/src/whenVisible.ts
 import { ref, onMounted, onUnmounted, inject } from 'vue'
+import type { ModalInstance } from './types'
 
-const props = defineProps({
-    data: [String, Array],
-    params: Object,
-    buffer: { type: Number, default: 0 },
-    as: { type: String, default: 'div' },
-    always: { type: Boolean, default: false },
+interface WhenVisibleProps {
+    data?: string | string[]
+    params?: Record<string, any>
+    buffer?: number
+    as?: string
+    always?: boolean
+}
+
+const props = withDefaults(defineProps<WhenVisibleProps>(), {
+    buffer: 0,
+    as: 'div',
+    always: false,
 })
 
-const modalContext = inject('modalContext')
+const modalContext = inject<ModalInstance | null>('modalContext')
 
 if (!modalContext) {
     throw new Error('Deferred component must be used inside a Modal component')
@@ -55,7 +62,7 @@ const observeElement = () => {
             fetching.value = true
             const reloadParams = getReloadParams()
 
-            modalContext.value.reload({
+            modalContext?.reload({
                 ...reloadParams,
                 onStart: () => {
                     fetching.value = true

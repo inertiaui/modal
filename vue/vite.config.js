@@ -6,22 +6,28 @@ import eslintPlugin from 'vite-plugin-eslint'
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
+        vue(),
         eslintPlugin({
             fix: true,
             failOnError: false,
         }),
-        vue(),
     ],
 
     build: {
         lib: {
-            entry: [resolve(__dirname, 'src/inertiauiModal.js')],
+            entry: [resolve(__dirname, 'src/inertiauiModal.ts')],
             name: 'InertiaUIModal',
             fileName: 'inertiaui-modal',
             cssFileName: 'style',
         },
         rollupOptions: {
             external: ['@inertiajs/core', '@inertiajs/vue3', 'axios', 'vue'],
+        },
+    },
+    
+    resolve: {
+        alias: {
+            '@': resolve(__dirname, 'src'),
         },
     },
 })

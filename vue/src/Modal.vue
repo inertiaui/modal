@@ -1,23 +1,31 @@
-<script setup>
+<script setup lang="ts">
 import { DialogOverlay, DialogPortal, DialogRoot } from 'reka-ui'
 import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
 import { onBeforeMount, onUnmounted, ref } from 'vue'
+import type { Ref } from 'vue'
+import type { ModalInstance } from './types'
 
-const modal = ref(null)
+const modal: Ref<ModalInstance | null> = ref(null)
 const rendered = ref(false)
 
-defineEmits(['after-leave', 'blur', 'close', 'focus', 'success'])
+defineEmits<{
+    'after-leave': []
+    blur: []
+    close: []
+    focus: []
+    success: []
+}>()
 
 defineExpose({
     afterLeave: () => modal.value?.afterLeave(),
     close: () => modal.value?.close(),
-    emit: (...args) => modal.value?.emit(...args),
+    emit: (event: string, ...args: any[]) => modal.value?.emit(event, ...args),
     getChildModal: () => modal.value?.getChildModal(),
     getParentModal: () => modal.value?.getParentModal(),
-    reload: (...args) => modal.value?.reload(...args),
-    setOpen: (...args) => modal.value?.setOpen(...args),
+    reload: (options?: any) => modal.value?.reload(options),
+    setOpen: (open: boolean) => modal.value?.setOpen(open),
 
     get config() {
         return modal.value?.config
@@ -32,7 +40,7 @@ defineExpose({
         return modal.value?.isOpen
     },
     get modalContext() {
-        return modal.value?.modalContext
+        return modal.value
     },
     get onTopOfStack() {
         return modal.value?.onTopOfStack
@@ -99,7 +107,7 @@ onUnmounted(() => {
                     :aria-hidden="!onTopOfStack"
                 >
                     <Transition
-                        v-if="index === 0 && onTopOfStack"
+                        v-if="index?.value === 0 && onTopOfStack?.value"
                         :appear="!rendered"
                         enter-active-class="transition transform ease-in-out duration-300"
                         enter-from-class="opacity-0"
@@ -114,7 +122,7 @@ onUnmounted(() => {
 
                     <!-- On multiple modals, only show a backdrop for the modal that is on top of the stack -->
                     <div
-                        v-if="index > 0 && onTopOfStack"
+                        v-if="(index?.value ?? 0) > 0 && onTopOfStack?.value"
                         class="im-backdrop fixed inset-0 z-30 bg-black/75"
                     />
 

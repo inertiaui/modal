@@ -1,12 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import CloseButton from './CloseButton.vue'
 import { DialogContent, DialogTitle, VisuallyHidden } from 'reka-ui'
+import type { ModalConfig, ModalInstance } from './types'
 
-defineProps({
-    modalContext: Object,
-    config: Object,
-})
+interface ModalContentProps {
+    modalContext: ModalInstance
+    config: ModalConfig
+}
+
+defineProps<ModalContentProps>()
 
 const entered = ref(false)
 </script>
