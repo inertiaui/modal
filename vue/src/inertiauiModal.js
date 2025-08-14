@@ -50,5 +50,6 @@ export {
     renderApp,
     resetConfig,
     useModal,
+    useModalStack,
     visitModal,
 }
