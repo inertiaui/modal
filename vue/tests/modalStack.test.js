@@ -277,7 +277,6 @@ describe('modalStack', () => {
             vi.mocked(router.resolveComponent).mockResolvedValue(mockComponent)
             vi.mocked(usePage).mockReturnValue({ version: '1.0' })
 
-            console.log('visiting')
             const result = await modalStack.visit(href, method, data, headers, config, onClose, onAfterLeave)
 
             expect(axios).toHaveBeenCalledWith({
