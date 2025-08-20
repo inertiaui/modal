@@ -8,8 +8,8 @@ return [
     /**
      * The stack that should be used by the application. Can be 'vue', 'react' or 'svelte'.
      */
-    'stack' => (function() {
-        switch(env('APP_STACK', 'vue')) {
+    'stack' => (function () {
+        switch (env('APP_STACK', 'vue')) {
             case 'vue':
                 return 'vue';
             case 'svelte':
