@@ -6,9 +6,18 @@ use Illuminate\Support\ServiceProvider;
 return [
 
     /**
-     * The stack that should be used by the application. Can be 'vue' or 'react'.
+     * The stack that should be used by the application. Can be 'vue', 'react' or 'svelte'.
      */
-    'stack' => env('APP_STACK', 'vue') === 'vue' ? 'vue' : 'react',
+    'stack' => (function() {
+        switch(env('APP_STACK', 'vue')) {
+            case 'vue':
+                return 'vue';
+            case 'svelte':
+                return 'svelte';
+            default:
+                return 'react';
+        }
+    })(),
 
     /*
     |--------------------------------------------------------------------------
