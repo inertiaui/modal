@@ -12,6 +12,8 @@
         @if(config('app.stack') === 'react')
             @viteReactRefresh
             @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
+        @elseif(config('app.stack') === 'svelte')
+            @vite(['resources/js/app-svelte.js', "resources/js/Pages/{$page['component']}.svelte"])
         @else
             @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @endif
@@ -21,7 +23,13 @@
 
     <body class="font-sans antialiased dark:bg-gray-950 dark:text-white bg-gray-100">
         <p class="text-xs">
-            {{ config('app.stack') === 'react' ? 'React stack' : 'Vue stack' }}
+            @if(config('app.stack') === 'react')
+              React stack
+            @elseif(config('app.stack') === 'svelte')
+              Svelte stack
+            @else
+              Vue stack
+            @endif
         </p>
 
         @inertia

@@ -1,15 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { useModalStack, modalPropNames } from './../src/modalStack'
+import { useModalStack, modalPropNames, initFromPageProps } from '../src/lib/modalStack.svelte.js'
 import axios from 'axios'
-import { router } from '@inertiajs/vue3'
-import { usePage } from '@inertiajs/vue3'
-import { generateIdUsing } from '../src/helpers'
+import { router } from '@inertiajs/svelte'
+import { generateIdUsing } from '../src/lib/helpers'
 
-vi.mock('@inertiajs/vue3', () => ({
+vi.mock('@inertiajs/svelte', () => ({
     router: {
         resolveComponent: vi.fn(),
-    },
-    usePage: vi.fn(),
+    }
 }))
 
 vi.mock('axios')
@@ -34,7 +32,7 @@ describe('modalStack', () => {
         })
 
         it('should have an empty stack initially', () => {
-            expect(modalStack.stack.value).toHaveLength(0)
+            expect(modalStack.stack).toHaveLength(0)
         })
     })
 
@@ -48,7 +46,7 @@ describe('modalStack', () => {
 
             const modal = modalStack.push(component, response, config, onClose, afterLeave)
 
-            expect(modalStack.stack.value).toHaveLength(1)
+            expect(modalStack.stack).toHaveLength(1)
             expect(modal).toHaveProperty('id')
             expect(modal.component).toBe(component)
             expect(modal.config).toBe(config)
@@ -81,18 +79,18 @@ describe('modalStack', () => {
 
         it('should correctly determine if a modal is on top of the stack', () => {
             const modal1 = modalStack.push({}, {}, {})
-            expect(modal1.onTopOfStack.value).toBe(true)
+            expect(modal1.onTopOfStack).toBe(true)
 
             const modal2 = modalStack.push({}, {}, {})
             modal2.show()
-            expect(modal1.onTopOfStack.value).toBe(false)
-            expect(modal2.onTopOfStack.value).toBe(true)
+            expect(modal1.onTopOfStack).toBe(false)
+            expect(modal2.onTopOfStack).toBe(true)
 
             const modal3 = modalStack.push({}, {}, {})
             modal3.show()
-            expect(modal1.onTopOfStack.value).toBe(false)
-            expect(modal2.onTopOfStack.value).toBe(false)
-            expect(modal3.onTopOfStack.value).toBe(true)
+            expect(modal1.onTopOfStack).toBe(false)
+            expect(modal2.onTopOfStack).toBe(false)
+            expect(modal3.onTopOfStack).toBe(true)
         })
 
         it('should close a modal', () => {
@@ -104,7 +102,7 @@ describe('modalStack', () => {
             expect(modal.isOpen).toBe(false)
             expect(onClose).toHaveBeenCalled()
             // it does not remove the modal from the stack immediately
-            expect(modalStack.stack.value).toHaveLength(1)
+            expect(modalStack.stack).toHaveLength(1)
         })
 
         it('should remove a modal after leave', () => {
@@ -113,7 +111,7 @@ describe('modalStack', () => {
             modal.afterLeave()
 
             expect(afterLeave).toHaveBeenCalled()
-            expect(modalStack.stack.value).toHaveLength(0)
+            expect(modalStack.stack).toHaveLength(0)
         })
 
         it('should handle event listeners', () => {
@@ -165,8 +163,8 @@ describe('modalStack', () => {
                 },
             })
 
-            expect(modal.props.value.test).toBe('updated')
-            expect(modal.props.value.another).toBe('updated prop')
+            expect(modal.props.test).toBe('updated')
+            expect(modal.props.another).toBe('updated prop')
         })
 
         it('should reload modal props with "only" option', async () => {
@@ -203,8 +201,8 @@ describe('modalStack', () => {
                 },
             })
 
-            expect(modal.props.value.test).toBe('updated')
-            expect(modal.props.value.another).toBe('prop') // This should not change
+            expect(modal.props.test).toBe('updated')
+            expect(modal.props.another).toBe('prop') // This should not change
         })
 
         it('should reload modal props with "except" option', async () => {
@@ -241,9 +239,9 @@ describe('modalStack', () => {
                 },
             })
 
-            expect(modal.props.value.test).toBe('updated')
-            expect(modal.props.value.another).toBe('prop') // This should not change
-            expect(modal.props.value.third).toBe('updated value')
+            expect(modal.props.test).toBe('updated')
+            expect(modal.props.another).toBe('prop') // This should not change
+            expect(modal.props.third).toBe('updated value')
         })
 
         it('should make an Axios request and push a new modal', async () => {
@@ -275,7 +273,7 @@ describe('modalStack', () => {
 
             vi.mocked(axios).mockResolvedValue(mockResponse)
             vi.mocked(router.resolveComponent).mockResolvedValue(mockComponent)
-            vi.mocked(usePage).mockReturnValue({ version: '1.0' })
+            initFromPageProps({ initialPage: { version: '1.0' } })
 
             console.log('visiting')
             const result = await modalStack.visit(href, method, data, headers, config, onClose, onAfterLeave)
@@ -292,7 +290,7 @@ describe('modalStack', () => {
                     'X-Inertia-Version': '1.0',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
                     'X-InertiaUI-Modal-Use-Router': 0,
-                    'X-InertiaUI-Modal-Base-Url': '',
+                    'X-InertiaUI-Modal-Base-Url': 'http://localhost:3000/',
                 },
             })
 
@@ -300,7 +298,7 @@ describe('modalStack', () => {
             expect(result.component).toBe(mockComponent)
             expect(result.response).toEqual(mockResponse.data)
             expect(result.config).toEqual(config)
-            expect(modalStack.stack.value).toHaveLength(1)
+            expect(modalStack.stack).toHaveLength(1)
         })
 
         it('should handle errors during the visit', async () => {
@@ -311,7 +309,7 @@ describe('modalStack', () => {
             vi.mocked(axios).mockRejectedValue(mockError)
 
             await expect(modalStack.visit(href, method)).rejects.toThrow('Network Error')
-            expect(modalStack.stack.value).toHaveLength(0)
+            expect(modalStack.stack).toHaveLength(0)
         })
     })
 

@@ -1,24 +1,29 @@
-import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
 import { generateId, except, kebabCase } from './helpers'
-import { router, usePage } from '@inertiajs/vue3'
-import * as InertiaVue from '@inertiajs/vue3'
+import { router } from '@inertiajs/svelte'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { default as Axios } from 'axios'
-import ModalRoot from './ModalRoot.vue'
+import { getConfig } from './config'
+import { mount } from 'svelte'
+import ModalRoot from './ModalRoot.svelte'
 
+let pageVersion = null
 let resolveComponent = null
 
-const pendingModalUpdates = ref({})
-const baseUrl = ref(null)
-const baseModalsToWaitFor = ref({})
-const stack = ref([])
-const localModals = ref({})
+const stack = $state([])
+let localModals = $state({})
+let pendingModalUpdates = $state({})
+let baseUrl = $state(null)
+let baseModalsToWaitFor = $state({})
 
 const setComponentResolver = (resolver) => {
     resolveComponent = resolver
 }
 
 export const initFromPageProps = (pageProps) => {
+    if (pageProps.initialPage) {
+        pageVersion = pageProps.initialPage.version
+    }
+
     if (pageProps.resolveComponent) {
         resolveComponent = pageProps.resolveComponent
     }
@@ -27,25 +32,25 @@ export const initFromPageProps = (pageProps) => {
 class Modal {
     constructor(component, response, config, onClose, afterLeave) {
         this.id = response.id ?? generateId()
-        this.isOpen = false
-        this.shouldRender = false
+        this.isOpen = $state(false)
+        this.shouldRender = $state(false)
         this.listeners = {}
 
         this.component = component
-        this.props = ref(response.props)
+        this.props = $state(response.props)
         this.response = response
         this.config = config ?? {}
         this.onCloseCallback = onClose
         this.afterLeaveCallback = afterLeave
 
-        if (pendingModalUpdates.value[this.id]) {
+        if (pendingModalUpdates[this.id]) {
             this.config = {
                 ...this.config,
-                ...(pendingModalUpdates.value[this.id].config ?? {}),
+                ...(pendingModalUpdates[this.id].config ?? {}),
             }
 
-            const pendingOnClose = pendingModalUpdates.value[this.id].onClose
-            const pendingOnAfterLeave = pendingModalUpdates.value[this.id].onAfterLeave
+            const pendingOnClose = pendingModalUpdates[this.id].onClose
+            const pendingOnAfterLeave = pendingModalUpdates[this.id].onAfterLeave
 
             if (pendingOnClose) {
                 this.onCloseCallback = onClose
@@ -65,31 +70,23 @@ class Modal {
                     : pendingOnAfterLeave
             }
 
-            delete pendingModalUpdates.value[this.id]
+            delete pendingModalUpdates[this.id]
         }
 
-        this.index = computed(() => stack.value.findIndex((m) => m.id === this.id))
-        this.onTopOfStack = computed(() => {
-            if (stack.value.length < 2) {
+        this.index = $derived(stack.findIndex((m) => m.id === this.id))
+        this.onTopOfStack = $derived.by(() => {
+            if (stack.length < 2) {
                 return true
             }
 
-            const modals = stack.value.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }))
+            const modals = stack.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }))
 
             return modals.reverse().find((modal) => modal.shouldRender)?.id === this.id
         })
     }
 
-    getComponentPropKeys = () => {
-        if (Array.isArray(this.component.props)) {
-            return this.component.props
-        }
-
-        return this.component.props ? Object.keys(this.component.props) : []
-    }
-
     getParentModal = () => {
-        const index = this.index.value
+        const index = this.index
 
         if (index < 1) {
             // This is the first modal in the stack
@@ -97,43 +94,43 @@ class Modal {
         }
 
         // Find the first open modal before this one
-        return stack.value
+        return stack
             .slice(0, index)
             .reverse()
             .find((modal) => modal.isOpen)
     }
 
     getChildModal = () => {
-        const index = this.index.value
+        const index = this.index
 
-        if (index === stack.value.length - 1) {
+        if (index === stack.length - 1) {
             // This is the last modal in the stack
             return null
         }
 
         // Find the first open modal after this one
-        return stack.value.slice(index + 1).find((modal) => modal.isOpen)
+        return stack.slice(index + 1).find((modal) => modal.isOpen)
     }
 
     show = () => {
-        const index = this.index.value
+        const index = this.index
 
         if (index > -1) {
-            if (stack.value[index].isOpen) {
+            if (this.isOpen) {
                 // Only open if the modal is closed
                 return
             }
 
-            stack.value[index].isOpen = true
-            stack.value[index].shouldRender = true
+            this.isOpen = true
+            this.shouldRender = true
         }
     }
 
     close = () => {
-        const index = this.index.value
+        const index = this.index
 
         if (index > -1) {
-            if (!stack.value[index].isOpen) {
+            if (!this.isOpen) {
                 // Only close if the modal is open
                 return
             }
@@ -142,7 +139,7 @@ class Modal {
                 this.off(event)
             })
 
-            stack.value[index].isOpen = false
+            this.isOpen = false
             this.onCloseCallback?.()
             this.onCloseCallback = null
         }
@@ -153,21 +150,21 @@ class Modal {
     }
 
     afterLeave = () => {
-        const index = this.index.value
+        const index = this.index
 
         if (index > -1) {
-            if (stack.value[index].isOpen) {
+            if (this.isOpen) {
                 // Only execute the callback if the modal is closed
                 return
             }
 
-            stack.value[index].shouldRender = false
+            this.shouldRender = false
             this.afterLeaveCallback?.()
             this.afterLeaveCallback = null
         }
 
         if (index === 0) {
-            stack.value = []
+            stack.length = 0 // NL: https://svelte.dev/docs/svelte/$state#Passing-state-across-modules
         }
     }
 
@@ -190,15 +187,15 @@ class Modal {
         this.listeners[kebabCase(event)]?.forEach((callback) => callback(...args))
     }
 
-    registerEventListenersFromAttrs = ($attrs) => {
+    registerEventListenersFromProps = (props) => {
         const unsubscribers = []
 
-        Object.keys($attrs)
+        Object.keys(props)
             .filter((key) => key.startsWith('on'))
             .forEach((key) => {
                 const eventName = kebabCase(key).replace(/^on-/, '')
-                this.on(eventName, $attrs[key])
-                unsubscribers.push(() => this.off(eventName, $attrs[key]))
+                this.on(eventName, props[key])
+                unsubscribers.push(() => this.off(eventName, props[key]))
             })
 
         return () => unsubscribers.forEach((unsub) => unsub())
@@ -238,7 +235,7 @@ class Modal {
                 'X-Inertia-Partial-Data': keys.join(','),
                 'X-InertiaUI-Modal': generateId(),
                 'X-InertiaUI-Modal-Use-Router': 0,
-                'X-InertiaUI-Modal-Base-Url': baseUrl.value,
+                'X-InertiaUI-Modal-Base-Url': baseUrl,
             },
         })
             .then((response) => {
@@ -254,27 +251,50 @@ class Modal {
     }
 
     updateProps = (props) => {
-        Object.assign(this.props.value, props)
+        Object.assign(this.props, props)
     }
 }
 
 function registerLocalModal(name, callback) {
-    localModals.value[name] = { name, callback }
+    localModals[name] = { name, callback }
 }
 
 function pushLocalModal(name, config, onClose, afterLeave) {
-    if (!localModals.value[name]) {
+    if (!localModals[name]) {
         throw new Error(`The local modal "${name}" has not been registered.`)
     }
 
     const modal = push(null, {}, config, onClose, afterLeave)
     modal.name = name
-    localModals.value[name].callback(modal)
+    localModals[name].callback(modal)
     return modal
 }
 
 function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null) {
-    return resolveComponent(responseData.component).then((component) => push(markRaw(component), responseData, config, onClose, onAfterLeave))
+    return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave))
+}
+
+function loadDeferredProps(modal) {
+    const deferred = modal.response?.meta?.deferredProps
+
+    if (!deferred) {
+        return
+    }
+
+    Object.keys(deferred).forEach((key) => {
+        modal.reload({ only: deferred[key] })
+    })
+}
+
+function push(component, response, config, onClose, afterLeave) {
+    const newModal = new Modal(component, response, config, onClose, afterLeave)
+    stack.push(newModal)
+    loadDeferredProps(newModal)
+
+    // Use setTimeout to ensure the modal is added to the stack before showing
+    setTimeout(() => newModal.show(), 0)
+
+    return newModal
 }
 
 function visit(
@@ -289,7 +309,7 @@ function visit(
     useBrowserHistory = false,
     onStart = null,
     onSuccess = null,
-    onError = null,
+    onError = null
 ) {
     const modalId = generateId()
 
@@ -301,11 +321,11 @@ function visit(
 
         const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
-        let useInertiaRouter = useBrowserHistory && stack.value.length === 0
+        let useInertiaRouter = useBrowserHistory && stack.length === 0
 
-        if (stack.value.length === 0) {
+        if (stack.length === 0) {
             console.log('setting baseUrl', typeof window)
-            baseUrl.value = typeof window !== 'undefined' ? window.location.href : ''
+            baseUrl = typeof window !== 'undefined' ? window.location.href : ''
         }
 
         headers = {
@@ -313,14 +333,20 @@ function visit(
             Accept: 'text/html, application/xhtml+xml',
             'X-Requested-With': 'XMLHttpRequest',
             'X-Inertia': true,
-            'X-Inertia-Version': usePage().version,
+            'X-Inertia-Version': pageVersion,
             'X-InertiaUI-Modal': modalId,
             'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
-            'X-InertiaUI-Modal-Base-Url': baseUrl.value,
+            'X-InertiaUI-Modal-Base-Url': baseUrl,
         }
 
         if (useInertiaRouter) {
-            pendingModalUpdates.value[modalId] = { config, onClose, onAfterLeave }
+            //baseModalsToWaitFor = {} // NL: this came from react
+
+            pendingModalUpdates[modalId] = {
+                config,
+                onClose,
+                onAfterLeave,
+            }
 
             // Pushing the modal to the stack will be handled by the ModalRoot...
             return router.visit(url, {
@@ -340,22 +366,12 @@ function visit(
                     onSuccess?.(...args)
                 },
                 onBefore: () => {
-                    baseModalsToWaitFor.value[modalId] = resolve
+                    baseModalsToWaitFor[modalId] = resolve
                 },
             })
         }
 
         onStart?.()
-
-        const withProgress = (callback) => {
-            try {
-                InertiaVue.progress ? callback(InertiaVue.progress) : null
-            } catch (e) {
-                // ignore
-            }
-        }
-
-        withProgress((progress) => progress.start())
 
         Axios({ url, method, data, headers })
             .then((response) => {
@@ -366,63 +382,64 @@ function visit(
                 onError?.(...args)
                 reject(...args)
             })
-            .finally(() => {
-                withProgress((progress) => progress.finish())
-            })
     })
 }
 
-function loadDeferredProps(modal) {
-    const deferred = modal.response?.meta?.deferredProps
+export function visitModal(url, options = {}) {
+    return visit(
+        url,
+        options.method ?? 'get',
+        options.data ?? {},
+        options.headers ?? {},
+        options.config ?? {},
+        options.onClose,
+        options.onAfterLeave,
+        options.queryStringArrayFormat ?? 'brackets',
+        options.navigate ?? getConfig('navigate'),
+        options.onStart,
+        options.onSuccess,
+        options.onError,
+    ).then((modal) => {
+        const listeners = options.listeners ?? {}
 
-    if (!deferred) {
-        return
-    }
+        Object.keys(listeners).forEach((event) => {
+            // e.g. refreshKey -> refresh-key
+            const eventName = kebabCase(event)
+            modal.on(eventName, listeners[event])
+        })
 
-    Object.keys(deferred).forEach((key) => {
-        modal.reload({ only: deferred[key] })
+        return modal
     })
-}
-
-function push(component, response, config, onClose, afterLeave) {
-    const newModal = new Modal(component, response, config, onClose, afterLeave)
-    stack.value.push(newModal)
-    loadDeferredProps(newModal)
-
-    nextTick(() => newModal.show())
-
-    return newModal
 }
 
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
-export const renderApp = (App, props) => {
-    if (props.resolveComponent) {
-        resolveComponent = props.resolveComponent
-    }
-
-    return () => h(ModalRoot, () => h(App, props))
+export const renderApp = (el, App, pageProps) => {
+    initFromPageProps(pageProps)
+    mount(ModalRoot, { target: el, props: { el, App, pageProps } })
 }
 
 export function useModalStack() {
     return {
         setComponentResolver,
-        getBaseUrl: () => baseUrl.value,
-        setBaseUrl: (url) => (baseUrl.value = url),
-        stack: readonly(stack),
+        getBaseUrl: () => baseUrl,
+        setBaseUrl: (url) => (baseUrl = url),
+        stack,
         push,
         pushFromResponseData,
-        closeAll: () => [...stack.value].reverse().forEach((modal) => modal.close()),
-        reset: () => (stack.value = []),
+        length: () => stack.length,
+        closeAll: () => [...stack].reverse().forEach((modal) => modal.close()),
+        reset: () => (stack.length = 0),
         visit,
+        visitModal,
         registerLocalModal,
-        removeLocalModal: (name) => delete localModals.value[name],
-        onModalOnBase(baseModal) {
-            const resolve = baseModalsToWaitFor.value[baseModal.id]
+        removeLocalModal: (name) => delete localModals[name],
+        onModalOnBase: (modalOnBase) => {
+            const resolve = baseModalsToWaitFor[modalOnBase.id]
 
             if (resolve) {
-                resolve(baseModal)
-                delete baseModalsToWaitFor.value[baseModal.id]
+                resolve(modalOnBase)
+                delete baseModalsToWaitFor[modalOnBase.id]
             }
         },
     }
