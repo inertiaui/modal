@@ -324,7 +324,6 @@ function visit(
         let useInertiaRouter = useBrowserHistory && stack.length === 0
 
         if (stack.length === 0) {
-            console.log('setting baseUrl', typeof window)
             baseUrl = typeof window !== 'undefined' ? window.location.href : ''
         }
 
