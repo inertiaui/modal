@@ -11,6 +11,7 @@ on:
       - "**.tsx"
       - "**.php"
       - "**.vue"
+      - "**.svelte"
       - "**/composer.json"
       - "**/package.json"
       - "**/package-lock.json"
@@ -28,7 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         laravel: ['13.0', '12.0', '11.0']
-        stack: [react, vue]
+        stack: [react, vue, svelte]
         app_mounting: [auto, custom]
         native_dialog: [true, false]
 
@@ -80,6 +81,12 @@ jobs:
           cd demo-app
           sed -i -e "s|APP_STACK=vue|APP_STACK=react|g" .env
 
+      - name: Set Svelte Environment Variables
+        if: ${{ matrix.stack == 'svelte' }}
+        run: |
+          cd demo-app
+          sed -i -e "s|APP_STACK=vue|APP_STACK=svelte|g" .env
+
       - name: Build React library
         if: ${{ matrix.stack == 'react' }}
         run: |
@@ -111,12 +118,27 @@ jobs:
           cd vue
           npm run test
 
+      - name: Build Svelte library
+        if: ${{ matrix.stack == 'svelte' }}
+        run: |
+          cd svelte
+          npm ci
+          npm list @inertiajs/svelte
+          npm run build
+
+      - name: Test Svelte library
+        if: ${{ matrix.stack == 'svelte' }}
+        run: |
+          cd svelte
+          npm run test
+
       - name: Switch to custom app mounting
         if: ${{ matrix.app_mounting == 'custom' }}
         run: |
           cd demo-app/resources/js
           mv app-custom-mount.js app.js
           mv app-custom-mount.jsx app.jsx
+          mv app-custom-mount-svelte.js app-svelte.js
 
       - name: Prepare Laravel app
         run: |
@@ -133,13 +155,15 @@ jobs:
           if [ "${{ matrix.stack }}" == "react" ]; then
             npm install react@^19.0.0 react-dom@^19.0.0
           fi
-          npm list react react-dom vue
-          npm install @inertiajs/react@^2.3.15 @inertiajs/vue3@^2.3.15
+          npm list react react-dom vue svelte
+          npm install @inertiajs/react@^2.3.15 @inertiajs/vue3@^2.3.15 @inertiajs/svelte@^2.3.15
           npm install --install-links ../react
           npm install --install-links ../vue
+          npm install --install-links ../svelte
           test -d node_modules/@inertiaui/modal-react || exit 1
           test -d node_modules/@inertiaui/modal-vue || exit 1
-          npm list @inertiajs/react @inertiajs/vue3 @inertiaui/modal-react @inertiaui/modal-vue
+          test -d node_modules/@inertiaui/modal-svelte || exit 1
+          npm list @inertiajs/react @inertiajs/vue3 @inertiajs/svelte @inertiaui/modal-react @inertiaui/modal-vue @inertiaui/modal-svelte
           npm run build
           php artisan key:generate
           touch database/database.sqlite
