@@ -104,4 +104,4 @@ function kebabCase(string) {
     return string.toLowerCase()
 }
 
-export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase, onEscape, onClick }
+export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase }
