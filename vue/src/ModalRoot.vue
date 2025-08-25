@@ -36,7 +36,7 @@ onUnmounted(
                     return
                 }
 
-                if (!isNavigating && window.location.href !== modalOnBase.baseUrl) {
+                if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                     router.visit(modalOnBase.baseUrl, {
                         preserveScroll: true,
                         preserveState: true,

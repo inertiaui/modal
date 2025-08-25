@@ -5,8 +5,9 @@ function generateIdUsing(callback) {
 }
 
 function sameUrlPath(url1, url2) {
-    url1 = typeof url1 === 'string' ? new URL(url1, window.location.origin) : url1
-    url2 = typeof url2 === 'string' ? new URL(url2, window.location.origin) : url2
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
+    url1 = typeof url1 === 'string' ? new URL(url1, origin) : url1
+    url2 = typeof url2 === 'string' ? new URL(url2, origin) : url2
 
     return `${url1.origin}${url1.pathname}` === `${url2.origin}${url2.pathname}`
 }
