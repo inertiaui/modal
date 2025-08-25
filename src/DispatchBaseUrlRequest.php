@@ -57,7 +57,7 @@ class DispatchBaseUrlRequest
                 $response = $route->run();
 
                 if ($response instanceof Responsable) {
-                    $response = $response->toResponse($requestForBaseUrl);
+                    return $response->toResponse($requestForBaseUrl);
                 }
 
                 return $response;
