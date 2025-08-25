@@ -179,3 +179,63 @@ export default function EditUser() {
 :::
 
 Another great example is reloading the parent modal when the child modal is closed. This is described in the [Reload Props](/reload-props#example-with-nested-stack-modal) documentation.
+
+## Form Submissions in Nested Modals
+
+When you have nested modals and need to submit forms, you'll need to be careful about how you handle the form submission. If you use Inertia's router (like `router.post()`), the redirect response will navigate back to the base route, which closes all modals in the stack.
+
+Instead, use **Axios** for form submissions in nested modals:
+
+::: code-group
+
+```vue [Vue]
+<script setup>
+import { default as Axios } from 'axios'
+import { ref } from 'vue'
+
+const modalRef = ref(null)
+
+function submit() {
+    Axios.post('/submit-form', formData).then(() => {
+        modalRef.value.close() // Only closes the current modal
+    })
+}
+</script>
+
+<template>
+    <Modal ref="modalRef">
+        <form @submit.prevent="submit">
+            <!-- Form fields -->
+            <button type="submit">Submit</button>
+        </form>
+    </Modal>
+</template>
+```
+
+```jsx [React]
+import { useRef } from 'react';
+import axios from 'axios';
+
+export default function NestedForm() {
+    const modalRef = useRef(null);
+
+    function submit() {
+        axios.post('/submit-form', formData).then(() => {
+            modalRef.current.close(); // Only closes the current modal
+        });
+    }
+
+    return (
+        <Modal ref={modalRef}>
+            <form onSubmit={(e) => { e.preventDefault(); submit(); }}>
+                {/* Form fields */}
+                <button type="submit">Submit</button>
+            </form>
+        </Modal>
+    );
+}
+```
+
+:::
+
+This approach lets you manually control which modal closes, keeping the parent modal open while only closing the child modal that was submitted.
