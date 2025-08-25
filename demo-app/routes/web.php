@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Middleware\TestHttpResponseMiddleware;
 use App\Models\Role;
 use App\Models\User;
-use App\Http\Middleware\TestHttpResponseMiddleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
