@@ -54,12 +54,14 @@ class DispatchBaseUrlRequest
             ->then(function ($requestForBaseUrl) use ($route) {
                 $this->bindRequest($requestForBaseUrl);
 
-                return $route->run();
-            });
+                $response = $route->run();
 
-        if ($response instanceof Responsable) {
-            $response = $response->toResponse($requestForBaseUrl);
-        }
+                if ($response instanceof Responsable) {
+                    return $response->toResponse($requestForBaseUrl);
+                }
+
+                return $response;
+            });
 
         return tap($response, fn () => $this->bindRequest($originalRequest));
     }

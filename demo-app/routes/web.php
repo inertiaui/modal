@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\TestHttpResponseMiddleware;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -114,6 +115,15 @@ Route::post('/roles', function () {
 
     return back();
 })->name('roles.store');
+
+// Middleware compatibility test
+Route::middleware([TestHttpResponseMiddleware::class])->get('/middleware-compatibility', function () {
+    return Inertia::render('MiddlewareCompatibility/Index');
+})->name('middleware-compatibility.index');
+
+Route::middleware([TestHttpResponseMiddleware::class])->get('/middleware-compatibility/form', function () {
+    return Inertia::modal('MiddlewareCompatibility/Form')->baseRoute('middleware-compatibility.index');
+});
 
 // POST route that returns Modal
 Route::post('/data', function () {
