@@ -104,4 +104,30 @@ function kebabCase(string) {
     return string.toLowerCase()
 }
 
-export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase }
+function isStandardDomEvent(eventName) {
+    if (typeof window !== 'undefined') {
+        return eventName.toLowerCase() in window
+    }
+
+    if (typeof document !== 'undefined') {
+        const testElement = document.createElement('div')
+        return eventName.toLowerCase() in testElement
+    }
+
+    const lowerEventName = eventName.toLowerCase()
+    const standardPatterns = [
+        /^on(click|dblclick|mousedown|mouseup|mouseover|mouseout|mousemove|mouseenter|mouseleave)$/,
+        /^on(keydown|keyup|keypress)$/,
+        /^on(focus|blur|change|input|submit|reset)$/,
+        /^on(load|unload|error|resize|scroll)$/,
+        /^on(touchstart|touchend|touchmove|touchcancel)$/,
+        /^on(pointerdown|pointerup|pointermove|pointerenter|pointerleave|pointercancel)$/,
+        /^on(drag|dragstart|dragend|dragenter|dragleave|dragover|drop)$/,
+        /^on(animationstart|animationend|animationiteration)$/,
+        /^on(transitionstart|transitionend|transitionrun|transitioncancel)$/,
+    ]
+
+    return standardPatterns.some((pattern) => pattern.test(lowerEventName))
+}
+
+export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase, isStandardDomEvent }

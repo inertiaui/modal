@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useMemo } from 'react'
 import { useModalStack, modalPropNames } from './ModalRoot'
-import { only, rejectNullValues } from './helpers'
+import { only, rejectNullValues, isStandardDomEvent } from './helpers'
 import { getConfig } from './config'
 
 const ModalLink = ({
@@ -39,7 +39,7 @@ const ModalLink = ({
         }
 
         if (key.startsWith('on') && typeof props[key] === 'function') {
-            if (key.toLowerCase() in window) {
+            if (isStandardDomEvent(key)) {
                 standardProps[key] = props[key]
             } else {
                 customEvents[key] = props[key]
