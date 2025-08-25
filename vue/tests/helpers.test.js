@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { except, only, rejectNullValues, kebabCase } from '../src/helpers'
+import { describe, it, expect, vi } from 'vitest'
+import { except, only, rejectNullValues, kebabCase, isStandardDomEvent } from '../src/helpers'
 
 describe('helpers', () => {
     describe('except', () => {
@@ -118,6 +118,62 @@ describe('helpers', () => {
             ['multiple__underscores', 'multiple-underscores'],
         ])('should convert %s to %s', (input, expected) => {
             expect(kebabCase(input)).toBe(expected)
+        })
+    })
+
+    describe('isStandardDomEvent', () => {
+        it('should identify standard DOM events', () => {
+            expect(isStandardDomEvent('onClick')).toBe(true)
+            expect(isStandardDomEvent('onMouseOver')).toBe(true)
+            expect(isStandardDomEvent('onKeyDown')).toBe(true)
+            expect(isStandardDomEvent('onFocus')).toBe(true)
+            expect(isStandardDomEvent('onSubmit')).toBe(true)
+            expect(isStandardDomEvent('onTouchStart')).toBe(true)
+            expect(isStandardDomEvent('onDragStart')).toBe(true)
+            expect(isStandardDomEvent('onAnimationEnd')).toBe(true)
+        })
+
+        it('should reject custom modal events', () => {
+            expect(isStandardDomEvent('onUserUpdated')).toBe(false)
+            expect(isStandardDomEvent('onModalReady')).toBe(false)
+            expect(isStandardDomEvent('onDataRefresh')).toBe(false)
+            expect(isStandardDomEvent('onCustomEvent')).toBe(false)
+        })
+
+        it('should be case insensitive', () => {
+            expect(isStandardDomEvent('onclick')).toBe(true)
+            expect(isStandardDomEvent('ONCLICK')).toBe(true)
+            expect(isStandardDomEvent('OnClick')).toBe(true)
+        })
+
+        it('should work in different environments', () => {
+            // Mock Node.js environment (no window or document)
+            const originalWindow = global.window
+            const originalDocument = global.document
+
+            delete global.window
+            delete global.document
+
+            // Should fall back to regex patterns
+            expect(isStandardDomEvent('onClick')).toBe(true)
+            expect(isStandardDomEvent('onUserUpdated')).toBe(false)
+
+            // Restore globals
+            global.window = originalWindow
+            global.document = originalDocument
+        })
+
+        it('should work with document.createElement fallback', () => {
+            // Mock SSR environment (document available, no window)
+            const originalWindow = global.window
+            delete global.window
+
+            // Should use document.createElement test
+            expect(isStandardDomEvent('onClick')).toBe(true)
+            expect(isStandardDomEvent('onUserUpdated')).toBe(false)
+
+            // Restore window
+            global.window = originalWindow
         })
     })
 })

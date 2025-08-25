@@ -565,7 +565,7 @@ export const ModalRoot = ({ children }) => {
                             console.error('No base url in modal response data so cannot navigate back')
                             return
                         }
-                        if (!isNavigating && window.location.href !== modalOnBase.baseUrl) {
+                        if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                             router.visit(modalOnBase.baseUrl, {
                                 preserveScroll: true,
                                 preserveState: true,
