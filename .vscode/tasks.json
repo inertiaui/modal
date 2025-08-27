@@ -30,6 +30,13 @@
             "runOptions": { "runOn": "folderOpen" }
         },
         {
+            "label": "Build Svelte library",
+            "command": "npm run dev",
+            "type": "shell",
+            "options": { "cwd": "${workspaceFolder}/svelte" },
+            "runOptions": { "runOn": "folderOpen" }
+        },
+        {
             "label": "Migrate and seed database",
             "command": "php artisan migrate:fresh --seed",
             "type": "shell",
