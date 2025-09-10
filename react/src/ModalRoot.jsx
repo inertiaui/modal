@@ -6,7 +6,7 @@ import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
 import { getConfig } from './config'
-import { prefetch as basePrefetch, invalidatePrefetchCache as baseInvalidatePrefetchCache } from './prefetch.js'
+import { prefetch as basePrefetch, invalidatePrefetchCache as baseInvalidatePrefetchCache, createPrefetchCache } from './prefetch.js'
 
 const ModalStackContext = createContext(null)
 ModalStackContext.displayName = 'ModalStackContext'
@@ -408,6 +408,23 @@ export const ModalStackProvider = ({ children }) => {
             //
 
             onStart?.()
+
+            // Check prefetch cache first
+            const cache = createPrefetchCache()
+            const params = {
+                url,
+                method,
+                data,
+                headers,
+            }
+            const cached = cache.get(params)
+
+            if (cached && Date.now() - cached.timestamp < 30000) {
+                // Use cached response
+                onSuccess?.(cached.response)
+                resolve(pushFromResponseData(cached.response.data, config, onClose, onAfterLeave))
+                return
+            }
 
             Axios({
                 url,

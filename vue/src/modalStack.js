@@ -5,7 +5,7 @@ import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { default as Axios } from 'axios'
 import ModalRoot from './ModalRoot.vue'
-import { prefetch as basePrefetch, invalidatePrefetchCache as baseinvalidatePrefetchCache } from './prefetch.js'
+import { prefetch as basePrefetch, invalidatePrefetchCache as baseinvalidatePrefetchCache, createPrefetchCache } from './prefetch.js'
 
 let resolveComponent = null
 
@@ -337,6 +337,23 @@ function visit(
         }
 
         onStart?.()
+
+        // Check prefetch cache first
+        const cache = createPrefetchCache()
+        const params = {
+            url,
+            method,
+            data,
+            headers,
+        }
+        const cached = cache.get(params)
+
+        if (cached && Date.now() - cached.timestamp < 30000) {
+            // Use cached response
+            onSuccess?.(cached.response)
+            resolve(pushFromResponseData(cached.response.data, config, onClose, onAfterLeave))
+            return
+        }
 
         Axios({ url, method, data, headers })
             .then((response) => {

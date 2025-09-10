@@ -149,4 +149,69 @@ function createInertiaHeaders(version, baseUrl, useRouter = false, purpose = nul
     return headers
 }
 
-export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase, isStandardDomEvent, createInertiaHeaders }
+function objectsAreEqual(obj1, obj2, excludeKeys = []) {
+    if (obj1 === obj2) return true
+
+    if (obj1 == null || obj2 == null) return obj1 === obj2
+
+    if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+        // For functions, compare their string representation
+        if (typeof obj1 === 'function' && typeof obj2 === 'function') {
+            return obj1.toString() === obj2.toString()
+        }
+        return obj1 === obj2
+    }
+
+    if (Array.isArray(obj1) !== Array.isArray(obj2)) return false
+
+    if (Array.isArray(obj1)) {
+        if (obj1.length !== obj2.length) return false
+        for (let i = 0; i < obj1.length; i++) {
+            if (!objectsAreEqual(obj1[i], obj2[i], excludeKeys)) return false
+        }
+        return true
+    }
+
+    const keys1 = Object.keys(obj1).filter((key) => !excludeKeys.includes(key))
+    const keys2 = Object.keys(obj2).filter((key) => !excludeKeys.includes(key))
+
+    if (keys1.length !== keys2.length) return false
+
+    for (let key of keys1) {
+        if (!keys2.includes(key)) return false
+        if (!objectsAreEqual(obj1[key], obj2[key], excludeKeys)) return false
+    }
+
+    return true
+}
+
+function withoutPurposeHeader(params) {
+    if (!params.headers) return params
+
+    const newParams = { ...params }
+    const headers = { ...params.headers }
+    delete headers.Purpose
+    newParams.headers = headers
+
+    return newParams
+}
+
+function paramsAreEqual(params1, params2) {
+    const excludeKeys = ['onStart', 'onSuccess', 'onError', 'onFinish', 'onPrefetching', 'onPrefetched', 'cacheFor', 'cacheTags']
+
+    return objectsAreEqual(withoutPurposeHeader(params1), withoutPurposeHeader(params2), excludeKeys)
+}
+
+export {
+    generateIdUsing,
+    sameUrlPath,
+    generateId,
+    except,
+    only,
+    rejectNullValues,
+    kebabCase,
+    isStandardDomEvent,
+    createInertiaHeaders,
+    objectsAreEqual,
+    paramsAreEqual,
+}

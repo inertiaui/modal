@@ -1,51 +1,83 @@
 // Framework-agnostic prefetch cache and utilities
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { default as Axios } from 'axios'
-import { createInertiaHeaders } from './helpers'
+import { createInertiaHeaders, paramsAreEqual } from './helpers'
 
 // Simple cache for prefetched responses
 let prefetchCache = new Map()
 let removalTimers = new Map()
 
+function findCachedItem(params) {
+    for (let [cachedParams, cachedData] of prefetchCache.entries()) {
+        if (paramsAreEqual(cachedParams, params)) {
+            return cachedData
+        }
+    }
+    return null
+}
+
+function findRemovalTimer(params) {
+    for (let [cachedParams, timer] of removalTimers.entries()) {
+        if (paramsAreEqual(cachedParams, params)) {
+            return { params: cachedParams, timer }
+        }
+    }
+    return null
+}
+
 export function createPrefetchCache() {
     return {
-        get: (key) => prefetchCache.get(key),
-        set: (key, value) => prefetchCache.set(key, value),
-        delete: (key) => prefetchCache.delete(key),
+        get: (params) => findCachedItem(params),
+        set: (params, value) => prefetchCache.set(params, value),
+        delete: (params) => {
+            for (let [cachedParams] of prefetchCache.entries()) {
+                if (paramsAreEqual(cachedParams, params)) {
+                    prefetchCache.delete(cachedParams)
+                    break
+                }
+            }
+        },
         clear: () => prefetchCache.clear(),
-        has: (key) => prefetchCache.has(key),
+        has: (params) => findCachedItem(params) !== null,
         entries: () => prefetchCache.entries(),
         size: () => prefetchCache.size,
     }
 }
 
-function scheduleForRemoval(cacheKey, expiresIn) {
+function scheduleForRemoval(params, expiresIn) {
     if (typeof window === 'undefined') {
         return
     }
 
-    clearRemovalTimer(cacheKey)
+    clearRemovalTimer(params)
 
     if (expiresIn > 0) {
         const timer = window.setTimeout(() => {
-            prefetchCache.delete(cacheKey)
-            removalTimers.delete(cacheKey)
+            // Find and remove the cached item and timer
+            for (let [cachedParams] of prefetchCache.entries()) {
+                if (paramsAreEqual(cachedParams, params)) {
+                    prefetchCache.delete(cachedParams)
+                    break
+                }
+            }
+            for (let [cachedParams] of removalTimers.entries()) {
+                if (paramsAreEqual(cachedParams, params)) {
+                    removalTimers.delete(cachedParams)
+                    break
+                }
+            }
         }, expiresIn)
 
-        removalTimers.set(cacheKey, timer)
+        removalTimers.set(params, timer)
     }
 }
 
-function clearRemovalTimer(cacheKey) {
-    const timer = removalTimers.get(cacheKey)
-    if (timer) {
-        clearTimeout(timer)
-        removalTimers.delete(cacheKey)
+function clearRemovalTimer(params) {
+    const timerInfo = findRemovalTimer(params)
+    if (timerInfo) {
+        clearTimeout(timerInfo.timer)
+        removalTimers.delete(timerInfo.params)
     }
-}
-
-export function createCacheKey(method, url, data) {
-    return `${method}:${url}:${JSON.stringify(data)}`
 }
 
 export function invalidatePrefetchCache(tags = null) {
@@ -60,19 +92,26 @@ export function invalidatePrefetchCache(tags = null) {
     }
 
     const tagsArray = Array.isArray(tags) ? tags : [tags]
-    for (const [key, entry] of prefetchCache.entries()) {
+    for (const [params, entry] of prefetchCache.entries()) {
         if (entry.cacheTags.some((tag) => tagsArray.includes(tag))) {
-            clearRemovalTimer(key)
-            prefetchCache.delete(key)
+            clearRemovalTimer(params)
+            prefetchCache.delete(params)
         }
     }
 }
 
 export function prefetchWithAxios(url, method, data, headers, cacheFor, cacheTags, baseUrl, version, onPrefetching, onPrefetched) {
-    const cacheKey = createCacheKey(method, url, data)
+    const params = {
+        url,
+        method,
+        data,
+        headers,
+        cacheFor,
+        cacheTags,
+    }
 
     // Check if already cached and not expired
-    const cached = prefetchCache.get(cacheKey)
+    const cached = findCachedItem(params)
     if (cached && Date.now() - cached.timestamp < cacheFor) {
         onPrefetched?.(cached.response)
         return Promise.resolve(cached.response)
@@ -88,14 +127,14 @@ export function prefetchWithAxios(url, method, data, headers, cacheFor, cacheTag
     return Axios({ url, method, data, headers: requestHeaders })
         .then((response) => {
             // Cache the response
-            prefetchCache.set(cacheKey, {
+            prefetchCache.set(params, {
                 response,
                 timestamp: Date.now(),
                 cacheTags: Array.isArray(cacheTags) ? cacheTags : [cacheTags].filter(Boolean),
             })
 
             // Schedule for removal like Inertia does
-            scheduleForRemoval(cacheKey, cacheFor)
+            scheduleForRemoval(params, cacheFor)
 
             onPrefetched?.(response)
             return response
