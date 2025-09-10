@@ -134,7 +134,6 @@ function isStandardDomEvent(eventName) {
 function createInertiaHeaders(version, baseUrl, useRouter = false, purpose = null) {
     const headers = {
         Accept: 'text/html, application/xhtml+xml',
-        'X-Requested-With': 'XMLHttpRequest',
         'X-Inertia': true,
         'X-Inertia-Version': version,
         'X-InertiaUI-Modal': generateId(),
