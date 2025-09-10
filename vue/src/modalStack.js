@@ -1,10 +1,11 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
-import { generateId, except, kebabCase } from './helpers'
+import { generateId, except, kebabCase, createInertiaHeaders } from './helpers'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { default as Axios } from 'axios'
 import ModalRoot from './ModalRoot.vue'
+import { prefetch as basePrefetch, invalidatePrefetchCache as baseinvalidatePrefetchCache } from './prefetch.js'
 
 let resolveComponent = null
 
@@ -231,14 +232,9 @@ class Modal {
             params: method === 'get' ? data : {},
             headers: {
                 ...(options.headers ?? {}),
-                Accept: 'text/html, application/xhtml+xml',
-                'X-Inertia': true,
+                ...createInertiaHeaders(this.response.version, baseUrl.value, false),
                 'X-Inertia-Partial-Component': this.response.component,
-                'X-Inertia-Version': this.response.version,
                 'X-Inertia-Partial-Data': keys.join(','),
-                'X-InertiaUI-Modal': generateId(),
-                'X-InertiaUI-Modal-Use-Router': 0,
-                'X-InertiaUI-Modal-Base-Url': baseUrl.value,
             },
         })
             .then((response) => {
@@ -309,13 +305,9 @@ function visit(
 
         headers = {
             ...headers,
-            Accept: 'text/html, application/xhtml+xml',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-Inertia': true,
-            'X-Inertia-Version': usePage().version,
+            ...createInertiaHeaders(usePage().version, baseUrl.value, useInertiaRouter),
+            // Override the modal ID with the specific one for this visit
             'X-InertiaUI-Modal': modalId,
-            'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
-            'X-InertiaUI-Modal-Base-Url': baseUrl.value,
         }
 
         if (useInertiaRouter) {
@@ -356,6 +348,40 @@ function visit(
                 reject(...args)
             })
     })
+}
+
+// Create the prefetch function using shared logic
+const prefetch = (
+    href,
+    method = 'get',
+    payload = {},
+    headers = {},
+    queryStringArrayFormat = 'brackets',
+    useBrowserHistory = false,
+    cacheFor = 30000,
+    cacheTags = [],
+    onPrefetching = null,
+    onPrefetched = null,
+) =>
+    basePrefetch(
+        href,
+        method,
+        payload,
+        headers,
+        queryStringArrayFormat,
+        useBrowserHistory,
+        cacheFor,
+        cacheTags,
+        baseUrl.value,
+        usePage().version,
+        router,
+        onPrefetching,
+        onPrefetched,
+    )
+
+// Wrapper for invalidate cache to maintain API compatibility
+function invalidatePrefetchCache(tags = null) {
+    baseinvalidatePrefetchCache(tags)
 }
 
 function loadDeferredProps(modal) {
@@ -401,6 +427,8 @@ export function useModalStack() {
         closeAll: () => [...stack.value].reverse().forEach((modal) => modal.close()),
         reset: () => (stack.value = []),
         visit,
+        prefetch,
+        invalidatePrefetchCache,
         registerLocalModal,
         removeLocalModal: (name) => delete localModals.value[name],
         onModalOnBase(baseModal) {

@@ -131,4 +131,22 @@ function isStandardDomEvent(eventName) {
     return standardPatterns.some((pattern) => pattern.test(lowerEventName))
 }
 
-export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase, isStandardDomEvent }
+function createInertiaHeaders(version, baseUrl, useRouter = false, purpose = null) {
+    const headers = {
+        Accept: 'text/html, application/xhtml+xml',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-Inertia': true,
+        'X-Inertia-Version': version,
+        'X-InertiaUI-Modal': generateId(),
+        'X-InertiaUI-Modal-Use-Router': useRouter ? 1 : 0,
+        'X-InertiaUI-Modal-Base-Url': baseUrl,
+    }
+
+    if (purpose) {
+        headers.Purpose = purpose
+    }
+
+    return headers
+}
+
+export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase, isStandardDomEvent, createInertiaHeaders }

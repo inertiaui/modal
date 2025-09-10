@@ -1,11 +1,12 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, kebabCase, generateId, sameUrlPath } from './helpers'
+import { except, kebabCase, generateId, sameUrlPath, createInertiaHeaders } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
 import { getConfig } from './config'
+import { prefetch as basePrefetch, invalidatePrefetchCache as baseInvalidatePrefetchCache } from './prefetch.js'
 
 const ModalStackContext = createContext(null)
 ModalStackContext.displayName = 'ModalStackContext'
@@ -246,14 +247,9 @@ export const ModalStackProvider = ({ children }) => {
                 params: method === 'get' ? data : {},
                 headers: {
                     ...(options.headers ?? {}),
-                    Accept: 'text/html, application/xhtml+xml',
-                    'X-Inertia': true,
+                    ...createInertiaHeaders(this.response.version, baseUrl, false),
                     'X-Inertia-Partial-Component': this.response.component,
-                    'X-Inertia-Version': this.response.version,
                     'X-Inertia-Partial-Data': keys.join(','),
-                    'X-InertiaUI-Modal': generateId(),
-                    'X-InertiaUI-Modal-Use-Router': 0,
-                    'X-InertiaUI-Modal-Base-Url': baseUrl,
                 },
             })
                 .then((response) => {
@@ -372,13 +368,9 @@ export const ModalStackProvider = ({ children }) => {
 
             headers = {
                 ...headers,
-                Accept: 'text/html, application/xhtml+xml',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-Inertia': true,
-                'X-Inertia-Version': pageVersion,
+                ...createInertiaHeaders(pageVersion, baseUrl, useInertiaRouter),
+                // Override the modal ID with the specific one for this visit
                 'X-InertiaUI-Modal': modalId,
-                'X-InertiaUI-Modal-Use-Router': useInertiaRouter ? 1 : 0,
-                'X-InertiaUI-Modal-Base-Url': baseUrl,
             }
 
             if (useInertiaRouter) {
@@ -434,6 +426,41 @@ export const ModalStackProvider = ({ children }) => {
         })
     }
 
+    // Create the prefetch function using shared logic
+    const prefetch = (
+        href,
+        method = 'get',
+        payload = {},
+        headers = {},
+        queryStringArrayFormat = 'brackets',
+        useBrowserHistory = false,
+        cacheFor = 30000,
+        cacheTags = [],
+        onPrefetching = null,
+        onPrefetched = null,
+    ) => {
+        return basePrefetch(
+            href,
+            method,
+            payload,
+            headers,
+            queryStringArrayFormat,
+            useBrowserHistory && localStackCopy.length === 0,
+            cacheFor,
+            cacheTags,
+            baseUrl,
+            pageVersion,
+            router,
+            onPrefetching,
+            onPrefetched,
+        )
+    }
+
+    // Wrapper for invalidate cache to maintain API compatibility
+    const invalidatePrefetchCache = (tags = null) => {
+        baseInvalidatePrefetchCache(tags)
+    }
+
     const registerLocalModal = (name, callback) => {
         setLocalModals((prevLocalModals) => ({
             ...prevLocalModals,
@@ -461,6 +488,8 @@ export const ModalStackProvider = ({ children }) => {
         reset: () => updateStack(() => []),
         visit,
         visitModal,
+        prefetch,
+        invalidatePrefetchCache,
         registerLocalModal,
         removeLocalModal,
         onModalOnBase: (modalOnBase) => {
