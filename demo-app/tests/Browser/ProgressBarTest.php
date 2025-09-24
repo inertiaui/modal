@@ -19,7 +19,7 @@ class ProgressBarTest extends DuskTestCase
             $browser->visit('/loading-prop')
                 ->waitForText('Loading Prop')
                 ->clickLink('Open Slideover')
-                ->waitFor('#nprogress')
+                ->assertPresent('#nprogress')
                 ->waitForModal()
                 ->waitUntilMissing('#nprogress');
         });
