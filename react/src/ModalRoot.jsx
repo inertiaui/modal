@@ -1,7 +1,8 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
 import { except, kebabCase, generateId, sameUrlPath, isInertiaV2 } from './helpers'
-import { router, usePage, progress } from '@inertiajs/react'
+import { router, usePage } from '@inertiajs/react'
+import * as InertiaReact from '@inertiajs/react';
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
@@ -97,18 +98,18 @@ export const ModalStackProvider = ({ children }) => {
                 if (pendingOnClose) {
                     this.onCloseCallback = onClose
                         ? () => {
-                              onClose()
-                              pendingOnClose()
-                          }
+                            onClose()
+                            pendingOnClose()
+                        }
                         : pendingOnClose
                 }
 
                 if (pendingOnAfterLeave) {
                     this.afterLeaveCallback = afterLeave
                         ? () => {
-                              afterLeave()
-                              pendingOnAfterLeave()
-                          }
+                            afterLeave()
+                            pendingOnAfterLeave()
+                        }
                         : pendingOnAfterLeave
                 }
 
@@ -416,7 +417,7 @@ export const ModalStackProvider = ({ children }) => {
             onStart?.()
 
             if (isInertiaV2()) {
-                progress.start()
+                InertiaReact.progress.start()
             }
 
             Axios({
@@ -435,7 +436,7 @@ export const ModalStackProvider = ({ children }) => {
                 })
                 .finally(() => {
                     if (isInertiaV2()) {
-                        progress.finish()
+                        InertiaReact.progress.finish()
                     }
                 })
         })

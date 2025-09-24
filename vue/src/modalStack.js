@@ -1,6 +1,7 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
 import { generateId, except, kebabCase, isInertiaV2 } from './helpers'
-import { router, usePage, progress } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
+import * as InertiaVue from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { default as Axios } from 'axios'
 import ModalRoot from './ModalRoot.vue'
@@ -346,7 +347,7 @@ function visit(
         onStart?.()
 
         if (isInertiaV2()) {
-            progress.start()
+            InertiaVue.progress.start()
         }
 
         Axios({ url, method, data, headers })
@@ -360,7 +361,7 @@ function visit(
             })
             .finally(() => {
                 if (isInertiaV2()) {
-                    progress.finish()
+                    InertiaVue.progress.finish()
                 }
             })
     })
