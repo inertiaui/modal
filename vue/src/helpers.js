@@ -1,3 +1,5 @@
+import { router } from '@inertiajs/vue3'
+
 let generateIdUsingCallback = null
 
 function generateIdUsing(callback) {
@@ -131,4 +133,8 @@ function isStandardDomEvent(eventName) {
     return standardPatterns.some((pattern) => pattern.test(lowerEventName))
 }
 
-export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase, isStandardDomEvent }
+function isInertiaV2() {
+    return router.push && typeof router.push === 'function'
+}
+
+export { generateIdUsing, sameUrlPath, generateId, except, only, rejectNullValues, kebabCase, isStandardDomEvent, isInertiaV2 }

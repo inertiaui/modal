@@ -1,7 +1,7 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, kebabCase, generateId, sameUrlPath } from './helpers'
-import { router, usePage } from '@inertiajs/react'
+import { except, kebabCase, generateId, sameUrlPath, isInertiaV2 } from './helpers'
+import { router, usePage, progress } from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
@@ -413,9 +413,11 @@ export const ModalStackProvider = ({ children }) => {
                 })
             }
 
-            //
-
             onStart?.()
+
+            if (isInertiaV2()) {
+                progress.start()
+            }
 
             Axios({
                 url,
@@ -430,6 +432,11 @@ export const ModalStackProvider = ({ children }) => {
                 .catch((...args) => {
                     onError?.(...args)
                     reject(...args)
+                })
+                .finally(() => {
+                    if (isInertiaV2()) {
+                        progress.finish()
+                    }
                 })
         })
     }
