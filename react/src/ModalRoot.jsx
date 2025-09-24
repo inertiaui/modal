@@ -2,7 +2,7 @@ import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
 import { except, kebabCase, generateId, sameUrlPath, isInertiaV2 } from './helpers'
 import { router, usePage } from '@inertiajs/react'
-import * as InertiaReact from '@inertiajs/react';
+import * as InertiaReact from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
@@ -98,18 +98,18 @@ export const ModalStackProvider = ({ children }) => {
                 if (pendingOnClose) {
                     this.onCloseCallback = onClose
                         ? () => {
-                            onClose()
-                            pendingOnClose()
-                        }
+                              onClose()
+                              pendingOnClose()
+                          }
                         : pendingOnClose
                 }
 
                 if (pendingOnAfterLeave) {
                     this.afterLeaveCallback = afterLeave
                         ? () => {
-                            afterLeave()
-                            pendingOnAfterLeave()
-                        }
+                              afterLeave()
+                              pendingOnAfterLeave()
+                          }
                         : pendingOnAfterLeave
                 }
 
