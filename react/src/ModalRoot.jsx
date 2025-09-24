@@ -1,6 +1,6 @@
 import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
-import { except, kebabCase, generateId, sameUrlPath, isInertiaV2 } from './helpers'
+import { except, kebabCase, generateId, sameUrlPath } from './helpers'
 import { router, usePage } from '@inertiajs/react'
 import * as InertiaReact from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -417,12 +417,8 @@ export const ModalStackProvider = ({ children }) => {
             onStart?.()
 
             const withProgress = (callback) => {
-                if (!isInertiaV2()) {
-                    return
-                }
-
                 try {
-                    callback(InertiaReact.progress)
+                    InertiaReact.progress ? callback(InertiaReact.progress) : null
                 } catch (e) {
                     // ignore
                 }

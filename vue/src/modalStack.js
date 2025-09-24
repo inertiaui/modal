@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
-import { generateId, except, kebabCase, isInertiaV2 } from './helpers'
+import { generateId, except, kebabCase } from './helpers'
 import { router, usePage } from '@inertiajs/vue3'
 import * as InertiaVue from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -347,12 +347,8 @@ function visit(
         onStart?.()
 
         const withProgress = (callback) => {
-            if (!isInertiaV2()) {
-                return
-            }
-
             try {
-                callback(InertiaVue.progress)
+                InertiaVue.progress ? callback(InertiaVue.progress) : null
             } catch (e) {
                 // ignore
             }
