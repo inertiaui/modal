@@ -2,7 +2,7 @@ import { createElement, useEffect, useState, useRef } from 'react'
 import { default as Axios } from 'axios'
 import { except, kebabCase, generateId, sameUrlPath, isInertiaV2 } from './helpers'
 import { router, usePage } from '@inertiajs/react'
-import * as InertiaReact from '@inertiajs/react';
+import * as InertiaReact from '@inertiajs/react'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
@@ -98,18 +98,18 @@ export const ModalStackProvider = ({ children }) => {
                 if (pendingOnClose) {
                     this.onCloseCallback = onClose
                         ? () => {
-                            onClose()
-                            pendingOnClose()
-                        }
+                              onClose()
+                              pendingOnClose()
+                          }
                         : pendingOnClose
                 }
 
                 if (pendingOnAfterLeave) {
                     this.afterLeaveCallback = afterLeave
                         ? () => {
-                            afterLeave()
-                            pendingOnAfterLeave()
-                        }
+                              afterLeave()
+                              pendingOnAfterLeave()
+                          }
                         : pendingOnAfterLeave
                 }
 
@@ -416,9 +416,19 @@ export const ModalStackProvider = ({ children }) => {
 
             onStart?.()
 
-            if (isInertiaV2()) {
-                InertiaReact.progress.start()
+            const withProgress = (callback) => {
+                if (!isInertiaV2()) {
+                    return
+                }
+
+                try {
+                    callback(InertiaReact.progress)
+                } catch (e) {
+                    // ignore
+                }
             }
+
+            withProgress((progress) => progress.start())
 
             Axios({
                 url,
@@ -435,9 +445,7 @@ export const ModalStackProvider = ({ children }) => {
                     reject(...args)
                 })
                 .finally(() => {
-                    if (isInertiaV2()) {
-                        InertiaReact.progress.finish()
-                    }
+                    withProgress((progress) => progress.finish())
                 })
         })
     }

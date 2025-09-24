@@ -346,9 +346,19 @@ function visit(
 
         onStart?.()
 
-        if (isInertiaV2()) {
-            InertiaVue.progress.start()
+        const withProgress = (callback) => {
+            if (!isInertiaV2()) {
+                return
+            }
+
+            try {
+                callback(InertiaVue.progress)
+            } catch (e) {
+                // ignore
+            }
         }
+
+        withProgress((progress) => progress.start())
 
         Axios({ url, method, data, headers })
             .then((response) => {
@@ -360,9 +370,7 @@ function visit(
                 reject(...args)
             })
             .finally(() => {
-                if (isInertiaV2()) {
-                    InertiaVue.progress.finish()
-                }
+                withProgress((progress) => progress.finish())
             })
     })
 }
