@@ -1,7 +1,15 @@
-import { ModalLink } from '@inertiaui/modal-react';
+import { ModalLink, putConfig } from '@inertiaui/modal-react';
 import Container from './Container';
 
 export default function LoadingProp() {
+    const params = new URLSearchParams(window.location.search);
+
+    putConfig({
+        progress: params.get('progress') === 'false'
+            ? false
+            : { delay: parseInt(params.get('delay') ?? 0) }
+    })
+
     return (
         <Container>
             <div className="flex justify-between">

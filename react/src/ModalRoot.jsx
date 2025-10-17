@@ -416,15 +416,22 @@ export const ModalStackProvider = ({ children }) => {
 
             onStart?.()
 
+            let progressTimeout
+            const progressConfig = config.progress ?? getConfig('progress')
             const withProgress = (callback) => {
                 try {
-                    InertiaReact.progress ? callback(InertiaReact.progress) : null
+                    InertiaReact.progress && progressConfig !== false ? callback(InertiaReact.progress) : null
                 } catch (e) {
                     // ignore
                 }
             }
 
-            withProgress((progress) => progress.start())
+            withProgress((progress) => {
+                clearTimeout(progressTimeout)
+                progressTimeout = setTimeout(() => {
+                    progress.start()
+                }, progressConfig?.delay ?? 0)
+            })
 
             Axios({
                 url,
@@ -441,7 +448,10 @@ export const ModalStackProvider = ({ children }) => {
                     reject(...args)
                 })
                 .finally(() => {
-                    withProgress((progress) => progress.finish())
+                    withProgress((progress) => {
+                        clearTimeout(progressTimeout)
+                        progress.finish()
+                    })
                 })
         })
     }

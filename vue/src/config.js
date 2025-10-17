@@ -17,6 +17,9 @@ const defaultConfig = {
         panelClasses: 'bg-white min-h-screen',
         position: 'right',
     },
+    progress: {
+        delay: 250,
+    },
 }
 
 class Config {
@@ -36,6 +39,7 @@ class Config {
                 navigate: key.navigate ?? defaultConfig.navigate,
                 modal: { ...defaultConfig.modal, ...(key.modal ?? {}) },
                 slideover: { ...defaultConfig.slideover, ...(key.slideover ?? {}) },
+                progress: key.progress === false ? false : { ...defaultConfig.progress, ...(key.progress ?? {}) },
             }
             return
         }
