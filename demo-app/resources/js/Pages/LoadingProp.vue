@@ -1,6 +1,14 @@
 <script setup>
 import Container from './Container.vue'
-import { ModalLink } from '@inertiaui/modal-vue'
+import { ModalLink, putConfig } from '@inertiaui/modal-vue'
+
+const params = new URLSearchParams(window.location.search);
+
+putConfig({
+    progress: params.get('progress') === 'false'
+        ? false
+        : { delay: parseInt(params.get('delay') ?? 0) }
+})
 </script>
 
 <template>

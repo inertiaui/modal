@@ -1,5 +1,6 @@
 import { computed, readonly, ref, markRaw, h, nextTick } from 'vue'
 import { generateId, except, kebabCase } from './helpers'
+import { getConfig } from './config.js'
 import { router, usePage } from '@inertiajs/vue3'
 import * as InertiaVue from '@inertiajs/vue3'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
@@ -346,15 +347,20 @@ function visit(
 
         onStart?.()
 
+        let progressTimeout
+        const progressConfig = config.progress ?? getConfig('progress')
         const withProgress = (callback) => {
             try {
-                InertiaVue.progress ? callback(InertiaVue.progress) : null
+                InertiaVue.progress && progressConfig !== false ? callback(InertiaVue.progress) : null
             } catch (e) {
                 // ignore
             }
         }
 
-        withProgress((progress) => progress.start())
+        withProgress((progress) => {
+            clearTimeout(progressTimeout)
+            progressTimeout = setTimeout(() => progress.start(), progressConfig?.delay ?? 0)
+        })
 
         Axios({ url, method, data, headers })
             .then((response) => {
@@ -366,7 +372,10 @@ function visit(
                 reject(...args)
             })
             .finally(() => {
-                withProgress((progress) => progress.finish())
+                withProgress((progress) => {
+                    clearTimeout(progressTimeout)
+                    progress.finish()
+                })
             })
     })
 }
