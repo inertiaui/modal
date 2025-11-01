@@ -12,7 +12,7 @@ class ProgressBarTest extends DuskTestCase
     public function it_shows_the_inertia_progress_bar()
     {
         if (Support::isInertiaV1()) {
-            return $this->markTestSkipped('Proress Bar API not supported in Inertia v1');
+            return $this->markTestSkipped('Progress Bar API not supported in Inertia v1');
         }
 
         $this->browse(function (Browser $browser) {
