@@ -1,5 +1,6 @@
 import { generateId, except, kebabCase } from './helpers'
 import { router } from '@inertiajs/svelte'
+import * as InertiaSvelte from '@inertiajs/svelte'
 import { mergeDataIntoQueryString } from '@inertiajs/core'
 import { default as Axios } from 'axios'
 import { getConfig } from './config'
@@ -372,6 +373,16 @@ function visit(
 
         onStart?.()
 
+        const withProgress = (callback) => {
+            try {
+                InertiaSvelte.progress ? callback(InertiaSvelte.progress) : null
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        withProgress((progress) => progress.start())
+
         Axios({ url, method, data, headers })
             .then((response) => {
                 onSuccess?.(response)
@@ -380,6 +391,9 @@ function visit(
             .catch((...args) => {
                 onError?.(...args)
                 reject(...args)
+            })
+            .finally(() => {
+                withProgress((progress) => progress.finish())
             })
     })
 }
