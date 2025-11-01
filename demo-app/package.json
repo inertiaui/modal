@@ -10,7 +10,7 @@
         "@heroicons/react": "^2.1.5",
         "@heroicons/vue": "^2.1.5",
         "@inertiajs/react": "^1.0.0",
-        "@inertiajs/svelte": "^2.0.13",
+        "@inertiajs/svelte": "^2.1.11",
         "@inertiajs/vue3": "^1.0.0",
         "@sveltejs/vite-plugin-svelte": "^5.1.0",
         "@tailwindcss/forms": "^0.5.3",
