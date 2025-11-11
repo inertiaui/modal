@@ -272,7 +272,7 @@ const tn = ({ children: e }) => {
         return;
       }
       const [j, ge] = Gr(u, h || "", c, O);
-      let ce = N && t.length === 0;
+      let ce = N;
       if (t.length === 0 && (xe = typeof window < "u" ? window.location.href : ""), v = {
         ...v,
         Accept: "text/html, application/xhtml+xml",

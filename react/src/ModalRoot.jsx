@@ -365,7 +365,7 @@ export const ModalStackProvider = ({ children }) => {
 
             const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
-            let useInertiaRouter = useBrowserHistory && stack.length === 0
+            let useInertiaRouter = useBrowserHistory
 
             if (stack.length === 0) {
                 baseUrl = typeof window !== 'undefined' ? window.location.href : ''
