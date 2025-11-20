@@ -1,3 +1,19 @@
+type ModalConfig = {
+    closeButton: boolean;
+    closeExplicitly: boolean,
+    maxWidth: string,
+    paddingClasses: string,
+    panelClasses: string,
+    position: string,
+}
+
+type ConfigType = {
+    type: string,
+    navigate: boolean,
+    modal: ModalConfig,
+    slideover: ModalConfig
+}
+
 const defaultConfig = {
     type: 'modal',
     navigate: false,
@@ -20,16 +36,18 @@ const defaultConfig = {
 }
 
 class Config {
+    private config: ConfigType
+
     constructor() {
-        this.config = {}
+        this.config = defaultConfig
         this.reset()
     }
 
     reset() {
-        this.config = JSON.parse(JSON.stringify(defaultConfig))
+        this.config = JSON.parse(JSON.stringify(defaultConfig)) as ConfigType
     }
 
-    put(key, value) {
+    put(key: ConfigType|string, value: any) {
         if (typeof key === 'object') {
             this.config = {
                 type: key.type ?? defaultConfig.type,
@@ -40,19 +58,27 @@ class Config {
             return
         }
         const keys = key.split('.')
-        let current = this.config
+        let current: any = this.config
         for (let i = 0; i < keys.length - 1; i++) {
-            current = current[keys[i]] = current[keys[i]] || {}
+            const k = keys[i]
+            if(current[k] === undefined)
+            {
+                current = {}
+            }
+            current = current[k]
         }
-        current[keys[keys.length - 1]] = value
+
+        const lastKey = keys[keys.length - 1]
+        current[lastKey] = value
     }
 
-    get(key) {
+    get(key?: string) {
         if (typeof key === 'undefined') {
             return this.config
         }
+
         const keys = key.split('.')
-        let current = this.config
+        let current: any = this.config
         for (const k of keys) {
             if (current[k] === undefined) {
                 return null
@@ -66,6 +92,6 @@ class Config {
 const configInstance = new Config()
 
 export const resetConfig = () => configInstance.reset()
-export const putConfig = (key, value) => configInstance.put(key, value)
-export const getConfig = (key) => configInstance.get(key)
-export const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`)
+export const putConfig = (key: ConfigType|string, value: any) => configInstance.put(key, value)
+export const getConfig = (key?: string) => configInstance.get(key)
+export const getConfigByType = (isSlideover: boolean|null, key: string) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`)

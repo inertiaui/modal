@@ -41,6 +41,7 @@
         "happy-dom": "^15.7.4",
         "prettier": "^3.2.4",
         "prettier-plugin-tailwindcss": "^0.5.12",
+        "typescript": "^5.9.3",
         "vite": "^6.1",
         "vite-plugin-eslint": "^1.8.1",
         "vitest": "^2.1.1",
