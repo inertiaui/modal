@@ -1,5 +1,12 @@
 module.exports = {
-    extends: ['eslint:recommended', 'plugin:vue/vue3-recommended', 'plugin:tailwindcss/recommended', 'prettier'],
+    extends: [
+        'eslint:recommended',
+        'plugin:vue/vue3-recommended',
+        'plugin:tailwindcss/recommended',
+        'prettier',
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+    ],
     plugins: ['prettier', 'unused-imports'],
     parserOptions: {
         sourceType: 'module',

@@ -34,19 +34,19 @@ function except<T extends Record<string, any>>(target: T, keys: string[], ignore
 function except(target: string[] | Record<string, any>, keys: string[], ignoreCase = false): string[] | Record<string, any> {
     let compareKeys: string[] = keys
     if (ignoreCase) {
-        compareKeys = keys.map(strToLowercase)
+        compareKeys = keys.map(strToLowercase) as string[]
     }
 
     if (Array.isArray(target)) {
         return target.filter((key) => {
-            const comparisonKey = ignoreCase ? strToLowercase(key) : key
+            const comparisonKey: string = ignoreCase ? strToLowercase(key) : key
             return !compareKeys.includes(comparisonKey)
         })
     }
 
     const objTarget = target as Record<string, any>
     return Object.keys(objTarget).reduce<Record<string, any>>((acc, key) => {
-        const comparisonKey = ignoreCase ? strToLowercase(key) : key
+        const comparisonKey: string = ignoreCase ? strToLowercase(key) : key
         if (!compareKeys.includes(comparisonKey)) {
             acc[key] = objTarget[key] // copy the key-value pair
         }
@@ -57,21 +57,21 @@ function except(target: string[] | Record<string, any>, keys: string[], ignoreCa
 function only(target: string[], keys: string[], ignoreCase?: boolean): string[]
 function only<T extends Record<string, any>>(target: T, keys: string[], ignoreCase?: boolean): Partial<T>
 function only(target: string[] | Record<string, any>, keys: string[], ignoreCase = false): string[] | Record<string, any> {
-    let compareKeys = keys
+    let compareKeys: string[] = keys
     if (ignoreCase) {
-        compareKeys = keys.map(strToLowercase)
+        compareKeys = keys.map(strToLowercase) as string[]
     }
 
     if (Array.isArray(target)) {
         return target.filter((key) => {
-            const comparisonKey = ignoreCase ? strToLowercase(key) : key
+            const comparisonKey: string = ignoreCase ? strToLowercase(key) : key
             return compareKeys.includes(comparisonKey)
         })
     }
 
     const objTarget = target as Record<string, any>
     return Object.keys(objTarget).reduce<Record<string, any>>((acc, key) => {
-        const comparisonKey = ignoreCase ? strToLowercase(key) : key
+        const comparisonKey: string = ignoreCase ? strToLowercase(key) : key
         if (compareKeys.includes(comparisonKey)) {
             acc[key] = objTarget[key] // copy the key-value pair
         }
