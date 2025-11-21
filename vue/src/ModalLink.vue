@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { modalPropNames, useModalStack } from './modalStack'
 import { ref, provide, computed, watch, useAttrs, onBeforeUnmount } from 'vue'
 import { only, rejectNullValues } from './helpers'
@@ -71,14 +71,14 @@ const props = defineProps({
     },
 })
 
-const loading = ref(false)
+const loading = ref<boolean>(false)
 const modalStack = useModalStack()
 const modalContext = ref(null)
 
 provide('modalContext', modalContext)
 
 const emit = defineEmits(['after-leave', 'blur', 'close', 'error', 'focus', 'start', 'success'])
-const isBlurred = ref(false)
+const isBlurred = ref<boolean>(false)
 
 const shouldNavigate = computed(() => {
     return props.navigate ?? getConfig('navigate')

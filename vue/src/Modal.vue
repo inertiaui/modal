@@ -1,12 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { DialogOverlay, DialogPortal, DialogRoot } from 'reka-ui'
 import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
 import { onBeforeMount, onUnmounted, ref } from 'vue'
+import { type Modal } from './modalStack';
 
-const modal = ref(null)
-const rendered = ref(false)
+const modal = ref<Modal|null>(null)
+const rendered = ref<boolean>(false)
 
 defineEmits(['after-leave', 'blur', 'close', 'focus', 'success'])
 

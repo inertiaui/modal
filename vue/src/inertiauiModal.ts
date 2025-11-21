@@ -9,7 +9,6 @@ import ModalRoot from './ModalRoot.vue'
 import WhenVisible from './WhenVisible.vue'
 import { Method, QueryStringArrayFormatOption } from '@inertiajs/core'
 
-
 type OptionsType = {
     method: Method
     data: Record<string, any>

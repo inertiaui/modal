@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { getConfig, getConfigByType } from './config'
 import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, watch } from 'vue'
 import { useModalStack } from './modalStack'
@@ -10,7 +10,7 @@ const props = defineProps({
         required: false,
     },
     // The slideover prop in on top because we need to know if it's a slideover
-    // before we can determine the defaule value of other props
+    // before we can determine the default value of other props
     slideover: {
         type: Boolean,
         default: null,

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 // See: https://github.com/inertiajs/inertia/blob/48bcd21fb7daf467d0df1bfde2408f161f94a579/packages/vue3/src/deferred.ts
 import { computed, inject } from 'vue'
 

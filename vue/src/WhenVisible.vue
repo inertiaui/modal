@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 // See: https://github.com/inertiajs/inertia/blob/48bcd21fb7daf467d0df1bfde2408f161f94a579/packages/vue3/src/whenVisible.ts
 import { ref, onMounted, onUnmounted, inject } from 'vue'
 
@@ -16,9 +16,9 @@ if (!modalContext) {
     throw new Error('Deferred component must be used inside a Modal component')
 }
 
-const loaded = ref(false)
-const fetching = ref(false)
-const rootElement = ref(null)
+const loaded = ref<boolean>(false)
+const fetching = ref<boolean>(false)
+const rootElement = ref<Element | null>(null)
 let observer = null
 
 const getReloadParams = () => {
