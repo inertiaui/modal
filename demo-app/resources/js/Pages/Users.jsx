@@ -33,7 +33,13 @@ export default function Users({ users, random, navigate, deferred }) {
                                     <div className="text-sm text-gray-500">{user.email}</div>
                                 </div>
                                 <div className="ml-auto flex items-center space-x-2">
-                                    <Link href={`/users/${user.id}`} className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md">View</Link>
+                                    <Link
+                                        dusk={`view-user-${user.id}`}
+                                        href={`/users/${user.id}`}
+                                        className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                    >
+                                        View
+                                    </Link>
 
                                     <ModalLink
                                         navigate={navigate}

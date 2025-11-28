@@ -10,7 +10,6 @@ const modalStack = useModalStack()
 const $page = usePage()
 
 let isNavigating = false
-let previousModalOnBase = null
 let initialModalStillOpened = false
 
 onUnmounted(router.on('start', () => (isNavigating = true)))
@@ -20,13 +19,12 @@ onUnmounted(
         const modalOnBase = $event.detail.page.props._inertiaui_modal
 
         if (!modalOnBase) {
-            previousModalOnBase && modalStack.closeAll()
+            modalStack.closeAll()
             modalStack.setBaseUrl(null)
             initialModalStillOpened = false
             return
         }
 
-        previousModalOnBase = modalOnBase
         modalStack.setBaseUrl(modalOnBase.baseUrl)
 
         modalStack
