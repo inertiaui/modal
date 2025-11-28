@@ -551,7 +551,6 @@ export const ModalRoot = ({ children }) => {
     const $page = usePage()
 
     let isNavigating = false
-    let previousModalOnBase = false
     let initialModalStillOpened = $page.props?._inertiaui_modal ? true : false
 
     useEffect(() => router.on('start', () => (isNavigating = true)), [])
@@ -562,13 +561,12 @@ export const ModalRoot = ({ children }) => {
                 const modalOnBase = $event.detail.page.props._inertiaui_modal
 
                 if (!modalOnBase) {
-                    previousModalOnBase && context.closeAll()
+                    context.closeAll()
                     baseUrl = null
                     initialModalStillOpened = false
                     return
                 }
 
-                previousModalOnBase = modalOnBase
                 baseUrl = modalOnBase.baseUrl
 
                 context

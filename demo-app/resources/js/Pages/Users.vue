@@ -54,7 +54,13 @@ function alertGreeting(greeting) {
                             <div class="text-sm text-gray-500">{{ user.email }}</div>
                         </div>
                         <div class="ml-auto flex items-center space-x-2">
-                            <Link :href="`/users/${user.id}`" class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md">View</Link>
+                            <Link
+                                :href="`/users/${user.id}`"
+                                :dusk="'view-user-' + user.id"
+                                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                            >
+                                View
+                            </Link>
                             <ModalLink
                                 :navigate="navigate"
                                 :dusk="'edit-user-' + user.id"

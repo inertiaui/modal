@@ -10,7 +10,6 @@ const modalStack = useModalStack()
 const $page = usePage()
 
 let isNavigating = false
-let previousModalOnBase = null
 let initialModalStillOpened = false
 
 onUnmounted(router.on('start', () => (isNavigating = true)))
@@ -26,7 +25,6 @@ onUnmounted(
             return
         }
 
-        previousModalOnBase = modalOnBase
         modalStack.setBaseUrl(modalOnBase.baseUrl)
 
         modalStack
