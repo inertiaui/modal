@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import CloseButton from './CloseButton.vue'
 import { DialogContent, DialogTitle, VisuallyHidden } from 'reka-ui'
