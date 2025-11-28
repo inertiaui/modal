@@ -20,7 +20,7 @@ onUnmounted(
         const modalOnBase = $event.detail.page.props._inertiaui_modal
 
         if (!modalOnBase) {
-            previousModalOnBase && modalStack.closeAll()
+            modalStack.closeAll()
             modalStack.setBaseUrl(null)
             initialModalStillOpened = false
             return
