@@ -101,9 +101,30 @@ class Modal implements Responsable
      */
     public function resolveBaseUrl(Request $request): ?string
     {
-        return $request->header(self::HEADER_BASE_URL)
-            ?? $request->header('referer')
-            ?? $this->getBaseUrl();
+        // Check each source in priority order, skipping any that match current path (prevents infinite loops)
+        $candidates = [
+            $request->header(self::HEADER_BASE_URL),
+            $request->header('referer'),
+            $this->getBaseUrl(),
+        ];
+
+        foreach ($candidates as $baseUrl) {
+            if ($baseUrl !== null && ! $request->is($this->extractPath($baseUrl))) {
+                return $baseUrl;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract and normalize the path from a URL for comparison.
+     */
+    protected function extractPath(string $url): string
+    {
+        $decoded = rawurldecode(trim((string) parse_url($url, PHP_URL_PATH), '/'));
+
+        return $decoded !== '' ? $decoded : '/';
     }
 
     /**
