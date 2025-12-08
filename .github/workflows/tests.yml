@@ -10,6 +10,7 @@ on:
       - "**.php"
       - "**.vue"
       - "**/composer.json"
+      - "**/package.json"
       - "**/package-lock.json"
       - "demo-app/{.env.example,composer.json,package.json,phpunit.xml.dist}"
       - ".github/workflows/tests.yml"
