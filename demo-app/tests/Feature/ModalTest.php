@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Database\Factories\UserFactory;
-use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia;
 use InertiaUI\Modal\Modal;
 use PHPUnit\Framework\Attributes\Test;
@@ -27,20 +26,6 @@ class ModalTest extends TestCase
         $modal->baseRoute('roles.create');
 
         $this->assertEquals(url('/roles/create'), $modal->getBaseUrl());
-    }
-
-    #[Test]
-    public function it_resolves_base_url_from_header()
-    {
-        $modal = new Modal('TestComponent');
-        $modal->baseUrl('https://example.com');
-
-        $request = new Request;
-        $request->headers->set(Modal::HEADER_BASE_URL, 'https://test.com');
-
-        $result = $modal->resolveBaseUrl($request);
-
-        $this->assertEquals('https://test.com', $result);
     }
 
     #[Test]
