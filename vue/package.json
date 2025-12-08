@@ -10,11 +10,11 @@
         "src"
     ],
     "module": "./dist/inertiaui-modal.js",
-    "main": "./dist/inertiaui-modal.umd.js",
+    "main": "./dist/inertiaui-modal.umd.cjs",
     "exports": {
         ".": {
             "import": "./dist/inertiaui-modal.js",
-            "require": "./dist/inertiaui-modal.umd.js"
+            "require": "./dist/inertiaui-modal.umd.cjs"
         }
     },
     "scripts": {
