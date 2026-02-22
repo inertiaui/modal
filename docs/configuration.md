@@ -58,6 +58,37 @@ export default function UserIndex() {
 
 :::
 
+### `close-on-click-outside`
+
+The `close-on-click-outside` prop allows you to control whether the modal closes when clicking outside of it (on the backdrop). By default, this is set to `true`. If you set `close-on-click-outside` to `false`, the modal will not close when clicking on the backdrop, but will still close when pressing the `Esc` key.
+
+This is useful when you want to prevent accidental closes from backdrop clicks, but still allow the user to press `Esc` to close the modal.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" :close-on-click-outside="false">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" closeOnClickOutside={false}>
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+> [!TIP] closeExplicitly vs closeOnClickOutside
+> Use `closeExplicitly` when you want to disable **both** the backdrop click and `Esc` key close behavior. Use `closeOnClickOutside` when you only want to disable the backdrop click but still allow `Esc` to close the modal.
+
 ### `max-width`
 
 The `max-width` lets you specify the maximum width of the modal. For modals, the default value is `2xl`, and for slideover, the default value is `md`. These values correspond to Tailwind CSS conventions. Valid values are `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl`, `5xl`, `6xl`, and `7xl`.
@@ -212,9 +243,11 @@ You can call the `putConfig` function with an object containing the configuratio
 putConfig({
     type: 'modal',
     navigate: false,
+    useNativeDialog: true,
     modal: {
         closeButton: true,
         closeExplicitly: false,
+        closeOnClickOutside: true,
         maxWidth: '2xl',
         paddingClasses: 'p-4 sm:p-6',
         panelClasses: 'bg-white rounded',
@@ -223,11 +256,22 @@ putConfig({
     slideover: {
         closeButton: true,
         closeExplicitly: false,
+        closeOnClickOutside: true,
         maxWidth: 'md',
         paddingClasses: 'p-4 sm:p-6',
         panelClasses: 'bg-white min-h-screen',
         position: 'right',
     },
+})
+```
+
+### Native Dialog
+
+By default, modals use the native HTML `<dialog>` element, which provides better accessibility and native backdrop handling. You can disable this behavior by setting `useNativeDialog` to `false`:
+
+```js
+putConfig({
+    useNativeDialog: false,
 })
 ```
 

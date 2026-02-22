@@ -10,6 +10,10 @@ vi.mock('@inertiajs/vue3', () => ({
         resolveComponent: vi.fn(),
     },
     usePage: vi.fn(),
+    progress: {
+        start: vi.fn(),
+        finish: vi.fn(),
+    },
 }))
 
 vi.mock('axios')
@@ -160,8 +164,7 @@ describe('modalStack', () => {
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,another',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                    'X-InertiaUI-Modal-Use-Router': 0,
-                    'X-InertiaUI-Modal-Base-Url': null,
+                                        'X-InertiaUI-Modal-Base-Url': null,
                 },
             })
 
@@ -198,8 +201,7 @@ describe('modalStack', () => {
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                    'X-InertiaUI-Modal-Use-Router': 0,
-                    'X-InertiaUI-Modal-Base-Url': null,
+                                        'X-InertiaUI-Modal-Base-Url': null,
                 },
             })
 
@@ -236,8 +238,7 @@ describe('modalStack', () => {
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,third',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                    'X-InertiaUI-Modal-Use-Router': 0,
-                    'X-InertiaUI-Modal-Base-Url': null,
+                                        'X-InertiaUI-Modal-Base-Url': null,
                 },
             })
 
@@ -290,8 +291,7 @@ describe('modalStack', () => {
                     'X-Inertia': true,
                     'X-Inertia-Version': '1.0',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                    'X-InertiaUI-Modal-Use-Router': 0,
-                    'X-InertiaUI-Modal-Base-Url': '',
+                                        'X-InertiaUI-Modal-Base-Url': expect.any(String),
                 },
             })
 
@@ -316,7 +316,7 @@ describe('modalStack', () => {
 
     describe('modalPropNames', () => {
         it('should contain the correct prop names', () => {
-            expect(modalPropNames).toEqual(['closeButton', 'closeExplicitly', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover'])
+            expect(modalPropNames).toEqual(['closeButton', 'closeExplicitly', 'closeOnClickOutside', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover'])
         })
     })
 })

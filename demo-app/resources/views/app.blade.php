@@ -17,6 +17,14 @@
         @endif
 
         @inertiaHead
+
+        @if(app()->environment('testing'))
+            <style>
+                *[class*="duration-"] {
+                    transition-duration: 0ms !important;
+                }
+            </style>
+        @endif
     </head>
 
     <body class="font-sans antialiased dark:bg-gray-950 dark:text-white bg-gray-100">

@@ -1,6 +1,6 @@
 <script setup>
 import { getConfig, getConfigByType } from './config'
-import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, watch } from 'vue'
+import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, watch, unref } from 'vue'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
 
@@ -20,6 +20,10 @@ const props = defineProps({
         default: null,
     },
     closeExplicitly: {
+        type: Boolean,
+        default: null,
+    },
+    closeOnClickOutside: {
         type: Boolean,
         default: null,
     },
@@ -50,6 +54,7 @@ const config = computed(() => {
         slideover: isSlideover,
         closeButton: props.closeButton ?? getConfigByType(isSlideover, 'closeButton'),
         closeExplicitly: props.closeExplicitly ?? getConfigByType(isSlideover, 'closeExplicitly'),
+        closeOnClickOutside: props.closeOnClickOutside ?? getConfigByType(isSlideover, 'closeOnClickOutside'),
         maxWidth: props.maxWidth ?? getConfigByType(isSlideover, 'maxWidth'),
         paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, 'paddingClasses'),
         panelClasses: props.panelClasses ?? getConfigByType(isSlideover, 'panelClasses'),
@@ -136,14 +141,28 @@ watch(
 
 watch(
     () => modalContext.value?.isOpen,
-    (isOpen) => {
-        isOpen ? emits('success') : emits('close')
+    (isOpen, previousIsOpen) => {
+        if (isOpen) {
+            emits('success')
+        } else if (previousIsOpen === true) {
+            // Only emit 'close' when transitioning from open to closed,
+            // not when the component first mounts with isOpen undefined
+            emits('close')
+        }
     },
     { immediate: true },
 )
 
 const nextIndex = computed(() => {
     return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index
+})
+
+// Computed to unwrap the modal's props ref for slot binding (#152)
+const modalProps = computed(() => {
+    const ctx = modalContext.value
+    if (!ctx) return {}
+    // The Modal class stores props as a ref, so we need to unref it
+    return unref(ctx.props) ?? {}
 })
 
 defineOptions({
@@ -154,6 +173,7 @@ defineOptions({
 <template>
     <slot
         v-if="modalContext.shouldRender"
+        v-bind="modalProps"
         :id="modalContext.id"
         :after-leave="modalContext.afterLeave"
         :close="modalContext.close"

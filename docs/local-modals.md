@@ -41,3 +41,69 @@ export default function Page() {
 ```
 
 :::
+
+## Passing Props to Local Modals
+
+You can pass props to a local modal by using the `visitModal` function with a `props` option. The props will be available in the modal's slot:
+
+::: code-group
+
+```vue [Vue]
+<script setup>
+import { Modal, visitModal } from '@inertiaui/modal-vue'
+
+function openConfirmModal() {
+    visitModal('#confirm-action', {
+        props: {
+            message: 'Are you sure you want to delete this item?',
+            itemId: 123
+        }
+    })
+}
+</script>
+
+<template>
+    <button @click="openConfirmModal">Delete Item</button>
+
+    <Modal name="confirm-action" v-slot="{ message, itemId }">
+        <p>{{ message }}</p>
+        <button @click="deleteItem(itemId)">Confirm</button>
+    </Modal>
+</template>
+```
+
+```jsx [React]
+import { Modal, useModalStack } from '@inertiaui/modal-react'
+
+export default function Page() {
+    const { visitModal } = useModalStack()
+
+    function openConfirmModal() {
+        visitModal('#confirm-action', {
+            props: {
+                message: 'Are you sure you want to delete this item?',
+                itemId: 123
+            }
+        })
+    }
+
+    return (
+        <div>
+            <button onClick={openConfirmModal}>Delete Item</button>
+
+            <Modal name="confirm-action">
+                {({ message, itemId }) => (
+                    <div>
+                        <p>{message}</p>
+                        <button onClick={() => deleteItem(itemId)}>Confirm</button>
+                    </div>
+                )}
+            </Modal>
+        </div>
+    );
+}
+```
+
+:::
+
+This is particularly useful for reusable confirmation modals or when you need to pass dynamic data to a local modal without making a server request.

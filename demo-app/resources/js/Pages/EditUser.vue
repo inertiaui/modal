@@ -75,19 +75,19 @@ function reloadWithHeader() {
             <div class="grid grid-cols-3 gap-6">
                 <div class="col-span-6 sm:col-span-3">
                     <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input v-model="form.name" type="text" id="name" name="name" autocomplete="off" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <input v-model="form.name" type="text" id="name" name="name" autocomplete="off" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-xs sm:text-sm border-gray-300 rounded-md">
                     <p v-if="form.errors.name" class="mt-2 text-sm text-red-600" v-text="form.errors.name"></p>
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input v-model="form.email" type="email" id="email" name="email" autocomplete="off" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <input v-model="form.email" type="email" id="email" name="email" autocomplete="off" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-xs sm:text-sm border-gray-300 rounded-md">
                     <p v-if="form.errors.email" class="mt-2 text-sm text-red-600" v-text="form.errors.email"></p>
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                     <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
-                    <select v-model="form.role_id" id="role" name="role" autocomplete="off" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <select v-model="form.role_id" id="role" name="role" autocomplete="off" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-xs focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         <option v-for="(role, id) in props.roles" :key="id" :value="id" v-text="role"></option>
                     </select>
 

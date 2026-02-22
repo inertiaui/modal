@@ -16,6 +16,10 @@ Here's a summary of the features:
 - Reload props in modals
 - Easy communication between nested/stacked modals
 - Highly configurable
+- **Prefetch support** for faster modal loading
+- **Native HTML dialog** support for better accessibility
+- **TypeScript** type definitions included
+- **Local modals** with prop passing
 
 ## Example
 

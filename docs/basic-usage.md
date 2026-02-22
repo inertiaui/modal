@@ -213,6 +213,152 @@ export default function UserIndex() {
 
 :::
 
+In Vue, you can also pass a component to the `as` prop:
+
+```vue
+<script setup>
+import { ModalLink } from '@inertiaui/modal-vue'
+import MyCustomButton from './MyCustomButton.vue'
+</script>
+
+<template>
+    <ModalLink href="/users/create" :as="MyCustomButton">
+        Create User
+    </ModalLink>
+</template>
+```
+
+### Prefetching
+
+The `ModalLink` component supports prefetching the modal content before the user clicks the link. This can significantly improve the perceived performance of your application. You can enable prefetching using the `prefetch` prop.
+
+The `prefetch` prop accepts the following values:
+
+- `hover` - Prefetch when the user hovers over the link (with a 75ms delay to avoid accidental prefetches)
+- `click` - Prefetch on mousedown (just before the click is registered)
+- `mount` - Prefetch as soon as the component is mounted
+
+You can use a single value or an array of values:
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <!-- Prefetch on hover -->
+    <ModalLink href="/users/create" prefetch="hover">
+        Create User
+    </ModalLink>
+
+    <!-- Prefetch on click (mousedown) -->
+    <ModalLink href="/users/create" prefetch="click">
+        Create User
+    </ModalLink>
+
+    <!-- Prefetch on mount -->
+    <ModalLink href="/users/create" prefetch="mount">
+        Create User
+    </ModalLink>
+
+    <!-- Multiple triggers -->
+    <ModalLink href="/users/create" :prefetch="['hover', 'click']">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <>
+            {/* Prefetch on hover */}
+            <ModalLink href="/users/create" prefetch="hover">
+                Create User
+            </ModalLink>
+
+            {/* Prefetch on click (mousedown) */}
+            <ModalLink href="/users/create" prefetch="click">
+                Create User
+            </ModalLink>
+
+            {/* Prefetch on mount */}
+            <ModalLink href="/users/create" prefetch="mount">
+                Create User
+            </ModalLink>
+
+            {/* Multiple triggers */}
+            <ModalLink href="/users/create" prefetch={['hover', 'click']}>
+                Create User
+            </ModalLink>
+        </>
+    );
+}
+```
+
+:::
+
+#### Cache Duration
+
+By default, prefetched content is cached for 30 seconds. You can customize this using the `cache-for` prop (in milliseconds):
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <!-- Cache for 60 seconds -->
+    <ModalLink href="/users/create" prefetch="hover" :cache-for="60000">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" prefetch="hover" cacheFor={60000}>
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+#### Prefetch Events
+
+The `ModalLink` component emits events when prefetching starts and completes:
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink
+        href="/users/create"
+        prefetch="hover"
+        @prefetching="console.log('Prefetching...')"
+        @prefetched="console.log('Prefetched!')"
+    >
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink
+            href="/users/create"
+            prefetch="hover"
+            onPrefetching={() => console.log('Prefetching...')}
+            onPrefetched={() => console.log('Prefetched!')}
+        >
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
 ### Loading State
 
 The `ModalLink` component has a `loading` slot prop that you can use to show a loading state while the modal is being fetched. You can use this prop to display a loading spinner or text.

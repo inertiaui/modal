@@ -8,9 +8,9 @@ You're probably the fastest if you just inspect the modal in your browser and se
 
 | Class | Description |
 | --- | --- |
-| `im-dialog` | The [Headless UI dialog](https://headlessui.com/v1/vue/dialog) component |
+| `im-dialog` | The dialog element (native `<dialog>` or `<div>` based on config) |
 | `im-close-button` | The close button |
-| `im-backdrop` | The backdrop behind the modal |
+| `im-backdrop` | The backdrop behind the modal (only rendered when `useNativeDialog` is `false`) |
 | `im-modal-container` | The screen-filling container for the modal |
 | `im-modal-positioner` | The container that positions the modal vertically |
 | `im-modal-wrapper` | The container that sets the maximum width of the modal |
@@ -19,3 +19,15 @@ You're probably the fastest if you just inspect the modal in your browser and se
 | `im-slideover-positioner` | The container that positions the slideover vertically |
 | `im-slideover-wrapper` | The container that sets the maximum width of the slideover |
 | `im-slideover-content` | The actual slideover content |
+
+## Native Dialog Backdrop
+
+When using the native dialog (`useNativeDialog: true`, which is the default), the backdrop is rendered using the `::backdrop` pseudo-element. You can style it using CSS:
+
+```css
+dialog.im-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+```
+
+Note that Tailwind CSS cannot target the `::backdrop` pseudo-element, so you'll need to use regular CSS for this. The default backdrop has a semi-transparent dark background with a blur effect.

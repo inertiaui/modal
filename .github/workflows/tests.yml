@@ -12,44 +12,39 @@ on:
       - "**/composer.json"
       - "**/package.json"
       - "**/package-lock.json"
-      - "demo-app/{.env.example,composer.json,package.json,phpunit.xml.dist}"
+      - "demo-app/.env.example"
+      - "demo-app/phpunit.xml.dist"
       - ".github/workflows/tests.yml"
 
 jobs:
   tests:
-    name: Dusk L${{ matrix.laravel }} - Inertia ${{ matrix.inertia }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}
-    timeout-minutes: 10
+    name: Pest L${{ matrix.laravel }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}, Native Dialog ${{ matrix.native_dialog }}
+    timeout-minutes: 15
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        laravel: [12.0, 11.0, 10.0]
-        inertia: [v1, v2]
-        stack: [react-18, react-19, vue]
+        laravel: [12.0, 11.0]
+        stack: [react, vue]
         app_mounting: [auto, custom]
-        exclude:
-          - inertia: v2
-            laravel: 10.0
-          - inertia: v1
-            laravel: 12.0
-          - laravel: 12.0
-            stack: react-18
-          - laravel: 12.0
-            stack: react-19
-          - laravel: 11.0
-            stack: react-18
-          - laravel: 11.0
-            stack: react-19
+        native_dialog: [true, false]
 
     env:
       APP_URL: "http://127.0.0.1:8000"
       DB_CONNECTION: sqlite
       APP_STACK: ${{ matrix.stack }}
+      VITE_USE_NATIVE_DIALOG: ${{ matrix.native_dialog }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Checkout vanilla package
+        run: |
+          cd ..
+          git clone https://github.com/inertiaui/vanilla.git vanilla
+          cd vanilla && npm ci && npm run build
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -57,6 +52,11 @@ jobs:
           php-version: 8.3
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, mysql, mysqli, pdo_mysql
           coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -68,9 +68,8 @@ jobs:
           path: |
             ${{ steps.composer-cache.outputs.dir }}
             ~/.npm
-          key: ${{ runner.os }}-${{ matrix.stack }}-${{ matrix.inertia }}-${{ hashFiles('**/composer.lock', '**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ matrix.stack }}-${{ hashFiles('**/composer.lock', '**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.stack }}-${{ matrix.inertia }}-
             ${{ runner.os }}-${{ matrix.stack }}-
             ${{ runner.os }}-
 
@@ -80,28 +79,30 @@ jobs:
           cp .env.example .env
 
       - name: Set React Environment Variables
-        if: ${{ matrix.stack == 'react-18' || matrix.stack == 'react-19' }}
+        if: ${{ matrix.stack == 'react' }}
         run: |
           cd demo-app
           sed -i -e "s|APP_STACK=vue|APP_STACK=react|g" .env
 
       - name: Build React library
-        if: ${{ matrix.stack == 'react-18' || matrix.stack == 'react-19' }}
+        if: ${{ matrix.stack == 'react' }}
         run: |
           # we need eslint-plugin-vue for files like helpers.js
+          # use npm install (not ci) because vanilla uses file: reference
           cd vue
-          npm ci
+          npm install
           npm list @inertiajs/vue3
           cd ../react
-          npm ci
+          npm install
           npm list @inertiajs/react
           npm run build
 
       - name: Build Vue library
         if: ${{ matrix.stack == 'vue' }}
         run: |
+          # use npm install (not ci) because vanilla uses file: reference
           cd vue
-          npm ci
+          npm install
           npm list @inertiajs/vue3
           npm run build
 
@@ -121,17 +122,16 @@ jobs:
       - name: Prepare Laravel app
         run: |
           cd demo-app
-          composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:${{ matrix.inertia == 'v1' && '^1.3' || '^2.0' }}
+          composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:^2.0
           composer install --no-progress --prefer-dist --optimize-autoloader
           php artisan about
           npm ci
-          if [ "${{ matrix.stack }}" == "react-18" ]; then
-            npm install react@^18.2.0 react-dom@^18.2.0
-          elif [ "${{ matrix.stack }}" == "react-19" ]; then
+          if [ "${{ matrix.stack }}" == "react" ]; then
             npm install react@^19.0.0 react-dom@^19.0.0
           fi
           npm list react react-dom vue
-          npm install @inertiajs/react@${{ matrix.inertia == 'v1' && '1.3.0' || '2.0.0' }} @inertiajs/vue3@${{ matrix.inertia == 'v1' && '1.3.0' || '2.0.0' }}
+          npm install @inertiajs/react@^2.3.15 @inertiajs/vue3@^2.3.15
+          npm install --install-links ../../vanilla
           npm install --install-links ../react
           npm install --install-links ../vue
           test -d node_modules/@inertiaui/modal-react || exit 1
@@ -141,33 +141,22 @@ jobs:
           php artisan key:generate
           touch database/database.sqlite
           php artisan migrate:fresh --seed
-          php artisan dusk:chrome-driver --detect
-          php artisan optimize
+
+      - name: Install Playwright
+        run: |
+          cd demo-app
+          npx playwright install --with-deps chromium
 
       - name: Run tests
         run: |
           cd demo-app
-          php artisan test
-
-      - name: Start servers
-        run: |
-          cd demo-app
-          php artisan serve --no-reload &
-          ./vendor/laravel/dusk/bin/chromedriver-linux --port=9515 &
-
-      - name: Run Dusk tests
-        run: |
-          cd demo-app
-          php artisan migrate:fresh --seed
-          php artisan dusk
+          ./vendor/bin/pest
 
       - name: Upload artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v5
         with:
-          name: dusk-artifacts
+          name: pest-artifacts-${{ matrix.laravel }}-${{ matrix.stack }}-${{ matrix.app_mounting }}-${{ matrix.native_dialog }}
           path: |
-            demo-app/tests/Browser/screenshots
-            demo-app/tests/Browser/__snapshots__
-            demo-app/tests/Browser/console
+            demo-app/tests/Browser/Screenshots
             demo-app/storage/logs

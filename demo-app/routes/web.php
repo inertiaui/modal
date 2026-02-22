@@ -7,14 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use InertiaUI\Modal\Support;
 
-$deferred = fn (string $data) => Support::isInertiaV2()
-    ? Inertia::defer(fn () => request()->header('X-InertiaUI-Modal-Base-Url')
-        ? 'Deferred data with Base URL header: '.$data
-        : 'Deferred data without Base URL header: '.$data
-    )
-    : 'Deferred not supported';
+$deferred = fn (string $data) => Inertia::defer(fn () => request()->header('X-InertiaUI-Modal-Base-Url')
+    ? 'Deferred data with Base URL header: '.$data
+    : 'Deferred data without Base URL header: '.$data
+);
 
 Route::get('/login', function () {
     Auth::loginUsingId(1);
@@ -37,21 +34,17 @@ Route::get('/modal-events', function (User $user) {
 
 // Modal Props
 Route::get('/modal-props-ignore-first-load', function () {
-    $inertiaV2 = Support::isInertiaV2();
+    $defer = fn (int $delay, string $data, string $group) => Inertia::defer(function () use ($delay, $data) {
+        usleep($delay * 1000);
 
-    $defer = fn (int $delay, string $data, string $group) => $inertiaV2
-        ? Inertia::defer(function () use ($delay, $data) {
-            usleep($delay * 1000);
+        return $data;
+    }, $group);
 
-            return $data;
-        }, $group) : $data;
+    $optional = fn (int $delay, string $data) => Inertia::lazy(function () use ($delay, $data) {
+        usleep($delay * 1000);
 
-    $optional = fn (int $delay, string $data) => $inertiaV2
-        ? Inertia::lazy(function () use ($delay, $data) {
-            usleep($delay * 1000);
-
-            return $data;
-        }) : $data;
+        return $data;
+    });
 
     return Inertia::modal('ModalPropsIgnoreFirstLoad', [
         'deferA' => $defer(250, 'Deferred data A- '.Str::random(), 'group-a'),
@@ -131,6 +124,44 @@ Route::post('/data', function () {
         'message' => request()->input('message'),
     ]);
 });
+
+// Test redirect()->back() behavior (for issue #153)
+Route::post('/test-redirect-back', function () {
+    session()->flash('message', 'Redirect back worked correctly!');
+
+    return back();
+})->name('test-redirect-back');
+
+// Test for issue #115: Base URL returns another modal (should not cause infinite recursion)
+Route::get('/modal-with-modal-base', function () {
+    return Inertia::modal('EditUser', [
+        'user' => User::first(),
+        'roles' => Role::pluck('name', 'id'),
+        'randomKey' => 'test',
+    ])->baseUrl('/users/1/edit'); // Base URL points to another modal
+})->name('modal-with-modal-base');
+
+// Test for issue #134: Invalid modal response (simulates session expiration)
+Route::get('/modal-invalid-response', function () {
+    // Simulate what happens when session expires: redirect to login instead of modal response
+    return redirect('/login');
+})->name('modal-invalid-response');
+
+// Test that checks if X-InertiaUI-Modal-Base-Url header is sent (for issue #153)
+Route::post('/test-modal-header-check', function () {
+    $hasModalHeader = request()->hasHeader('X-InertiaUI-Modal');
+    $hasBaseUrlHeader = request()->hasHeader('X-InertiaUI-Modal-Base-Url');
+    $baseUrl = request()->header('X-InertiaUI-Modal-Base-Url');
+
+    // If we have base URL header but no modal header, that's the bug!
+    if (! $hasModalHeader && $hasBaseUrlHeader && $baseUrl) {
+        session()->flash('message', "BUG: Base URL header sent without modal header: {$baseUrl}");
+    } else {
+        session()->flash('message', 'OK: No stale modal headers detected');
+    }
+
+    return back();
+})->name('test-modal-header-check');
 
 // General pages
 Route::get('{page}', function ($page) use ($deferred) {

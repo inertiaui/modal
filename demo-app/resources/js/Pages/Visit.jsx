@@ -1,9 +1,14 @@
 import { Modal, ModalLink, useModalStack } from '@inertiaui/modal-react';
 import Container from './Container';
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 
 export default function Visit({ navigate }) {
     const { visitModal } = useModalStack();
+    const testRedirectBackForm = useForm({});
+
+    const testRedirectBack = () => {
+        testRedirectBackForm.post('/test-redirect-back');
+    };
 
     const openLocalModal = () => {
         visitModal('#local');
@@ -48,6 +53,17 @@ export default function Visit({ navigate }) {
                             Open Modal with props that ignore first load
                         </ModalLink>
                     </div>
+                </div>
+
+                <div className="mt-8">
+                    <p className="text-lg font-medium text-gray-900">Visit Page</p>
+                    <button
+                        dusk="test-redirect-back"
+                        onClick={testRedirectBack}
+                        className="mt-2 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
+                    >
+                        Test Redirect Back
+                    </button>
                 </div>
             </Container>
             <Modal name="local">

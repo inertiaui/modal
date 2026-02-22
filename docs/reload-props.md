@@ -48,6 +48,91 @@ reload({ data: { email: 'john.doe@example.com' } })
 reload({ headers: { 'X-Custom-Header': 'value' } })
 ```
 
+## Lifecycle Events
+
+The `reload` method supports Inertia-style lifecycle events that you can use to track the reload state:
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <Modal #default="{ reload }">
+        <button @click="reloadWithEvents(reload)">
+            Reload permissions
+        </button>
+    </Modal>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const loading = ref(false)
+
+function reloadWithEvents(reload) {
+    reload({
+        only: ['permissions'],
+        onStart: () => {
+            loading.value = true
+        },
+        onSuccess: (response) => {
+            console.log('Reload successful')
+        },
+        onError: (error) => {
+            console.error('Reload failed', error)
+        },
+        onFinish: () => {
+            loading.value = false
+        },
+    })
+}
+</script>
+```
+
+```jsx [React]
+import { useState } from 'react'
+
+export default function MyPage({ permissions }) {
+    const [loading, setLoading] = useState(false)
+
+    function reloadWithEvents(reload) {
+        reload({
+            only: ['permissions'],
+            onStart: () => {
+                setLoading(true)
+            },
+            onSuccess: (response) => {
+                console.log('Reload successful')
+            },
+            onError: (error) => {
+                console.error('Reload failed', error)
+            },
+            onFinish: () => {
+                setLoading(false)
+            },
+        })
+    }
+
+    return (
+        <Modal>
+            {({ reload }) => (
+                <button onClick={() => reloadWithEvents(reload)} disabled={loading}>
+                    {loading ? 'Loading...' : 'Reload permissions'}
+                </button>
+            )}
+        </Modal>
+    )
+}
+```
+
+:::
+
+The available lifecycle events are:
+
+- `onStart` - Called when the reload request starts
+- `onSuccess` - Called when the reload request succeeds (receives the Axios response)
+- `onError` - Called when the reload request fails (receives the error)
+- `onFinish` - Called when the reload request completes (regardless of success or failure)
+
 Alternatively, you can use the `ref` attribute to get a reference to the modal component and call the method on it.
 
 ::: code-group

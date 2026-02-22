@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": false,
+        "noImplicitAny": false,
+        "declaration": true,
+        "declarationDir": "./dist",
+        "emitDeclarationOnly": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "lib": ["DOM", "ES2020"],
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "jsx": "preserve",
+        "types": ["vite/client"]
+    },
+    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
+    "exclude": ["node_modules", "dist", "tests"]
+}

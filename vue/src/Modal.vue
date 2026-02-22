@@ -1,14 +1,15 @@
 <script setup>
-import { DialogOverlay, DialogPortal, DialogRoot } from 'reka-ui'
 import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
-import { onBeforeMount, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { lockScroll, markAriaHidden } from './dialog'
+import { getConfig } from './config'
 
 const modal = ref(null)
 const rendered = ref(false)
 
-defineEmits(['after-leave', 'blur', 'close', 'focus', 'success'])
+const emits = defineEmits(['after-leave', 'blur', 'close', 'focus', 'success'])
 
 defineExpose({
     afterLeave: () => modal.value?.afterLeave(),
@@ -42,25 +43,42 @@ defineExpose({
     },
 })
 
-let observer
+// Cleanup functions for scroll lock and aria-hidden
+let cleanupScrollLock = null
+let cleanupAriaHidden = null
 
-onBeforeMount(() => {
-    // Workaround for: https://github.com/unovue/reka-ui/issues/1540
-    observer = new MutationObserver(() => {
-        if (document.body.style.pointerEvents === 'none') {
-            document.body.style.pointerEvents = ''
-        }
-    })
-
-    observer.observe(document.body, { attributes: true, attributeFilter: ['style'] })
+onMounted(() => {
+    // Initial setup if modal is already open
+    // Only call lockScroll if not already set (onSuccessEvent may have already called it)
+    if (modal.value?.isOpen && !cleanupScrollLock) {
+        cleanupScrollLock = lockScroll()
+        cleanupAriaHidden = markAriaHidden('#app')
+    }
 })
 
 onUnmounted(() => {
-    if (observer) {
-        observer.disconnect()
-        observer = null
-    }
+    cleanupScrollLock?.()
+    cleanupAriaHidden?.()
 })
+
+// Handle open state changes
+function onSuccessEvent() {
+    emits('success')
+    if (!cleanupScrollLock) {
+        cleanupScrollLock = lockScroll()
+        cleanupAriaHidden = markAriaHidden('#app')
+    }
+}
+
+function onCloseEvent() {
+    emits('close')
+    cleanupScrollLock?.()
+    cleanupAriaHidden?.()
+    cleanupScrollLock = null
+    cleanupAriaHidden = null
+}
+
+const useNativeDialog = computed(() => getConfig('useNativeDialog'))
 </script>
 
 <template>
@@ -81,69 +99,67 @@ onUnmounted(() => {
             reload,
             setOpen,
             shouldRender,
+            ...props
         }"
-        @success="$emit('success')"
-        @close="$emit('close')"
-        @focus="$emit('focus')"
-        @blur="$emit('blur')"
+        @success="onSuccessEvent"
+        @close="onCloseEvent"
+        @focus="emits('focus')"
+        @blur="emits('blur')"
     >
-        <DialogRoot
-            :open="isOpen"
-            @update:open="setOpen"
-        >
-            <DialogPortal>
-                <div
-                    :data-inertiaui-modal-id="id"
-                    :data-inertiaui-modal-index="index"
-                    class="im-dialog relative z-20"
-                    :aria-hidden="!onTopOfStack"
+        <Teleport to="body">
+            <div
+                :data-inertiaui-modal-id="id"
+                :data-inertiaui-modal-index="index"
+                class="im-dialog relative z-20"
+                :aria-hidden="!onTopOfStack"
+            >
+                <!-- Only render backdrop for the first modal (non-native dialog mode) -->
+                <!-- Native dialog uses ::backdrop pseudo-element instead -->
+                <Transition
+                    v-if="index === 0 && !useNativeDialog"
+                    :appear="!rendered"
+                    enter-active-class="transition transform ease-in-out duration-300"
+                    enter-from-class="opacity-0"
+                    enter-to-class="opacity-100"
+                    leave-active-class="transition transform ease-in-out duration-300"
+                    leave-from-class="opacity-100"
+                    leave-to-class="opacity-0"
+                    @after-appear="rendered = true"
                 >
-                    <Transition
-                        v-if="index === 0 && onTopOfStack"
-                        :appear="!rendered"
-                        enter-active-class="transition transform ease-in-out duration-300"
-                        enter-from-class="opacity-0"
-                        enter-to-class="opacity-100"
-                        leave-active-class="transition transform ease-in-out duration-300"
-                        leave-from-class="opacity-100"
-                        leave-to-class="opacity-0"
-                        @after-appear="rendered = true"
-                    >
-                        <DialogOverlay class="im-backdrop fixed inset-0 z-30 bg-black/75" />
-                    </Transition>
-
-                    <!-- On multiple modals, only show a backdrop for the modal that is on top of the stack -->
                     <div
-                        v-if="index > 0 && onTopOfStack"
+                        v-if="isOpen"
                         class="im-backdrop fixed inset-0 z-30 bg-black/75"
                     />
+                </Transition>
 
-                    <!-- The modal/slideover content itself -->
-                    <component
-                        :is="config?.slideover ? SlideoverContent : ModalContent"
-                        :modal-context="modalContext"
+                <!-- The modal/slideover content itself -->
+                <component
+                    :is="config?.slideover ? SlideoverContent : ModalContent"
+                    :modal-context="modalContext"
+                    :config="config"
+                    :use-native-dialog="useNativeDialog"
+                    :is-first-modal="index === 0"
+                    @after-leave="$emit('after-leave')"
+                >
+                    <slot
+                        v-bind="props"
+                        :id="id"
+                        :after-leave="afterLeave"
+                        :close="close"
                         :config="config"
-                        @after-leave="$emit('after-leave')"
-                    >
-                        <slot
-                            :id="id"
-                            :after-leave="afterLeave"
-                            :close="close"
-                            :config="config"
-                            :emit="emit"
-                            :get-child-modal="getChildModal"
-                            :get-parent-modal="getParentModal"
-                            :index="index"
-                            :is-open="isOpen"
-                            :modal-context="modalContext"
-                            :on-top-of-stack="onTopOfStack"
-                            :reload="reload"
-                            :set-open="setOpen"
-                            :should-render="shouldRender"
-                        />
-                    </component>
-                </div>
-            </DialogPortal>
-        </DialogRoot>
+                        :emit="emit"
+                        :get-child-modal="getChildModal"
+                        :get-parent-modal="getParentModal"
+                        :index="index"
+                        :is-open="isOpen"
+                        :modal-context="modalContext"
+                        :on-top-of-stack="onTopOfStack"
+                        :reload="reload"
+                        :set-open="setOpen"
+                        :should-render="shouldRender"
+                    />
+                </component>
+            </div>
+        </Teleport>
     </HeadlessModal>
 </template>

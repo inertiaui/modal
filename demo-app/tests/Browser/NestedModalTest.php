@@ -1,69 +1,89 @@
 <?php
 
-namespace Tests\Browser;
-
 use App\Models\Role;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\DuskTestCase;
 
-class NestedModalTest extends DuskTestCase
-{
-    #[DataProvider('booleanProvider')]
-    #[Test]
-    public function it_can_open_a_second_modal_on_top_of_the_first_one(bool $navigate)
-    {
-        $this->browse(function (Browser $browser) use ($navigate) {
-            $firstUser = $browser->firstUser();
+it('maintains body scroll lock when opening nested modals', function (bool $navigate) {
+    $firstUser = firstUser();
 
-            $browser->visit('/users?'.($navigate ? 'navigate=1' : ''))
-                ->waitForFirstUser()
-                ->click("@edit-user-{$firstUser->id}")
-                ->waitForModal()
-                ->clickLink('Add Role')
-                ->waitForModal(1)
-                ->assertSeeIn('.im-dialog[data-inertiaui-modal-index="1"]', 'Create Role')
-                ->withinModal(function (Browser $browser) {
-                    // The first modal should be blurred
-                    $browser->assertAttributeContains('.im-modal-wrapper', 'class', 'blur-sm');
-                })
-                ->clickModalCloseButton(1)
-                ->waitUntilMissingModal(1)
-                ->withinModal(function (Browser $browser) {
-                    // The first modal should not be blurred anymore
-                    $browser->assertAttributeDoesntContain('.im-modal-wrapper', 'class', 'blur-sm');
-                })
-                ->press('Save')
-                ->waitUntilMissingText('Edit User')
-                ->waitUntilMissingModal();
-        });
-    }
+    $page = visit('/users?'.($navigate ? 'navigate=1' : ''))
+        ->waitForText($firstUser->name)
+        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->assertPresent(waitForModalSelector());
 
-    #[Test]
-    public function it_can_refresh_props_after_closing_the_second_modal()
-    {
-        $this->browse(function (Browser $browser) {
-            $newRoleName = Str::random();
+    // Check that body has scroll lock after first modal opens
+    $overflow = $page->script('window.getComputedStyle(document.body).overflow');
+    expect($overflow)->toBe('hidden');
 
-            $browser->visit('/users')
-                ->waitForFirstUser()
-                ->click('@edit-user-'.$browser->firstUser()->id)
-                ->waitForModal()
-                ->clickLink('Add Role')
-                ->waitForModal(1)
-                ->withinModal(function (Browser $browser) use ($newRoleName) {
-                    $browser->type('name', $newRoleName)->press('Save');
-                }, 1)
-                ->waitUntilMissingModal(1)
-                ->withinModal(function (Browser $browser) use ($newRoleName) {
-                    $newRole = Role::where('name', $newRoleName)->firstOr(
-                        fn () => $this->fail('New role was not saved.')
-                    );
+    // Open nested modal
+    $page->click('Add Role')
+        ->assertPresent(waitForModalSelector(1));
 
-                    $browser->select('role', $newRole->id)
-                        ->assertSelected('role', $newRole->id);
-                });
-        });
-    }
-}
+    // Body should still have scroll lock after nested modal opens
+    $overflow = $page->script('window.getComputedStyle(document.body).overflow');
+    expect($overflow)->toBe('hidden');
+
+    // Close nested modal
+    clickModalCloseButton($page, 1);
+    waitUntilMissingModal($page, 1);
+
+    // Body should still have scroll lock (first modal still open)
+    $overflow = $page->script('window.getComputedStyle(document.body).overflow');
+    expect($overflow)->toBe('hidden');
+
+    // Close first modal
+    clickModalCloseButton($page, 0);
+    waitUntilMissingModal($page, 0);
+
+    // Body should no longer have scroll lock
+    $overflow = $page->script('window.getComputedStyle(document.body).overflow');
+    expect($overflow)->not->toBe('hidden');
+})->with('navigate');
+
+it('can open a second modal on top of the first one', function (bool $navigate) {
+    $firstUser = firstUser();
+
+    $page = visit('/users?'.($navigate ? 'navigate=1' : ''))
+        ->waitForText($firstUser->name)
+        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->assertPresent(waitForModalSelector())
+        ->click('Add Role')
+        ->assertPresent(waitForModalSelector(1))
+        ->assertSeeIn('.im-dialog[data-inertiaui-modal-index="1"]', 'Create Role')
+        // The first modal should be blurred
+        ->assertAttributeContains(modalSelector().' .im-modal-wrapper', 'class', 'blur');
+
+    clickModalCloseButton($page, 1);
+
+    waitUntilMissingModal($page, 1)
+        // The first modal should not be blurred anymore
+        ->assertAttributeDoesntContain(modalSelector().' .im-modal-wrapper', 'class', 'blur')
+        ->press('Save')
+        ->assertDontSee('Edit User');
+
+    waitUntilMissingModal($page);
+})->with('navigate');
+
+it('can refresh props after closing the second modal', function () {
+    $newRoleName = Str::random();
+
+    $page = visit('/users')
+        ->waitForText(firstUser('name'))
+        ->click("[dusk='edit-user-".firstUser()->id."']")
+        ->assertPresent(waitForModalSelector())
+        ->click('Add Role')
+        ->assertPresent(waitForModalSelector(1));
+
+    // Type in the nested modal and press its save button
+    $page->page()->locator(modalSelector(1).' input[name="name"]')->fill($newRoleName);
+    $page->page()->locator(modalSelector(1).' button:has-text("Save")')->click();
+
+    waitUntilMissingModal($page, 1);
+
+    $newRole = Role::where('name', $newRoleName)->firstOr(
+        fn () => test()->fail('New role was not saved.')
+    );
+
+    $page->select('role', $newRole->id)
+        ->assertSelected('role', $newRole->id);
+});

@@ -1,60 +1,43 @@
 <?php
 
-namespace Tests\Browser;
+it('can attach listeners to the modal link', function (bool $navigate) {
+    $page = visit('/events'.($navigate ? '?navigate=1' : ''))
+        ->waitForText('Events')
+        ->click('Open Modal')
+        ->assertPresent(waitForModalSelector());
 
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\DuskTestCase;
+    clickModalCloseButton($page);
 
-class EventsTest extends DuskTestCase
-{
-    #[DataProvider('booleanProvider')]
-    #[Test]
-    public function it_can_attach_listeners_to_the_modal_link(bool $navigate)
-    {
-        $this->browse(function (Browser $browser) use ($navigate) {
-            $browser->visit('/events'.($navigate ? '?navigate=1' : ''))
-                ->waitForText('Events')
-                ->clickLink('Open Modal')
-                ->waitForModal()
-                ->clickModalCloseButton()
-                ->waitUntilMissingModal()
-                ->assertSeeIn('@log', 'start,success,close,after-leave');
-        });
-    }
+    waitUntilMissingModal($page)
+        ->assertSeeIn("[dusk='log']", 'start,success,close,after-leave');
+})->with('navigate');
 
-    #[Test]
-    public function it_can_attach_listeners_to_the_modal_component()
-    {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/modal-events')
-                ->waitForConsoleLog('success')
-                ->waitForModal()
-                ->clickLink('Create role')
-                ->waitForConsoleLog('blur')
-                ->waitForModal(1)
-                ->clickModalCloseButton(1)
-                ->waitForConsoleLog('focus')
-                ->clickModalCloseButton()
-                ->waitForConsoleLog('close');
-        });
-    }
+it('can attach listeners to the modal component', function () {
+    $page = visit('/modal-events')
+        ->assertPresent(waitForModalSelector())
+        ->click('Create role')
+        ->assertPresent(waitForModalSelector(1));
 
-    #[DataProvider('booleanProvider')]
-    #[Test]
-    public function it_can_attach_a_listener_for_blur(bool $navigate)
-    {
-        $this->browse(function (Browser $browser) use ($navigate) {
-            $browser->visit('/events'.($navigate ? '?navigate=1' : ''))
-                ->waitForText('Events')
-                ->clickLink('Open Modal')
-                ->waitForModal()
-                ->clickLink('Add Role')
-                ->waitForModal(1)
-                ->assertSeeIn('@log', 'start,success,blur')
-                ->clickModalCloseButton(1)
-                ->waitUntilMissingModal(1)
-                ->assertSeeIn('@log', 'start,success,blur,focus');
-        });
-    }
-}
+    clickModalCloseButton($page, 1);
+
+    waitUntilMissingModal($page, 1);
+
+    clickModalCloseButton($page);
+
+    waitUntilMissingModal($page);
+});
+
+it('can attach a listener for blur', function (bool $navigate) {
+    $page = visit('/events'.($navigate ? '?navigate=1' : ''))
+        ->waitForText('Events')
+        ->click('Open Modal')
+        ->assertPresent(waitForModalSelector())
+        ->click('Add Role')
+        ->assertPresent(waitForModalSelector(1))
+        ->assertSeeIn("[dusk='log']", 'start,success,blur');
+
+    clickModalCloseButton($page, 1);
+
+    waitUntilMissingModal($page, 1)
+        ->assertSeeIn("[dusk='log']", 'start,success,blur,focus');
+})->with('navigate');

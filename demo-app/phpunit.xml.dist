@@ -11,6 +11,9 @@
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
         </testsuite>
+        <testsuite name="Browser">
+            <directory>tests/Browser</directory>
+        </testsuite>
     </testsuites>
     <php>
         <env name="APP_ENV" value="testing" />
@@ -22,7 +25,7 @@
         <env name="MAIL_MAILER" value="array" />
         <env name="PULSE_ENABLED" value="false" />
         <env name="QUEUE_CONNECTION" value="sync" />
-        <env name="SESSION_DRIVER" value="array" />
+        <env name="SESSION_DRIVER" value="file" />
         <env name="TELESCOPE_ENABLED" value="false" />
     </php>
 </phpunit>

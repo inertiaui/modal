@@ -1,31 +1,21 @@
 <?php
 
-namespace Tests\Browser;
-
 use App\Models\User;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\DuskTestCase;
 
-class NavigationTest extends DuskTestCase
-{
-    #[Test]
-    public function it_closes_the_modal_on_navigation()
-    {
-        $this->browse(function (Browser $browser) {
-            $firstUser = User::orderBy('name')->first();
+it('closes the modal on navigation', function () {
+    $firstUser = User::orderBy('name')->first();
 
-            $browser->visit('/users')
-                ->waitForFirstUser()
-                ->click("@view-user-{$firstUser->id}")
-                ->waitForLocation('/users/'.$firstUser->id)
-                ->back()
-                ->waitForLocation('/users')
-                ->click("@edit-user-{$firstUser->id}")
-                ->waitForModal()
-                ->assertSeeIn('.im-modal-content', 'Edit User')
-                ->forward()
-                ->waitForLocation('/users/'.$firstUser->id)
-                ->waitUntilMissingModal();
-        });
-    }
-}
+    $page = visit('/users')
+        ->waitForText($firstUser->name)
+        ->click("[dusk='view-user-{$firstUser->id}']")
+        ->assertPathIs('/users/'.$firstUser->id)
+        ->back()
+        ->assertPathIs('/users')
+        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->assertPresent(waitForModalSelector())
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->forward()
+        ->assertPathIs('/users/'.$firstUser->id);
+
+    waitUntilMissingModal($page);
+});
