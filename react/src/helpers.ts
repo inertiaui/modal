@@ -1,7 +1,7 @@
-import { generateId, sameUrlPath, except, only, rejectNullValues, kebabCase, isStandardDomEvent } from './../../vue/src/helpers'
-export { generateId, sameUrlPath, except, only, rejectNullValues, kebabCase, isStandardDomEvent }
+// Re-export helper utilities from vanilla
+export { generateId, sameUrlPath, except, only, rejectNullValues, kebabCase, isStandardDomEvent } from '@inertiaui/vanilla'
 
-// Re-export dialog utilities from vanilla (via vue)
+// Re-export dialog utilities from vanilla
 export {
     lockScroll,
     unlockScroll,
@@ -14,7 +14,7 @@ export {
     markAriaHidden,
     unmarkAriaHidden,
     createDialog,
-} from './../../vue/src/dialog'
+} from '@inertiaui/vanilla'
 
 // Re-export types from vanilla
 export type {

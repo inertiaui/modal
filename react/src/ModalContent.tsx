@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo, ReactNode, SyntheticEvent, MouseEvent } from 'react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
-import { createFocusTrap, onEscapeKey, onTransitionEnd } from '../../vue/src/dialog'
-import { getMaxWidthClass } from '../../vue/src/constants'
+import { createFocusTrap, onEscapeKey, onTransitionEnd } from '@inertiaui/vanilla'
+import { getMaxWidthClass } from './constants'
 import type { Modal } from './types'
 
 interface ModalContentConfig {

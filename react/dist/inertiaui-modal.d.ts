@@ -1,2 +1,2 @@
-export * from './react/src/inertiauiModal'
+export * from './inertiauiModal'
 export {}

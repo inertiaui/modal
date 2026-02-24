@@ -7,7 +7,7 @@ import { default as HeadlessModal } from './HeadlessModal';
 import { default as Modal } from './Modal';
 import { default as ModalLink } from './ModalLink';
 import { default as WhenVisible } from './WhenVisible';
-import * as dialogUtils from '../../vue/src/dialog';
+import * as dialogUtils from '@inertiaui/vanilla';
 export type { Modal as ModalInstance, ModalConfig, ModalResponseData, ModalStackContextValue, VisitOptions, ReloadOptions, EventCallback, ComponentResolver, PageProps, ModalRootProps, ModalRendererProps, LocalModal, PrefetchOption, PrefetchOptions, } from './types';
 export type { CleanupFunction, FocusTrapOptions, ClickOutsideOptions, EscapeKeyOptions, DialogOptions, Dialog, } from '@inertiaui/vanilla';
 declare const setPageLayout: <T extends {

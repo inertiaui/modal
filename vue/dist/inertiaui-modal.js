@@ -1,5 +1,5 @@
 import { computed, provide, openBlock, createBlock, unref, mergeProps, createCommentVNode, onUnmounted, onMounted, watch, createElementBlock, Fragment, renderSlot, ref, h, readonly, markRaw, nextTick, toValue, inject, onBeforeUnmount, useAttrs, createElementVNode, normalizeClass, createVNode, withModifiers, Transition, withCtx, Teleport, resolveDynamicComponent } from "vue";
-import { generateId as generateId$1, only, kebabCase, except, createDialog, createFocusTrap, focusFirstElement, getFocusableElements, getScrollLockCount, lockScroll, markAriaHidden, onClickOutside, onEscapeKey, onTransitionEnd, unlockScroll, unmarkAriaHidden, rejectNullValues } from "@inertiaui/vanilla";
+import { generateId as generateId$1, only, sameUrlPath, kebabCase, except, createDialog, createFocusTrap, focusFirstElement, getFocusableElements, getScrollLockCount, lockScroll, markAriaHidden, onClickOutside, onEscapeKey, onTransitionEnd, unlockScroll, unmarkAriaHidden, rejectNullValues } from "@inertiaui/vanilla";
 import { usePage, router, progress } from "@inertiajs/vue3";
 import { mergeDataIntoQueryString } from "@inertiajs/core";
 import Axios from "axios";
@@ -76,15 +76,6 @@ const getConfig = (key) => configInstance.get(key);
 const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
 function generateId(prefix = "inertiaui_modal_") {
   return generateId$1(prefix);
-}
-function sameUrlPath(url1, url2) {
-  if (!url1 || !url2) {
-    return false;
-  }
-  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
-  const parsed1 = typeof url1 === "string" ? new URL(url1, origin) : url1;
-  const parsed2 = typeof url2 === "string" ? new URL(url2, origin) : url2;
-  return `${parsed1.origin}${parsed1.pathname}` === `${parsed2.origin}${parsed2.pathname}`;
 }
 const _sfc_main$9 = {
   __name: "ModalRenderer",

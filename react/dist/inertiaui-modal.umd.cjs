@@ -2,6 +2,23 @@
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react"), require("axios"), require("@inertiaui/vanilla"), require("@inertiajs/react"), require("@inertiajs/core"), require("react-dom")) : typeof define === "function" && define.amd ? define(["exports", "react", "axios", "@inertiaui/vanilla", "@inertiajs/react", "@inertiajs/core", "react-dom"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.React, global.axios, global.InertiaUIVanilla, global.InertiaReact, global.InertiaCore, global.ReactDOM));
 })(this, (function(exports2, React, Axios, vanilla, react, core, reactDom) {
   "use strict";
+  function _interopNamespaceDefault(e) {
+    const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
+    if (e) {
+      for (const k in e) {
+        if (k !== "default") {
+          const d = Object.getOwnPropertyDescriptor(e, k);
+          Object.defineProperty(n, k, d.get ? d : {
+            enumerable: true,
+            get: () => e[k]
+          });
+        }
+      }
+    }
+    n.default = e;
+    return Object.freeze(n);
+  }
+  const vanilla__namespace = /* @__PURE__ */ _interopNamespaceDefault(vanilla);
   const defaultConfig = {
     type: "modal",
     navigate: false,
@@ -372,33 +389,6 @@
     return jsxRuntime.exports;
   }
   var jsxRuntimeExports = requireJsxRuntime();
-  function generateId(prefix = "inertiaui_modal_") {
-    return vanilla.generateId(prefix);
-  }
-  function sameUrlPath(url1, url2) {
-    if (!url1 || !url2) {
-      return false;
-    }
-    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
-    const parsed1 = typeof url1 === "string" ? new URL(url1, origin) : url1;
-    const parsed2 = typeof url2 === "string" ? new URL(url2, origin) : url2;
-    return `${parsed1.origin}${parsed1.pathname}` === `${parsed2.origin}${parsed2.pathname}`;
-  }
-  const dialog = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-    __proto__: null,
-    createDialog: vanilla.createDialog,
-    createFocusTrap: vanilla.createFocusTrap,
-    focusFirstElement: vanilla.focusFirstElement,
-    getFocusableElements: vanilla.getFocusableElements,
-    getScrollLockCount: vanilla.getScrollLockCount,
-    lockScroll: vanilla.lockScroll,
-    markAriaHidden: vanilla.markAriaHidden,
-    onClickOutside: vanilla.onClickOutside,
-    onEscapeKey: vanilla.onEscapeKey,
-    onTransitionEnd: vanilla.onTransitionEnd,
-    unlockScroll: vanilla.unlockScroll,
-    unmarkAriaHidden: vanilla.unmarkAriaHidden
-  }, Symbol.toStringTag, { value: "Module" }));
   const ModalStackContext = React.createContext(null);
   ModalStackContext.displayName = "ModalStackContext";
   let pageVersion = null;
@@ -457,7 +447,7 @@
       "X-Requested-With": "XMLHttpRequest",
       "X-Inertia": "true",
       "X-Inertia-Version": pageVersion ?? "",
-      "X-InertiaUI-Modal": generateId(),
+      "X-InertiaUI-Modal": vanilla.generateId(),
       "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
     };
     const request = Axios({
@@ -629,7 +619,7 @@
               "X-Inertia-Partial-Component": this.response.component,
               "X-Inertia-Version": this.response.version ?? "",
               "X-Inertia-Partial-Data": keys.join(","),
-              "X-InertiaUI-Modal": generateId(),
+              "X-InertiaUI-Modal": vanilla.generateId(),
               "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
             }
           }).then((response2) => {
@@ -645,7 +635,7 @@
           Object.assign(this.props, props);
           updateStack((prevStack) => prevStack);
         };
-        this.id = response.id ?? generateId();
+        this.id = response.id ?? vanilla.generateId();
         this.isOpen = false;
         this.shouldRender = false;
         this.listeners = {};
@@ -747,7 +737,7 @@
       });
     };
     const visit = (href, method, payload = {}, headers = {}, config = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = "brackets", useBrowserHistory = false, onStart = null, onSuccess = null, onError = null, props = null) => {
-      const modalId = generateId();
+      const modalId = vanilla.generateId();
       return new Promise((resolve, reject) => {
         if (href.startsWith("#")) {
           resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave, props));
@@ -902,7 +892,7 @@
           initialModalStillOpenedRef.current = false;
           return;
         }
-        if (!sameUrlPath(pageUrl, modalOnBase.url)) {
+        if (!vanilla.sameUrlPath(pageUrl, modalOnBase.url)) {
           context?.closeAll(true);
           baseUrl = null;
           initialModalStillOpenedRef.current = false;
@@ -915,7 +905,7 @@
         if (modalOnBase.id && context?.stack.some((m) => m.id === modalOnBase.id)) {
           return;
         }
-        if (context?.stack.some((m) => m.response?.component === modalOnBase.component && sameUrlPath(m.response?.url, modalOnBase.url))) {
+        if (context?.stack.some((m) => m.response?.component === modalOnBase.component && vanilla.sameUrlPath(m.response?.url, modalOnBase.url))) {
           return;
         }
         baseUrl = modalOnBase.baseUrl;
@@ -956,13 +946,13 @@
       if (!newModal) {
         return;
       }
-      if (previousModal && newModal.component === previousModal.component && sameUrlPath(newModal.url, previousModal.url)) {
+      if (previousModal && newModal.component === previousModal.component && vanilla.sameUrlPath(newModal.url, previousModal.url)) {
         context?.stack[0]?.updateProps(newModal.props ?? {});
         return;
       }
       if (!previousModal && context && context.stack.length > 0) {
         const existingModal = context.stack.find(
-          (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url)
+          (m) => m.response?.component === newModal.component && vanilla.sameUrlPath(m.response?.url, newModal.url)
         );
         if (existingModal) {
           existingModal.updateProps(newModal.props ?? {});
@@ -2189,6 +2179,7 @@
     module2.default.layout = (page) => React.createElement(layout, { children: page });
     return module2;
   };
+  exports2.dialogUtils = vanilla__namespace;
   exports2.Deferred = Deferred;
   exports2.HeadlessModal = HeadlessModal;
   exports2.Modal = Modal;
@@ -2196,7 +2187,6 @@
   exports2.ModalRoot = ModalRoot;
   exports2.ModalStackProvider = ModalStackProvider;
   exports2.WhenVisible = WhenVisible;
-  exports2.dialogUtils = dialog;
   exports2.getConfig = getConfig;
   exports2.initFromPageProps = initFromPageProps;
   exports2.modalPropNames = modalPropNames;

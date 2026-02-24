@@ -76,15 +76,6 @@
   function generateId(prefix = "inertiaui_modal_") {
     return vanilla.generateId(prefix);
   }
-  function sameUrlPath(url1, url2) {
-    if (!url1 || !url2) {
-      return false;
-    }
-    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
-    const parsed1 = typeof url1 === "string" ? new URL(url1, origin) : url1;
-    const parsed2 = typeof url2 === "string" ? new URL(url2, origin) : url2;
-    return `${parsed1.origin}${parsed1.pathname}` === `${parsed2.origin}${parsed2.pathname}`;
-  }
   const _sfc_main$9 = {
     __name: "ModalRenderer",
     props: {
@@ -132,7 +123,7 @@
             modalStack.setBaseUrl(null);
             return;
           }
-          if (!sameUrlPath(pageUrl, modalOnBase.url)) {
+          if (!vanilla.sameUrlPath(pageUrl, modalOnBase.url)) {
             modalStack.closeAll(true);
             modalStack.setBaseUrl(null);
             return;
@@ -144,7 +135,7 @@
           if (modalOnBase.id && modalStack.stack.value.some((m) => m.id === modalOnBase.id)) {
             return;
           }
-          if (modalStack.stack.value.some((m) => m.response?.component === modalOnBase.component && sameUrlPath(m.response?.url, modalOnBase.url))) {
+          if (modalStack.stack.value.some((m) => m.response?.component === modalOnBase.component && vanilla.sameUrlPath(m.response?.url, modalOnBase.url))) {
             return;
           }
           modalStack.setBaseUrl(modalOnBase.baseUrl);
@@ -181,13 +172,13 @@
           if (!newModal) {
             return;
           }
-          if (previousModal && newModal.component === previousModal.component && sameUrlPath(newModal.url, previousModal.url)) {
+          if (previousModal && newModal.component === previousModal.component && vanilla.sameUrlPath(newModal.url, previousModal.url)) {
             modalStack.stack.value[0]?.updateProps(newModal.props ?? {});
             return;
           }
           if (!previousModal && modalStack.stack.value.length > 0) {
             const existingModal = modalStack.stack.value.find(
-              (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url)
+              (m) => m.response?.component === newModal.component && vanilla.sameUrlPath(m.response?.url, newModal.url)
             );
             if (existingModal) {
               existingModal.updateProps(newModal.props ?? {});

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import HeadlessModal, { HeadlessModalRef } from './HeadlessModal'
 import ModalContent from './ModalContent'
 import SlideoverContent from './SlideoverContent'
-import { lockScroll, markAriaHidden } from '../../vue/src/dialog'
+import { lockScroll, markAriaHidden } from '@inertiaui/vanilla'
 import { getConfig } from './config'
 import type { Modal as ModalType, ReloadOptions } from './types'
 

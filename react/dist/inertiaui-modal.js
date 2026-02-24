@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useRef, useEffect, useReducer, useState, createElement, useMemo, forwardRef, useImperativeHandle, useCallback } from "react";
 import Axios from "axios";
-import { generateId as generateId$1, createDialog, createFocusTrap, focusFirstElement, getFocusableElements, getScrollLockCount, lockScroll, markAriaHidden, onClickOutside, onEscapeKey, onTransitionEnd, unlockScroll, unmarkAriaHidden, kebabCase, except, isStandardDomEvent, rejectNullValues, only } from "@inertiaui/vanilla";
+import { sameUrlPath, generateId, kebabCase, except, createFocusTrap, onEscapeKey, onTransitionEnd, lockScroll, markAriaHidden, isStandardDomEvent, rejectNullValues, only } from "@inertiaui/vanilla";
+import * as vanilla from "@inertiaui/vanilla";
 import { usePage, router, progress } from "@inertiajs/react";
 import { mergeDataIntoQueryString } from "@inertiajs/core";
 import { createPortal } from "react-dom";
@@ -374,33 +375,6 @@ function requireJsxRuntime() {
   return jsxRuntime.exports;
 }
 var jsxRuntimeExports = requireJsxRuntime();
-function generateId(prefix = "inertiaui_modal_") {
-  return generateId$1(prefix);
-}
-function sameUrlPath(url1, url2) {
-  if (!url1 || !url2) {
-    return false;
-  }
-  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
-  const parsed1 = typeof url1 === "string" ? new URL(url1, origin) : url1;
-  const parsed2 = typeof url2 === "string" ? new URL(url2, origin) : url2;
-  return `${parsed1.origin}${parsed1.pathname}` === `${parsed2.origin}${parsed2.pathname}`;
-}
-const dialog = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  createDialog,
-  createFocusTrap,
-  focusFirstElement,
-  getFocusableElements,
-  getScrollLockCount,
-  lockScroll,
-  markAriaHidden,
-  onClickOutside,
-  onEscapeKey,
-  onTransitionEnd,
-  unlockScroll,
-  unmarkAriaHidden
-}, Symbol.toStringTag, { value: "Module" }));
 const ModalStackContext = createContext(null);
 ModalStackContext.displayName = "ModalStackContext";
 let pageVersion = null;
@@ -2199,7 +2173,7 @@ export {
   ModalRoot,
   ModalStackProvider,
   WhenVisible,
-  dialog as dialogUtils,
+  vanilla as dialogUtils,
   getConfig,
   initFromPageProps,
   modalPropNames,

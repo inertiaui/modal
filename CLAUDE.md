@@ -420,17 +420,16 @@ User closes A
 - **Remote modals**: Fetched from backend (standard flow)
 - **Local modals**: Registered in frontend via `registerLocalModal('name', Component)`, no backend request needed
 
-### Shared Dialog Utilities
+### Shared Dialog Utilities (`@inertiaui/vanilla`)
 
-Both React and Vue implementations use framework-agnostic dialog utilities from `vue/src/dialog.js`. React imports these via relative path (`../../vue/src/dialog`). These utilities handle:
+Both React and Vue implementations use framework-agnostic dialog utilities from the `@inertiaui/vanilla` package. This package lives at `/Users/pascalbaljet/Sites/vanilla` (outside this repo) and contains **only generic utilities** that can be shared across all InertiaUI packages (modal, form, table, etc.):
 
-- **Scroll locking** - `lockScroll()` / `unlockScroll()` with nested dialog support (reference counting)
-- **Focus trapping** - `createFocusTrap()` keeps focus within modal, handles Tab cycling
-- **Escape key** - `onEscapeKey()` for closing modals
-- **Click outside** - `onClickOutside()` for backdrop clicks
-- **Aria-hidden** - `markAriaHidden()` / `unmarkAriaHidden()` for accessibility
+- **Helper utilities**: `generateId`, `except`, `only`, `rejectNullValues`, `kebabCase`, `isStandardDomEvent`, `sameUrlPath`
+- **Dialog utilities**: `lockScroll`, `unlockScroll`, `createFocusTrap`, `onEscapeKey`, `onClickOutside`, `markAriaHidden`, `onTransitionEnd`, `createDialog`
 
-All utilities return cleanup functions for proper teardown.
+**Important**: Do NOT put modal-specific code in vanilla (like `ModalConfig`, `maxWidthClasses`, etc.). Those belong in the modal packages. The vanilla package is for generic, framework-agnostic utilities only.
+
+All dialog utilities return cleanup functions for proper teardown.
 
 ### Backdrop Behavior
 

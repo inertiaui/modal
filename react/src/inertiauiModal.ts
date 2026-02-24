@@ -8,7 +8,7 @@ import HeadlessModal from './HeadlessModal'
 import Modal from './Modal'
 import ModalLink from './ModalLink'
 import WhenVisible from './WhenVisible'
-import * as dialogUtils from '../../vue/src/dialog'
+import * as dialogUtils from '@inertiaui/vanilla'
 
 // Types
 export type {
