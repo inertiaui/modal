@@ -9,8 +9,8 @@ const props = defineProps({
         type: String,
         required: false,
     },
-    // The slideover prop in on top because we need to know if it's a slideover
-    // before we can determine the defaule value of other props
+    // The slideover prop is on top because we need to know if it's a slideover
+    // before we can determine the default value of other props
     slideover: {
         type: Boolean,
         default: null,

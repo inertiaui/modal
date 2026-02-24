@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, ReactNode, SyntheticEvent, MouseEvent } from 'react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
-import { createFocusTrap, onEscapeKey } from '../../vue/src/dialog'
+import { createFocusTrap, onEscapeKey, onTransitionEnd } from '../../vue/src/dialog'
 import { getMaxWidthClass } from '../../vue/src/constants'
 import type { Modal } from './types'
 
@@ -30,6 +30,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
     const [transitionState, setTransitionState] = useState<'entering' | 'entered' | 'leaving' | 'exited'>('entering')
     const wrapperRef = useRef<HTMLDivElement>(null)
     const dialogRef = useRef<HTMLDialogElement>(null)
+    const nativeWrapperRef = useRef<HTMLDivElement>(null)
     const cleanupFocusTrapRef = useRef<(() => void) | null>(null)
     const cleanupEscapeKeyRef = useRef<(() => void) | null>(null)
     const initialRender = useRef(true)
@@ -137,20 +138,28 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
         }
     }, [])
 
+    const finishClose = useCallback(() => {
+        if (dialogRef.current) {
+            dialogRef.current.close()
+        }
+        setIsLeaving(false)
+        onAfterLeave?.()
+        modalContext.afterLeave()
+    }, [onAfterLeave, modalContext])
+
     const closeDialog = useCallback(() => {
         if (dialogRef.current && dialogRef.current.open) {
             setIsLeaving(true)
             setEntered(false)
-            setTimeout(() => {
-                if (dialogRef.current) {
-                    dialogRef.current.close()
-                }
-                setIsLeaving(false)
-                onAfterLeave?.()
-                modalContext.afterLeave()
-            }, 300)
+
+            const wrapper = nativeWrapperRef.current
+            if (wrapper) {
+                onTransitionEnd(wrapper, finishClose)
+            } else {
+                finishClose()
+            }
         }
-    }, [onAfterLeave, modalContext])
+    }, [finishClose])
 
     // ============ Lifecycle ============
 
@@ -199,10 +208,13 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     setTransitionState('entered')
-                    setTimeout(() => {
-                        setEntered(true)
-                        setupFocusTrap()
-                    }, 300)
+                    const wrapper = wrapperRef.current
+                    if (wrapper) {
+                        onTransitionEnd(wrapper, () => {
+                            setEntered(true)
+                            setupFocusTrap()
+                        })
+                    }
                 })
             })
         }
@@ -214,11 +226,14 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
 
         if (!modalContext.isOpen && transitionState === 'entered') {
             setTransitionState('leaving')
-            setTimeout(() => {
-                setTransitionState('exited')
-                onAfterLeave?.()
-                modalContext.afterLeave()
-            }, 300)
+            const wrapper = wrapperRef.current
+            if (wrapper) {
+                onTransitionEnd(wrapper, () => {
+                    setTransitionState('exited')
+                    onAfterLeave?.()
+                    modalContext.afterLeave()
+                })
+            }
         }
     }, [modalContext.isOpen, transitionState, onAfterLeave, modalContext, useNativeDialog])
 
@@ -272,6 +287,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
                         })}
                     >
                         <div
+                            ref={nativeWrapperRef}
                             className={clsx(
                                 'im-slideover-wrapper w-full transition duration-300 ease-in-out',
                                 modalContext.onTopOfStack ? '' : 'blur-xs',

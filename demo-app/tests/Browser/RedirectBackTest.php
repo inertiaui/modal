@@ -50,7 +50,11 @@ it('does not use modal base URL for redirect back after modal is closed and navi
 
     // Navigate to a different page (this should reset any modal state)
     $page->click("[dusk='nav-visit']")
-        ->waitForText('Visit Page');
+        ->waitForText('Visit Page')
+        ->assertPathIs('/visit');
+
+    // Small pause to ensure frontend state has fully reset after navigation
+    usleep(100000); // 100ms
 
     // Now click the test redirect back button from the /visit page
     // This should redirect back to /visit (current page), NOT /users (modal base URL)

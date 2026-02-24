@@ -1,893 +1,1159 @@
-import xe, { createContext as Ve, useContext as Pe, useRef as U, useEffect as W, useReducer as ze, useState as X, createElement as se, useMemo as K, forwardRef as Ie, useImperativeHandle as ge, useCallback as F } from "react";
-import le from "axios";
-import { generateId as De, createDialog as Je, createFocusTrap as ke, focusFirstElement as Ke, getFocusableElements as He, getScrollLockCount as Ge, lockScroll as Fe, markAriaHidden as Ne, onClickOutside as Qe, onEscapeKey as Oe, unlockScroll as Ze, unmarkAriaHidden as er, kebabCase as re, except as rr, isStandardDomEvent as tr, rejectNullValues as nr, only as sr } from "@inertiaui/vanilla";
-import { usePage as lr, router as ee, progress as Te } from "@inertiajs/react";
-import { mergeDataIntoQueryString as Ce } from "@inertiajs/core";
-import { createPortal as ir } from "react-dom";
-const Z = {
+import React, { createContext, useContext, useRef, useEffect, useReducer, useState, createElement, useMemo, forwardRef, useImperativeHandle, useCallback } from "react";
+import Axios from "axios";
+import { generateId as generateId$1, createDialog, createFocusTrap, focusFirstElement, getFocusableElements, getScrollLockCount, lockScroll, markAriaHidden, onClickOutside, onEscapeKey, onTransitionEnd, unlockScroll, unmarkAriaHidden, kebabCase, except, isStandardDomEvent, rejectNullValues, only } from "@inertiaui/vanilla";
+import { usePage, router, progress } from "@inertiajs/react";
+import { mergeDataIntoQueryString } from "@inertiajs/core";
+import { createPortal } from "react-dom";
+const defaultConfig = {
   type: "modal",
-  navigate: !1,
-  useNativeDialog: !0,
+  navigate: false,
+  useNativeDialog: true,
+  appElement: "#app",
   modal: {
-    closeButton: !0,
-    closeExplicitly: !1,
-    closeOnClickOutside: !0,
+    closeButton: true,
+    closeExplicitly: false,
+    closeOnClickOutside: true,
     maxWidth: "2xl",
     paddingClasses: "p-4 sm:p-6",
     panelClasses: "bg-white rounded",
     position: "center"
   },
   slideover: {
-    closeButton: !0,
-    closeExplicitly: !1,
-    closeOnClickOutside: !0,
+    closeButton: true,
+    closeExplicitly: false,
+    closeOnClickOutside: true,
     maxWidth: "md",
     paddingClasses: "p-4 sm:p-6",
     panelClasses: "bg-white min-h-screen",
     position: "right"
   }
 };
-class ar {
+class Config {
   constructor() {
-    this.config = {}, this.reset();
+    this.config = {};
+    this.reset();
   }
   reset() {
-    this.config = JSON.parse(JSON.stringify(Z));
+    this.config = JSON.parse(JSON.stringify(defaultConfig));
   }
-  put(e, t) {
-    if (typeof e == "object") {
+  put(key, value) {
+    if (typeof key === "object") {
       this.config = {
-        type: e.type ?? Z.type,
-        navigate: e.navigate ?? Z.navigate,
-        useNativeDialog: e.useNativeDialog ?? Z.useNativeDialog,
-        modal: { ...Z.modal, ...e.modal ?? {} },
-        slideover: { ...Z.slideover, ...e.slideover ?? {} }
+        type: key.type ?? defaultConfig.type,
+        navigate: key.navigate ?? defaultConfig.navigate,
+        useNativeDialog: key.useNativeDialog ?? defaultConfig.useNativeDialog,
+        appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
+        modal: { ...defaultConfig.modal, ...key.modal ?? {} },
+        slideover: { ...defaultConfig.slideover, ...key.slideover ?? {} }
       };
       return;
     }
-    const u = e.split(".");
-    let i = this.config;
-    for (let c = 0; c < u.length - 1; c++)
-      i = i[u[c]] = i[u[c]] || {};
-    i[u[u.length - 1]] = t;
-  }
-  get(e) {
-    if (typeof e > "u")
-      return this.config;
-    const t = e.split(".");
-    let u = this.config;
-    for (const i of t) {
-      if (u == null || typeof u != "object")
-        return null;
-      u = u[i];
+    const keys = key.split(".");
+    let current = this.config;
+    for (let i = 0; i < keys.length - 1; i++) {
+      current = current[keys[i]] = current[keys[i]] || {};
     }
-    return u === void 0 ? null : u;
+    current[keys[keys.length - 1]] = value;
+  }
+  get(key) {
+    if (typeof key === "undefined") {
+      return this.config;
+    }
+    const keys = key.split(".");
+    let current = this.config;
+    for (const k of keys) {
+      if (current === null || current === void 0 || typeof current !== "object") {
+        return null;
+      }
+      current = current[k];
+    }
+    return current === void 0 ? null : current;
   }
 }
-const oe = new ar(), Pr = () => oe.reset(), Ir = (r, e) => oe.put(r, e), ce = (r) => oe.get(r), G = (r, e) => oe.get(r ? `slideover.${e}` : `modal.${e}`);
-var ie = { exports: {} }, te = {};
-/**
- * @license React
- * react-jsx-runtime.production.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var Re;
-function ur() {
-  if (Re) return te;
-  Re = 1;
-  var r = Symbol.for("react.transitional.element"), e = Symbol.for("react.fragment");
-  function t(u, i, c) {
-    var m = null;
-    if (c !== void 0 && (m = "" + c), i.key !== void 0 && (m = "" + i.key), "key" in i) {
-      c = {};
-      for (var b in i)
-        b !== "key" && (c[b] = i[b]);
-    } else c = i;
-    return i = c.ref, {
-      $$typeof: r,
-      type: u,
-      key: m,
-      ref: i !== void 0 ? i : null,
-      props: c
+const configInstance = new Config();
+const resetConfig = () => configInstance.reset();
+const putConfig = (key, value) => configInstance.put(key, value);
+const getConfig = (key) => configInstance.get(key);
+const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+var jsxRuntime = { exports: {} };
+var reactJsxRuntime_production = {};
+var hasRequiredReactJsxRuntime_production;
+function requireReactJsxRuntime_production() {
+  if (hasRequiredReactJsxRuntime_production) return reactJsxRuntime_production;
+  hasRequiredReactJsxRuntime_production = 1;
+  var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element"), REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
+  function jsxProd(type, config, maybeKey) {
+    var key = null;
+    void 0 !== maybeKey && (key = "" + maybeKey);
+    void 0 !== config.key && (key = "" + config.key);
+    if ("key" in config) {
+      maybeKey = {};
+      for (var propName in config)
+        "key" !== propName && (maybeKey[propName] = config[propName]);
+    } else maybeKey = config;
+    config = maybeKey.ref;
+    return {
+      $$typeof: REACT_ELEMENT_TYPE,
+      type,
+      key,
+      ref: void 0 !== config ? config : null,
+      props: maybeKey
     };
   }
-  return te.Fragment = e, te.jsx = t, te.jsxs = t, te;
+  reactJsxRuntime_production.Fragment = REACT_FRAGMENT_TYPE;
+  reactJsxRuntime_production.jsx = jsxProd;
+  reactJsxRuntime_production.jsxs = jsxProd;
+  return reactJsxRuntime_production;
 }
-var ne = {};
-/**
- * @license React
- * react-jsx-runtime.development.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var je;
-function or() {
-  return je || (je = 1, process.env.NODE_ENV !== "production" && (function() {
-    function r(n) {
-      if (n == null) return null;
-      if (typeof n == "function")
-        return n.$$typeof === E ? null : n.displayName || n.name || null;
-      if (typeof n == "string") return n;
-      switch (n) {
-        case M:
+var reactJsxRuntime_development = {};
+var hasRequiredReactJsxRuntime_development;
+function requireReactJsxRuntime_development() {
+  if (hasRequiredReactJsxRuntime_development) return reactJsxRuntime_development;
+  hasRequiredReactJsxRuntime_development = 1;
+  "production" !== process.env.NODE_ENV && (function() {
+    function getComponentNameFromType(type) {
+      if (null == type) return null;
+      if ("function" === typeof type)
+        return type.$$typeof === REACT_CLIENT_REFERENCE ? null : type.displayName || type.name || null;
+      if ("string" === typeof type) return type;
+      switch (type) {
+        case REACT_FRAGMENT_TYPE:
           return "Fragment";
-        case p:
+        case REACT_PROFILER_TYPE:
           return "Profiler";
-        case I:
+        case REACT_STRICT_MODE_TYPE:
           return "StrictMode";
-        case k:
+        case REACT_SUSPENSE_TYPE:
           return "Suspense";
-        case a:
+        case REACT_SUSPENSE_LIST_TYPE:
           return "SuspenseList";
-        case x:
+        case REACT_ACTIVITY_TYPE:
           return "Activity";
       }
-      if (typeof n == "object")
-        switch (typeof n.tag == "number" && console.error(
+      if ("object" === typeof type)
+        switch ("number" === typeof type.tag && console.error(
           "Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."
-        ), n.$$typeof) {
-          case s:
+        ), type.$$typeof) {
+          case REACT_PORTAL_TYPE:
             return "Portal";
-          case h:
-            return n.displayName || "Context";
-          case o:
-            return (n._context.displayName || "Context") + ".Consumer";
-          case w:
-            var R = n.render;
-            return n = n.displayName, n || (n = R.displayName || R.name || "", n = n !== "" ? "ForwardRef(" + n + ")" : "ForwardRef"), n;
-          case l:
-            return R = n.displayName || null, R !== null ? R : r(n.type) || "Memo";
-          case T:
-            R = n._payload, n = n._init;
+          case REACT_CONTEXT_TYPE:
+            return type.displayName || "Context";
+          case REACT_CONSUMER_TYPE:
+            return (type._context.displayName || "Context") + ".Consumer";
+          case REACT_FORWARD_REF_TYPE:
+            var innerType = type.render;
+            type = type.displayName;
+            type || (type = innerType.displayName || innerType.name || "", type = "" !== type ? "ForwardRef(" + type + ")" : "ForwardRef");
+            return type;
+          case REACT_MEMO_TYPE:
+            return innerType = type.displayName || null, null !== innerType ? innerType : getComponentNameFromType(type.type) || "Memo";
+          case REACT_LAZY_TYPE:
+            innerType = type._payload;
+            type = type._init;
             try {
-              return r(n(R));
-            } catch {
+              return getComponentNameFromType(type(innerType));
+            } catch (x) {
             }
         }
       return null;
     }
-    function e(n) {
-      return "" + n;
+    function testStringCoercion(value) {
+      return "" + value;
     }
-    function t(n) {
+    function checkKeyStringCoercion(value) {
       try {
-        e(n);
-        var R = !1;
-      } catch {
-        R = !0;
+        testStringCoercion(value);
+        var JSCompiler_inline_result = false;
+      } catch (e) {
+        JSCompiler_inline_result = true;
       }
-      if (R) {
-        R = console;
-        var P = R.error, S = typeof Symbol == "function" && Symbol.toStringTag && n[Symbol.toStringTag] || n.constructor.name || "Object";
-        return P.call(
-          R,
+      if (JSCompiler_inline_result) {
+        JSCompiler_inline_result = console;
+        var JSCompiler_temp_const = JSCompiler_inline_result.error;
+        var JSCompiler_inline_result$jscomp$0 = "function" === typeof Symbol && Symbol.toStringTag && value[Symbol.toStringTag] || value.constructor.name || "Object";
+        JSCompiler_temp_const.call(
+          JSCompiler_inline_result,
           "The provided key is an unsupported type %s. This value must be coerced to a string before using it here.",
-          S
-        ), e(n);
+          JSCompiler_inline_result$jscomp$0
+        );
+        return testStringCoercion(value);
       }
     }
-    function u(n) {
-      if (n === M) return "<>";
-      if (typeof n == "object" && n !== null && n.$$typeof === T)
+    function getTaskName(type) {
+      if (type === REACT_FRAGMENT_TYPE) return "<>";
+      if ("object" === typeof type && null !== type && type.$$typeof === REACT_LAZY_TYPE)
         return "<...>";
       try {
-        var R = r(n);
-        return R ? "<" + R + ">" : "<...>";
-      } catch {
+        var name = getComponentNameFromType(type);
+        return name ? "<" + name + ">" : "<...>";
+      } catch (x) {
         return "<...>";
       }
     }
-    function i() {
-      var n = g.A;
-      return n === null ? null : n.getOwner();
+    function getOwner() {
+      var dispatcher = ReactSharedInternals.A;
+      return null === dispatcher ? null : dispatcher.getOwner();
     }
-    function c() {
+    function UnknownOwner() {
       return Error("react-stack-top-frame");
     }
-    function m(n) {
-      if (A.call(n, "key")) {
-        var R = Object.getOwnPropertyDescriptor(n, "key").get;
-        if (R && R.isReactWarning) return !1;
+    function hasValidKey(config) {
+      if (hasOwnProperty.call(config, "key")) {
+        var getter = Object.getOwnPropertyDescriptor(config, "key").get;
+        if (getter && getter.isReactWarning) return false;
       }
-      return n.key !== void 0;
+      return void 0 !== config.key;
     }
-    function b(n, R) {
-      function P() {
-        L || (L = !0, console.error(
+    function defineKeyPropWarningGetter(props, displayName) {
+      function warnAboutAccessingKey() {
+        specialPropKeyWarningShown || (specialPropKeyWarningShown = true, console.error(
           "%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)",
-          R
+          displayName
         ));
       }
-      P.isReactWarning = !0, Object.defineProperty(n, "key", {
-        get: P,
-        configurable: !0
+      warnAboutAccessingKey.isReactWarning = true;
+      Object.defineProperty(props, "key", {
+        get: warnAboutAccessingKey,
+        configurable: true
       });
     }
-    function v() {
-      var n = r(this.type);
-      return Y[n] || (Y[n] = !0, console.error(
+    function elementRefGetterWithDeprecationWarning() {
+      var componentName = getComponentNameFromType(this.type);
+      didWarnAboutElementRef[componentName] || (didWarnAboutElementRef[componentName] = true, console.error(
         "Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release."
-      )), n = this.props.ref, n !== void 0 ? n : null;
+      ));
+      componentName = this.props.ref;
+      return void 0 !== componentName ? componentName : null;
     }
-    function N(n, R, P, S, D, fe) {
-      var $ = P.ref;
-      return n = {
-        $$typeof: _,
-        type: n,
-        key: R,
-        props: P,
-        _owner: S
-      }, ($ !== void 0 ? $ : null) !== null ? Object.defineProperty(n, "ref", {
-        enumerable: !1,
-        get: v
-      }) : Object.defineProperty(n, "ref", { enumerable: !1, value: null }), n._store = {}, Object.defineProperty(n._store, "validated", {
-        configurable: !1,
-        enumerable: !1,
-        writable: !0,
+    function ReactElement(type, key, props, owner, debugStack, debugTask) {
+      var refProp = props.ref;
+      type = {
+        $$typeof: REACT_ELEMENT_TYPE,
+        type,
+        key,
+        props,
+        _owner: owner
+      };
+      null !== (void 0 !== refProp ? refProp : null) ? Object.defineProperty(type, "ref", {
+        enumerable: false,
+        get: elementRefGetterWithDeprecationWarning
+      }) : Object.defineProperty(type, "ref", { enumerable: false, value: null });
+      type._store = {};
+      Object.defineProperty(type._store, "validated", {
+        configurable: false,
+        enumerable: false,
+        writable: true,
         value: 0
-      }), Object.defineProperty(n, "_debugInfo", {
-        configurable: !1,
-        enumerable: !1,
-        writable: !0,
+      });
+      Object.defineProperty(type, "_debugInfo", {
+        configurable: false,
+        enumerable: false,
+        writable: true,
         value: null
-      }), Object.defineProperty(n, "_debugStack", {
-        configurable: !1,
-        enumerable: !1,
-        writable: !0,
-        value: D
-      }), Object.defineProperty(n, "_debugTask", {
-        configurable: !1,
-        enumerable: !1,
-        writable: !0,
-        value: fe
-      }), Object.freeze && (Object.freeze(n.props), Object.freeze(n)), n;
+      });
+      Object.defineProperty(type, "_debugStack", {
+        configurable: false,
+        enumerable: false,
+        writable: true,
+        value: debugStack
+      });
+      Object.defineProperty(type, "_debugTask", {
+        configurable: false,
+        enumerable: false,
+        writable: true,
+        value: debugTask
+      });
+      Object.freeze && (Object.freeze(type.props), Object.freeze(type));
+      return type;
     }
-    function j(n, R, P, S, D, fe) {
-      var $ = R.children;
-      if ($ !== void 0)
-        if (S)
-          if (C($)) {
-            for (S = 0; S < $.length; S++)
-              y($[S]);
-            Object.freeze && Object.freeze($);
+    function jsxDEVImpl(type, config, maybeKey, isStaticChildren, debugStack, debugTask) {
+      var children = config.children;
+      if (void 0 !== children)
+        if (isStaticChildren)
+          if (isArrayImpl(children)) {
+            for (isStaticChildren = 0; isStaticChildren < children.length; isStaticChildren++)
+              validateChildKeys(children[isStaticChildren]);
+            Object.freeze && Object.freeze(children);
           } else
             console.error(
               "React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead."
             );
-        else y($);
-      if (A.call(R, "key")) {
-        $ = r(n);
-        var Q = Object.keys(R).filter(function(Be) {
-          return Be !== "key";
+        else validateChildKeys(children);
+      if (hasOwnProperty.call(config, "key")) {
+        children = getComponentNameFromType(type);
+        var keys = Object.keys(config).filter(function(k) {
+          return "key" !== k;
         });
-        S = 0 < Q.length ? "{key: someKey, " + Q.join(": ..., ") + ": ...}" : "{key: someKey}", z[$ + S] || (Q = 0 < Q.length ? "{" + Q.join(": ..., ") + ": ...}" : "{}", console.error(
-          `A props object containing a "key" prop is being spread into JSX:
-  let props = %s;
-  <%s {...props} />
-React keys must be passed directly to JSX without using spread:
-  let props = %s;
-  <%s key={someKey} {...props} />`,
-          S,
-          $,
-          Q,
-          $
-        ), z[$ + S] = !0);
+        isStaticChildren = 0 < keys.length ? "{key: someKey, " + keys.join(": ..., ") + ": ...}" : "{key: someKey}";
+        didWarnAboutKeySpread[children + isStaticChildren] || (keys = 0 < keys.length ? "{" + keys.join(": ..., ") + ": ...}" : "{}", console.error(
+          'A props object containing a "key" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />',
+          isStaticChildren,
+          children,
+          keys,
+          children
+        ), didWarnAboutKeySpread[children + isStaticChildren] = true);
       }
-      if ($ = null, P !== void 0 && (t(P), $ = "" + P), m(R) && (t(R.key), $ = "" + R.key), "key" in R) {
-        P = {};
-        for (var he in R)
-          he !== "key" && (P[he] = R[he]);
-      } else P = R;
-      return $ && b(
-        P,
-        typeof n == "function" ? n.displayName || n.name || "Unknown" : n
-      ), N(
-        n,
-        $,
-        P,
-        i(),
-        D,
-        fe
+      children = null;
+      void 0 !== maybeKey && (checkKeyStringCoercion(maybeKey), children = "" + maybeKey);
+      hasValidKey(config) && (checkKeyStringCoercion(config.key), children = "" + config.key);
+      if ("key" in config) {
+        maybeKey = {};
+        for (var propName in config)
+          "key" !== propName && (maybeKey[propName] = config[propName]);
+      } else maybeKey = config;
+      children && defineKeyPropWarningGetter(
+        maybeKey,
+        "function" === typeof type ? type.displayName || type.name || "Unknown" : type
+      );
+      return ReactElement(
+        type,
+        children,
+        maybeKey,
+        getOwner(),
+        debugStack,
+        debugTask
       );
     }
-    function y(n) {
-      f(n) ? n._store && (n._store.validated = 1) : typeof n == "object" && n !== null && n.$$typeof === T && (n._payload.status === "fulfilled" ? f(n._payload.value) && n._payload.value._store && (n._payload.value._store.validated = 1) : n._store && (n._store.validated = 1));
+    function validateChildKeys(node) {
+      isValidElement(node) ? node._store && (node._store.validated = 1) : "object" === typeof node && null !== node && node.$$typeof === REACT_LAZY_TYPE && ("fulfilled" === node._payload.status ? isValidElement(node._payload.value) && node._payload.value._store && (node._payload.value._store.validated = 1) : node._store && (node._store.validated = 1));
     }
-    function f(n) {
-      return typeof n == "object" && n !== null && n.$$typeof === _;
+    function isValidElement(object) {
+      return "object" === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE;
     }
-    var d = xe, _ = Symbol.for("react.transitional.element"), s = Symbol.for("react.portal"), M = Symbol.for("react.fragment"), I = Symbol.for("react.strict_mode"), p = Symbol.for("react.profiler"), o = Symbol.for("react.consumer"), h = Symbol.for("react.context"), w = Symbol.for("react.forward_ref"), k = Symbol.for("react.suspense"), a = Symbol.for("react.suspense_list"), l = Symbol.for("react.memo"), T = Symbol.for("react.lazy"), x = Symbol.for("react.activity"), E = Symbol.for("react.client.reference"), g = d.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, A = Object.prototype.hasOwnProperty, C = Array.isArray, q = console.createTask ? console.createTask : function() {
+    var React$1 = React, REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = /* @__PURE__ */ Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = /* @__PURE__ */ Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = /* @__PURE__ */ Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = /* @__PURE__ */ Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = /* @__PURE__ */ Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = /* @__PURE__ */ Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = /* @__PURE__ */ Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = /* @__PURE__ */ Symbol.for("react.memo"), REACT_LAZY_TYPE = /* @__PURE__ */ Symbol.for("react.lazy"), REACT_ACTIVITY_TYPE = /* @__PURE__ */ Symbol.for("react.activity"), REACT_CLIENT_REFERENCE = /* @__PURE__ */ Symbol.for("react.client.reference"), ReactSharedInternals = React$1.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, isArrayImpl = Array.isArray, createTask = console.createTask ? console.createTask : function() {
       return null;
     };
-    d = {
-      react_stack_bottom_frame: function(n) {
-        return n();
+    React$1 = {
+      react_stack_bottom_frame: function(callStackForError) {
+        return callStackForError();
       }
     };
-    var L, Y = {}, V = d.react_stack_bottom_frame.bind(
-      d,
-      c
-    )(), H = q(u(c)), z = {};
-    ne.Fragment = M, ne.jsx = function(n, R, P) {
-      var S = 1e4 > g.recentlyCreatedOwnerStacks++;
-      return j(
-        n,
-        R,
-        P,
-        !1,
-        S ? Error("react-stack-top-frame") : V,
-        S ? q(u(n)) : H
-      );
-    }, ne.jsxs = function(n, R, P) {
-      var S = 1e4 > g.recentlyCreatedOwnerStacks++;
-      return j(
-        n,
-        R,
-        P,
-        !0,
-        S ? Error("react-stack-top-frame") : V,
-        S ? q(u(n)) : H
+    var specialPropKeyWarningShown;
+    var didWarnAboutElementRef = {};
+    var unknownOwnerDebugStack = React$1.react_stack_bottom_frame.bind(
+      React$1,
+      UnknownOwner
+    )();
+    var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
+    var didWarnAboutKeySpread = {};
+    reactJsxRuntime_development.Fragment = REACT_FRAGMENT_TYPE;
+    reactJsxRuntime_development.jsx = function(type, config, maybeKey) {
+      var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
+      return jsxDEVImpl(
+        type,
+        config,
+        maybeKey,
+        false,
+        trackActualOwner ? Error("react-stack-top-frame") : unknownOwnerDebugStack,
+        trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask
       );
     };
-  })()), ne;
+    reactJsxRuntime_development.jsxs = function(type, config, maybeKey) {
+      var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
+      return jsxDEVImpl(
+        type,
+        config,
+        maybeKey,
+        true,
+        trackActualOwner ? Error("react-stack-top-frame") : unknownOwnerDebugStack,
+        trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask
+      );
+    };
+  })();
+  return reactJsxRuntime_development;
 }
-var Me;
-function cr() {
-  return Me || (Me = 1, process.env.NODE_ENV === "production" ? ie.exports = ur() : ie.exports = or()), ie.exports;
+var hasRequiredJsxRuntime;
+function requireJsxRuntime() {
+  if (hasRequiredJsxRuntime) return jsxRuntime.exports;
+  hasRequiredJsxRuntime = 1;
+  if (process.env.NODE_ENV === "production") {
+    jsxRuntime.exports = requireReactJsxRuntime_production();
+  } else {
+    jsxRuntime.exports = requireReactJsxRuntime_development();
+  }
+  return jsxRuntime.exports;
 }
-var O = cr();
-function ue(r = "inertiaui_modal_") {
-  return De(r);
+var jsxRuntimeExports = requireJsxRuntime();
+function generateId(prefix = "inertiaui_modal_") {
+  return generateId$1(prefix);
 }
-function ae(r, e) {
-  const t = typeof window < "u" ? window.location.origin : "http://localhost", u = typeof r == "string" ? new URL(r, t) : r, i = typeof e == "string" ? new URL(e, t) : e;
-  return `${u.origin}${u.pathname}` == `${i.origin}${i.pathname}`;
+function sameUrlPath(url1, url2) {
+  if (!url1 || !url2) {
+    return false;
+  }
+  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+  const parsed1 = typeof url1 === "string" ? new URL(url1, origin) : url1;
+  const parsed2 = typeof url2 === "string" ? new URL(url2, origin) : url2;
+  return `${parsed1.origin}${parsed1.pathname}` === `${parsed2.origin}${parsed2.pathname}`;
 }
-const gr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const dialog = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  createDialog: Je,
-  createFocusTrap: ke,
-  focusFirstElement: Ke,
-  getFocusableElements: He,
-  getScrollLockCount: Ge,
-  lockScroll: Fe,
-  markAriaHidden: Ne,
-  onClickOutside: Qe,
-  onEscapeKey: Oe,
-  unlockScroll: Ze,
-  unmarkAriaHidden: er
-}, Symbol.toStringTag, { value: "Module" })), de = Ve(null);
-de.displayName = "ModalStackContext";
-let be = null, ye = null, B = null;
-const ve = /* @__PURE__ */ new Map(), me = /* @__PURE__ */ new Map();
-function we(r, e, t) {
-  return `${e}:${r}:${JSON.stringify(t)}`;
+  createDialog,
+  createFocusTrap,
+  focusFirstElement,
+  getFocusableElements,
+  getScrollLockCount,
+  lockScroll,
+  markAriaHidden,
+  onClickOutside,
+  onEscapeKey,
+  onTransitionEnd,
+  unlockScroll,
+  unmarkAriaHidden
+}, Symbol.toStringTag, { value: "Module" }));
+const ModalStackContext = createContext(null);
+ModalStackContext.displayName = "ModalStackContext";
+let pageVersion = null;
+let resolveComponent = null;
+let baseUrl = null;
+let closingToBaseUrlTarget = null;
+const prefetchCache = /* @__PURE__ */ new Map();
+const prefetchInFlight = /* @__PURE__ */ new Map();
+function getPrefetchCacheKey(url, method, data) {
+  return `${method}:${url}:${JSON.stringify(data)}`;
 }
-function Ae(r, e, t) {
-  const u = we(r, e, t), i = ve.get(u);
-  return i ? Date.now() > i.expiresAt ? (ve.delete(u), null) : i.response : null;
+function getCachedResponse(url, method, data) {
+  const key = getPrefetchCacheKey(url, method, data);
+  const cached = prefetchCache.get(key);
+  if (!cached) {
+    return null;
+  }
+  if (Date.now() > cached.expiresAt) {
+    prefetchCache.delete(key);
+    return null;
+  }
+  return cached.response;
 }
-function dr(r, e, t, u, i) {
-  const c = we(r, e, t);
-  ve.set(c, {
-    response: u,
+function setCachedResponse(url, method, data, response, cacheFor) {
+  const key = getPrefetchCacheKey(url, method, data);
+  prefetchCache.set(key, {
+    response,
     timestamp: Date.now(),
-    expiresAt: Date.now() + i
+    expiresAt: Date.now() + cacheFor
   });
 }
-function pr(r, e = {}) {
-  var _;
-  if (r.startsWith("#"))
+function prefetch(href, options = {}) {
+  if (href.startsWith("#")) {
     return Promise.resolve();
-  const t = (e.method ?? "get").toLowerCase(), u = e.data ?? {}, i = e.headers ?? {}, c = e.queryStringArrayFormat ?? "brackets", m = e.cacheFor ?? 3e4, [b, v] = Ce(t, r || "", u, c);
-  if (Ae(b, t, v))
+  }
+  const method = (options.method ?? "get").toLowerCase();
+  const data = options.data ?? {};
+  const headers = options.headers ?? {};
+  const queryStringArrayFormat = options.queryStringArrayFormat ?? "brackets";
+  const cacheFor = options.cacheFor ?? 3e4;
+  const [url, mergedData] = mergeDataIntoQueryString(method, href || "", data, queryStringArrayFormat);
+  const cached = getCachedResponse(url, method, mergedData);
+  if (cached) {
     return Promise.resolve();
-  const j = we(b, t, v), y = me.get(j);
-  if (y)
-    return y.then(() => {
+  }
+  const cacheKey = getPrefetchCacheKey(url, method, mergedData);
+  const inFlight = prefetchInFlight.get(cacheKey);
+  if (inFlight) {
+    return inFlight.then(() => {
     });
-  (_ = e.onPrefetching) == null || _.call(e);
-  const f = {
-    ...i,
+  }
+  options.onPrefetching?.();
+  const requestHeaders = {
+    ...headers,
     Accept: "text/html, application/xhtml+xml",
     "X-Requested-With": "XMLHttpRequest",
     "X-Inertia": "true",
-    "X-Inertia-Version": be ?? "",
-    "X-InertiaUI-Modal": ue(),
-    "X-InertiaUI-Modal-Base-Url": B ?? ""
-  }, d = le({
-    url: b,
-    method: t,
-    data: v,
-    headers: f
-  }).then((s) => {
-    var M;
-    return dr(b, t, v, s, m), (M = e.onPrefetched) == null || M.call(e), s;
+    "X-Inertia-Version": pageVersion ?? "",
+    "X-InertiaUI-Modal": generateId(),
+    "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
+  };
+  const request = Axios({
+    url,
+    method,
+    data: mergedData,
+    headers: requestHeaders
+  }).then((response) => {
+    setCachedResponse(url, method, mergedData, response, cacheFor);
+    options.onPrefetched?.();
+    return response;
   }).finally(() => {
-    me.delete(j);
+    prefetchInFlight.delete(cacheKey);
   });
-  return me.set(j, d), d.then(() => {
+  prefetchInFlight.set(cacheKey, request);
+  return request.then(() => {
   });
 }
-const fr = ({ children: r }) => {
-  const e = U([]), [, t] = ze((p) => p + 1, 0), [u, i] = X({}), c = (p) => {
-    const o = p([...e.current]), h = (w) => {
-      var k;
-      return o.length < 2 ? !0 : ((k = o.map((a) => ({ id: a.id, shouldRender: a.shouldRender })).reverse().find((a) => a.shouldRender)) == null ? void 0 : k.id) === w;
+const ModalStackProvider = ({ children }) => {
+  const stackRef = useRef([]);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [localModals, setLocalModals] = useState({});
+  const updateStack = (withStack) => {
+    const newStack = withStack([...stackRef.current]);
+    const isOnTopOfStack = (modalId) => {
+      if (newStack.length < 2) {
+        return true;
+      }
+      return newStack.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender })).reverse().find((modal) => modal.shouldRender)?.id === modalId;
     };
-    o.forEach((w, k) => {
-      o[k].onTopOfStack = h(w.id), o[k].getParentModal = () => k < 1 ? null : e.current.slice(0, k).reverse().find((a) => a.isOpen) ?? null, o[k].getChildModal = () => k === e.current.length - 1 ? null : e.current.slice(k + 1).find((a) => a.isOpen) ?? null;
-    }), e.current = o, t();
+    newStack.forEach((modal, index) => {
+      newStack[index].onTopOfStack = isOnTopOfStack(modal.id);
+      newStack[index].getParentModal = () => {
+        if (index < 1) {
+          return null;
+        }
+        return stackRef.current.slice(0, index).reverse().find((m) => m.isOpen) ?? null;
+      };
+      newStack[index].getChildModal = () => {
+        if (index === stackRef.current.length - 1) {
+          return null;
+        }
+        return stackRef.current.slice(index + 1).find((m) => m.isOpen) ?? null;
+      };
+    });
+    stackRef.current = newStack;
+    forceUpdate();
   };
-  class m {
-    constructor(o, h, w, k, a) {
+  class ModalClass {
+    constructor(component, response, config, onClose, afterLeave) {
       this.show = () => {
-        c(
-          (l) => l.map((T) => (T.id === this.id && !T.isOpen && (T.isOpen = !0, T.shouldRender = !0), T))
-        );
-      }, this.setOpen = (l) => {
-        l ? this.show() : this.close();
-      }, this.close = () => {
-        c((l) => {
-          let T = !1;
-          const x = l.map((E) => {
-            var g;
-            return E.id === this.id && E.isOpen && (Object.keys(E.listeners).forEach((A) => {
-              E.off(A);
-            }), E.isOpen = !1, (g = E.onCloseCallback) == null || g.call(E), T = !0), E;
-          });
-          return T ? x : l;
-        });
-      }, this.afterLeave = () => {
-        this.isOpen || c((l) => {
-          const T = l.map((x) => {
-            var E;
-            return x.id === this.id && !x.isOpen && (x.shouldRender = !1, (E = x.afterLeaveCallback) == null || E.call(x), x.afterLeaveCallback = null), x;
-          });
-          return this.index === 0 ? (B && typeof window < "u" && ee.push({
-            url: B,
-            preserveScroll: !0,
-            preserveState: !0,
-            // Clear _inertiaui_modal prop to prevent modal from reopening
-            props: (x) => {
-              const { _inertiaui_modal: E, ...g } = x;
-              return { ...g, _inertiaui_modal: void 0 };
+        updateStack(
+          (prevStack) => prevStack.map((modal) => {
+            if (modal.id === this.id && !modal.isOpen) {
+              modal.isOpen = true;
+              modal.shouldRender = true;
             }
-          }), B = null, []) : T;
+            return modal;
+          })
+        );
+      };
+      this.setOpen = (open) => {
+        if (open) {
+          this.show();
+        } else {
+          this.close();
+        }
+      };
+      this.close = () => {
+        updateStack((currentStack) => {
+          let modalClosed = false;
+          const newStack = currentStack.map((modal) => {
+            if (modal.id === this.id && modal.isOpen) {
+              Object.keys(modal.listeners).forEach((event) => {
+                modal.off(event);
+              });
+              modal.isOpen = false;
+              modal.onCloseCallback?.();
+              modalClosed = true;
+            }
+            return modal;
+          });
+          return modalClosed ? newStack : currentStack;
         });
-      }, this.on = (l, T) => {
-        l = re(l), this.listeners[l] = this.listeners[l] ?? [], this.listeners[l].push(T);
-      }, this.off = (l, T) => {
-        var x;
-        l = re(l), T ? this.listeners[l] = ((x = this.listeners[l]) == null ? void 0 : x.filter((E) => E !== T)) ?? [] : delete this.listeners[l];
-      }, this.emit = (l, ...T) => {
-        var x;
-        (x = this.listeners[re(l)]) == null || x.forEach((E) => E(...T));
-      }, this.registerEventListenersFromProps = (l) => {
-        const T = [];
-        return Object.keys(l).filter((x) => x.startsWith("on")).forEach((x) => {
-          const E = re(x).replace(/^on-/, ""), g = l[x];
-          this.on(E, g), T.push(() => this.off(E, g));
-        }), () => T.forEach((x) => x());
-      }, this.reload = (l = {}) => {
-        var g, A;
-        let T = Object.keys(this.response.props);
-        if (l.only && (T = l.only), l.except && (T = rr(T, l.except)), !((g = this.response) != null && g.url))
+      };
+      this.afterLeave = () => {
+        if (this.isOpen) {
           return;
-        const x = (l.method ?? "get").toLowerCase(), E = l.data ?? {};
-        (A = l.onStart) == null || A.call(l), le({
+        }
+        updateStack((prevStack) => {
+          const updatedStack = prevStack.map((modal) => {
+            if (modal.id === this.id && !modal.isOpen) {
+              modal.shouldRender = false;
+              modal.afterLeaveCallback?.();
+              modal.afterLeaveCallback = null;
+            }
+            return modal;
+          });
+          if (this.index === 0) {
+            const savedBaseUrl = baseUrl;
+            baseUrl = null;
+            closingToBaseUrlTarget = savedBaseUrl;
+            if (savedBaseUrl && typeof window !== "undefined") {
+              router.push({
+                url: savedBaseUrl,
+                preserveScroll: true,
+                preserveState: true,
+                // Clear _inertiaui_modal prop to prevent modal from reopening
+                props: (currentProps) => {
+                  const { _inertiaui_modal, ...rest } = currentProps;
+                  return { ...rest, _inertiaui_modal: void 0 };
+                }
+              });
+            }
+            return [];
+          }
+          return updatedStack;
+        });
+      };
+      this.on = (event, callback) => {
+        event = kebabCase(event);
+        this.listeners[event] = this.listeners[event] ?? [];
+        this.listeners[event].push(callback);
+      };
+      this.off = (event, callback) => {
+        event = kebabCase(event);
+        if (callback) {
+          this.listeners[event] = this.listeners[event]?.filter((cb) => cb !== callback) ?? [];
+        } else {
+          delete this.listeners[event];
+        }
+      };
+      this.emit = (event, ...args) => {
+        this.listeners[kebabCase(event)]?.forEach((callback) => callback(...args));
+      };
+      this.registerEventListenersFromProps = (props) => {
+        const unsubscribers = [];
+        Object.keys(props).filter((key) => key.startsWith("on")).forEach((key) => {
+          const eventName = kebabCase(key).replace(/^on-/, "");
+          const callback = props[key];
+          this.on(eventName, callback);
+          unsubscribers.push(() => this.off(eventName, callback));
+        });
+        return () => unsubscribers.forEach((unsub) => unsub());
+      };
+      this.reload = (options = {}) => {
+        let keys = Object.keys(this.response.props);
+        if (options.only) {
+          keys = options.only;
+        }
+        if (options.except) {
+          keys = except(keys, options.except);
+        }
+        if (!this.response?.url) {
+          return;
+        }
+        const method = (options.method ?? "get").toLowerCase();
+        const data = options.data ?? {};
+        options.onStart?.();
+        Axios({
           url: this.response.url,
-          method: x,
-          data: x === "get" ? {} : E,
-          params: x === "get" ? E : {},
+          method,
+          data: method === "get" ? {} : data,
+          params: method === "get" ? data : {},
           headers: {
-            ...l.headers ?? {},
+            ...options.headers ?? {},
             Accept: "text/html, application/xhtml+xml",
             "X-Inertia": "true",
             "X-Inertia-Partial-Component": this.response.component,
             "X-Inertia-Version": this.response.version ?? "",
-            "X-Inertia-Partial-Data": T.join(","),
-            "X-InertiaUI-Modal": ue(),
-            "X-InertiaUI-Modal-Base-Url": B ?? ""
+            "X-Inertia-Partial-Data": keys.join(","),
+            "X-InertiaUI-Modal": generateId(),
+            "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
           }
-        }).then((C) => {
-          var q;
-          this.updateProps(C.data.props), (q = l.onSuccess) == null || q.call(l, C);
-        }).catch((C) => {
-          var q;
-          (q = l.onError) == null || q.call(l, C);
+        }).then((response2) => {
+          this.updateProps(response2.data.props);
+          options.onSuccess?.(response2);
+        }).catch((error) => {
+          options.onError?.(error);
         }).finally(() => {
-          var C;
-          (C = l.onFinish) == null || C.call(l);
+          options.onFinish?.();
         });
-      }, this.updateProps = (l) => {
-        Object.assign(this.props, l), c((T) => T);
-      }, this.id = h.id ?? ue(), this.isOpen = !1, this.shouldRender = !1, this.listeners = {}, this.component = o, this.props = h.props ?? {}, this.response = h, this.config = w ?? {}, this.onCloseCallback = k ?? null, this.afterLeaveCallback = a ?? null, this.index = -1, this.getParentModal = () => null, this.getChildModal = () => null, this.onTopOfStack = !0;
+      };
+      this.updateProps = (props) => {
+        Object.assign(this.props, props);
+        updateStack((prevStack) => prevStack);
+      };
+      this.id = response.id ?? generateId();
+      this.isOpen = false;
+      this.shouldRender = false;
+      this.listeners = {};
+      this.component = component;
+      this.props = response.props ?? {};
+      this.response = response;
+      this.config = config ?? {};
+      this.onCloseCallback = onClose ?? null;
+      this.afterLeaveCallback = afterLeave ?? null;
+      this.index = -1;
+      this.getParentModal = () => null;
+      this.getChildModal = () => null;
+      this.onTopOfStack = true;
     }
   }
-  const b = (p) => typeof p == "object" && p !== null && "component" in p && typeof p.component == "string", v = (p, o = {}, h = null, w = null) => ye ? b(p) ? ye(p.component).then(
-    (k) => j(k, p, o, h, w)
-  ) : Promise.reject(
-    new Error(
-      "Invalid modal response. This usually happens when the server returns a redirect (e.g., due to session expiration). Check if the user is still authenticated."
-    )
-  ) : Promise.reject(new Error("resolveComponent not set")), N = (p) => {
-    var h, w;
-    const o = (w = (h = p.response) == null ? void 0 : h.meta) == null ? void 0 : w.deferredProps;
-    o && Object.keys(o).forEach((k) => {
-      p.reload({ only: o[k] });
-    });
-  }, j = (p, o, h, w, k) => {
-    const a = new m(p, o, h, w, k);
-    return a.index = e.current.length, c((l) => [...l, a]), N(a), a.show(), a;
+  const isValidModalResponse = (data) => {
+    return typeof data === "object" && data !== null && "component" in data && typeof data.component === "string";
   };
-  function y(p, o, h, w, k) {
-    if (!u[p])
-      throw new Error(`The local modal "${p}" has not been registered.`);
-    const l = j(null, { props: k ?? {} }, o, h, w);
-    return l.name = p, u[p].callback(l), l;
+  const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null) => {
+    if (!resolveComponent) {
+      return Promise.reject(new Error("resolveComponent not set"));
+    }
+    if (!isValidModalResponse(responseData)) {
+      return Promise.reject(
+        new Error(
+          "Invalid modal response. This usually happens when the server returns a redirect (e.g., due to session expiration). Check if the user is still authenticated."
+        )
+      );
+    }
+    return resolveComponent(responseData.component).then(
+      (component) => push(component, responseData, config, onClose, onAfterLeave)
+    );
+  };
+  const loadDeferredProps = (modal) => {
+    const deferred = modal.response?.meta?.deferredProps;
+    if (!deferred) {
+      return;
+    }
+    Object.keys(deferred).forEach((key) => {
+      modal.reload({ only: deferred[key] });
+    });
+  };
+  const push = (component, response, config, onClose, afterLeave) => {
+    const newModal = new ModalClass(component, response, config, onClose, afterLeave);
+    newModal.index = stackRef.current.length;
+    updateStack((prevStack) => [...prevStack, newModal]);
+    loadDeferredProps(newModal);
+    newModal.show();
+    return newModal;
+  };
+  function pushLocalModal(name, config, onClose, afterLeave, props) {
+    if (!localModals[name]) {
+      throw new Error(`The local modal "${name}" has not been registered.`);
+    }
+    const responseData = { props: props ?? {} };
+    const modal = push(null, responseData, config, onClose, afterLeave);
+    modal.name = name;
+    localModals[name].callback(modal);
+    return modal;
   }
-  const f = (p, o = {}) => _(
-    p,
-    o.method ?? "get",
-    o.data ?? {},
-    o.headers ?? {},
-    o.config ?? {},
-    o.onClose ?? null,
-    o.onAfterLeave ?? null,
-    o.queryStringArrayFormat ?? "brackets",
-    o.navigate ?? ce("navigate"),
-    o.onStart ?? null,
-    o.onSuccess ?? null,
-    o.onError ?? null,
-    o.props ?? null
-  ).then((h) => {
-    const w = o.listeners ?? {};
-    return Object.keys(w).forEach((k) => {
-      const a = re(k);
-      h.on(a, w[k]);
-    }), h;
-  }), d = (p, o, h) => {
-    !p || !o || typeof window > "u" || ee.push({
-      url: p,
-      preserveScroll: !0,
-      preserveState: !0,
+  const visitModal = (url, options = {}) => visit(
+    url,
+    options.method ?? "get",
+    options.data ?? {},
+    options.headers ?? {},
+    options.config ?? {},
+    options.onClose ?? null,
+    options.onAfterLeave ?? null,
+    options.queryStringArrayFormat ?? "brackets",
+    options.navigate ?? getConfig("navigate"),
+    options.onStart ?? null,
+    options.onSuccess ?? null,
+    options.onError ?? null,
+    options.props ?? null
+  ).then((modal) => {
+    const listeners = options.listeners ?? {};
+    Object.keys(listeners).forEach((event) => {
+      const eventName = kebabCase(event);
+      modal.on(eventName, listeners[event]);
+    });
+    return modal;
+  });
+  const updateBrowserUrl = (url, useBrowserHistory, modalData) => {
+    if (!url || !useBrowserHistory || typeof window === "undefined") {
+      return;
+    }
+    router.push({
+      url,
+      preserveScroll: true,
+      preserveState: true,
       // Store modal data in page props for history navigation
-      props: h ? (w) => ({
-        ...w,
+      props: modalData ? (currentProps) => ({
+        ...currentProps,
         _inertiaui_modal: {
-          ...h,
-          baseUrl: B
+          ...modalData,
+          baseUrl
         }
       }) : void 0
     });
-  }, _ = (p, o, h = {}, w = {}, k = {}, a = null, l = null, T = "brackets", x = !1, E = null, g = null, A = null, C = null) => {
-    const q = ue();
-    return new Promise((L, Y) => {
-      var R;
-      if (p.startsWith("#")) {
-        L(y(p.substring(1), k, a, l, C));
+  };
+  const visit = (href, method, payload = {}, headers = {}, config = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = "brackets", useBrowserHistory = false, onStart = null, onSuccess = null, onError = null, props = null) => {
+    const modalId = generateId();
+    return new Promise((resolve, reject) => {
+      if (href.startsWith("#")) {
+        resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave, props));
         return;
       }
-      const [V, H] = Ce(o, p || "", h, T), z = Ae(V, o, H);
-      if (z) {
-        g == null || g(z), v(z.data, k, a, l).then((P) => {
-          d(z.data.url, x, z.data), L(P);
-        }).catch(Y);
+      const [url, data] = mergeDataIntoQueryString(method, href || "", payload, queryStringArrayFormat);
+      const cachedResponse = getCachedResponse(url, method, data);
+      if (cachedResponse) {
+        onSuccess?.(cachedResponse);
+        pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data);
+          resolve(modal);
+        }).catch(reject);
         return;
       }
-      e.current.length === 0 && (B = typeof window < "u" ? window.location.href : "");
-      const n = {
-        ...w,
+      if (stackRef.current.length === 0) {
+        baseUrl = typeof window !== "undefined" ? window.location.href : "";
+      }
+      const requestHeaders = {
+        ...headers,
         Accept: "text/html, application/xhtml+xml",
         "X-Requested-With": "XMLHttpRequest",
         "X-Inertia": "true",
-        "X-Inertia-Version": be ?? "",
-        "X-InertiaUI-Modal": q,
-        "X-InertiaUI-Modal-Base-Url": B ?? ""
+        "X-Inertia-Version": pageVersion ?? "",
+        "X-InertiaUI-Modal": modalId,
+        "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
       };
-      E == null || E(), (R = Te) == null || R.start(), le({
-        url: V,
-        method: o,
-        data: H,
-        headers: n
-      }).then((P) => {
-        g == null || g(P), v(P.data, k, a, l).then((S) => {
-          d(P.data.url, x, P.data), L(S);
-        }).catch(Y);
-      }).catch((...P) => {
-        A == null || A(...P), Y(P[0]);
+      onStart?.();
+      progress?.start();
+      Axios({
+        url,
+        method,
+        data,
+        headers: requestHeaders
+      }).then((response) => {
+        onSuccess?.(response);
+        pushFromResponseData(response.data, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(response.data.url, useBrowserHistory, response.data);
+          resolve(modal);
+        }).catch(reject);
+      }).catch((...args) => {
+        onError?.(...args);
+        reject(args[0]);
       }).finally(() => {
-        var P;
-        (P = Te) == null || P.finish();
+        progress?.finish();
       });
     });
-  }, I = {
-    get stack() {
-      return e.current;
-    },
-    localModals: u,
-    push: j,
-    pushFromResponseData: v,
-    length: () => e.current.length,
-    closeAll: (p = !1) => {
-      p ? c(() => []) : [...e.current].reverse().forEach((o) => o.close());
-    },
-    reset: () => c(() => []),
-    visit: _,
-    visitModal: f,
-    registerLocalModal: (p, o) => {
-      i((h) => ({
-        ...h,
-        [p]: { name: p, callback: o }
-      }));
-    },
-    removeLocalModal: (p) => {
-      i((o) => {
-        const h = { ...o };
-        return delete h[p], h;
-      });
-    }
   };
-  return /* @__PURE__ */ O.jsx(de.Provider, { value: I, children: r });
-}, pe = () => {
-  const r = Pe(de);
-  if (r === null)
+  const registerLocalModal = (name, callback) => {
+    setLocalModals((prevLocalModals) => ({
+      ...prevLocalModals,
+      [name]: { name, callback }
+    }));
+  };
+  const removeLocalModal = (name) => {
+    setLocalModals((prevLocalModals) => {
+      const newLocalModals = { ...prevLocalModals };
+      delete newLocalModals[name];
+      return newLocalModals;
+    });
+  };
+  const value = {
+    get stack() {
+      return stackRef.current;
+    },
+    localModals,
+    push,
+    pushFromResponseData,
+    length: () => stackRef.current.length,
+    closeAll: (force = false) => {
+      if (force) {
+        updateStack(() => []);
+      } else {
+        [...stackRef.current].reverse().forEach((modal) => modal.close());
+      }
+    },
+    reset: () => updateStack(() => []),
+    visit,
+    visitModal,
+    registerLocalModal,
+    removeLocalModal
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(ModalStackContext.Provider, { value, children });
+};
+const useModalStack = () => {
+  const context = useContext(ModalStackContext);
+  if (context === null) {
     throw new Error("useModalStack must be used within a ModalStackProvider");
-  return r;
-}, _e = ["closeButton", "closeExplicitly", "closeOnClickOutside", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"], hr = (r) => {
-  r.initialPage && (be = r.initialPage.version ?? null), r.resolveComponent && (ye = r.resolveComponent);
-}, Fr = (r, e) => {
-  hr(e);
-  const t = ({ Component: u, props: i, key: c }) => {
-    const m = () => {
-      const b = se(u, { key: c, ...i });
-      return typeof u.layout == "function" ? u.layout(b) : Array.isArray(u.layout) ? u.layout.slice().reverse().reduce(
-        (v, N) => se(N, i, v),
-        b
-      ) : b;
+  }
+  return context;
+};
+const modalPropNames = ["closeButton", "closeExplicitly", "closeOnClickOutside", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"];
+const initFromPageProps = (pageProps) => {
+  if (pageProps.initialPage) {
+    pageVersion = pageProps.initialPage.version ?? null;
+  }
+  if (pageProps.resolveComponent) {
+    resolveComponent = pageProps.resolveComponent;
+  }
+};
+const renderApp = (App, pageProps) => {
+  initFromPageProps(pageProps);
+  const renderInertiaApp = ({ Component, props, key }) => {
+    const renderComponent = () => {
+      const child = createElement(Component, { key, ...props });
+      if (typeof Component.layout === "function") {
+        return Component.layout(child);
+      }
+      if (Array.isArray(Component.layout)) {
+        return Component.layout.slice().reverse().reduce(
+          (acc, Layout) => createElement(Layout, props, acc),
+          child
+        );
+      }
+      return child;
     };
-    return /* @__PURE__ */ O.jsxs(O.Fragment, { children: [
-      m(),
-      /* @__PURE__ */ O.jsx(mr, {})
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      renderComponent(),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ModalRoot, {})
     ] });
   };
-  return /* @__PURE__ */ O.jsx(fr, { children: /* @__PURE__ */ O.jsx(r, { ...e, children: t }) });
-}, mr = ({ children: r }) => {
-  var N, j;
-  const e = Pe(de), t = lr(), u = U(/* @__PURE__ */ new Set()), i = (y) => y.id || `${y.component}:${y.url}`, c = U(!1), m = U(!!((N = t.props) != null && N._inertiaui_modal));
-  W(() => ee.on("start", () => c.current = !0), []), W(() => ee.on("finish", () => c.current = !1), []), W(
-    () => ee.on("navigate", function(y) {
-      const f = y.detail.page.props._inertiaui_modal, d = y.detail.page.url;
-      if (!f) {
-        e == null || e.closeAll(!0), B = null, m.current = !1;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(ModalStackProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, { ...pageProps, children: renderInertiaApp }) });
+};
+const ModalRoot = ({ children }) => {
+  const context = useContext(ModalStackContext);
+  const $page = usePage();
+  const pendingModalKeysRef = useRef(/* @__PURE__ */ new Set());
+  const getModalKey = (modalData) => modalData.id || `${modalData.component}:${modalData.url}`;
+  const isNavigatingRef = useRef(false);
+  const initialModalStillOpenedRef = useRef(!!$page.props?._inertiaui_modal);
+  useEffect(() => router.on("start", () => isNavigatingRef.current = true), []);
+  useEffect(() => router.on("finish", () => isNavigatingRef.current = false), []);
+  useEffect(
+    () => router.on("navigate", function($event) {
+      const modalOnBase = $event.detail.page.props._inertiaui_modal;
+      const pageUrl = $event.detail.page.url;
+      if (closingToBaseUrlTarget) {
+        const targetPath = new URL(closingToBaseUrlTarget, "http://x").pathname;
+        const pagePath = new URL(pageUrl, "http://x").pathname;
+        if (targetPath === pagePath) {
+          closingToBaseUrlTarget = null;
+          context?.closeAll(true);
+          baseUrl = null;
+          initialModalStillOpenedRef.current = false;
+          return;
+        }
+        closingToBaseUrlTarget = null;
+      }
+      if (!modalOnBase) {
+        context?.closeAll(true);
+        baseUrl = null;
+        initialModalStillOpenedRef.current = false;
         return;
       }
-      if (!ae(d, f.url)) {
-        e == null || e.closeAll(!0), B = null, m.current = !1;
+      if (!sameUrlPath(pageUrl, modalOnBase.url)) {
+        context?.closeAll(true);
+        baseUrl = null;
+        initialModalStillOpenedRef.current = false;
         return;
       }
-      B = f.baseUrl;
-      const _ = i(f);
-      u.current.has(_) || f.id && (e != null && e.stack.some((s) => s.id === f.id)) || e != null && e.stack.some((s) => {
-        var M, I;
-        return ((M = s.response) == null ? void 0 : M.component) === f.component && ae((I = s.response) == null ? void 0 : I.url, f.url);
-      }) || (u.current.add(_), e == null || e.pushFromResponseData(f, {}, () => {
-        if (!f.baseUrl) {
+      const modalKey = getModalKey(modalOnBase);
+      if (pendingModalKeysRef.current.has(modalKey)) {
+        return;
+      }
+      if (modalOnBase.id && context?.stack.some((m) => m.id === modalOnBase.id)) {
+        return;
+      }
+      if (context?.stack.some((m) => m.response?.component === modalOnBase.component && sameUrlPath(m.response?.url, modalOnBase.url))) {
+        return;
+      }
+      baseUrl = modalOnBase.baseUrl;
+      pendingModalKeysRef.current.add(modalKey);
+      context?.pushFromResponseData(modalOnBase, {}, () => {
+        if (!modalOnBase.baseUrl) {
           console.error("No base url in modal response data so cannot navigate back");
           return;
         }
-        !c.current && typeof window < "u" && window.location.href !== f.baseUrl && ee.visit(f.baseUrl, {
-          preserveScroll: !0,
-          preserveState: !0
-        });
+        if (!isNavigatingRef.current && typeof window !== "undefined" && window.location.href !== modalOnBase.baseUrl) {
+          router.visit(modalOnBase.baseUrl, {
+            preserveScroll: true,
+            preserveState: true
+          });
+        }
       }).then(() => {
-        u.current.delete(_);
-      }));
+        pendingModalKeysRef.current.delete(modalKey);
+      });
     }),
     []
   );
-  const b = (y) => {
-    var d;
-    const f = B ?? (m.current ? (d = t.props._inertiaui_modal) == null ? void 0 : d.baseUrl : null);
-    return f && (y.headers["X-InertiaUI-Modal-Base-Url"] = f), y;
+  const axiosRequestInterceptor = (config) => {
+    const baseUrlValue = baseUrl ?? (initialModalStillOpenedRef.current ? $page.props._inertiaui_modal?.baseUrl : null);
+    if (baseUrlValue) {
+      config.headers["X-InertiaUI-Modal-Base-Url"] = baseUrlValue;
+    }
+    return config;
   };
-  W(() => {
-    const y = le.interceptors.request.use(b);
-    return () => le.interceptors.request.eject(y);
+  useEffect(() => {
+    const interceptorId = Axios.interceptors.request.use(axiosRequestInterceptor);
+    return () => Axios.interceptors.request.eject(interceptorId);
   }, []);
-  const v = U(void 0);
-  return W(() => {
-    var d, _;
-    const y = (d = t.props) == null ? void 0 : d._inertiaui_modal, f = v.current;
-    if (v.current = y, !!y) {
-      if (f && y.component === f.component && ae(y.url, f.url)) {
-        (_ = e == null ? void 0 : e.stack[0]) == null || _.updateProps(y.props ?? {});
-        return;
-      }
-      if (!f && e && e.stack.length > 0) {
-        const s = e.stack.find(
-          (M) => {
-            var I, p;
-            return ((I = M.response) == null ? void 0 : I.component) === y.component && ae((p = M.response) == null ? void 0 : p.url, y.url);
-          }
-        );
-        s && s.updateProps(y.props ?? {});
+  const previousModalRef = useRef(void 0);
+  useEffect(() => {
+    const newModal = $page.props?._inertiaui_modal;
+    const previousModal = previousModalRef.current;
+    previousModalRef.current = newModal;
+    if (!newModal) {
+      return;
+    }
+    if (previousModal && newModal.component === previousModal.component && sameUrlPath(newModal.url, previousModal.url)) {
+      context?.stack[0]?.updateProps(newModal.props ?? {});
+      return;
+    }
+    if (!previousModal && context && context.stack.length > 0) {
+      const existingModal = context.stack.find(
+        (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url)
+      );
+      if (existingModal) {
+        existingModal.updateProps(newModal.props ?? {});
       }
     }
-  }, [(j = t.props) == null ? void 0 : j._inertiaui_modal]), /* @__PURE__ */ O.jsxs(O.Fragment, { children: [
-    r,
-    e && e.stack.length > 0 && /* @__PURE__ */ O.jsx(Ue, { index: 0 })
+  }, [$page.props?._inertiaui_modal]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    children,
+    context && context.stack.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(ModalRenderer, { index: 0 })
   ] });
-}, Ee = xe.createContext(null);
-Ee.displayName = "ModalIndexContext";
-const We = () => xe.useContext(Ee), Ue = ({ index: r }) => {
-  const { stack: e } = pe(), t = K(() => e[r], [e, r]);
-  return t != null && t.component ? /* @__PURE__ */ O.jsx(Ee.Provider, { value: r, children: se(t.component, {
-    ...t.props,
-    onModalEvent: (...u) => t.emit("modal-event", ...u)
-  }) }) : null;
 };
-function Le() {
-  return pe().stack[We()] ?? null;
+const ModalIndexContext = React.createContext(null);
+ModalIndexContext.displayName = "ModalIndexContext";
+const useModalIndex = () => {
+  return React.useContext(ModalIndexContext);
+};
+const ModalRenderer = ({ index }) => {
+  const { stack } = useModalStack();
+  const modalContext = useMemo(() => {
+    return stack[index];
+  }, [stack, index]);
+  if (!modalContext?.component) {
+    return null;
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(ModalIndexContext.Provider, { value: index, children: createElement(modalContext.component, {
+    ...modalContext.props,
+    onModalEvent: (...args) => modalContext.emit("modal-event", ...args)
+  }) });
+};
+function useModal() {
+  return useModalStack().stack[useModalIndex()] ?? null;
 }
-const yr = ({ children: r, data: e, fallback: t }) => {
-  if (!e)
+const Deferred = ({ children, data, fallback }) => {
+  if (!data) {
     throw new Error("`<Deferred>` requires a `data` prop to be a string or array of strings");
-  const [u, i] = X(!1), c = Array.isArray(e) ? e : [e], m = Le(), b = (m == null ? void 0 : m.props) ?? {};
-  return W(() => {
-    i(c.every((v) => b[v] !== void 0));
-  }, [b, c]), u ? r : t;
+  }
+  const [loaded, setLoaded] = useState(false);
+  const keys = Array.isArray(data) ? data : [data];
+  const modal = useModal();
+  const modalProps = modal?.props ?? {};
+  useEffect(() => {
+    setLoaded(keys.every((key) => modalProps[key] !== void 0));
+  }, [modalProps, keys]);
+  return loaded ? children : fallback;
 };
-yr.displayName = "InertiaModalDeferred";
-const $e = Ie(
-  (r, e) => {
-    const { name: t, children: u, onFocus: i, onBlur: c, onClose: m, onSuccess: b, ...v } = r, N = We(), { stack: j, registerLocalModal: y, removeLocalModal: f } = pe(), [d, _] = X(null), s = K(
-      () => t ? d : j[N],
-      [t, d, N, j]
-    ), M = K(() => {
-      var a;
-      return (a = j.find((l) => l.shouldRender && l.index > ((s == null ? void 0 : s.index) ?? -1))) == null ? void 0 : a.index;
-    }, [N, j]), I = K(
-      () => (s == null ? void 0 : s.config.slideover) ?? v.slideover ?? ce("type") === "slideover",
-      [v.slideover, s == null ? void 0 : s.config.slideover]
-    ), p = K(
-      () => ({
-        slideover: I,
-        closeButton: v.closeButton ?? G(I, "closeButton"),
-        closeExplicitly: v.closeExplicitly ?? G(I, "closeExplicitly"),
-        closeOnClickOutside: v.closeOnClickOutside ?? G(I, "closeOnClickOutside"),
-        maxWidth: v.maxWidth ?? G(I, "maxWidth"),
-        paddingClasses: v.paddingClasses ?? G(I, "paddingClasses"),
-        panelClasses: v.panelClasses ?? G(I, "panelClasses"),
-        position: v.position ?? G(I, "position"),
-        ...s == null ? void 0 : s.config
-      }),
-      [v, s == null ? void 0 : s.config, I]
+Deferred.displayName = "InertiaModalDeferred";
+const HeadlessModal = forwardRef(
+  (allProps, ref) => {
+    const { name, children, onFocus, onBlur, onClose, onSuccess, ...props } = allProps;
+    const modalIndex = useModalIndex();
+    const { stack, registerLocalModal, removeLocalModal } = useModalStack();
+    const [localModalContext, setLocalModalContext] = useState(null);
+    const modalContext = useMemo(
+      () => name ? localModalContext : stack[modalIndex],
+      [name, localModalContext, modalIndex, stack]
     );
-    W(() => {
-      if (t) {
-        let a = null;
-        return y(t, (l) => {
-          a = l.registerEventListenersFromProps(v), _(l);
-        }), () => {
-          a == null || a(), a = null, f(t);
+    const nextIndex = useMemo(() => {
+      return stack.find((m) => m.shouldRender && m.index > (modalContext?.index ?? -1))?.index;
+    }, [modalIndex, stack]);
+    const configSlideover = useMemo(
+      () => modalContext?.config.slideover ?? props.slideover ?? getConfig("type") === "slideover",
+      [props.slideover, modalContext?.config.slideover]
+    );
+    const config = useMemo(
+      () => ({
+        slideover: configSlideover,
+        closeButton: props.closeButton ?? getConfigByType(configSlideover, "closeButton"),
+        closeExplicitly: props.closeExplicitly ?? getConfigByType(configSlideover, "closeExplicitly"),
+        closeOnClickOutside: props.closeOnClickOutside ?? getConfigByType(configSlideover, "closeOnClickOutside"),
+        maxWidth: props.maxWidth ?? getConfigByType(configSlideover, "maxWidth"),
+        paddingClasses: props.paddingClasses ?? getConfigByType(configSlideover, "paddingClasses"),
+        panelClasses: props.panelClasses ?? getConfigByType(configSlideover, "panelClasses"),
+        position: props.position ?? getConfigByType(configSlideover, "position"),
+        ...modalContext?.config
+      }),
+      [props, modalContext?.config, configSlideover]
+    );
+    useEffect(() => {
+      if (name) {
+        let removeListeners = null;
+        registerLocalModal(name, (localContext) => {
+          removeListeners = localContext.registerEventListenersFromProps(props);
+          setLocalModalContext(localContext);
+        });
+        return () => {
+          removeListeners?.();
+          removeListeners = null;
+          removeLocalModal(name);
         };
       }
-      return s == null ? void 0 : s.registerEventListenersFromProps(v);
-    }, [t]);
-    const o = U(s);
-    W(() => {
-      o.current = s;
-    }, [s]);
-    const h = U(void 0);
-    W(() => {
-      s !== null && (s.isOpen ? b == null || b() : h.current === !0 && (m == null || m()), h.current = s.isOpen);
-    }, [s == null ? void 0 : s.isOpen]);
-    const [w, k] = X(!1);
-    return W(() => {
-      w && s !== null && s.isOpen && (s.onTopOfStack ? i == null || i() : c == null || c()), k(!0);
-    }, [s == null ? void 0 : s.onTopOfStack]), ge(
-      e,
+      return modalContext?.registerEventListenersFromProps(props);
+    }, [name]);
+    const modalContextRef = useRef(modalContext);
+    useEffect(() => {
+      modalContextRef.current = modalContext;
+    }, [modalContext]);
+    const previousIsOpenRef = useRef(void 0);
+    useEffect(() => {
+      if (modalContext !== null) {
+        if (modalContext.isOpen) {
+          onSuccess?.();
+        } else if (previousIsOpenRef.current === true) {
+          onClose?.();
+        }
+        previousIsOpenRef.current = modalContext.isOpen;
+      }
+    }, [modalContext?.isOpen]);
+    const [rendered, setRendered] = useState(false);
+    useEffect(() => {
+      if (rendered && modalContext !== null && modalContext.isOpen) {
+        if (modalContext.onTopOfStack) {
+          onFocus?.();
+        } else {
+          onBlur?.();
+        }
+      }
+      setRendered(true);
+    }, [modalContext?.onTopOfStack]);
+    useImperativeHandle(
+      ref,
       () => ({
-        afterLeave: () => {
-          var a;
-          return (a = o.current) == null ? void 0 : a.afterLeave();
-        },
-        close: () => {
-          var a;
-          return (a = o.current) == null ? void 0 : a.close();
-        },
-        emit: (...a) => {
-          var l;
-          return (l = o.current) == null ? void 0 : l.emit(...a);
-        },
-        getChildModal: () => {
-          var a;
-          return (a = o.current) == null ? void 0 : a.getChildModal();
-        },
-        getParentModal: () => {
-          var a;
-          return (a = o.current) == null ? void 0 : a.getParentModal();
-        },
-        reload: (a) => {
-          var l;
-          return (l = o.current) == null ? void 0 : l.reload(a);
-        },
-        setOpen: (a) => {
-          var l;
-          return (l = o.current) == null ? void 0 : l.setOpen(a);
-        },
+        afterLeave: () => modalContextRef.current?.afterLeave(),
+        close: () => modalContextRef.current?.close(),
+        emit: (...args) => modalContextRef.current?.emit(...args),
+        getChildModal: () => modalContextRef.current?.getChildModal(),
+        getParentModal: () => modalContextRef.current?.getParentModal(),
+        reload: (options) => modalContextRef.current?.reload(options),
+        setOpen: (open) => modalContextRef.current?.setOpen(open),
         get id() {
-          var a;
-          return (a = o.current) == null ? void 0 : a.id;
+          return modalContextRef.current?.id;
         },
         get index() {
-          var a;
-          return (a = o.current) == null ? void 0 : a.index;
+          return modalContextRef.current?.index;
         },
         get isOpen() {
-          var a;
-          return (a = o.current) == null ? void 0 : a.isOpen;
+          return modalContextRef.current?.isOpen;
         },
         get config() {
-          var a;
-          return (a = o.current) == null ? void 0 : a.config;
+          return modalContextRef.current?.config;
         },
         get modalContext() {
-          return o.current;
+          return modalContextRef.current;
         },
         get onTopOfStack() {
-          var a;
-          return (a = o.current) == null ? void 0 : a.onTopOfStack;
+          return modalContextRef.current?.onTopOfStack;
         },
         get shouldRender() {
-          var a;
-          return (a = o.current) == null ? void 0 : a.shouldRender;
+          return modalContextRef.current?.shouldRender;
         }
       }),
-      [s]
-    ), s != null && s.shouldRender ? /* @__PURE__ */ O.jsxs(O.Fragment, { children: [
-      typeof u == "function" ? u({
+      [modalContext]
+    );
+    if (!modalContext?.shouldRender) {
+      return null;
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      typeof children === "function" ? children({
         // Spread props first so they can be overridden by built-in props
-        ...s.props,
-        afterLeave: s.afterLeave,
-        close: s.close,
-        config: p,
-        emit: s.emit,
-        getChildModal: s.getChildModal,
-        getParentModal: s.getParentModal,
-        id: s.id,
-        index: s.index,
-        isOpen: s.isOpen,
-        modalContext: s,
-        onTopOfStack: s.onTopOfStack,
-        reload: s.reload,
-        setOpen: s.setOpen,
-        shouldRender: s.shouldRender
-      }) : u,
-      M !== void 0 && /* @__PURE__ */ O.jsx(Ue, { index: M })
-    ] }) : null;
+        ...modalContext.props,
+        afterLeave: modalContext.afterLeave,
+        close: modalContext.close,
+        config,
+        emit: modalContext.emit,
+        getChildModal: modalContext.getChildModal,
+        getParentModal: modalContext.getParentModal,
+        id: modalContext.id,
+        index: modalContext.index,
+        isOpen: modalContext.isOpen,
+        modalContext,
+        onTopOfStack: modalContext.onTopOfStack,
+        reload: modalContext.reload,
+        setOpen: modalContext.setOpen,
+        shouldRender: modalContext.shouldRender
+      }) : children,
+      nextIndex !== void 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(ModalRenderer, { index: nextIndex })
+    ] });
   }
 );
-$e.displayName = "HeadlessModal";
-function qe({ onClick: r }) {
-  return /* @__PURE__ */ O.jsxs(
+HeadlessModal.displayName = "HeadlessModal";
+function CloseButton({ onClick }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "button",
     {
       type: "button",
       className: "im-close-button text-gray-400 hover:text-gray-500",
-      onClick: r,
+      onClick,
       children: [
-        /* @__PURE__ */ O.jsx("span", { className: "sr-only", children: "Close" }),
-        /* @__PURE__ */ O.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Close" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
           "svg",
           {
             className: "size-6",
@@ -897,7 +1163,7 @@ function qe({ onClick: r }) {
             strokeWidth: "2",
             stroke: "currentColor",
             "aria-hidden": "true",
-            children: /* @__PURE__ */ O.jsx(
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "path",
               {
                 strokeLinecap: "round",
@@ -911,20 +1177,20 @@ function qe({ onClick: r }) {
     }
   );
 }
-function Xe(r) {
-  var e, t, u = "";
-  if (typeof r == "string" || typeof r == "number") u += r;
-  else if (typeof r == "object") if (Array.isArray(r)) {
-    var i = r.length;
-    for (e = 0; e < i; e++) r[e] && (t = Xe(r[e])) && (u && (u += " "), u += t);
-  } else for (t in r) r[t] && (u && (u += " "), u += t);
-  return u;
+function r(e) {
+  var t, f, n = "";
+  if ("string" == typeof e || "number" == typeof e) n += e;
+  else if ("object" == typeof e) if (Array.isArray(e)) {
+    var o = e.length;
+    for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+  } else for (f in e) e[f] && (n && (n += " "), n += f);
+  return n;
 }
-function J() {
-  for (var r, e, t = 0, u = "", i = arguments.length; t < i; t++) (r = arguments[t]) && (e = Xe(r)) && (u && (u += " "), u += e);
-  return u;
+function clsx() {
+  for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
+  return n;
 }
-const Se = {
+const maxWidthClasses = {
   sm: "sm:max-w-sm",
   md: "sm:max-w-md",
   lg: "sm:max-w-md md:max-w-lg",
@@ -935,150 +1201,269 @@ const Se = {
   "5xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl",
   "6xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl",
   "7xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl"
-}, vr = "2xl";
-function Ye(r) {
-  return Se[r] || Se[vr];
+};
+const defaultMaxWidth = "2xl";
+function getMaxWidthClass(maxWidth) {
+  return maxWidthClasses[maxWidth] || maxWidthClasses[defaultMaxWidth];
 }
-const xr = ({ modalContext: r, config: e, useNativeDialog: t, isFirstModal: u, onAfterLeave: i, children: c }) => {
-  const [m, b] = X(!1), [v, N] = X(!1), [j, y] = X("entering"), f = U(null), d = U(null), _ = U(null), s = U(null), M = U(!0), I = K(() => Ye(e.maxWidth), [e.maxWidth]), p = F(() => {
-    t || !f.current || !r.onTopOfStack || _.current || (_.current = ke(f.current, {
-      initialFocus: !0,
-      returnFocus: !1
-    }));
-  }, [r.onTopOfStack, t]), o = F(() => {
-    _.current && (_.current(), _.current = null);
-  }, []), h = F(() => {
-    t || s.current || e != null && e.closeExplicitly || (s.current = Oe(() => {
-      r.onTopOfStack && r.close();
-    }));
-  }, [e == null ? void 0 : e.closeExplicitly, r, t]), w = F(() => {
-    s.current && (s.current(), s.current = null);
-  }, []), k = F(
-    (C) => {
-      t || r.onTopOfStack && (e != null && e.closeExplicitly || (e == null ? void 0 : e.closeOnClickOutside) !== !1 && f.current && (f.current.contains(C.target) || r.close()));
+const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }) => {
+  const [entered, setEntered] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
+  const [transitionState, setTransitionState] = useState("entering");
+  const wrapperRef = useRef(null);
+  const dialogRef = useRef(null);
+  const nativeWrapperRef = useRef(null);
+  const cleanupFocusTrapRef = useRef(null);
+  const cleanupEscapeKeyRef = useRef(null);
+  const initialRender = useRef(true);
+  const maxWidthClass = useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth]);
+  const setupFocusTrap = useCallback(() => {
+    if (useNativeDialog) return;
+    if (!wrapperRef.current || !modalContext.onTopOfStack) return;
+    if (cleanupFocusTrapRef.current) return;
+    cleanupFocusTrapRef.current = createFocusTrap(wrapperRef.current, {
+      initialFocus: true,
+      returnFocus: false
+    });
+  }, [modalContext.onTopOfStack, useNativeDialog]);
+  const cleanupFocusTrap = useCallback(() => {
+    if (cleanupFocusTrapRef.current) {
+      cleanupFocusTrapRef.current();
+      cleanupFocusTrapRef.current = null;
+    }
+  }, []);
+  const setupEscapeKey = useCallback(() => {
+    if (useNativeDialog) return;
+    if (cleanupEscapeKeyRef.current) return;
+    if (config?.closeExplicitly) return;
+    cleanupEscapeKeyRef.current = onEscapeKey(() => {
+      if (modalContext.onTopOfStack) {
+        modalContext.close();
+      }
+    });
+  }, [config?.closeExplicitly, modalContext, useNativeDialog]);
+  const cleanupEscapeKey = useCallback(() => {
+    if (cleanupEscapeKeyRef.current) {
+      cleanupEscapeKeyRef.current();
+      cleanupEscapeKeyRef.current = null;
+    }
+  }, []);
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (useNativeDialog) return;
+      if (!modalContext.onTopOfStack) return;
+      if (config?.closeExplicitly) return;
+      if (config?.closeOnClickOutside === false) return;
+      if (!wrapperRef.current) return;
+      if (!wrapperRef.current.contains(event.target)) {
+        modalContext.close();
+      }
     },
-    [r, e == null ? void 0 : e.closeExplicitly, e == null ? void 0 : e.closeOnClickOutside, t]
-  ), a = F(
-    (C) => {
-      C.preventDefault(), r.onTopOfStack && !(e != null && e.closeExplicitly) && r.close();
+    [modalContext, config?.closeExplicitly, config?.closeOnClickOutside, useNativeDialog]
+  );
+  const handleCancel = useCallback(
+    (event) => {
+      event.preventDefault();
+      if (modalContext.onTopOfStack && !config?.closeExplicitly) {
+        modalContext.close();
+      }
     },
-    [r, e == null ? void 0 : e.closeExplicitly]
-  ), l = F(
-    (C) => {
-      C.target === d.current && r.onTopOfStack && !(e != null && e.closeExplicitly) && (e == null ? void 0 : e.closeOnClickOutside) !== !1 && r.close();
+    [modalContext, config?.closeExplicitly]
+  );
+  const handleDialogClick = useCallback(
+    (event) => {
+      if (event.target === dialogRef.current) {
+        if (modalContext.onTopOfStack && !config?.closeExplicitly && config?.closeOnClickOutside !== false) {
+          modalContext.close();
+        }
+      }
     },
-    [r, e == null ? void 0 : e.closeExplicitly, e == null ? void 0 : e.closeOnClickOutside]
-  ), T = F(() => {
-    d.current && !d.current.open && (d.current.showModal(), requestAnimationFrame(() => {
+    [modalContext, config?.closeExplicitly, config?.closeOnClickOutside]
+  );
+  const openDialog = useCallback(() => {
+    if (dialogRef.current && !dialogRef.current.open) {
+      dialogRef.current.showModal();
       requestAnimationFrame(() => {
-        b(!0);
+        requestAnimationFrame(() => {
+          setEntered(true);
+        });
       });
-    }));
-  }, []), x = F(() => {
-    d.current && d.current.open && (N(!0), b(!1), setTimeout(() => {
-      d.current && d.current.close(), N(!1), i == null || i(), r.afterLeave();
-    }, 300));
-  }, [i, r]);
-  W(() => (t ? r.isOpen && T() : h(), () => {
-    var C;
-    t ? (C = d.current) != null && C.open && d.current.close() : (o(), w());
-  }), []), W(() => {
-    t || (r.onTopOfStack ? (h(), m && p()) : (o(), w()));
-  }, [r.onTopOfStack, m, h, p, o, w, t]), W(() => {
-    t || M.current && r.isOpen && (M.current = !1, requestAnimationFrame(() => {
+    }
+  }, []);
+  const finishClose = useCallback(() => {
+    if (dialogRef.current) {
+      dialogRef.current.close();
+    }
+    setIsLeaving(false);
+    onAfterLeave?.();
+    modalContext.afterLeave();
+  }, [onAfterLeave, modalContext]);
+  const closeDialog = useCallback(() => {
+    if (dialogRef.current && dialogRef.current.open) {
+      setIsLeaving(true);
+      setEntered(false);
+      const wrapper = nativeWrapperRef.current;
+      if (wrapper) {
+        onTransitionEnd(wrapper, finishClose);
+      } else {
+        finishClose();
+      }
+    }
+  }, [finishClose]);
+  useEffect(() => {
+    if (useNativeDialog) {
+      if (modalContext.isOpen) {
+        openDialog();
+      }
+    } else {
+      setupEscapeKey();
+    }
+    return () => {
+      if (useNativeDialog) {
+        if (dialogRef.current?.open) {
+          dialogRef.current.close();
+        }
+      } else {
+        cleanupFocusTrap();
+        cleanupEscapeKey();
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if (useNativeDialog) return;
+    if (modalContext.onTopOfStack) {
+      setupEscapeKey();
+      if (entered) {
+        setupFocusTrap();
+      }
+    } else {
+      cleanupFocusTrap();
+      cleanupEscapeKey();
+    }
+  }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog]);
+  useEffect(() => {
+    if (useNativeDialog) return;
+    if (initialRender.current && modalContext.isOpen) {
+      initialRender.current = false;
       requestAnimationFrame(() => {
-        y("entered"), setTimeout(() => {
-          b(!0), p();
-        }, 300);
+        requestAnimationFrame(() => {
+          setTransitionState("entered");
+          const wrapper = wrapperRef.current;
+          if (wrapper) {
+            onTransitionEnd(wrapper, () => {
+              setEntered(true);
+              setupFocusTrap();
+            });
+          }
+        });
       });
-    }));
-  }, [r.isOpen, p, t]), W(() => {
-    t || !r.isOpen && j === "entered" && (y("leaving"), setTimeout(() => {
-      y("exited"), i == null || i(), r.afterLeave();
-    }, 300));
-  }, [r.isOpen, j, i, r, t]), W(() => {
-    t && (r.isOpen ? T() : v || x());
-  }, [r.isOpen, T, x, v, t]);
-  const E = () => /* @__PURE__ */ O.jsxs(
+    }
+  }, [modalContext.isOpen, setupFocusTrap, useNativeDialog]);
+  useEffect(() => {
+    if (useNativeDialog) return;
+    if (!modalContext.isOpen && transitionState === "entered") {
+      setTransitionState("leaving");
+      const wrapper = wrapperRef.current;
+      if (wrapper) {
+        onTransitionEnd(wrapper, () => {
+          setTransitionState("exited");
+          onAfterLeave?.();
+          modalContext.afterLeave();
+        });
+      }
+    }
+  }, [modalContext.isOpen, transitionState, onAfterLeave, modalContext, useNativeDialog]);
+  useEffect(() => {
+    if (!useNativeDialog) return;
+    if (modalContext.isOpen) {
+      openDialog();
+    } else if (!isLeaving) {
+      closeDialog();
+    }
+  }, [modalContext.isOpen, openDialog, closeDialog, isLeaving, useNativeDialog]);
+  const renderContent = () => /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: `im-modal-content relative ${e.paddingClasses} ${e.panelClasses}`,
-      "data-inertiaui-modal-entered": m,
+      className: `im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`,
+      "data-inertiaui-modal-entered": entered,
       children: [
-        e.closeButton && /* @__PURE__ */ O.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ O.jsx(qe, { onClick: r.close }) }),
-        typeof c == "function" ? c({ modalContext: r, config: e }) : c
+        config.closeButton && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { onClick: modalContext.close }) }),
+        typeof children === "function" ? children({ modalContext, config }) : children
       ]
     }
   );
-  if (t)
-    return /* @__PURE__ */ O.jsx(
+  if (useNativeDialog) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "dialog",
       {
-        ref: d,
-        className: J(
+        ref: dialogRef,
+        className: clsx(
           "im-modal-dialog m-0 overflow-visible bg-transparent p-0",
           "size-full max-h-none max-w-none",
           "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
-          m ? "backdrop:opacity-100" : "backdrop:opacity-0",
-          !u && "backdrop:bg-transparent"
+          entered ? "backdrop:opacity-100" : "backdrop:opacity-0",
+          !isFirstModal && "backdrop:bg-transparent"
         ),
-        onCancel: a,
-        onClick: l,
-        children: /* @__PURE__ */ O.jsx("div", { className: "im-modal-container fixed inset-0 overflow-y-auto p-4", children: /* @__PURE__ */ O.jsx(
+        onCancel: handleCancel,
+        onClick: handleDialogClick,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "im-modal-container fixed inset-0 overflow-y-auto p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: J("im-modal-positioner flex min-h-full justify-center", {
-              "items-start": e.position === "top",
-              "items-center": e.position === "center",
-              "items-end": e.position === "bottom"
+            className: clsx("im-modal-positioner flex min-h-full justify-center", {
+              "items-start": config.position === "top",
+              "items-center": config.position === "center",
+              "items-end": config.position === "bottom"
             }),
-            children: /* @__PURE__ */ O.jsx(
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: J(
+                ref: nativeWrapperRef,
+                className: clsx(
                   "im-modal-wrapper w-full transition duration-300 ease-in-out",
-                  r.onTopOfStack ? "" : "blur-xs",
-                  m && !v ? "translate-y-0 opacity-100 sm:scale-100" : "translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95",
-                  I
+                  modalContext.onTopOfStack ? "" : "blur-xs",
+                  entered && !isLeaving ? "translate-y-0 opacity-100 sm:scale-100" : "translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95",
+                  maxWidthClass
                 ),
-                children: E()
+                children: renderContent()
               }
             )
           }
         ) })
       }
     );
-  if (j === "exited") return null;
-  const g = j === "entering", A = j === "leaving";
-  return /* @__PURE__ */ O.jsx(
+  }
+  if (transitionState === "exited") return null;
+  const isEntering = transitionState === "entering";
+  const isLeavingNonNative = transitionState === "leaving";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
       className: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",
-      onMouseDown: k,
-      children: /* @__PURE__ */ O.jsx(
+      onMouseDown: handleClickOutside,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: J("im-modal-positioner flex min-h-full justify-center", {
-            "items-start": e.position === "top",
-            "items-center": e.position === "center",
-            "items-end": e.position === "bottom"
+          className: clsx("im-modal-positioner flex min-h-full justify-center", {
+            "items-start": config.position === "top",
+            "items-center": config.position === "center",
+            "items-end": config.position === "bottom"
           }),
-          onMouseDown: k,
-          children: /* @__PURE__ */ O.jsxs(
+          onMouseDown: handleClickOutside,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              ref: f,
+              ref: wrapperRef,
               role: "dialog",
               "aria-modal": "true",
-              className: J(
+              className: clsx(
                 "im-modal-wrapper w-full transition duration-300 ease-in-out",
-                r.onTopOfStack ? "" : "blur-xs",
-                g || A ? "translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95" : "translate-y-0 opacity-100 sm:scale-100",
-                I
+                modalContext.onTopOfStack ? "" : "blur-xs",
+                isEntering || isLeavingNonNative ? "translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95" : "translate-y-0 opacity-100 sm:scale-100",
+                maxWidthClass
               ),
               children: [
-                /* @__PURE__ */ O.jsx("span", { className: "sr-only", children: "Dialog" }),
-                E()
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Dialog" }),
+                renderContent()
               ]
             }
           )
@@ -1086,147 +1471,273 @@ const xr = ({ modalContext: r, config: e, useNativeDialog: t, isFirstModal: u, o
       )
     }
   );
-}, kr = ({ modalContext: r, config: e, useNativeDialog: t, isFirstModal: u, onAfterLeave: i, children: c }) => {
-  const [m, b] = X(!1), [v, N] = X(!1), [j, y] = X("entering"), f = U(null), d = U(null), _ = U(null), s = U(null), M = U(!0), I = e.position === "left", p = K(() => Ye(e.maxWidth), [e.maxWidth]), o = F(
-    (L) => L ? I ? "-translate-x-full opacity-0" : "translate-x-full opacity-0" : "translate-x-0 opacity-100",
-    [I]
-  ), h = F(() => {
-    t || !f.current || !r.onTopOfStack || _.current || (_.current = ke(f.current, {
-      initialFocus: !0,
-      returnFocus: !1
-    }));
-  }, [r.onTopOfStack, t]), w = F(() => {
-    _.current && (_.current(), _.current = null);
-  }, []), k = F(() => {
-    t || s.current || e != null && e.closeExplicitly || (s.current = Oe(() => {
-      r.onTopOfStack && r.close();
-    }));
-  }, [e == null ? void 0 : e.closeExplicitly, r, t]), a = F(() => {
-    s.current && (s.current(), s.current = null);
-  }, []), l = F(
-    (L) => {
-      t || r.onTopOfStack && (e != null && e.closeExplicitly || (e == null ? void 0 : e.closeOnClickOutside) !== !1 && f.current && (f.current.contains(L.target) || r.close()));
+};
+const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }) => {
+  const [entered, setEntered] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
+  const [transitionState, setTransitionState] = useState("entering");
+  const wrapperRef = useRef(null);
+  const dialogRef = useRef(null);
+  const nativeWrapperRef = useRef(null);
+  const cleanupFocusTrapRef = useRef(null);
+  const cleanupEscapeKeyRef = useRef(null);
+  const initialRender = useRef(true);
+  const isLeft = config.position === "left";
+  const maxWidthClass = useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth]);
+  const getTransformClass = useCallback(
+    (isHidden) => {
+      if (isHidden) {
+        return isLeft ? "-translate-x-full opacity-0" : "translate-x-full opacity-0";
+      }
+      return "translate-x-0 opacity-100";
     },
-    [r, e == null ? void 0 : e.closeExplicitly, e == null ? void 0 : e.closeOnClickOutside, t]
-  ), T = F(
-    (L) => {
-      L.preventDefault(), r.onTopOfStack && !(e != null && e.closeExplicitly) && r.close();
+    [isLeft]
+  );
+  const setupFocusTrap = useCallback(() => {
+    if (useNativeDialog) return;
+    if (!wrapperRef.current || !modalContext.onTopOfStack) return;
+    if (cleanupFocusTrapRef.current) return;
+    cleanupFocusTrapRef.current = createFocusTrap(wrapperRef.current, {
+      initialFocus: true,
+      returnFocus: false
+    });
+  }, [modalContext.onTopOfStack, useNativeDialog]);
+  const cleanupFocusTrap = useCallback(() => {
+    if (cleanupFocusTrapRef.current) {
+      cleanupFocusTrapRef.current();
+      cleanupFocusTrapRef.current = null;
+    }
+  }, []);
+  const setupEscapeKey = useCallback(() => {
+    if (useNativeDialog) return;
+    if (cleanupEscapeKeyRef.current) return;
+    if (config?.closeExplicitly) return;
+    cleanupEscapeKeyRef.current = onEscapeKey(() => {
+      if (modalContext.onTopOfStack) {
+        modalContext.close();
+      }
+    });
+  }, [config?.closeExplicitly, modalContext, useNativeDialog]);
+  const cleanupEscapeKey = useCallback(() => {
+    if (cleanupEscapeKeyRef.current) {
+      cleanupEscapeKeyRef.current();
+      cleanupEscapeKeyRef.current = null;
+    }
+  }, []);
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (useNativeDialog) return;
+      if (!modalContext.onTopOfStack) return;
+      if (config?.closeExplicitly) return;
+      if (config?.closeOnClickOutside === false) return;
+      if (!wrapperRef.current) return;
+      if (!wrapperRef.current.contains(event.target)) {
+        modalContext.close();
+      }
     },
-    [r, e == null ? void 0 : e.closeExplicitly]
-  ), x = F(
-    (L) => {
-      L.target === d.current && r.onTopOfStack && !(e != null && e.closeExplicitly) && (e == null ? void 0 : e.closeOnClickOutside) !== !1 && r.close();
+    [modalContext, config?.closeExplicitly, config?.closeOnClickOutside, useNativeDialog]
+  );
+  const handleCancel = useCallback(
+    (event) => {
+      event.preventDefault();
+      if (modalContext.onTopOfStack && !config?.closeExplicitly) {
+        modalContext.close();
+      }
     },
-    [r, e == null ? void 0 : e.closeExplicitly, e == null ? void 0 : e.closeOnClickOutside]
-  ), E = F(() => {
-    d.current && !d.current.open && (d.current.showModal(), requestAnimationFrame(() => {
+    [modalContext, config?.closeExplicitly]
+  );
+  const handleDialogClick = useCallback(
+    (event) => {
+      if (event.target === dialogRef.current) {
+        if (modalContext.onTopOfStack && !config?.closeExplicitly && config?.closeOnClickOutside !== false) {
+          modalContext.close();
+        }
+      }
+    },
+    [modalContext, config?.closeExplicitly, config?.closeOnClickOutside]
+  );
+  const openDialog = useCallback(() => {
+    if (dialogRef.current && !dialogRef.current.open) {
+      dialogRef.current.showModal();
       requestAnimationFrame(() => {
-        b(!0);
+        requestAnimationFrame(() => {
+          setEntered(true);
+        });
       });
-    }));
-  }, []), g = F(() => {
-    d.current && d.current.open && (N(!0), b(!1), setTimeout(() => {
-      d.current && d.current.close(), N(!1), i == null || i(), r.afterLeave();
-    }, 300));
-  }, [i, r]);
-  W(() => (t ? r.isOpen && E() : k(), () => {
-    var L;
-    t ? (L = d.current) != null && L.open && d.current.close() : (w(), a());
-  }), []), W(() => {
-    t || (r.onTopOfStack ? (k(), m && h()) : (w(), a()));
-  }, [r.onTopOfStack, m, k, h, w, a, t]), W(() => {
-    t || M.current && r.isOpen && (M.current = !1, requestAnimationFrame(() => {
+    }
+  }, []);
+  const finishClose = useCallback(() => {
+    if (dialogRef.current) {
+      dialogRef.current.close();
+    }
+    setIsLeaving(false);
+    onAfterLeave?.();
+    modalContext.afterLeave();
+  }, [onAfterLeave, modalContext]);
+  const closeDialog = useCallback(() => {
+    if (dialogRef.current && dialogRef.current.open) {
+      setIsLeaving(true);
+      setEntered(false);
+      const wrapper = nativeWrapperRef.current;
+      if (wrapper) {
+        onTransitionEnd(wrapper, finishClose);
+      } else {
+        finishClose();
+      }
+    }
+  }, [finishClose]);
+  useEffect(() => {
+    if (useNativeDialog) {
+      if (modalContext.isOpen) {
+        openDialog();
+      }
+    } else {
+      setupEscapeKey();
+    }
+    return () => {
+      if (useNativeDialog) {
+        if (dialogRef.current?.open) {
+          dialogRef.current.close();
+        }
+      } else {
+        cleanupFocusTrap();
+        cleanupEscapeKey();
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if (useNativeDialog) return;
+    if (modalContext.onTopOfStack) {
+      setupEscapeKey();
+      if (entered) {
+        setupFocusTrap();
+      }
+    } else {
+      cleanupFocusTrap();
+      cleanupEscapeKey();
+    }
+  }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog]);
+  useEffect(() => {
+    if (useNativeDialog) return;
+    if (initialRender.current && modalContext.isOpen) {
+      initialRender.current = false;
       requestAnimationFrame(() => {
-        y("entered"), setTimeout(() => {
-          b(!0), h();
-        }, 300);
+        requestAnimationFrame(() => {
+          setTransitionState("entered");
+          const wrapper = wrapperRef.current;
+          if (wrapper) {
+            onTransitionEnd(wrapper, () => {
+              setEntered(true);
+              setupFocusTrap();
+            });
+          }
+        });
       });
-    }));
-  }, [r.isOpen, h, t]), W(() => {
-    t || !r.isOpen && j === "entered" && (y("leaving"), setTimeout(() => {
-      y("exited"), i == null || i(), r.afterLeave();
-    }, 300));
-  }, [r.isOpen, j, i, r, t]), W(() => {
-    t && (r.isOpen ? E() : v || g());
-  }, [r.isOpen, E, g, v, t]);
-  const A = () => /* @__PURE__ */ O.jsxs(
+    }
+  }, [modalContext.isOpen, setupFocusTrap, useNativeDialog]);
+  useEffect(() => {
+    if (useNativeDialog) return;
+    if (!modalContext.isOpen && transitionState === "entered") {
+      setTransitionState("leaving");
+      const wrapper = wrapperRef.current;
+      if (wrapper) {
+        onTransitionEnd(wrapper, () => {
+          setTransitionState("exited");
+          onAfterLeave?.();
+          modalContext.afterLeave();
+        });
+      }
+    }
+  }, [modalContext.isOpen, transitionState, onAfterLeave, modalContext, useNativeDialog]);
+  useEffect(() => {
+    if (!useNativeDialog) return;
+    if (modalContext.isOpen) {
+      openDialog();
+    } else if (!isLeaving) {
+      closeDialog();
+    }
+  }, [modalContext.isOpen, openDialog, closeDialog, isLeaving, useNativeDialog]);
+  const renderContent = () => /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: `im-slideover-content relative ${e.paddingClasses} ${e.panelClasses}`,
-      "data-inertiaui-modal-entered": m,
+      className: `im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`,
+      "data-inertiaui-modal-entered": entered,
       children: [
-        e.closeButton && /* @__PURE__ */ O.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ O.jsx(qe, { onClick: r.close }) }),
-        typeof c == "function" ? c({ modalContext: r, config: e }) : c
+        config.closeButton && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { onClick: modalContext.close }) }),
+        typeof children === "function" ? children({ modalContext, config }) : children
       ]
     }
   );
-  if (t)
-    return /* @__PURE__ */ O.jsx(
+  if (useNativeDialog) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "dialog",
       {
-        ref: d,
-        className: J(
+        ref: dialogRef,
+        className: clsx(
           "im-slideover-dialog m-0 overflow-visible bg-transparent p-0",
           "size-full max-h-none max-w-none",
           "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
-          m ? "backdrop:opacity-100" : "backdrop:opacity-0",
-          !u && "backdrop:bg-transparent"
+          entered ? "backdrop:opacity-100" : "backdrop:opacity-0",
+          !isFirstModal && "backdrop:bg-transparent"
         ),
-        onCancel: T,
-        onClick: x,
-        children: /* @__PURE__ */ O.jsx("div", { className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden", children: /* @__PURE__ */ O.jsx(
+        onCancel: handleCancel,
+        onClick: handleDialogClick,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: J("im-slideover-positioner flex min-h-full items-center", {
-              "justify-start rtl:justify-end": (e == null ? void 0 : e.position) === "left",
-              "justify-end rtl:justify-start": (e == null ? void 0 : e.position) === "right"
+            className: clsx("im-slideover-positioner flex min-h-full items-center", {
+              "justify-start rtl:justify-end": config?.position === "left",
+              "justify-end rtl:justify-start": config?.position === "right"
             }),
-            children: /* @__PURE__ */ O.jsx(
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: J(
+                ref: nativeWrapperRef,
+                className: clsx(
                   "im-slideover-wrapper w-full transition duration-300 ease-in-out",
-                  r.onTopOfStack ? "" : "blur-xs",
-                  o(!(m && !v)),
-                  p
+                  modalContext.onTopOfStack ? "" : "blur-xs",
+                  getTransformClass(!(entered && !isLeaving)),
+                  maxWidthClass
                 ),
-                children: A()
+                children: renderContent()
               }
             )
           }
         ) })
       }
     );
-  if (j === "exited") return null;
-  const C = j === "entering", q = j === "leaving";
-  return /* @__PURE__ */ O.jsx(
+  }
+  if (transitionState === "exited") return null;
+  const isEntering = transitionState === "entering";
+  const isLeavingNonNative = transitionState === "leaving";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
       className: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
-      onMouseDown: l,
-      children: /* @__PURE__ */ O.jsx(
+      onMouseDown: handleClickOutside,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: J("im-slideover-positioner flex min-h-full items-center", {
-            "justify-start rtl:justify-end": (e == null ? void 0 : e.position) === "left",
-            "justify-end rtl:justify-start": (e == null ? void 0 : e.position) === "right"
+          className: clsx("im-slideover-positioner flex min-h-full items-center", {
+            "justify-start rtl:justify-end": config?.position === "left",
+            "justify-end rtl:justify-start": config?.position === "right"
           }),
-          onMouseDown: l,
-          children: /* @__PURE__ */ O.jsxs(
+          onMouseDown: handleClickOutside,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              ref: f,
+              ref: wrapperRef,
               role: "dialog",
               "aria-modal": "true",
-              className: J(
+              className: clsx(
                 "im-slideover-wrapper w-full transition duration-300 ease-in-out",
-                r.onTopOfStack ? "" : "blur-xs",
-                o(C || q),
-                p
+                modalContext.onTopOfStack ? "" : "blur-xs",
+                getTransformClass(isEntering || isLeavingNonNative),
+                maxWidthClass
               ),
               children: [
-                /* @__PURE__ */ O.jsx("span", { className: "sr-only", children: "Dialog" }),
-                A()
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Dialog" }),
+                renderContent()
               ]
             }
           )
@@ -1234,113 +1745,137 @@ const xr = ({ modalContext: r, config: e, useNativeDialog: t, isFirstModal: u, o
       )
     }
   );
-}, Or = Ie(
-  (r, e) => {
-    const { name: t, children: u, onFocus: i, onBlur: c, onClose: m, onSuccess: b, onAfterLeave: v, ...N } = r, j = (h) => typeof u == "function" ? u(h) : u, y = U(null), f = U(null), d = U(null), [_, s] = X(!1), M = K(() => ce("useNativeDialog"), []);
-    ge(e, () => y.current, [y]), W(() => () => {
-      var h, w;
-      (h = f.current) == null || h.call(f), (w = d.current) == null || w.call(d);
+};
+const Modal = forwardRef(
+  (allProps, ref) => {
+    const { name, children, onFocus, onBlur, onClose, onSuccess, onAfterLeave, ...props } = allProps;
+    const renderChildren = (contentProps) => {
+      if (typeof children === "function") {
+        return children(contentProps);
+      }
+      return children;
+    };
+    const headlessModalRef = useRef(null);
+    const cleanupScrollLockRef = useRef(null);
+    const cleanupAriaHiddenRef = useRef(null);
+    const [rendered, setRendered] = useState(false);
+    const useNativeDialog = useMemo(() => getConfig("useNativeDialog"), []);
+    useImperativeHandle(ref, () => headlessModalRef.current, [headlessModalRef]);
+    useEffect(() => {
+      return () => {
+        cleanupScrollLockRef.current?.();
+        cleanupAriaHiddenRef.current?.();
+      };
     }, []);
-    const I = F(() => {
-      b == null || b(), f.current || (f.current = Fe(), d.current = Ne("#app"));
-    }, [b]), p = F(() => {
-      var h, w;
-      m == null || m(), (h = f.current) == null || h.call(f), (w = d.current) == null || w.call(d), f.current = null, d.current = null;
-    }, [m]), o = F(() => {
-      v == null || v();
-    }, [v]);
-    return /* @__PURE__ */ O.jsx(
-      $e,
+    const handleSuccess = useCallback(() => {
+      onSuccess?.();
+      if (!cleanupScrollLockRef.current) {
+        cleanupScrollLockRef.current = lockScroll();
+        cleanupAriaHiddenRef.current = markAriaHidden(getConfig("appElement"));
+      }
+    }, [onSuccess]);
+    const handleClose = useCallback(() => {
+      onClose?.();
+      cleanupScrollLockRef.current?.();
+      cleanupAriaHiddenRef.current?.();
+      cleanupScrollLockRef.current = null;
+      cleanupAriaHiddenRef.current = null;
+    }, [onClose]);
+    const handleAfterLeave = useCallback(() => {
+      onAfterLeave?.();
+    }, [onAfterLeave]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      HeadlessModal,
       {
-        ref: y,
-        name: t,
-        onFocus: i ?? void 0,
-        onBlur: c ?? void 0,
-        onClose: p,
-        onSuccess: I,
-        ...N,
+        ref: headlessModalRef,
+        name,
+        onFocus: onFocus ?? void 0,
+        onBlur: onBlur ?? void 0,
+        onClose: handleClose,
+        onSuccess: handleSuccess,
+        ...props,
         children: ({
-          afterLeave: h,
-          close: w,
-          config: k,
-          emit: a,
-          getChildModal: l,
-          getParentModal: T,
-          id: x,
-          index: E,
-          isOpen: g,
-          modalContext: A,
-          onTopOfStack: C,
-          reload: q,
-          setOpen: L,
-          shouldRender: Y,
-          ...V
-        }) => /* @__PURE__ */ O.jsx(br, { children: /* @__PURE__ */ O.jsxs(
+          afterLeave,
+          close,
+          config,
+          emit,
+          getChildModal,
+          getParentModal,
+          id,
+          index,
+          isOpen,
+          modalContext,
+          onTopOfStack,
+          reload,
+          setOpen,
+          shouldRender,
+          ...extraProps
+        }) => /* @__PURE__ */ jsxRuntimeExports.jsx(ModalPortal, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
             className: "im-dialog relative z-20",
-            "data-inertiaui-modal-id": x,
-            "data-inertiaui-modal-index": E,
-            "aria-hidden": !C,
+            "data-inertiaui-modal-id": id,
+            "data-inertiaui-modal-index": index,
+            "aria-hidden": !onTopOfStack,
             children: [
-              E === 0 && !M && /* @__PURE__ */ O.jsx(
-                wr,
+              index === 0 && !useNativeDialog && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                BackdropTransition,
                 {
-                  show: g,
-                  appear: !_,
-                  onAfterAppear: () => s(!0)
+                  show: isOpen,
+                  appear: !rendered,
+                  onAfterAppear: () => setRendered(true)
                 }
               ),
-              k.slideover ? /* @__PURE__ */ O.jsx(
-                kr,
+              config.slideover ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SlideoverContent,
                 {
-                  modalContext: A,
-                  config: k,
-                  useNativeDialog: M,
-                  isFirstModal: E === 0,
-                  onAfterLeave: o,
-                  children: j({
-                    ...V,
-                    afterLeave: h,
-                    close: w,
-                    config: k,
-                    emit: a,
-                    getChildModal: l,
-                    getParentModal: T,
-                    id: x,
-                    index: E,
-                    isOpen: g,
-                    modalContext: A,
-                    onTopOfStack: C,
-                    reload: q,
-                    setOpen: L,
-                    shouldRender: Y
+                  modalContext,
+                  config,
+                  useNativeDialog,
+                  isFirstModal: index === 0,
+                  onAfterLeave: handleAfterLeave,
+                  children: renderChildren({
+                    ...extraProps,
+                    afterLeave,
+                    close,
+                    config,
+                    emit,
+                    getChildModal,
+                    getParentModal,
+                    id,
+                    index,
+                    isOpen,
+                    modalContext,
+                    onTopOfStack,
+                    reload,
+                    setOpen,
+                    shouldRender
                   })
                 }
-              ) : /* @__PURE__ */ O.jsx(
-                xr,
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ModalContent,
                 {
-                  modalContext: A,
-                  config: k,
-                  useNativeDialog: M,
-                  isFirstModal: E === 0,
-                  onAfterLeave: o,
-                  children: j({
-                    ...V,
-                    afterLeave: h,
-                    close: w,
-                    config: k,
-                    emit: a,
-                    getChildModal: l,
-                    getParentModal: T,
-                    id: x,
-                    index: E,
-                    isOpen: g,
-                    modalContext: A,
-                    onTopOfStack: C,
-                    reload: q,
-                    setOpen: L,
-                    shouldRender: Y
+                  modalContext,
+                  config,
+                  useNativeDialog,
+                  isFirstModal: index === 0,
+                  onAfterLeave: handleAfterLeave,
+                  children: renderChildren({
+                    ...extraProps,
+                    afterLeave,
+                    close,
+                    config,
+                    emit,
+                    getChildModal,
+                    getParentModal,
+                    id,
+                    index,
+                    isOpen,
+                    modalContext,
+                    onTopOfStack,
+                    reload,
+                    setOpen,
+                    shouldRender
                   })
                 }
               )
@@ -1351,197 +1886,330 @@ const xr = ({ modalContext: r, config: e, useNativeDialog: t, isFirstModal: u, o
     );
   }
 );
-function br({ children: r }) {
-  const [e, t] = X(!1);
-  return W(() => {
-    t(!0);
-  }, []), e ? ir(r, document.body) : null;
+function ModalPortal({ children }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
+  return createPortal(children, document.body);
 }
-function wr({ show: r, appear: e, onAfterAppear: t }) {
-  const [u, i] = X(() => e && r ? "entering" : r ? "entered" : "exited"), c = U(!0);
-  if (W(() => {
-    if (c.current) {
-      c.current = !1, e && r && requestAnimationFrame(() => {
-        i("entered"), setTimeout(() => t == null ? void 0 : t(), 300);
-      });
+function BackdropTransition({ show, appear, onAfterAppear }) {
+  const [state, setState] = useState(() => {
+    if (appear && show) return "entering";
+    return show ? "entered" : "exited";
+  });
+  const initialRender = useRef(true);
+  const backdropRef = useRef(null);
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+      if (appear && show) {
+        requestAnimationFrame(() => {
+          setState("entered");
+          const backdrop = backdropRef.current;
+          if (backdrop) {
+            const onTransitionEnd2 = (e) => {
+              if (e.target !== backdrop) return;
+              backdrop.removeEventListener("transitionend", onTransitionEnd2);
+              onAfterAppear?.();
+            };
+            backdrop.addEventListener("transitionend", onTransitionEnd2);
+          }
+        });
+      }
       return;
     }
-    r ? (i("entering"), requestAnimationFrame(() => {
-      i("entered");
-    })) : (i("leaving"), setTimeout(() => i("exited"), 300));
-  }, [r, e, t]), u === "exited") return null;
-  const m = u === "entered";
-  return /* @__PURE__ */ O.jsx(
+    if (show) {
+      setState("entering");
+      requestAnimationFrame(() => {
+        setState("entered");
+      });
+    } else {
+      setState("leaving");
+      const backdrop = backdropRef.current;
+      if (backdrop) {
+        const onTransitionEnd2 = (e) => {
+          if (e.target !== backdrop) return;
+          backdrop.removeEventListener("transitionend", onTransitionEnd2);
+          setState("exited");
+        };
+        backdrop.addEventListener("transitionend", onTransitionEnd2);
+      }
+    }
+  }, [show, appear, onAfterAppear]);
+  if (state === "exited") return null;
+  const isVisible = state === "entered";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
-      className: `im-backdrop fixed inset-0 z-30 bg-black/75 transition-opacity duration-300 ease-in-out ${m ? "opacity-100" : "opacity-0"}`,
+      ref: backdropRef,
+      className: `im-backdrop fixed inset-0 z-30 bg-black/75 transition-opacity duration-300 ease-in-out ${isVisible ? "opacity-100" : "opacity-0"}`,
       "aria-hidden": "true"
     }
   );
 }
-Or.displayName = "Modal";
-const Nr = ({
-  href: r,
-  method: e = "get",
-  data: t = {},
-  as: u = "a",
-  headers: i = {},
-  queryStringArrayFormat: c = "brackets",
-  onAfterLeave: m,
-  onBlur: b,
-  onClose: v,
-  onError: N,
-  onFocus: j,
-  onStart: y,
-  onSuccess: f,
-  onPrefetching: d,
-  onPrefetched: _,
-  navigate: s,
-  prefetch: M = !1,
-  cacheFor: I = 3e4,
-  children: p,
-  ...o
+Modal.displayName = "Modal";
+const ModalLink = ({
+  href,
+  method = "get",
+  data = {},
+  as: Component = "a",
+  headers = {},
+  queryStringArrayFormat = "brackets",
+  onAfterLeave,
+  onBlur,
+  onClose,
+  onError,
+  onFocus,
+  onStart,
+  onSuccess,
+  onPrefetching,
+  onPrefetched,
+  navigate,
+  prefetch: prefetch$1 = false,
+  cacheFor = 3e4,
+  children,
+  ...props
 }) => {
-  const [h, w] = X(!1), [k, a] = X(null), { stack: l, visit: T } = pe(), x = U(null), E = K(() => s ?? ce("navigate"), [s]), g = K(() => M === !0 ? ["hover"] : M === !1 ? [] : Array.isArray(M) ? M : [M], [M]), A = F(() => {
-    pr(r, {
-      method: e,
-      data: t,
-      headers: i,
-      queryStringArrayFormat: c,
-      cacheFor: I,
-      onPrefetching: d ?? void 0,
-      onPrefetched: _ ?? void 0
+  const [loading, setLoading] = useState(false);
+  const [modalContext, setModalContext] = useState(null);
+  const { stack, visit } = useModalStack();
+  const hoverTimeout = useRef(null);
+  const shouldNavigate = useMemo(() => {
+    return navigate ?? getConfig("navigate");
+  }, [navigate]);
+  const prefetchModes = useMemo(() => {
+    if (prefetch$1 === true) {
+      return ["hover"];
+    }
+    if (prefetch$1 === false) {
+      return [];
+    }
+    if (Array.isArray(prefetch$1)) {
+      return prefetch$1;
+    }
+    return [prefetch$1];
+  }, [prefetch$1]);
+  const doPrefetch = useCallback(() => {
+    prefetch(href, {
+      method,
+      data,
+      headers,
+      queryStringArrayFormat,
+      cacheFor,
+      onPrefetching: onPrefetching ?? void 0,
+      onPrefetched: onPrefetched ?? void 0
     });
-  }, [r, e, t, i, c, I, d, _]), C = F(() => {
-    g.includes("hover") && (x.current = setTimeout(() => {
-      A();
-    }, 75));
-  }, [g, A]), q = F(() => {
-    x.current && (clearTimeout(x.current), x.current = null);
-  }, []), L = F(
-    (S) => {
-      g.includes("click") && S.button === 0 && A();
-    },
-    [g, A]
-  );
-  W(() => {
-    g.includes("mount") && A();
-  }, []), W(() => () => {
-    x.current && clearTimeout(x.current);
+  }, [href, method, data, headers, queryStringArrayFormat, cacheFor, onPrefetching, onPrefetched]);
+  const handleMouseEnter = useCallback(() => {
+    if (!prefetchModes.includes("hover")) return;
+    hoverTimeout.current = setTimeout(() => {
+      doPrefetch();
+    }, 75);
+  }, [prefetchModes, doPrefetch]);
+  const handleMouseLeave = useCallback(() => {
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
+      hoverTimeout.current = null;
+    }
   }, []);
-  const Y = {}, V = {};
-  Object.keys(o).forEach((S) => {
-    _e.includes(S) || (S.startsWith("on") && typeof o[S] == "function" ? tr(S) ? Y[S] = o[S] : V[S] = o[S] : Y[S] = o[S]);
-  });
-  const [H, z] = X(!1);
-  W(() => {
-    k && (k.onTopOfStack && H ? j == null || j() : !k.onTopOfStack && !H && (b == null || b()), z(!k.onTopOfStack));
-  }, [l]);
-  const n = F(() => {
-    v == null || v();
-  }, [v]), R = F(() => {
-    a(null), m == null || m();
-  }, [m]), P = F(
-    (S) => {
-      S == null || S.preventDefault(), !h && (r.startsWith("#") || (w(!0), y == null || y()), T(
-        r,
-        e,
-        t,
-        i,
-        nr(sr(o, _e)),
-        () => n(),
-        R,
-        c,
-        E
-      ).then((D) => {
-        a(D), D.registerEventListenersFromProps(V), f == null || f();
-      }).catch((D) => {
-        console.error(D), N == null || N(D);
-      }).finally(() => w(!1)));
+  const handleMouseDown = useCallback(
+    (event) => {
+      if (!prefetchModes.includes("click")) return;
+      if (event.button !== 0) return;
+      doPrefetch();
     },
-    [r, e, t, i, c, o, n, R]
+    [prefetchModes, doPrefetch]
   );
-  return /* @__PURE__ */ O.jsx(
-    u,
+  useEffect(() => {
+    if (prefetchModes.includes("mount")) {
+      doPrefetch();
+    }
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout.current) {
+        clearTimeout(hoverTimeout.current);
+      }
+    };
+  }, []);
+  const standardProps = {};
+  const customEvents = {};
+  Object.keys(props).forEach((key) => {
+    if (modalPropNames.includes(key)) {
+      return;
+    }
+    if (key.startsWith("on") && typeof props[key] === "function") {
+      if (isStandardDomEvent(key)) {
+        standardProps[key] = props[key];
+      } else {
+        customEvents[key] = props[key];
+      }
+    } else {
+      standardProps[key] = props[key];
+    }
+  });
+  const [isBlurred, setIsBlurred] = useState(false);
+  useEffect(() => {
+    if (!modalContext) {
+      return;
+    }
+    if (modalContext.onTopOfStack && isBlurred) {
+      onFocus?.();
+    } else if (!modalContext.onTopOfStack && !isBlurred) {
+      onBlur?.();
+    }
+    setIsBlurred(!modalContext.onTopOfStack);
+  }, [stack]);
+  const onCloseCallback = useCallback(() => {
+    onClose?.();
+  }, [onClose]);
+  const onAfterLeaveCallback = useCallback(() => {
+    setModalContext(null);
+    onAfterLeave?.();
+  }, [onAfterLeave]);
+  const handle = useCallback(
+    (e) => {
+      e?.preventDefault();
+      if (loading) return;
+      if (!href.startsWith("#")) {
+        setLoading(true);
+        onStart?.();
+      }
+      visit(
+        href,
+        method,
+        data,
+        headers,
+        rejectNullValues(only(props, modalPropNames)),
+        () => onCloseCallback(),
+        onAfterLeaveCallback,
+        queryStringArrayFormat,
+        shouldNavigate
+      ).then((newModalContext) => {
+        setModalContext(newModalContext);
+        newModalContext.registerEventListenersFromProps(customEvents);
+        onSuccess?.();
+      }).catch((error) => {
+        console.error(error);
+        onError?.(error);
+      }).finally(() => setLoading(false));
+    },
+    [href, method, data, headers, queryStringArrayFormat, props, onCloseCallback, onAfterLeaveCallback]
+  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Component,
     {
-      ...Y,
-      href: r,
-      onClick: P,
-      onMouseEnter: C,
-      onMouseLeave: q,
-      onMouseDown: L,
-      children: typeof p == "function" ? p({ loading: h }) : p
+      ...standardProps,
+      href,
+      onClick: handle,
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave,
+      onMouseDown: handleMouseDown,
+      children: typeof children === "function" ? children({ loading }) : children
     }
   );
-}, Er = ({ children: r, data: e, params: t, buffer: u, as: i, always: c, fallback: m }) => {
-  c = c ?? !1, i = i ?? "div", m = m ?? null;
-  const [b, v] = X(!1), N = U(!1), j = U(!1), y = U(null), f = Le(), d = F(() => {
-    if (e)
+};
+const WhenVisible = ({ children, data, params, buffer, as, always, fallback }) => {
+  always = always ?? false;
+  as = as ?? "div";
+  fallback = fallback ?? null;
+  const [loaded, setLoaded] = useState(false);
+  const hasFetched = useRef(false);
+  const fetching = useRef(false);
+  const ref = useRef(null);
+  const modal = useModal();
+  const getReloadParams = useCallback(() => {
+    if (data) {
       return {
-        only: Array.isArray(e) ? e : [e]
+        only: Array.isArray(data) ? data : [data]
       };
-    if (!t)
+    }
+    if (!params) {
       throw new Error("You must provide either a `data` or `params` prop.");
-    return t;
-  }, [t, e]);
-  return W(() => {
-    if (!y.current)
+    }
+    return params;
+  }, [params, data]);
+  useEffect(() => {
+    if (!ref.current) {
       return;
-    const _ = new IntersectionObserver(
-      (s) => {
-        if (!s[0].isIntersecting || (!c && N.current && _.disconnect(), j.current))
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) {
           return;
-        N.current = !0, j.current = !0;
-        const M = d();
-        f == null || f.reload({
-          ...M,
+        }
+        if (!always && hasFetched.current) {
+          observer.disconnect();
+        }
+        if (fetching.current) {
+          return;
+        }
+        hasFetched.current = true;
+        fetching.current = true;
+        const reloadParams = getReloadParams();
+        modal?.reload({
+          ...reloadParams,
           onStart: () => {
-            var I;
-            j.current = !0, (I = M.onStart) == null || I.call(M);
+            fetching.current = true;
+            reloadParams.onStart?.();
           },
           onFinish: () => {
-            var I;
-            v(!0), j.current = !1, (I = M.onFinish) == null || I.call(M), c || _.disconnect();
+            setLoaded(true);
+            fetching.current = false;
+            reloadParams.onFinish?.();
+            if (!always) {
+              observer.disconnect();
+            }
           }
         });
       },
       {
-        rootMargin: `${u || 0}px`
+        rootMargin: `${buffer || 0}px`
       }
     );
-    return _.observe(y.current), () => {
-      _.disconnect();
+    observer.observe(ref.current);
+    return () => {
+      observer.disconnect();
     };
-  }, [y, d, u]), c || !b ? se(
-    i,
-    {
-      props: null,
-      ref: y
-    },
-    b ? r : m
-  ) : b ? r : null;
+  }, [ref, getReloadParams, buffer]);
+  if (always || !loaded) {
+    return createElement(
+      as,
+      {
+        props: null,
+        ref
+      },
+      loaded ? children : fallback
+    );
+  }
+  return loaded ? children : null;
 };
-Er.displayName = "InertiaWhenVisible";
-const Cr = (r) => (e) => (e.default.layout = (t) => se(r, { children: t }), e);
+WhenVisible.displayName = "InertiaWhenVisible";
+const setPageLayout = (layout) => (module) => {
+  module.default.layout = (page) => createElement(layout, { children: page });
+  return module;
+};
 export {
-  yr as Deferred,
-  $e as HeadlessModal,
-  Or as Modal,
-  Nr as ModalLink,
-  mr as ModalRoot,
-  fr as ModalStackProvider,
-  Er as WhenVisible,
-  gr as dialogUtils,
-  ce as getConfig,
-  hr as initFromPageProps,
-  _e as modalPropNames,
-  pr as prefetch,
-  Ir as putConfig,
-  Fr as renderApp,
-  Pr as resetConfig,
-  Cr as setPageLayout,
-  Le as useModal,
-  We as useModalIndex,
-  pe as useModalStack
+  Deferred,
+  HeadlessModal,
+  Modal,
+  ModalLink,
+  ModalRoot,
+  ModalStackProvider,
+  WhenVisible,
+  dialog as dialogUtils,
+  getConfig,
+  initFromPageProps,
+  modalPropNames,
+  prefetch,
+  putConfig,
+  renderApp,
+  resetConfig,
+  setPageLayout,
+  useModal,
+  useModalIndex,
+  useModalStack
 };
 //# sourceMappingURL=inertiaui-modal.js.map

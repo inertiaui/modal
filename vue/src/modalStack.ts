@@ -73,6 +73,10 @@ const baseUrl = ref<string | null>(null)
 const stack = ref<Modal[]>([])
 const localModals = ref<Record<string, { name: string; callback: (modal: Modal) => void }>>({})
 
+// Track the URL we're closing to (prevents navigate handler from re-setting baseUrl)
+// Only suppresses if navigate event URL matches this URL
+let closingToBaseUrlTarget: string | null = null
+
 // Prefetch cache (#146)
 interface PrefetchCacheEntry {
     response: AxiosResponse
@@ -147,7 +151,7 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
         'X-Inertia': true,
         'X-Inertia-Version': usePage().version ?? '',
         'X-InertiaUI-Modal': generateId(),
-                'X-InertiaUI-Modal-Base-Url': baseUrl.value,
+        'X-InertiaUI-Modal-Base-Url': baseUrl.value ?? '',
     }
 
     const request = Axios({ url, method, data: mergedData, headers: requestHeaders })
@@ -321,9 +325,18 @@ export class Modal {
             stack.value = []
 
             // Update browser URL back to base when all modals are closed
-            if (baseUrl.value && typeof window !== 'undefined') {
+            // Clear baseUrl BEFORE router.push to prevent the navigate event
+            // from setting it back (race condition with props callback)
+            const savedBaseUrl = baseUrl.value
+            baseUrl.value = null
+
+            // Set target URL to prevent navigate handler from re-setting baseUrl
+            // Only suppresses navigate events to this specific URL
+            closingToBaseUrlTarget = savedBaseUrl
+
+            if (savedBaseUrl && typeof window !== 'undefined') {
                 router.push({
-                    url: baseUrl.value,
+                    url: savedBaseUrl,
                     preserveScroll: true,
                     preserveState: true,
                     // Clear _inertiaui_modal prop to prevent modal from reopening
@@ -335,8 +348,6 @@ export class Modal {
                     },
                 })
             }
-
-            baseUrl.value = null
         }
     }
 
@@ -624,6 +635,8 @@ export interface ModalStack {
     setComponentResolver: (resolver: ComponentResolver) => void
     getBaseUrl: () => string | null
     setBaseUrl: (url: string | null) => void
+    isClosingToBaseUrl: (pageUrl: string) => boolean
+    clearClosingToBaseUrl: () => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stack: any
     push: typeof push
@@ -640,6 +653,14 @@ export function useModalStack(): ModalStack {
         setComponentResolver,
         getBaseUrl: () => baseUrl.value,
         setBaseUrl: (url: string | null) => (baseUrl.value = url),
+        isClosingToBaseUrl: (pageUrl: string) => {
+            if (!closingToBaseUrlTarget) return false
+            // Check if the page URL matches our closing target (ignoring query strings)
+            const targetPath = new URL(closingToBaseUrlTarget, 'http://x').pathname
+            const pagePath = new URL(pageUrl, 'http://x').pathname
+            return targetPath === pagePath
+        },
+        clearClosingToBaseUrl: () => (closingToBaseUrlTarget = null),
         stack: readonly(stack),
         push,
         pushFromResponseData,

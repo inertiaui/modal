@@ -33,6 +33,8 @@ it('can perform a partial request on a base url when visiting the modal url dire
     $page = visit("/users/{$firstUser->id}/edit")
         ->waitForText($firstUser->name)
         ->assertPresent(waitForModalSelector())
+        // Wait for deferred data to load (may take longer in CI)
+        ->waitForText('Deferred data with Base URL header: page users')
         ->assertSeeIn("[dusk='deferred']", 'Deferred data with Base URL header: page users')
         ->assertPathIs('/users/'.$firstUser->id.'/edit');
 

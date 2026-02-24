@@ -22,6 +22,7 @@ import { default as ModalLink } from './ModalLink.vue';
 import { default as ModalRoot } from './ModalRoot.vue';
 import { onClickOutside } from '@inertiaui/vanilla';
 import { onEscapeKey } from '@inertiaui/vanilla';
+import { onTransitionEnd } from '@inertiaui/vanilla';
 import { Ref } from 'vue';
 import { RequestPayload } from '@inertiajs/core';
 import { unlockScroll } from '@inertiaui/vanilla';
@@ -52,6 +53,7 @@ declare namespace dialogUtils {
         onEscapeKey,
         markAriaHidden,
         unmarkAriaHidden,
+        onTransitionEnd,
         createDialog,
         CleanupFunction,
         FocusTrapOptions,
@@ -87,6 +89,7 @@ declare interface ModalConfig_2 {
     type: 'modal' | 'slideover';
     navigate: boolean;
     useNativeDialog: boolean;
+    appElement: string | null;
     modal: ModalTypeConfig;
     slideover: ModalTypeConfig;
 }
@@ -143,6 +146,8 @@ export declare interface ModalStack {
     setComponentResolver: (resolver: ComponentResolver) => void;
     getBaseUrl: () => string | null;
     setBaseUrl: (url: string | null) => void;
+    isClosingToBaseUrl: (pageUrl: string) => boolean;
+    clearClosingToBaseUrl: () => void;
     stack: any;
     push: typeof push;
     pushFromResponseData: typeof pushFromResponseData;

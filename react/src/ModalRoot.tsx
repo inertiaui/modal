@@ -28,6 +28,10 @@ let pageVersion: string | null = null
 let resolveComponent: ComponentResolver | null = null
 let baseUrl: string | null = null
 
+// Track the URL we're closing to (prevents navigate handler from re-setting baseUrl)
+// Only suppresses if navigate event URL matches this URL
+let closingToBaseUrlTarget: string | null = null
+
 // Prefetch cache (#146)
 interface PrefetchCacheEntry {
     response: AxiosResponse
@@ -282,9 +286,18 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
 
                 if (this.index === 0) {
                     // Update browser URL back to base when all modals are closed
-                    if (baseUrl && typeof window !== 'undefined') {
+                    // Clear baseUrl BEFORE router.push to prevent the navigate event
+                    // from setting it back (race condition with props callback)
+                    const savedBaseUrl = baseUrl
+                    baseUrl = null
+
+                    // Set target URL to prevent navigate handler from re-setting baseUrl
+                    // Only suppresses navigate events to this specific URL
+                    closingToBaseUrlTarget = savedBaseUrl
+
+                    if (savedBaseUrl && typeof window !== 'undefined') {
                         router.push({
-                            url: baseUrl,
+                            url: savedBaseUrl,
                             preserveScroll: true,
                             preserveState: true,
                             // Clear _inertiaui_modal prop to prevent modal from reopening
@@ -295,7 +308,6 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
                             },
                         })
                     }
-                    baseUrl = null
                     return []
                 }
 
@@ -736,6 +748,23 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                 const modalOnBase = ($event as { detail: { page: { props: InertiaUIModalPageProps; url: string } } }).detail.page.props._inertiaui_modal
                 const pageUrl = ($event as { detail: { page: { url: string } } }).detail.page.url
 
+                // If we're closing to this specific URL, don't re-open the modal
+                // This handles the race condition where router.push in afterLeave
+                // fires a navigate event before the props callback clears _inertiaui_modal
+                // Only suppresses when navigating to our closing target URL (not browser back to modal)
+                if (closingToBaseUrlTarget) {
+                    const targetPath = new URL(closingToBaseUrlTarget, 'http://x').pathname
+                    const pagePath = new URL(pageUrl, 'http://x').pathname
+                    if (targetPath === pagePath) {
+                        closingToBaseUrlTarget = null
+                        context?.closeAll(true)
+                        baseUrl = null
+                        initialModalStillOpenedRef.current = false
+                        return
+                    }
+                    closingToBaseUrlTarget = null
+                }
+
                 if (!modalOnBase) {
                     // No modal data - close any open modals (force close without transition)
                     context?.closeAll(true)
@@ -752,8 +781,6 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                     return
                 }
 
-                baseUrl = modalOnBase.baseUrl
-
                 // Skip if this modal is already being pushed (handles duplicate navigate events)
                 const modalKey = getModalKey(modalOnBase)
                 if (pendingModalKeysRef.current.has(modalKey)) {
@@ -769,6 +796,10 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                 if (context?.stack.some((m) => m.response?.component === modalOnBase.component && sameUrlPath(m.response?.url, modalOnBase.url))) {
                     return
                 }
+
+                // Only set baseUrl when we're actually opening a new modal
+                // (after deduplication checks pass)
+                baseUrl = modalOnBase.baseUrl
 
                 pendingModalKeysRef.current.add(modalKey)
 

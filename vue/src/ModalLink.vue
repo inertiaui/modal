@@ -225,7 +225,10 @@ function handle() {
         .then((context) => {
             modalContext.value = context
         })
-        .catch((error) => emit('error', error))
+        .catch((error) => {
+            console.error(error)
+            emit('error', error)
+        })
         .finally(() => (loading.value = false))
 }
 </script>

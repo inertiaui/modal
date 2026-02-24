@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount, onMounted, onUnmounted, watch } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
@@ -23,6 +23,18 @@ onUnmounted(
         const modalOnBase = $event.detail.page.props._inertiaui_modal
         const pageUrl = $event.detail.page.url
 
+        // If we're closing to this specific URL, don't re-open the modal
+        // This handles the race condition where router.push in afterLeave
+        // fires a navigate event before the props callback clears _inertiaui_modal
+        // Only suppresses when navigating to our closing target URL (not browser back to modal)
+        if (modalStack.isClosingToBaseUrl(pageUrl)) {
+            modalStack.clearClosingToBaseUrl()
+            modalStack.closeAll(true)
+            modalStack.setBaseUrl(null)
+            initialModalStillOpened = false
+            return
+        }
+
         if (!modalOnBase) {
             // No modal data - close any open modals (force close without transition)
             modalStack.closeAll(true)
@@ -39,8 +51,6 @@ onUnmounted(
             initialModalStillOpened = false
             return
         }
-
-        modalStack.setBaseUrl(modalOnBase.baseUrl)
 
         // Skip if this modal is already being pushed (handles duplicate navigate events)
         const modalKey = getModalKey(modalOnBase)
@@ -59,6 +69,9 @@ onUnmounted(
             return
         }
 
+        // Only set baseUrl when we're actually opening a new modal
+        // (after deduplication checks pass)
+        modalStack.setBaseUrl(modalOnBase.baseUrl)
         pendingModalKeys.add(modalKey)
 
         modalStack
@@ -85,7 +98,8 @@ const axiosRequestInterceptor = (config) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
     // Only send the header when we have an actual base URL value
-    const baseUrlValue = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
+    // Check modalStack first, then fall back to page props if a modal is still open from initial load
+    const baseUrlValue = modalStack.getBaseUrl() ?? $page.props?._inertiaui_modal?.baseUrl ?? null
     if (baseUrlValue) {
         config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
     }
@@ -93,9 +107,9 @@ const axiosRequestInterceptor = (config) => {
     return config
 }
 
-onBeforeMount(() => Axios.interceptors.request.use(axiosRequestInterceptor))
-onMounted(() => (initialModalStillOpened = !!$page.props._inertiaui_modal))
-onUnmounted(() => Axios.interceptors.request.eject(axiosRequestInterceptor))
+let axiosInterceptorId = null
+onMounted(() => (axiosInterceptorId = Axios.interceptors.request.use(axiosRequestInterceptor)))
+onUnmounted(() => axiosInterceptorId !== null && Axios.interceptors.request.eject(axiosInterceptorId))
 
 watch(
     () => $page.props?._inertiaui_modal,

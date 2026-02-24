@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 import CloseButton from './CloseButton.vue'
-import { createFocusTrap, onEscapeKey } from './dialog'
+import { createFocusTrap, onEscapeKey, onTransitionEnd } from './dialog'
 import { getMaxWidthClass } from './constants'
 
 const props = defineProps({
@@ -17,6 +17,7 @@ const entered = ref(false)
 const isLeaving = ref(false)
 const wrapperRef = ref(null)
 const dialogRef = ref(null)
+const nativeWrapperRef = ref(null)
 
 let cleanupFocusTrap = null
 let cleanupEscapeKey = null
@@ -115,19 +116,29 @@ function openDialog() {
     }
 }
 
+let cleanupTransition = null
+
 function closeDialog() {
     if (dialogRef.value && dialogRef.value.open) {
         isLeaving.value = true
         entered.value = false
-        setTimeout(() => {
-            if (dialogRef.value) {
-                dialogRef.value.close()
-            }
-            isLeaving.value = false
-            emit('after-leave')
-            props.modalContext.afterLeave()
-        }, 300)
+
+        const wrapper = nativeWrapperRef.value
+        if (wrapper) {
+            cleanupTransition = onTransitionEnd(wrapper, finishClose)
+        } else {
+            finishClose()
+        }
     }
+}
+
+function finishClose() {
+    if (dialogRef.value) {
+        dialogRef.value.close()
+    }
+    isLeaving.value = false
+    emit('after-leave')
+    props.modalContext.afterLeave()
 }
 
 // ============ Lifecycle ============
@@ -208,6 +219,7 @@ watch(
                 }"
             >
                 <div
+                    ref="nativeWrapperRef"
                     :class="[
                         'im-slideover-wrapper w-full transition duration-300 ease-in-out',
                         modalContext.onTopOfStack ? '' : 'blur-xs',

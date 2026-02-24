@@ -52,7 +52,7 @@ onMounted(() => {
     // Only call lockScroll if not already set (onSuccessEvent may have already called it)
     if (modal.value?.isOpen && !cleanupScrollLock) {
         cleanupScrollLock = lockScroll()
-        cleanupAriaHidden = markAriaHidden('#app')
+        cleanupAriaHidden = markAriaHidden(getConfig('appElement'))
     }
 })
 
@@ -66,7 +66,7 @@ function onSuccessEvent() {
     emits('success')
     if (!cleanupScrollLock) {
         cleanupScrollLock = lockScroll()
-        cleanupAriaHidden = markAriaHidden('#app')
+        cleanupAriaHidden = markAriaHidden(getConfig('appElement'))
     }
 }
 

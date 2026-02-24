@@ -19,7 +19,7 @@ export default defineConfig({
             fileName: 'inertiaui-modal',
         },
         sourcemap: true,
-        minify: true,
+        minify: false,
         rollupOptions: {
             external: ['@inertiajs/core', '@inertiajs/vue3', '@inertiaui/vanilla', 'axios', 'vue'],
             output: {

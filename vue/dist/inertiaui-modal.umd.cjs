@@ -1,2 +1,1900 @@
-(function(k,e){typeof exports=="object"&&typeof module<"u"?e(exports,require("vue"),require("@inertiaui/vanilla"),require("@inertiajs/vue3"),require("@inertiajs/core"),require("axios")):typeof define=="function"&&define.amd?define(["exports","vue","@inertiaui/vanilla","@inertiajs/vue3","@inertiajs/core","axios"],e):(k=typeof globalThis<"u"?globalThis:k||self,e(k.InertiaUIModal={},k.Vue,k.InertiaUIVanilla,k.InertiaVue3,k.InertiaCore,k.axios))})(this,(function(k,e,C,E,H,$){"use strict";const A={type:"modal",navigate:!1,useNativeDialog:!0,modal:{closeButton:!0,closeExplicitly:!1,closeOnClickOutside:!0,maxWidth:"2xl",paddingClasses:"p-4 sm:p-6",panelClasses:"bg-white rounded",position:"center"},slideover:{closeButton:!0,closeExplicitly:!1,closeOnClickOutside:!0,maxWidth:"md",paddingClasses:"p-4 sm:p-6",panelClasses:"bg-white min-h-screen",position:"right"}};class re{constructor(){this.config={},this.reset()}reset(){this.config=JSON.parse(JSON.stringify(A))}put(o,t){if(typeof o=="object"){this.config={type:o.type??A.type,navigate:o.navigate??A.navigate,useNativeDialog:o.useNativeDialog??A.useNativeDialog,modal:{...A.modal,...o.modal??{}},slideover:{...A.slideover,...o.slideover??{}}};return}const l=o.split(".");let u=this.config;for(let r=0;r<l.length-1;r++)u=u[l[r]]=u[l[r]]||{};u[l[l.length-1]]=t}get(o){if(typeof o>"u")return this.config;const t=o.split(".");let l=this.config;for(const u of t){if(l==null||typeof l!="object")return null;l=l[u]}return l===void 0?null:l}}const U=new re,se=()=>U.reset(),ie=(n,o)=>U.put(n,o),j=n=>U.get(n),T=(n,o)=>U.get(n?`slideover.${o}`:`modal.${o}`);function I(n="inertiaui_modal_"){return C.generateId(n)}function R(n,o){const t=typeof window<"u"?window.location.origin:"http://localhost",l=typeof n=="string"?new URL(n,t):n,u=typeof o=="string"?new URL(o,t):o;return`${l.origin}${l.pathname}`==`${u.origin}${u.pathname}`}const J={__name:"ModalRenderer",props:{index:{type:Number,required:!0}},setup(n){const o=n,t=V(),l=e.computed(()=>t.stack.value[o.index]);return e.provide("modalContext",l),(u,r)=>{var a;return(a=l.value)!=null&&a.component?(e.openBlock(),e.createBlock(e.unref(l).component,e.mergeProps({key:0},e.unref(C.only)(l.value.props??{},l.value.getComponentPropKeys(),!0),{onModalEvent:r[0]||(r[0]=(i,...d)=>l.value.emit(i,...d))}),null,16)):e.createCommentVNode("",!0)}}},Q={__name:"ModalRoot",setup(n){const o=V(),t=E.usePage();let l=!1,u=!1;const r=new Set,a=d=>d.id||`${d.component}:${d.url}`;e.onUnmounted(E.router.on("start",()=>l=!0)),e.onUnmounted(E.router.on("finish",()=>l=!1)),e.onUnmounted(E.router.on("navigate",d=>{const f=d.detail.page.props._inertiaui_modal,m=d.detail.page.url;if(!f){o.closeAll(!0),o.setBaseUrl(null),u=!1;return}if(!R(m,f.url)){o.closeAll(!0),o.setBaseUrl(null),u=!1;return}o.setBaseUrl(f.baseUrl);const c=a(f);r.has(c)||f.id&&o.stack.value.some(p=>p.id===f.id)||o.stack.value.some(p=>{var y,s;return((y=p.response)==null?void 0:y.component)===f.component&&R((s=p.response)==null?void 0:s.url,f.url)})||(r.add(c),o.pushFromResponseData(f,{},()=>{if(!f.baseUrl){console.error("No base url in modal response data so cannot navigate back");return}!l&&typeof window<"u"&&window.location.href!==f.baseUrl&&E.router.visit(f.baseUrl,{preserveScroll:!0,preserveState:!0})}).then(()=>{r.delete(c)}))}));const i=d=>{var m;const f=o.getBaseUrl()??(u?(m=t.props._inertiaui_modal)==null?void 0:m.baseUrl:null);return f&&(d.headers["X-InertiaUI-Modal-Base-Url"]=f),d};return e.onBeforeMount(()=>$.interceptors.request.use(i)),e.onMounted(()=>u=!!t.props._inertiaui_modal),e.onUnmounted(()=>$.interceptors.request.eject(i)),e.watch(()=>{var d;return(d=t.props)==null?void 0:d._inertiaui_modal},(d,f)=>{var m;if(d){if(f&&d.component===f.component&&R(d.url,f.url)){(m=o.stack.value[0])==null||m.updateProps(d.props??{});return}if(!f&&o.stack.value.length>0){const c=o.stack.value.find(p=>{var y,s;return((y=p.response)==null?void 0:y.component)===d.component&&R((s=p.response)==null?void 0:s.url,d.url)});c&&c.updateProps(d.props??{})}}}),(d,f)=>(e.openBlock(),e.createElementBlock(e.Fragment,null,[e.renderSlot(d.$slots,"default"),e.unref(o).stack.value.length?(e.openBlock(),e.createBlock(J,{key:0,index:0})):e.createCommentVNode("",!0)],64))}};let P=null;const S=e.ref(null),w=e.ref([]),L=e.ref({}),W=new Map,z=new Map;function X(n,o,t){return`${o}:${n}:${JSON.stringify(t)}`}function Y(n,o,t){const l=X(n,o,t),u=W.get(l);return u?Date.now()>u.expiresAt?(W.delete(l),null):u.response:null}function ce(n,o,t,l,u){const r=X(n,o,t);W.set(r,{response:l,timestamp:Date.now(),expiresAt:Date.now()+u})}function G(n,o={}){var s;if(n.startsWith("#"))return Promise.resolve();const t=(o.method??"get").toLowerCase(),l=o.data??{},u=o.headers??{},r=o.queryStringArrayFormat??"brackets",a=o.cacheFor??3e4,[i,d]=H.mergeDataIntoQueryString(t,n||"",l,r);if(Y(i,t,d))return Promise.resolve();const m=X(i,t,d),c=z.get(m);if(c)return c.then(()=>{});(s=o.onPrefetching)==null||s.call(o);const p={...u,Accept:"text/html, application/xhtml+xml","X-Requested-With":"XMLHttpRequest","X-Inertia":!0,"X-Inertia-Version":E.usePage().version??"","X-InertiaUI-Modal":I(),"X-InertiaUI-Modal-Base-Url":S.value},y=$({url:i,method:t,data:d,headers:p}).then(g=>{var O;return ce(i,t,d,g,a),(O=o.onPrefetched)==null||O.call(o),g}).finally(()=>{z.delete(m)});return z.set(m,y),y.then(()=>{})}const de=n=>{P=n},ue=n=>{n.resolveComponent&&(P=n.resolveComponent)};class Z{constructor(o,t,l,u,r){this.getComponentPropKeys=()=>{if(!this.component)return[];const a=this.component.props;return Array.isArray(a)?a:a?Object.keys(a):[]},this.getParentModal=()=>{const a=this.index.value;return a<1?null:w.value.slice(0,a).reverse().find(i=>i.isOpen)},this.getChildModal=()=>{const a=this.index.value;return a===w.value.length-1?null:w.value.slice(a+1).find(i=>i.isOpen)??null},this.show=()=>{const a=this.index.value;if(a>-1){if(w.value[a].isOpen)return;w.value[a].isOpen=!0,w.value[a].shouldRender=!0}},this.close=()=>{var i;const a=this.index.value;if(a>-1){if(!w.value[a].isOpen)return;Object.keys(this.listeners).forEach(d=>{this.off(d)}),w.value[a].isOpen=!1,(i=this.onCloseCallback)==null||i.call(this),this.onCloseCallback=null}},this.setOpen=a=>{a?this.show():this.close()},this.afterLeave=()=>{var i;const a=this.index.value;if(a>-1){if(w.value[a].isOpen)return;w.value[a].shouldRender=!1,(i=this.afterLeaveCallback)==null||i.call(this),this.afterLeaveCallback=null}a===0&&(w.value=[],S.value&&typeof window<"u"&&E.router.push({url:S.value,preserveScroll:!0,preserveState:!0,props:d=>{const{_inertiaui_modal:f,...m}=d;return{...m,_inertiaui_modal:void 0}}}),S.value=null)},this.on=(a,i)=>{a=C.kebabCase(a),this.listeners[a]=this.listeners[a]??[],this.listeners[a].push(i)},this.off=(a,i)=>{var d;a=C.kebabCase(a),i?this.listeners[a]=((d=this.listeners[a])==null?void 0:d.filter(f=>f!==i))??[]:delete this.listeners[a]},this.emit=(a,...i)=>{var d;(d=this.listeners[C.kebabCase(a)])==null||d.forEach(f=>f(...i))},this.registerEventListenersFromAttrs=a=>{const i=[];return Object.keys(a).filter(d=>d.startsWith("on")).forEach(d=>{const f=C.kebabCase(d).replace(/^on-/,""),m=a[d];this.on(f,m),i.push(()=>this.off(f,m))}),()=>i.forEach(d=>d())},this.reload=(a={})=>{var m,c;let i=Object.keys(this.response.props);if(a.only&&(i=a.only),a.except&&(i=C.except(i,a.except)),!((m=this.response)!=null&&m.url))return;const d=(a.method??"get").toLowerCase(),f=a.data??{};(c=a.onStart)==null||c.call(a),$({url:this.response.url,method:d,data:d==="get"?{}:f,params:d==="get"?f:{},headers:{...a.headers??{},Accept:"text/html, application/xhtml+xml","X-Inertia":!0,"X-Inertia-Partial-Component":this.response.component,"X-Inertia-Version":this.response.version??"","X-Inertia-Partial-Data":i.join(","),"X-InertiaUI-Modal":I(),"X-InertiaUI-Modal-Base-Url":S.value}}).then(p=>{var y;this.updateProps(p.data.props),(y=a.onSuccess)==null||y.call(a,p)}).catch(p=>{var y;(y=a.onError)==null||y.call(a,p)}).finally(()=>{var p;(p=a.onFinish)==null||p.call(a)})},this.updateProps=a=>{Object.assign(this.props.value,a)},this.id=t.id??I(),this.isOpen=!1,this.shouldRender=!1,this.listeners={},this.component=o,this.props=e.ref(t.props??{}),this.response=t,this.config=l??{},this.onCloseCallback=u??null,this.afterLeaveCallback=r??null,this.index=e.computed(()=>w.value.findIndex(a=>a.id===this.id)),this.onTopOfStack=e.computed(()=>{var i;return w.value.length<2?!0:((i=w.value.map(d=>({id:d.id,shouldRender:d.shouldRender})).reverse().find(d=>d.shouldRender))==null?void 0:i.id)===this.id})}}function fe(n,o){L.value[n]={name:n,callback:o}}function me(n,o,t,l,u){if(!L.value[n])throw new Error(`The local modal "${n}" has not been registered.`);const a=_(null,{props:u??{}},o,t,l);return a.name=n,L.value[n].callback(a),a}function pe(n){return typeof n=="object"&&n!==null&&"component"in n&&typeof n.component=="string"}function ee(n,o,t){!n||!o||typeof window>"u"||E.router.push({url:n,preserveScroll:!0,preserveState:!0,props:t?l=>({...l,_inertiaui_modal:{...t,baseUrl:S.value}}):void 0})}function K(n,o={},t=null,l=null){return P?pe(n)?P(n.component).then(u=>_(e.markRaw(u),n,o,t,l)):Promise.reject(new Error("Invalid modal response. This usually happens when the server returns a redirect (e.g., due to session expiration). Check if the user is still authenticated.")):Promise.reject(new Error("Component resolver not set"))}function ge(n,o,t={},l={},u={},r=null,a=null,i="brackets",d=!1,f=null,m=null,c=null,p=null){const y=I();return new Promise((s,g)=>{var B;if(n.startsWith("#")){s(me(n.substring(1),u,r,a,p));return}const[O,N]=H.mergeDataIntoQueryString(o,n||"",t,i),M=Y(O,o,N);if(M){m==null||m(M),K(M.data,u,r,a).then(h=>{ee(M.data.url,d,M.data),s(h)}).catch(g);return}w.value.length===0&&(S.value=typeof window<"u"?window.location.href:"");const F={...l,Accept:"text/html, application/xhtml+xml","X-Requested-With":"XMLHttpRequest","X-Inertia":!0,"X-Inertia-Version":E.usePage().version??"","X-InertiaUI-Modal":y,"X-InertiaUI-Modal-Base-Url":S.value};f==null||f(),(B=E.progress)==null||B.start(),$({url:O,method:o,data:N,headers:F}).then(h=>{m==null||m(h),K(h.data,u,r,a).then(v=>{ee(h.data.url,d,h.data),s(v)}).catch(g)}).catch((...h)=>{c==null||c(...h),g(h[0])}).finally(()=>{var h;(h=E.progress)==null||h.finish()})})}function he(n){var t,l;const o=(l=(t=n.response)==null?void 0:t.meta)==null?void 0:l.deferredProps;o&&Object.keys(o).forEach(u=>{n.reload({only:o[u]})})}function _(n,o,t,l,u){const r=new Z(n,o,t,l,u);return w.value.push(r),he(r),e.nextTick(()=>r.show()),r}const te=["closeButton","closeExplicitly","closeOnClickOutside","maxWidth","paddingClasses","panelClasses","position","slideover"],xe=(n,o)=>(o.resolveComponent&&(P=o.resolveComponent),()=>e.h(Q,()=>e.h(n,o)));function V(){return{setComponentResolver:de,getBaseUrl:()=>S.value,setBaseUrl:n=>S.value=n,stack:e.readonly(w),push:_,pushFromResponseData:K,closeAll:(n=!1)=>{n?w.value=[]:[...w.value].reverse().forEach(o=>o.close())},reset:()=>w.value=[],visit:ge,registerLocalModal:fe,removeLocalModal:n=>delete L.value[n]}}function ne(){return e.toValue(e.inject("modalContext",null))}const ye={__name:"Deferred",props:{data:{type:[String,Array],required:!0}},setup(n){const o=n,t=e.inject("modalContext");if(!t)throw new Error("Deferred component must be used inside a Modal component");const l=e.computed(()=>(Array.isArray(o.data)?o.data:[o.data]).every(r=>t.value.props[r]!==void 0));return(u,r)=>l.value?e.renderSlot(u.$slots,"default",{key:0}):e.renderSlot(u.$slots,"fallback",{key:1})}},ae=Object.assign({inheritAttrs:!1},{__name:"HeadlessModal",props:{name:{type:String,required:!1},slideover:{type:Boolean,default:null},closeButton:{type:Boolean,default:null},closeExplicitly:{type:Boolean,default:null},closeOnClickOutside:{type:Boolean,default:null},maxWidth:{type:String,default:null},paddingClasses:{type:[Boolean,String],default:null},panelClasses:{type:[Boolean,String],default:null},position:{type:String,default:null}},emits:["modal-event","focus","blur","close","success"],setup(n,{expose:o,emit:t}){const l=n,u=V(),r=l.name?e.ref({}):e.inject("modalContext"),a=e.computed(()=>{var g;const s=((g=r.value.config)==null?void 0:g.slideover)??l.slideover??j("type")==="slideover";return{slideover:s,closeButton:l.closeButton??T(s,"closeButton"),closeExplicitly:l.closeExplicitly??T(s,"closeExplicitly"),closeOnClickOutside:l.closeOnClickOutside??T(s,"closeOnClickOutside"),maxWidth:l.maxWidth??T(s,"maxWidth"),paddingClasses:l.paddingClasses??T(s,"paddingClasses"),panelClasses:l.panelClasses??T(s,"panelClasses"),position:l.position??T(s,"position"),...r.value.config}});l.name&&(u.registerLocalModal(l.name,function(s){r.value=s,f()}),e.onBeforeUnmount(()=>{u.removeLocalModal(l.name)})),e.onMounted(()=>{l.name||f()});const i=e.ref(null);e.onBeforeUnmount(()=>{var s;return(s=i.value)==null?void 0:s.call(i)});const d=e.useAttrs();function f(){i.value=r.value.registerEventListenersFromAttrs(d)}const m=t;function c(s,...g){m("modal-event",s,...g)}o({emit:c,afterLeave:()=>{var s;return(s=r.value)==null?void 0:s.afterLeave()},close:()=>{var s;return(s=r.value)==null?void 0:s.close()},reload:(...s)=>{var g;return(g=r.value)==null?void 0:g.reload(...s)},setOpen:(...s)=>{var g;return(g=r.value)==null?void 0:g.setOpen(...s)},getChildModal:()=>{var s;return(s=r.value)==null?void 0:s.getChildModal()},getParentModal:()=>{var s;return(s=r.value)==null?void 0:s.getParentModal()},get config(){var s;return(s=r.value)==null?void 0:s.config},get id(){var s;return(s=r.value)==null?void 0:s.id},get index(){var s;return(s=r.value)==null?void 0:s.index},get isOpen(){var s;return(s=r.value)==null?void 0:s.isOpen},get modalContext(){var s;return(s=r.value)==null?void 0:s.modalContext},get onTopOfStack(){var s;return(s=r.value)==null?void 0:s.onTopOfStack},get shouldRender(){var s;return(s=r.value)==null?void 0:s.shouldRender}}),e.watch(()=>{var s;return(s=r.value)==null?void 0:s.onTopOfStack},(s,g)=>{s&&!g?m("focus"):!s&&g&&m("blur")}),e.watch(()=>{var s;return(s=r.value)==null?void 0:s.isOpen},(s,g)=>{s?m("success"):g===!0&&m("close")},{immediate:!0});const p=e.computed(()=>{var s;return(s=u.stack.value.find(g=>g.shouldRender&&g.index>r.value.index))==null?void 0:s.index}),y=e.computed(()=>{const s=r.value;return s?e.unref(s.props)??{}:{}});return(s,g)=>(e.openBlock(),e.createElementBlock(e.Fragment,null,[e.unref(r).shouldRender?e.renderSlot(s.$slots,"default",e.mergeProps({key:0},y.value,{id:e.unref(r).id,afterLeave:e.unref(r).afterLeave,close:e.unref(r).close,config:a.value,emit:c,getChildModal:e.unref(r).getChildModal,getParentModal:e.unref(r).getParentModal,index:e.unref(r).index,isOpen:e.unref(r).isOpen,modalContext:e.unref(r),onTopOfStack:e.unref(r).onTopOfStack,reload:e.unref(r).reload,setOpen:e.unref(r).setOpen,shouldRender:e.unref(r).shouldRender})):e.createCommentVNode("",!0),p.value?(e.openBlock(),e.createBlock(J,{key:1,index:p.value},null,8,["index"])):e.createCommentVNode("",!0)],64))}}),q={__name:"CloseButton",setup(n){const o=ne();return(t,l)=>(e.openBlock(),e.createElementBlock("button",{type:"button",class:"im-close-button text-gray-400 hover:text-gray-500",onClick:l[0]||(l[0]=u=>e.unref(o).close())},[...l[1]||(l[1]=[e.createElementVNode("span",{class:"sr-only"},"Close",-1),e.createElementVNode("svg",{class:"size-6",xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24","stroke-width":"2",stroke:"currentColor","aria-hidden":"true"},[e.createElementVNode("path",{"stroke-linecap":"round","stroke-linejoin":"round",d:"M6 18L18 6M6 6l12 12"})],-1)])]))}},Ce=Object.freeze(Object.defineProperty({__proto__:null,createDialog:C.createDialog,createFocusTrap:C.createFocusTrap,focusFirstElement:C.focusFirstElement,getFocusableElements:C.getFocusableElements,getScrollLockCount:C.getScrollLockCount,lockScroll:C.lockScroll,markAriaHidden:C.markAriaHidden,onClickOutside:C.onClickOutside,onEscapeKey:C.onEscapeKey,unlockScroll:C.unlockScroll,unmarkAriaHidden:C.unmarkAriaHidden},Symbol.toStringTag,{value:"Module"})),oe={sm:"sm:max-w-sm",md:"sm:max-w-md",lg:"sm:max-w-md md:max-w-lg",xl:"sm:max-w-md md:max-w-xl","2xl":"sm:max-w-md md:max-w-xl lg:max-w-2xl","3xl":"sm:max-w-md md:max-w-xl lg:max-w-3xl","4xl":"sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl","5xl":"sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl","6xl":"sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl","7xl":"sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl"},ke="2xl";function le(n){return oe[n]||oe[ke]}const ve={class:"im-modal-container fixed inset-0 overflow-y-auto p-4"},we=["data-inertiaui-modal-entered"],be={key:0,class:"absolute right-0 top-0 pr-3 pt-3"},Oe=["data-inertiaui-modal-entered"],Be={key:0,class:"absolute right-0 top-0 pr-3 pt-3"},Me={__name:"ModalContent",props:{modalContext:Object,config:Object,useNativeDialog:Boolean,isFirstModal:Boolean},emits:["after-leave"],setup(n,{emit:o}){const t=n,l=o,u=e.ref(!1),r=e.ref(!1),a=e.ref(null),i=e.ref(null);let d=null,f=null;const m=e.computed(()=>le(t.config.maxWidth));function c(){t.useNativeDialog||!a.value||!t.modalContext.onTopOfStack||d||(d=C.createFocusTrap(a.value,{initialFocus:!0,returnFocus:!1}))}function p(){d&&(d(),d=null)}function y(){var v;t.useNativeDialog||f||(v=t.config)!=null&&v.closeExplicitly||(f=C.onEscapeKey(()=>{t.modalContext.onTopOfStack&&t.modalContext.close()}))}function s(){f&&(f(),f=null)}function g(v){var x,b;t.useNativeDialog||t.modalContext.onTopOfStack&&((x=t.config)!=null&&x.closeExplicitly||((b=t.config)==null?void 0:b.closeOnClickOutside)!==!1&&a.value&&(a.value.contains(v.target)||t.modalContext.close()))}function O(){u.value=!0,c()}function N(){l("after-leave"),t.modalContext.afterLeave()}function M(v){var x;v.preventDefault(),t.modalContext.onTopOfStack&&!((x=t.config)!=null&&x.closeExplicitly)&&t.modalContext.close()}function F(v){var x,b;v.target===i.value&&t.modalContext.onTopOfStack&&!((x=t.config)!=null&&x.closeExplicitly)&&((b=t.config)==null?void 0:b.closeOnClickOutside)!==!1&&t.modalContext.close()}function B(){i.value&&!i.value.open&&(i.value.showModal(),e.nextTick(()=>{requestAnimationFrame(()=>{u.value=!0})}))}function h(){i.value&&i.value.open&&(r.value=!0,u.value=!1,setTimeout(()=>{i.value&&i.value.close(),r.value=!1,l("after-leave"),t.modalContext.afterLeave()},300))}return e.onMounted(()=>{t.useNativeDialog?t.modalContext.isOpen&&B():y()}),e.onUnmounted(()=>{var v;t.useNativeDialog?(v=i.value)!=null&&v.open&&i.value.close():(p(),s())}),e.watch(()=>t.modalContext.onTopOfStack,v=>{t.useNativeDialog||(v?(y(),u.value&&c()):(p(),s()))}),e.watch(()=>t.modalContext.isOpen,v=>{t.useNativeDialog&&(v?B():r.value||h())}),(v,x)=>n.useNativeDialog?(e.openBlock(),e.createElementBlock("dialog",{key:0,ref_key:"dialogRef",ref:i,class:e.normalizeClass(["im-modal-dialog m-0 overflow-visible bg-transparent p-0","size-full max-h-none max-w-none","backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",u.value?"backdrop:opacity-100":"backdrop:opacity-0",!n.isFirstModal&&"backdrop:bg-transparent"]),onCancel:M,onClick:F},[e.createElementVNode("div",ve,[e.createElementVNode("div",{class:e.normalizeClass(["im-modal-positioner flex min-h-full justify-center",{"items-start":n.config.position==="top","items-center":n.config.position==="center","items-end":n.config.position==="bottom"}])},[e.createElementVNode("div",{class:e.normalizeClass(["im-modal-wrapper w-full transition duration-300 ease-in-out",n.modalContext.onTopOfStack?"":"blur-xs",u.value&&!r.value?"translate-y-0 opacity-100 sm:scale-100":"translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95",m.value])},[e.createElementVNode("div",{class:e.normalizeClass(["im-modal-content relative",[n.config.paddingClasses,n.config.panelClasses]]),"data-inertiaui-modal-entered":u.value},[n.config.closeButton?(e.openBlock(),e.createElementBlock("div",be,[e.createVNode(q)])):e.createCommentVNode("",!0),e.renderSlot(v.$slots,"default",{modalContext:n.modalContext,config:n.config})],10,we)],2)],2)])],34)):(e.openBlock(),e.createElementBlock("div",{key:1,class:"im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",onMousedown:e.withModifiers(g,["self"])},[e.createElementVNode("div",{class:e.normalizeClass(["im-modal-positioner flex min-h-full justify-center",{"items-start":n.config.position==="top","items-center":n.config.position==="center","items-end":n.config.position==="bottom"}]),onMousedown:e.withModifiers(g,["self"])},[e.createVNode(e.Transition,{appear:"","enter-active-class":"transition duration-300 ease-in-out","enter-from-class":"opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95","enter-to-class":"opacity-100 translate-y-0 sm:scale-100","leave-active-class":"transition duration-300 ease-in-out","leave-from-class":"opacity-100 translate-y-0 sm:scale-100","leave-to-class":"opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",onAfterEnter:O,onAfterLeave:N},{default:e.withCtx(()=>[n.modalContext.isOpen?(e.openBlock(),e.createElementBlock("div",{key:0,ref_key:"wrapperRef",ref:a,role:"dialog","aria-modal":"true",class:e.normalizeClass(["im-modal-wrapper w-full",n.modalContext.onTopOfStack?"":"blur-xs",m.value])},[x[0]||(x[0]=e.createElementVNode("span",{class:"sr-only"},"Dialog",-1)),e.createElementVNode("div",{class:e.normalizeClass(["im-modal-content relative",[n.config.paddingClasses,n.config.panelClasses]]),"data-inertiaui-modal-entered":u.value},[n.config.closeButton?(e.openBlock(),e.createElementBlock("div",Be,[e.createVNode(q)])):e.createCommentVNode("",!0),e.renderSlot(v.$slots,"default",{modalContext:n.modalContext,config:n.config})],10,Oe)],2)):e.createCommentVNode("",!0)]),_:3})],34)],32))}},Ee={class:"im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden"},Se=["data-inertiaui-modal-entered"],Ne={key:0,class:"absolute right-0 top-0 pr-3 pt-3"},Fe=["data-inertiaui-modal-entered"],Te={key:0,class:"absolute right-0 top-0 pr-3 pt-3"},De={__name:"SlideoverContent",props:{modalContext:Object,config:Object,useNativeDialog:Boolean,isFirstModal:Boolean},emits:["after-leave"],setup(n,{emit:o}){const t=n,l=o,u=e.ref(!1),r=e.ref(!1),a=e.ref(null),i=e.ref(null);let d=null,f=null;const m=e.computed(()=>le(t.config.maxWidth)),c=e.computed(()=>t.config.position==="left"?"-translate-x-full":"translate-x-full");function p(){t.useNativeDialog||!a.value||!t.modalContext.onTopOfStack||d||(d=C.createFocusTrap(a.value,{initialFocus:!0,returnFocus:!1}))}function y(){d&&(d(),d=null)}function s(){var x;t.useNativeDialog||f||(x=t.config)!=null&&x.closeExplicitly||(f=C.onEscapeKey(()=>{t.modalContext.onTopOfStack&&t.modalContext.close()}))}function g(){f&&(f(),f=null)}function O(x){var b,D;t.useNativeDialog||t.modalContext.onTopOfStack&&((b=t.config)!=null&&b.closeExplicitly||((D=t.config)==null?void 0:D.closeOnClickOutside)!==!1&&a.value&&(a.value.contains(x.target)||t.modalContext.close()))}function N(){u.value=!0,p()}function M(){l("after-leave"),t.modalContext.afterLeave()}function F(x){var b;x.preventDefault(),t.modalContext.onTopOfStack&&!((b=t.config)!=null&&b.closeExplicitly)&&t.modalContext.close()}function B(x){var b,D;x.target===i.value&&t.modalContext.onTopOfStack&&!((b=t.config)!=null&&b.closeExplicitly)&&((D=t.config)==null?void 0:D.closeOnClickOutside)!==!1&&t.modalContext.close()}function h(){i.value&&!i.value.open&&(i.value.showModal(),e.nextTick(()=>{requestAnimationFrame(()=>{u.value=!0})}))}function v(){i.value&&i.value.open&&(r.value=!0,u.value=!1,setTimeout(()=>{i.value&&i.value.close(),r.value=!1,l("after-leave"),t.modalContext.afterLeave()},300))}return e.onMounted(()=>{t.useNativeDialog?t.modalContext.isOpen&&h():s()}),e.onUnmounted(()=>{var x;t.useNativeDialog?(x=i.value)!=null&&x.open&&i.value.close():(y(),g())}),e.watch(()=>t.modalContext.onTopOfStack,x=>{t.useNativeDialog||(x?(s(),u.value&&p()):(y(),g()))}),e.watch(()=>t.modalContext.isOpen,x=>{t.useNativeDialog&&(x?h():r.value||v())}),(x,b)=>n.useNativeDialog?(e.openBlock(),e.createElementBlock("dialog",{key:0,ref_key:"dialogRef",ref:i,class:e.normalizeClass(["im-slideover-dialog m-0 overflow-visible bg-transparent p-0","size-full max-h-none max-w-none","backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",u.value?"backdrop:opacity-100":"backdrop:opacity-0",!n.isFirstModal&&"backdrop:bg-transparent"]),onCancel:F,onClick:B},[e.createElementVNode("div",Ee,[e.createElementVNode("div",{class:e.normalizeClass(["im-slideover-positioner flex min-h-full items-center",{"justify-start rtl:justify-end":n.config.position==="left","justify-end rtl:justify-start":n.config.position==="right"}])},[e.createElementVNode("div",{class:e.normalizeClass(["im-slideover-wrapper w-full transition duration-300 ease-in-out",n.modalContext.onTopOfStack?"":"blur-xs",u.value&&!r.value?"translate-x-0 opacity-100":n.config.position==="left"?"-translate-x-full opacity-0":"translate-x-full opacity-0",m.value])},[e.createElementVNode("div",{class:e.normalizeClass(["im-slideover-content relative",[n.config.paddingClasses,n.config.panelClasses]]),"data-inertiaui-modal-entered":u.value},[n.config.closeButton?(e.openBlock(),e.createElementBlock("div",Ne,[e.createVNode(q)])):e.createCommentVNode("",!0),e.renderSlot(x.$slots,"default",{modalContext:n.modalContext,config:n.config})],10,Se)],2)],2)])],34)):(e.openBlock(),e.createElementBlock("div",{key:1,class:"im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",onMousedown:e.withModifiers(O,["self"])},[e.createElementVNode("div",{class:e.normalizeClass(["im-slideover-positioner flex min-h-full items-center",{"justify-start rtl:justify-end":n.config.position==="left","justify-end rtl:justify-start":n.config.position==="right"}]),onMousedown:e.withModifiers(O,["self"])},[e.createVNode(e.Transition,{appear:"","enter-active-class":"transition duration-300 ease-in-out","enter-from-class":"opacity-0 "+c.value,"enter-to-class":"opacity-100 translate-x-0","leave-active-class":"transition duration-300 ease-in-out","leave-from-class":"opacity-100 translate-x-0","leave-to-class":"opacity-0 "+c.value,onAfterEnter:N,onAfterLeave:M},{default:e.withCtx(()=>[n.modalContext.isOpen?(e.openBlock(),e.createElementBlock("div",{key:0,ref_key:"wrapperRef",ref:a,role:"dialog","aria-modal":"true",class:e.normalizeClass(["im-slideover-wrapper w-full",n.modalContext.onTopOfStack?"":"blur-xs",m.value])},[b[0]||(b[0]=e.createElementVNode("span",{class:"sr-only"},"Dialog",-1)),e.createElementVNode("div",{class:e.normalizeClass(["im-slideover-content relative",[n.config.paddingClasses,n.config.panelClasses]]),"data-inertiaui-modal-entered":u.value},[n.config.closeButton?(e.openBlock(),e.createElementBlock("div",Te,[e.createVNode(q)])):e.createCommentVNode("",!0),e.renderSlot(x.$slots,"default",{modalContext:n.modalContext,config:n.config})],10,Fe)],2)):e.createCommentVNode("",!0)]),_:3},8,["enter-from-class","leave-to-class"])],34)],32))}},Ae=["data-inertiaui-modal-id","data-inertiaui-modal-index","aria-hidden"],Ve={key:0,class:"im-backdrop fixed inset-0 z-30 bg-black/75"},$e={__name:"Modal",emits:["after-leave","blur","close","focus","success"],setup(n,{expose:o,emit:t}){const l=e.ref(null),u=e.ref(!1),r=t;o({afterLeave:()=>{var c;return(c=l.value)==null?void 0:c.afterLeave()},close:()=>{var c;return(c=l.value)==null?void 0:c.close()},emit:(...c)=>{var p;return(p=l.value)==null?void 0:p.emit(...c)},getChildModal:()=>{var c;return(c=l.value)==null?void 0:c.getChildModal()},getParentModal:()=>{var c;return(c=l.value)==null?void 0:c.getParentModal()},reload:(...c)=>{var p;return(p=l.value)==null?void 0:p.reload(...c)},setOpen:(...c)=>{var p;return(p=l.value)==null?void 0:p.setOpen(...c)},get config(){var c;return(c=l.value)==null?void 0:c.config},get id(){var c;return(c=l.value)==null?void 0:c.id},get index(){var c;return(c=l.value)==null?void 0:c.index},get isOpen(){var c;return(c=l.value)==null?void 0:c.isOpen},get modalContext(){var c;return(c=l.value)==null?void 0:c.modalContext},get onTopOfStack(){var c;return(c=l.value)==null?void 0:c.onTopOfStack},get shouldRender(){var c;return(c=l.value)==null?void 0:c.shouldRender}});let a=null,i=null;e.onMounted(()=>{var c;(c=l.value)!=null&&c.isOpen&&!a&&(a=C.lockScroll(),i=C.markAriaHidden("#app"))}),e.onUnmounted(()=>{a==null||a(),i==null||i()});function d(){r("success"),a||(a=C.lockScroll(),i=C.markAriaHidden("#app"))}function f(){r("close"),a==null||a(),i==null||i(),a=null,i=null}const m=e.computed(()=>j("useNativeDialog"));return(c,p)=>(e.openBlock(),e.createBlock(ae,{ref_key:"modal",ref:l,onSuccess:d,onClose:f,onFocus:p[2]||(p[2]=y=>r("focus")),onBlur:p[3]||(p[3]=y=>r("blur"))},{default:e.withCtx(({afterLeave:y,close:s,config:g,emit:O,getChildModal:N,getParentModal:M,id:F,index:B,isOpen:h,modalContext:v,onTopOfStack:x,reload:b,setOpen:D,shouldRender:Ie,...Re})=>[(e.openBlock(),e.createBlock(e.Teleport,{to:"body"},[e.createElementVNode("div",{"data-inertiaui-modal-id":F,"data-inertiaui-modal-index":B,class:"im-dialog relative z-20","aria-hidden":!x},[B===0&&!m.value?(e.openBlock(),e.createBlock(e.Transition,{key:0,appear:!u.value,"enter-active-class":"transition transform ease-in-out duration-300","enter-from-class":"opacity-0","enter-to-class":"opacity-100","leave-active-class":"transition transform ease-in-out duration-300","leave-from-class":"opacity-100","leave-to-class":"opacity-0",onAfterAppear:p[0]||(p[0]=Le=>u.value=!0)},{default:e.withCtx(()=>[h?(e.openBlock(),e.createElementBlock("div",Ve)):e.createCommentVNode("",!0)]),_:2},1032,["appear"])):e.createCommentVNode("",!0),(e.openBlock(),e.createBlock(e.resolveDynamicComponent(g!=null&&g.slideover?De:Me),{"modal-context":v,config:g,"use-native-dialog":m.value,"is-first-modal":B===0,onAfterLeave:p[1]||(p[1]=Le=>c.$emit("after-leave"))},{default:e.withCtx(()=>[e.renderSlot(c.$slots,"default",e.mergeProps(Re,{id:F,afterLeave:y,close:s,config:g,emit:O,getChildModal:N,getParentModal:M,index:B,isOpen:h,modalContext:v,onTopOfStack:x,reload:b,setOpen:D,shouldRender:Ie}))]),_:2},1064,["modal-context","config","use-native-dialog","is-first-modal"]))],8,Ae)]))]),_:3},512))}},je={__name:"ModalLink",props:{href:{type:String,required:!0},method:{type:String,default:"get"},data:{type:Object,default:()=>({})},as:{type:[String,Object],default:"a"},headers:{type:Object,default:()=>({})},queryStringArrayFormat:{type:String,default:"brackets"},navigate:{type:Boolean,default:null},prefetch:{type:[Boolean,String,Array],default:!1},cacheFor:{type:Number,default:3e4},closeButton:{type:Boolean,required:!1,default:null},closeExplicitly:{type:Boolean,required:!1,default:null},closeOnClickOutside:{type:Boolean,required:!1,default:null},maxWidth:{type:String,required:!1,default:null},paddingClasses:{type:[Boolean,String],required:!1,default:null},panelClasses:{type:[Boolean,String],required:!1,default:null},position:{type:String,required:!1,default:null},slideover:{type:Boolean,required:!1,default:null}},emits:["after-leave","blur","close","error","focus","start","success","prefetching","prefetched"],setup(n,{emit:o}){const t=n,l=e.ref(!1),u=V(),r=e.ref(null);e.provide("modalContext",r);const a=o,i=e.ref(!1),d=e.computed(()=>t.navigate??j("navigate")),f=e.ref(null),m=e.computed(()=>t.prefetch===!0?["hover"]:t.prefetch===!1?[]:Array.isArray(t.prefetch)?t.prefetch:[t.prefetch]);function c(){G(t.href,{method:t.method,data:t.data,headers:t.headers,queryStringArrayFormat:t.queryStringArrayFormat,cacheFor:t.cacheFor,onPrefetching:()=>a("prefetching"),onPrefetched:()=>a("prefetched")})}function p(){m.value.includes("hover")&&(f.value=setTimeout(()=>{c()},75))}function y(){f.value&&(clearTimeout(f.value),f.value=null)}function s(h){m.value.includes("click")&&h.button===0&&c()}e.onMounted(()=>{m.value.includes("mount")&&c()}),e.watch(()=>{var h;return(h=r.value)==null?void 0:h.onTopOfStack},h=>{r.value&&(h&&i.value?a("focus"):h||a("blur"),i.value=!h)});const g=e.ref(null);e.onBeforeUnmount(()=>{var h;(h=g.value)==null||h.call(g),f.value&&clearTimeout(f.value)});const O=e.useAttrs();function N(){g.value=r.value.registerEventListenersFromAttrs(O)}e.watch(r,(h,v)=>{h&&!v&&(N(),a("success"))});function M(){a("close")}function F(){r.value=null,a("after-leave")}function B(){l.value||(t.href.startsWith("#")||(l.value=!0,a("start")),u.visit(t.href,t.method,t.data,t.headers,C.rejectNullValues(C.only(t,te)),M,F,t.queryStringArrayFormat,d.value).then(h=>{r.value=h}).catch(h=>a("error",h)).finally(()=>l.value=!1))}return(h,v)=>(e.openBlock(),e.createBlock(e.resolveDynamicComponent(n.as),e.mergeProps(e.unref(O),{href:n.href,onClick:e.withModifiers(B,["prevent"]),onMouseenter:p,onMouseleave:y,onMousedown:s}),{default:e.withCtx(()=>[e.renderSlot(h.$slots,"default",{loading:l.value})]),_:3},16,["href"]))}},Pe={__name:"WhenVisible",props:{data:[String,Array],params:Object,buffer:{type:Number,default:0},as:{type:String,default:"div"},always:{type:Boolean,default:!1}},setup(n){const o=n,t=e.inject("modalContext");if(!t)throw new Error("Deferred component must be used inside a Modal component");const l=e.ref(!1),u=e.ref(!1),r=e.ref(null);let a=null;const i=()=>{if(o.data)return{only:Array.isArray(o.data)?o.data:[o.data]};if(!o.params)throw new Error("You must provide either a `data` or `params` prop.");return o.params},d=()=>{r.value&&(a=new IntersectionObserver(f=>{if(!f[0].isIntersecting||(o.always||a.disconnect(),u.value))return;u.value=!0;const m=i();t.value.reload({...m,onStart:()=>{var c;u.value=!0,(c=m.onStart)==null||c.call(m)},onFinish:()=>{var c;l.value=!0,u.value=!1,(c=m.onFinish)==null||c.call(m)}})},{rootMargin:`${o.buffer}px`}),a.observe(r.value))};return e.onMounted(d),e.onUnmounted(()=>a==null?void 0:a.disconnect()),(f,m)=>(e.openBlock(),e.createBlock(e.resolveDynamicComponent(o.as),{ref_key:"rootElement",ref:r},{default:e.withCtx(()=>[l.value?e.renderSlot(f.$slots,"default",{key:0}):e.renderSlot(f.$slots,"fallback",{key:1})]),_:3},512))}};function Ue(n,o={}){return V().visit(n,o.method??"get",o.data??{},o.headers??{},o.config??{},o.onClose,o.onAfterLeave,o.queryStringArrayFormat??"brackets",o.navigate??j("navigate"),o.onStart,o.onSuccess,o.onError,o.props??null).then(t=>{const l=o.listeners??{};return Object.keys(l).forEach(u=>{const r=C.kebabCase(u);t.on(r,l[u])}),t})}k.Deferred=ye,k.HeadlessModal=ae,k.Modal=$e,k.ModalInstance=Z,k.ModalLink=je,k.ModalRoot=Q,k.WhenVisible=Pe,k.dialogUtils=Ce,k.getConfig=j,k.initFromPageProps=ue,k.modalPropNames=te,k.prefetch=G,k.putConfig=ie,k.renderApp=xe,k.resetConfig=se,k.useModal=ne,k.useModalStack=V,k.visitModal=Ue,Object.defineProperty(k,Symbol.toStringTag,{value:"Module"})}));
+(function(global, factory) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue"), require("@inertiaui/vanilla"), require("@inertiajs/vue3"), require("@inertiajs/core"), require("axios")) : typeof define === "function" && define.amd ? define(["exports", "vue", "@inertiaui/vanilla", "@inertiajs/vue3", "@inertiajs/core", "axios"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.Vue, global.InertiaUIVanilla, global.InertiaVue3, global.InertiaCore, global.axios));
+})(this, (function(exports2, vue, vanilla, vue3, core, Axios) {
+  "use strict";
+  const defaultConfig = {
+    type: "modal",
+    navigate: false,
+    useNativeDialog: true,
+    appElement: "#app",
+    modal: {
+      closeButton: true,
+      closeExplicitly: false,
+      closeOnClickOutside: true,
+      maxWidth: "2xl",
+      paddingClasses: "p-4 sm:p-6",
+      panelClasses: "bg-white rounded",
+      position: "center"
+    },
+    slideover: {
+      closeButton: true,
+      closeExplicitly: false,
+      closeOnClickOutside: true,
+      maxWidth: "md",
+      paddingClasses: "p-4 sm:p-6",
+      panelClasses: "bg-white min-h-screen",
+      position: "right"
+    }
+  };
+  class Config {
+    constructor() {
+      this.config = {};
+      this.reset();
+    }
+    reset() {
+      this.config = JSON.parse(JSON.stringify(defaultConfig));
+    }
+    put(key, value) {
+      if (typeof key === "object") {
+        this.config = {
+          type: key.type ?? defaultConfig.type,
+          navigate: key.navigate ?? defaultConfig.navigate,
+          useNativeDialog: key.useNativeDialog ?? defaultConfig.useNativeDialog,
+          appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
+          modal: { ...defaultConfig.modal, ...key.modal ?? {} },
+          slideover: { ...defaultConfig.slideover, ...key.slideover ?? {} }
+        };
+        return;
+      }
+      const keys = key.split(".");
+      let current = this.config;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]] = current[keys[i]] || {};
+      }
+      current[keys[keys.length - 1]] = value;
+    }
+    get(key) {
+      if (typeof key === "undefined") {
+        return this.config;
+      }
+      const keys = key.split(".");
+      let current = this.config;
+      for (const k of keys) {
+        if (current === null || current === void 0 || typeof current !== "object") {
+          return null;
+        }
+        current = current[k];
+      }
+      return current === void 0 ? null : current;
+    }
+  }
+  const configInstance = new Config();
+  const resetConfig = () => configInstance.reset();
+  const putConfig = (key, value) => configInstance.put(key, value);
+  const getConfig = (key) => configInstance.get(key);
+  const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+  function generateId(prefix = "inertiaui_modal_") {
+    return vanilla.generateId(prefix);
+  }
+  function sameUrlPath(url1, url2) {
+    if (!url1 || !url2) {
+      return false;
+    }
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+    const parsed1 = typeof url1 === "string" ? new URL(url1, origin) : url1;
+    const parsed2 = typeof url2 === "string" ? new URL(url2, origin) : url2;
+    return `${parsed1.origin}${parsed1.pathname}` === `${parsed2.origin}${parsed2.pathname}`;
+  }
+  const _sfc_main$9 = {
+    __name: "ModalRenderer",
+    props: {
+      index: {
+        type: Number,
+        required: true
+      }
+    },
+    setup(__props) {
+      const props = __props;
+      const modalStack = useModalStack();
+      const modalContext = vue.computed(() => {
+        return modalStack.stack.value[props.index];
+      });
+      vue.provide("modalContext", modalContext);
+      return (_ctx, _cache) => {
+        return modalContext.value?.component ? (vue.openBlock(), vue.createBlock(vue.unref(modalContext).component, vue.mergeProps({ key: 0 }, vue.unref(vanilla.only)(modalContext.value.props ?? {}, modalContext.value.getComponentPropKeys(), true), {
+          onModalEvent: _cache[0] || (_cache[0] = (event, ...args) => modalContext.value.emit(event, ...args))
+        }), null, 16)) : vue.createCommentVNode("", true);
+      };
+    }
+  };
+  const _sfc_main$8 = {
+    __name: "ModalRoot",
+    setup(__props) {
+      const modalStack = useModalStack();
+      const $page = vue3.usePage();
+      let isNavigating = false;
+      const pendingModalKeys = /* @__PURE__ */ new Set();
+      const getModalKey = (modalData) => modalData.id || `${modalData.component}:${modalData.url}`;
+      vue.onUnmounted(vue3.router.on("start", () => isNavigating = true));
+      vue.onUnmounted(vue3.router.on("finish", () => isNavigating = false));
+      vue.onUnmounted(
+        vue3.router.on("navigate", ($event) => {
+          const modalOnBase = $event.detail.page.props._inertiaui_modal;
+          const pageUrl = $event.detail.page.url;
+          if (modalStack.isClosingToBaseUrl(pageUrl)) {
+            modalStack.clearClosingToBaseUrl();
+            modalStack.closeAll(true);
+            modalStack.setBaseUrl(null);
+            return;
+          }
+          if (!modalOnBase) {
+            modalStack.closeAll(true);
+            modalStack.setBaseUrl(null);
+            return;
+          }
+          if (!sameUrlPath(pageUrl, modalOnBase.url)) {
+            modalStack.closeAll(true);
+            modalStack.setBaseUrl(null);
+            return;
+          }
+          const modalKey = getModalKey(modalOnBase);
+          if (pendingModalKeys.has(modalKey)) {
+            return;
+          }
+          if (modalOnBase.id && modalStack.stack.value.some((m) => m.id === modalOnBase.id)) {
+            return;
+          }
+          if (modalStack.stack.value.some((m) => m.response?.component === modalOnBase.component && sameUrlPath(m.response?.url, modalOnBase.url))) {
+            return;
+          }
+          modalStack.setBaseUrl(modalOnBase.baseUrl);
+          pendingModalKeys.add(modalKey);
+          modalStack.pushFromResponseData(modalOnBase, {}, () => {
+            if (!modalOnBase.baseUrl) {
+              console.error("No base url in modal response data so cannot navigate back");
+              return;
+            }
+            if (!isNavigating && typeof window !== "undefined" && window.location.href !== modalOnBase.baseUrl) {
+              vue3.router.visit(modalOnBase.baseUrl, {
+                preserveScroll: true,
+                preserveState: true
+              });
+            }
+          }).then(() => {
+            pendingModalKeys.delete(modalKey);
+          });
+        })
+      );
+      const axiosRequestInterceptor = (config) => {
+        const baseUrlValue = modalStack.getBaseUrl() ?? $page.props?._inertiaui_modal?.baseUrl ?? null;
+        if (baseUrlValue) {
+          config.headers["X-InertiaUI-Modal-Base-Url"] = baseUrlValue;
+        }
+        return config;
+      };
+      let axiosInterceptorId = null;
+      vue.onMounted(() => axiosInterceptorId = Axios.interceptors.request.use(axiosRequestInterceptor));
+      vue.onUnmounted(() => axiosInterceptorId !== null && Axios.interceptors.request.eject(axiosInterceptorId));
+      vue.watch(
+        () => $page.props?._inertiaui_modal,
+        (newModal, previousModal) => {
+          if (!newModal) {
+            return;
+          }
+          if (previousModal && newModal.component === previousModal.component && sameUrlPath(newModal.url, previousModal.url)) {
+            modalStack.stack.value[0]?.updateProps(newModal.props ?? {});
+            return;
+          }
+          if (!previousModal && modalStack.stack.value.length > 0) {
+            const existingModal = modalStack.stack.value.find(
+              (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url)
+            );
+            if (existingModal) {
+              existingModal.updateProps(newModal.props ?? {});
+            }
+          }
+        }
+      );
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+          vue.renderSlot(_ctx.$slots, "default"),
+          vue.unref(modalStack).stack.value.length ? (vue.openBlock(), vue.createBlock(_sfc_main$9, {
+            key: 0,
+            index: 0
+          })) : vue.createCommentVNode("", true)
+        ], 64);
+      };
+    }
+  };
+  let resolveComponent = null;
+  const baseUrl = vue.ref(null);
+  const stack = vue.ref([]);
+  const localModals = vue.ref({});
+  let closingToBaseUrlTarget = null;
+  const prefetchCache = /* @__PURE__ */ new Map();
+  const prefetchInFlight = /* @__PURE__ */ new Map();
+  function getPrefetchCacheKey(url, method, data) {
+    return `${method}:${url}:${JSON.stringify(data)}`;
+  }
+  function getCachedResponse(url, method, data) {
+    const key = getPrefetchCacheKey(url, method, data);
+    const cached = prefetchCache.get(key);
+    if (!cached) {
+      return null;
+    }
+    if (Date.now() > cached.expiresAt) {
+      prefetchCache.delete(key);
+      return null;
+    }
+    return cached.response;
+  }
+  function setCachedResponse(url, method, data, response, cacheFor) {
+    const key = getPrefetchCacheKey(url, method, data);
+    prefetchCache.set(key, {
+      response,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + cacheFor
+    });
+  }
+  function prefetch(href, options = {}) {
+    if (href.startsWith("#")) {
+      return Promise.resolve();
+    }
+    const method = (options.method ?? "get").toLowerCase();
+    const data = options.data ?? {};
+    const headers = options.headers ?? {};
+    const queryStringArrayFormat = options.queryStringArrayFormat ?? "brackets";
+    const cacheFor = options.cacheFor ?? 3e4;
+    const [url, mergedData] = core.mergeDataIntoQueryString(method, href || "", data, queryStringArrayFormat);
+    const cached = getCachedResponse(url, method, mergedData);
+    if (cached) {
+      return Promise.resolve();
+    }
+    const cacheKey = getPrefetchCacheKey(url, method, mergedData);
+    const inFlight = prefetchInFlight.get(cacheKey);
+    if (inFlight) {
+      return inFlight.then(() => {
+      });
+    }
+    options.onPrefetching?.();
+    const requestHeaders = {
+      ...headers,
+      Accept: "text/html, application/xhtml+xml",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-Inertia": true,
+      "X-Inertia-Version": vue3.usePage().version ?? "",
+      "X-InertiaUI-Modal": generateId(),
+      "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
+    };
+    const request = Axios({ url, method, data: mergedData, headers: requestHeaders }).then((response) => {
+      setCachedResponse(url, method, mergedData, response, cacheFor);
+      options.onPrefetched?.();
+      return response;
+    }).finally(() => {
+      prefetchInFlight.delete(cacheKey);
+    });
+    prefetchInFlight.set(cacheKey, request);
+    return request.then(() => {
+    });
+  }
+  const setComponentResolver = (resolver) => {
+    resolveComponent = resolver;
+  };
+  const initFromPageProps = (pageProps) => {
+    if (pageProps.resolveComponent) {
+      resolveComponent = pageProps.resolveComponent;
+    }
+  };
+  class Modal {
+    constructor(component, response, config, onClose, afterLeave) {
+      this.getComponentPropKeys = () => {
+        if (!this.component) {
+          return [];
+        }
+        const componentProps = this.component.props;
+        if (Array.isArray(componentProps)) {
+          return componentProps;
+        }
+        return componentProps ? Object.keys(componentProps) : [];
+      };
+      this.getParentModal = () => {
+        const index = this.index.value;
+        if (index < 1) {
+          return null;
+        }
+        return stack.value.slice(0, index).reverse().find((modal) => modal.isOpen);
+      };
+      this.getChildModal = () => {
+        const index = this.index.value;
+        if (index === stack.value.length - 1) {
+          return null;
+        }
+        return stack.value.slice(index + 1).find((modal) => modal.isOpen) ?? null;
+      };
+      this.show = () => {
+        const index = this.index.value;
+        if (index > -1) {
+          if (stack.value[index].isOpen) {
+            return;
+          }
+          stack.value[index].isOpen = true;
+          stack.value[index].shouldRender = true;
+        }
+      };
+      this.close = () => {
+        const index = this.index.value;
+        if (index > -1) {
+          if (!stack.value[index].isOpen) {
+            return;
+          }
+          Object.keys(this.listeners).forEach((event) => {
+            this.off(event);
+          });
+          stack.value[index].isOpen = false;
+          this.onCloseCallback?.();
+          this.onCloseCallback = null;
+        }
+      };
+      this.setOpen = (open) => {
+        if (open) {
+          this.show();
+        } else {
+          this.close();
+        }
+      };
+      this.afterLeave = () => {
+        const index = this.index.value;
+        if (index > -1) {
+          if (stack.value[index].isOpen) {
+            return;
+          }
+          stack.value[index].shouldRender = false;
+          this.afterLeaveCallback?.();
+          this.afterLeaveCallback = null;
+        }
+        if (index === 0) {
+          stack.value = [];
+          const savedBaseUrl = baseUrl.value;
+          baseUrl.value = null;
+          closingToBaseUrlTarget = savedBaseUrl;
+          if (savedBaseUrl && typeof window !== "undefined") {
+            vue3.router.push({
+              url: savedBaseUrl,
+              preserveScroll: true,
+              preserveState: true,
+              // Clear _inertiaui_modal prop to prevent modal from reopening
+              // Must explicitly set to undefined since props are merged
+              props: (currentProps) => {
+                const { _inertiaui_modal, ...rest } = currentProps;
+                return { ...rest, _inertiaui_modal: void 0 };
+              }
+            });
+          }
+        }
+      };
+      this.on = (event, callback) => {
+        event = vanilla.kebabCase(event);
+        this.listeners[event] = this.listeners[event] ?? [];
+        this.listeners[event].push(callback);
+      };
+      this.off = (event, callback) => {
+        event = vanilla.kebabCase(event);
+        if (callback) {
+          this.listeners[event] = this.listeners[event]?.filter((cb) => cb !== callback) ?? [];
+        } else {
+          delete this.listeners[event];
+        }
+      };
+      this.emit = (event, ...args) => {
+        this.listeners[vanilla.kebabCase(event)]?.forEach((callback) => callback(...args));
+      };
+      this.registerEventListenersFromAttrs = ($attrs) => {
+        const unsubscribers = [];
+        Object.keys($attrs).filter((key) => key.startsWith("on")).forEach((key) => {
+          const eventName = vanilla.kebabCase(key).replace(/^on-/, "");
+          const callback = $attrs[key];
+          this.on(eventName, callback);
+          unsubscribers.push(() => this.off(eventName, callback));
+        });
+        return () => unsubscribers.forEach((unsub) => unsub());
+      };
+      this.reload = (options = {}) => {
+        let keys = Object.keys(this.response.props);
+        if (options.only) {
+          keys = options.only;
+        }
+        if (options.except) {
+          keys = vanilla.except(keys, options.except);
+        }
+        if (!this.response?.url) {
+          return;
+        }
+        const method = (options.method ?? "get").toLowerCase();
+        const data = options.data ?? {};
+        options.onStart?.();
+        Axios({
+          url: this.response.url,
+          method,
+          data: method === "get" ? {} : data,
+          params: method === "get" ? data : {},
+          headers: {
+            ...options.headers ?? {},
+            Accept: "text/html, application/xhtml+xml",
+            "X-Inertia": true,
+            "X-Inertia-Partial-Component": this.response.component,
+            "X-Inertia-Version": this.response.version ?? "",
+            "X-Inertia-Partial-Data": keys.join(","),
+            "X-InertiaUI-Modal": generateId(),
+            "X-InertiaUI-Modal-Base-Url": baseUrl.value
+          }
+        }).then((response2) => {
+          this.updateProps(response2.data.props);
+          options.onSuccess?.(response2);
+        }).catch((error) => {
+          options.onError?.(error);
+        }).finally(() => {
+          options.onFinish?.();
+        });
+      };
+      this.updateProps = (props) => {
+        Object.assign(this.props.value, props);
+      };
+      this.id = response.id ?? generateId();
+      this.isOpen = false;
+      this.shouldRender = false;
+      this.listeners = {};
+      this.component = component;
+      this.props = vue.ref(response.props ?? {});
+      this.response = response;
+      this.config = config ?? {};
+      this.onCloseCallback = onClose ?? null;
+      this.afterLeaveCallback = afterLeave ?? null;
+      this.index = vue.computed(() => stack.value.findIndex((m) => m.id === this.id));
+      this.onTopOfStack = vue.computed(() => {
+        if (stack.value.length < 2) {
+          return true;
+        }
+        const modals = stack.value.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }));
+        return modals.reverse().find((modal) => modal.shouldRender)?.id === this.id;
+      });
+    }
+  }
+  function registerLocalModal(name, callback) {
+    localModals.value[name] = { name, callback };
+  }
+  function pushLocalModal(name, config, onClose, afterLeave, props) {
+    if (!localModals.value[name]) {
+      throw new Error(`The local modal "${name}" has not been registered.`);
+    }
+    const responseData = { props: props ?? {} };
+    const modal = push(null, responseData, config, onClose, afterLeave);
+    modal.name = name;
+    localModals.value[name].callback(modal);
+    return modal;
+  }
+  function isValidModalResponse(data) {
+    return typeof data === "object" && data !== null && "component" in data && typeof data.component === "string";
+  }
+  function updateBrowserUrl(url, useBrowserHistory, modalData) {
+    if (!url || !useBrowserHistory || typeof window === "undefined") {
+      return;
+    }
+    vue3.router.push({
+      url,
+      preserveScroll: true,
+      preserveState: true,
+      // Store modal data in page props for history navigation
+      // This allows forward/back to restore the modal
+      props: modalData ? (currentProps) => ({
+        ...currentProps,
+        _inertiaui_modal: {
+          ...modalData,
+          baseUrl: baseUrl.value
+        }
+      }) : void 0
+    });
+  }
+  function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null) {
+    if (!resolveComponent) {
+      return Promise.reject(new Error("Component resolver not set"));
+    }
+    if (!isValidModalResponse(responseData)) {
+      return Promise.reject(
+        new Error(
+          "Invalid modal response. This usually happens when the server returns a redirect (e.g., due to session expiration). Check if the user is still authenticated."
+        )
+      );
+    }
+    return resolveComponent(responseData.component).then(
+      (component) => push(vue.markRaw(component), responseData, config, onClose, onAfterLeave)
+    );
+  }
+  function visit(href, method, payload = {}, headers = {}, config = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = "brackets", useBrowserHistory = false, onStart = null, onSuccess = null, onError = null, props = null) {
+    const modalId = generateId();
+    return new Promise((resolve, reject) => {
+      if (href.startsWith("#")) {
+        resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave, props));
+        return;
+      }
+      const [url, data] = core.mergeDataIntoQueryString(method, href || "", payload, queryStringArrayFormat);
+      const cachedResponse = getCachedResponse(url, method, data);
+      if (cachedResponse) {
+        onSuccess?.(cachedResponse);
+        pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data);
+          resolve(modal);
+        }).catch(reject);
+        return;
+      }
+      if (stack.value.length === 0) {
+        baseUrl.value = typeof window !== "undefined" ? window.location.href : "";
+      }
+      const requestHeaders = {
+        ...headers,
+        Accept: "text/html, application/xhtml+xml",
+        "X-Requested-With": "XMLHttpRequest",
+        "X-Inertia": true,
+        "X-Inertia-Version": vue3.usePage().version ?? "",
+        "X-InertiaUI-Modal": modalId,
+        "X-InertiaUI-Modal-Base-Url": baseUrl.value
+      };
+      onStart?.();
+      vue3.progress?.start();
+      Axios({ url, method, data, headers: requestHeaders }).then((response) => {
+        onSuccess?.(response);
+        pushFromResponseData(response.data, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(response.data.url, useBrowserHistory, response.data);
+          resolve(modal);
+        }).catch(reject);
+      }).catch((...args) => {
+        onError?.(...args);
+        reject(args[0]);
+      }).finally(() => {
+        vue3.progress?.finish();
+      });
+    });
+  }
+  function loadDeferredProps(modal) {
+    const deferred = modal.response?.meta?.deferredProps;
+    if (!deferred) {
+      return;
+    }
+    Object.keys(deferred).forEach((key) => {
+      modal.reload({ only: deferred[key] });
+    });
+  }
+  function push(component, response, config, onClose, afterLeave) {
+    const newModal = new Modal(component, response, config, onClose, afterLeave);
+    stack.value.push(newModal);
+    loadDeferredProps(newModal);
+    vue.nextTick(() => newModal.show());
+    return newModal;
+  }
+  const modalPropNames = ["closeButton", "closeExplicitly", "closeOnClickOutside", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"];
+  const renderApp = (App, props) => {
+    if (props.resolveComponent) {
+      resolveComponent = props.resolveComponent;
+    }
+    return () => vue.h(_sfc_main$8, () => vue.h(App, props));
+  };
+  function useModalStack() {
+    return {
+      setComponentResolver,
+      getBaseUrl: () => baseUrl.value,
+      setBaseUrl: (url) => baseUrl.value = url,
+      isClosingToBaseUrl: (pageUrl) => {
+        if (!closingToBaseUrlTarget) return false;
+        const targetPath = new URL(closingToBaseUrlTarget, "http://x").pathname;
+        const pagePath = new URL(pageUrl, "http://x").pathname;
+        return targetPath === pagePath;
+      },
+      clearClosingToBaseUrl: () => closingToBaseUrlTarget = null,
+      stack: vue.readonly(stack),
+      push,
+      pushFromResponseData,
+      closeAll: (force = false) => {
+        if (force) {
+          stack.value = [];
+        } else {
+          [...stack.value].reverse().forEach((modal) => modal.close());
+        }
+      },
+      reset: () => stack.value = [],
+      visit,
+      registerLocalModal,
+      removeLocalModal: (name) => delete localModals.value[name]
+    };
+  }
+  function useModal() {
+    return vue.toValue(vue.inject("modalContext", null));
+  }
+  const _sfc_main$7 = {
+    __name: "Deferred",
+    props: {
+      data: {
+        type: [String, Array],
+        required: true
+      }
+    },
+    setup(__props) {
+      const props = __props;
+      const modalContext = vue.inject("modalContext");
+      if (!modalContext) {
+        throw new Error("Deferred component must be used inside a Modal component");
+      }
+      const allKeysAreAvailable = vue.computed(() => {
+        const keys = Array.isArray(props.data) ? props.data : [props.data];
+        return keys.every((key) => modalContext.value.props[key] !== void 0);
+      });
+      return (_ctx, _cache) => {
+        return allKeysAreAvailable.value ? vue.renderSlot(_ctx.$slots, "default", { key: 0 }) : vue.renderSlot(_ctx.$slots, "fallback", { key: 1 });
+      };
+    }
+  };
+  const _sfc_main$6 = /* @__PURE__ */ Object.assign({
+    inheritAttrs: false
+  }, {
+    __name: "HeadlessModal",
+    props: {
+      name: {
+        type: String,
+        required: false
+      },
+      // The slideover prop is on top because we need to know if it's a slideover
+      // before we can determine the default value of other props
+      slideover: {
+        type: Boolean,
+        default: null
+      },
+      closeButton: {
+        type: Boolean,
+        default: null
+      },
+      closeExplicitly: {
+        type: Boolean,
+        default: null
+      },
+      closeOnClickOutside: {
+        type: Boolean,
+        default: null
+      },
+      maxWidth: {
+        type: String,
+        default: null
+      },
+      paddingClasses: {
+        type: [Boolean, String],
+        default: null
+      },
+      panelClasses: {
+        type: [Boolean, String],
+        default: null
+      },
+      position: {
+        type: String,
+        default: null
+      }
+    },
+    emits: ["modal-event", "focus", "blur", "close", "success"],
+    setup(__props, { expose: __expose, emit: __emit }) {
+      const props = __props;
+      const modalStack = useModalStack();
+      const modalContext = props.name ? vue.ref({}) : vue.inject("modalContext");
+      const config = vue.computed(() => {
+        const isSlideover = modalContext.value.config?.slideover ?? props.slideover ?? getConfig("type") === "slideover";
+        return {
+          slideover: isSlideover,
+          closeButton: props.closeButton ?? getConfigByType(isSlideover, "closeButton"),
+          closeExplicitly: props.closeExplicitly ?? getConfigByType(isSlideover, "closeExplicitly"),
+          closeOnClickOutside: props.closeOnClickOutside ?? getConfigByType(isSlideover, "closeOnClickOutside"),
+          maxWidth: props.maxWidth ?? getConfigByType(isSlideover, "maxWidth"),
+          paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, "paddingClasses"),
+          panelClasses: props.panelClasses ?? getConfigByType(isSlideover, "panelClasses"),
+          position: props.position ?? getConfigByType(isSlideover, "position"),
+          ...modalContext.value.config
+        };
+      });
+      if (props.name) {
+        modalStack.registerLocalModal(props.name, function(context) {
+          modalContext.value = context;
+          registerEventListeners();
+        });
+        vue.onBeforeUnmount(() => {
+          modalStack.removeLocalModal(props.name);
+        });
+      }
+      vue.onMounted(() => {
+        if (!props.name) {
+          registerEventListeners();
+        }
+      });
+      const unsubscribeEventListeners = vue.ref(null);
+      vue.onBeforeUnmount(() => unsubscribeEventListeners.value?.());
+      const $attrs = vue.useAttrs();
+      function registerEventListeners() {
+        unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs);
+      }
+      const emits = __emit;
+      function emit(event, ...args) {
+        emits("modal-event", event, ...args);
+      }
+      __expose({
+        emit,
+        afterLeave: () => modalContext.value?.afterLeave(),
+        close: () => modalContext.value?.close(),
+        reload: (...args) => modalContext.value?.reload(...args),
+        setOpen: (...args) => modalContext.value?.setOpen(...args),
+        getChildModal: () => modalContext.value?.getChildModal(),
+        getParentModal: () => modalContext.value?.getParentModal(),
+        get config() {
+          return modalContext.value?.config;
+        },
+        get id() {
+          return modalContext.value?.id;
+        },
+        get index() {
+          return modalContext.value?.index;
+        },
+        get isOpen() {
+          return modalContext.value?.isOpen;
+        },
+        get modalContext() {
+          return modalContext.value?.modalContext;
+        },
+        get onTopOfStack() {
+          return modalContext.value?.onTopOfStack;
+        },
+        get shouldRender() {
+          return modalContext.value?.shouldRender;
+        }
+      });
+      vue.watch(
+        () => modalContext.value?.onTopOfStack,
+        (onTopOfStack, previousOnTopOfStack) => {
+          if (onTopOfStack && !previousOnTopOfStack) {
+            emits("focus");
+          } else if (!onTopOfStack && previousOnTopOfStack) {
+            emits("blur");
+          }
+        }
+      );
+      vue.watch(
+        () => modalContext.value?.isOpen,
+        (isOpen, previousIsOpen) => {
+          if (isOpen) {
+            emits("success");
+          } else if (previousIsOpen === true) {
+            emits("close");
+          }
+        },
+        { immediate: true }
+      );
+      const nextIndex = vue.computed(() => {
+        return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index;
+      });
+      const modalProps = vue.computed(() => {
+        const ctx = modalContext.value;
+        if (!ctx) return {};
+        return vue.unref(ctx.props) ?? {};
+      });
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
+          vue.unref(modalContext).shouldRender ? vue.renderSlot(_ctx.$slots, "default", vue.mergeProps({ key: 0 }, modalProps.value, {
+            id: vue.unref(modalContext).id,
+            afterLeave: vue.unref(modalContext).afterLeave,
+            close: vue.unref(modalContext).close,
+            config: config.value,
+            emit,
+            getChildModal: vue.unref(modalContext).getChildModal,
+            getParentModal: vue.unref(modalContext).getParentModal,
+            index: vue.unref(modalContext).index,
+            isOpen: vue.unref(modalContext).isOpen,
+            modalContext: vue.unref(modalContext),
+            onTopOfStack: vue.unref(modalContext).onTopOfStack,
+            reload: vue.unref(modalContext).reload,
+            setOpen: vue.unref(modalContext).setOpen,
+            shouldRender: vue.unref(modalContext).shouldRender
+          })) : vue.createCommentVNode("", true),
+          nextIndex.value ? (vue.openBlock(), vue.createBlock(_sfc_main$9, {
+            key: 1,
+            index: nextIndex.value
+          }, null, 8, ["index"])) : vue.createCommentVNode("", true)
+        ], 64);
+      };
+    }
+  });
+  const _sfc_main$5 = {
+    __name: "CloseButton",
+    setup(__props) {
+      const modal = useModal();
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createElementBlock("button", {
+          type: "button",
+          class: "im-close-button text-gray-400 hover:text-gray-500",
+          onClick: _cache[0] || (_cache[0] = ($event) => vue.unref(modal).close())
+        }, [..._cache[1] || (_cache[1] = [
+          vue.createElementVNode("span", { class: "sr-only" }, "Close", -1),
+          vue.createElementVNode("svg", {
+            class: "size-6",
+            xmlns: "http://www.w3.org/2000/svg",
+            fill: "none",
+            viewBox: "0 0 24 24",
+            "stroke-width": "2",
+            stroke: "currentColor",
+            "aria-hidden": "true"
+          }, [
+            vue.createElementVNode("path", {
+              "stroke-linecap": "round",
+              "stroke-linejoin": "round",
+              d: "M6 18L18 6M6 6l12 12"
+            })
+          ], -1)
+        ])]);
+      };
+    }
+  };
+  const dialog = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    createDialog: vanilla.createDialog,
+    createFocusTrap: vanilla.createFocusTrap,
+    focusFirstElement: vanilla.focusFirstElement,
+    getFocusableElements: vanilla.getFocusableElements,
+    getScrollLockCount: vanilla.getScrollLockCount,
+    lockScroll: vanilla.lockScroll,
+    markAriaHidden: vanilla.markAriaHidden,
+    onClickOutside: vanilla.onClickOutside,
+    onEscapeKey: vanilla.onEscapeKey,
+    onTransitionEnd: vanilla.onTransitionEnd,
+    unlockScroll: vanilla.unlockScroll,
+    unmarkAriaHidden: vanilla.unmarkAriaHidden
+  }, Symbol.toStringTag, { value: "Module" }));
+  const maxWidthClasses = {
+    sm: "sm:max-w-sm",
+    md: "sm:max-w-md",
+    lg: "sm:max-w-md md:max-w-lg",
+    xl: "sm:max-w-md md:max-w-xl",
+    "2xl": "sm:max-w-md md:max-w-xl lg:max-w-2xl",
+    "3xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl",
+    "4xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl",
+    "5xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl",
+    "6xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl",
+    "7xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl"
+  };
+  const defaultMaxWidth = "2xl";
+  function getMaxWidthClass(maxWidth) {
+    return maxWidthClasses[maxWidth] || maxWidthClasses[defaultMaxWidth];
+  }
+  const _hoisted_1$2 = { class: "im-modal-container fixed inset-0 overflow-y-auto p-4" };
+  const _hoisted_2$2 = ["data-inertiaui-modal-entered"];
+  const _hoisted_3$1 = {
+    key: 0,
+    class: "absolute right-0 top-0 pr-3 pt-3"
+  };
+  const _hoisted_4$1 = ["data-inertiaui-modal-entered"];
+  const _hoisted_5$1 = {
+    key: 0,
+    class: "absolute right-0 top-0 pr-3 pt-3"
+  };
+  const _sfc_main$4 = {
+    __name: "ModalContent",
+    props: {
+      modalContext: Object,
+      config: Object,
+      useNativeDialog: Boolean,
+      isFirstModal: Boolean
+    },
+    emits: ["after-leave"],
+    setup(__props, { emit: __emit }) {
+      const props = __props;
+      const emit = __emit;
+      const entered = vue.ref(false);
+      const isLeaving = vue.ref(false);
+      const wrapperRef = vue.ref(null);
+      const dialogRef = vue.ref(null);
+      const nativeWrapperRef = vue.ref(null);
+      let cleanupFocusTrap = null;
+      let cleanupEscapeKey = null;
+      const maxWidthClass = vue.computed(() => getMaxWidthClass(props.config.maxWidth));
+      function setupFocusTrap() {
+        if (props.useNativeDialog) return;
+        if (!wrapperRef.value || !props.modalContext.onTopOfStack) return;
+        if (cleanupFocusTrap) return;
+        cleanupFocusTrap = vanilla.createFocusTrap(wrapperRef.value, {
+          initialFocus: true,
+          returnFocus: false
+        });
+      }
+      function cleanupFocusTrap_() {
+        if (cleanupFocusTrap) {
+          cleanupFocusTrap();
+          cleanupFocusTrap = null;
+        }
+      }
+      function setupEscapeKey() {
+        if (props.useNativeDialog) return;
+        if (cleanupEscapeKey) return;
+        if (props.config?.closeExplicitly) return;
+        cleanupEscapeKey = vanilla.onEscapeKey(() => {
+          if (props.modalContext.onTopOfStack) {
+            props.modalContext.close();
+          }
+        });
+      }
+      function cleanupEscapeKey_() {
+        if (cleanupEscapeKey) {
+          cleanupEscapeKey();
+          cleanupEscapeKey = null;
+        }
+      }
+      function handleClickOutside(event) {
+        if (props.useNativeDialog) return;
+        if (!props.modalContext.onTopOfStack) return;
+        if (props.config?.closeExplicitly) return;
+        if (props.config?.closeOnClickOutside === false) return;
+        if (!wrapperRef.value) return;
+        if (!wrapperRef.value.contains(event.target)) {
+          props.modalContext.close();
+        }
+      }
+      function onAfterEnter() {
+        entered.value = true;
+        setupFocusTrap();
+      }
+      function onAfterLeave() {
+        emit("after-leave");
+        props.modalContext.afterLeave();
+      }
+      function handleCancel(event) {
+        event.preventDefault();
+        if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly) {
+          props.modalContext.close();
+        }
+      }
+      function handleDialogClick(event) {
+        if (event.target === dialogRef.value) {
+          if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly && props.config?.closeOnClickOutside !== false) {
+            props.modalContext.close();
+          }
+        }
+      }
+      function openDialog() {
+        if (dialogRef.value && !dialogRef.value.open) {
+          dialogRef.value.showModal();
+          vue.nextTick(() => {
+            requestAnimationFrame(() => {
+              entered.value = true;
+            });
+          });
+        }
+      }
+      function closeDialog() {
+        if (dialogRef.value && dialogRef.value.open) {
+          isLeaving.value = true;
+          entered.value = false;
+          const wrapper = nativeWrapperRef.value;
+          if (wrapper) {
+            vanilla.onTransitionEnd(wrapper, finishClose);
+          } else {
+            finishClose();
+          }
+        }
+      }
+      function finishClose() {
+        if (dialogRef.value) {
+          dialogRef.value.close();
+        }
+        isLeaving.value = false;
+        emit("after-leave");
+        props.modalContext.afterLeave();
+      }
+      vue.onMounted(() => {
+        if (props.useNativeDialog) {
+          if (props.modalContext.isOpen) {
+            openDialog();
+          }
+        } else {
+          setupEscapeKey();
+        }
+      });
+      vue.onUnmounted(() => {
+        if (props.useNativeDialog) {
+          if (dialogRef.value?.open) {
+            dialogRef.value.close();
+          }
+        } else {
+          cleanupFocusTrap_();
+          cleanupEscapeKey_();
+        }
+      });
+      vue.watch(
+        () => props.modalContext.onTopOfStack,
+        (onTop) => {
+          if (props.useNativeDialog) return;
+          if (onTop) {
+            setupEscapeKey();
+            if (entered.value) {
+              setupFocusTrap();
+            }
+          } else {
+            cleanupFocusTrap_();
+            cleanupEscapeKey_();
+          }
+        }
+      );
+      vue.watch(
+        () => props.modalContext.isOpen,
+        (isOpen) => {
+          if (!props.useNativeDialog) return;
+          if (isOpen) {
+            openDialog();
+          } else if (!isLeaving.value) {
+            closeDialog();
+          }
+        }
+      );
+      return (_ctx, _cache) => {
+        return __props.useNativeDialog ? (vue.openBlock(), vue.createElementBlock("dialog", {
+          key: 0,
+          ref_key: "dialogRef",
+          ref: dialogRef,
+          class: vue.normalizeClass([
+            "im-modal-dialog m-0 overflow-visible bg-transparent p-0",
+            "size-full max-h-none max-w-none",
+            "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
+            entered.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
+            !__props.isFirstModal && "backdrop:bg-transparent"
+          ]),
+          onCancel: handleCancel,
+          onClick: handleDialogClick
+        }, [
+          vue.createElementVNode("div", _hoisted_1$2, [
+            vue.createElementVNode("div", {
+              class: vue.normalizeClass(["im-modal-positioner flex min-h-full justify-center", {
+                "items-start": __props.config.position === "top",
+                "items-center": __props.config.position === "center",
+                "items-end": __props.config.position === "bottom"
+              }])
+            }, [
+              vue.createElementVNode("div", {
+                ref_key: "nativeWrapperRef",
+                ref: nativeWrapperRef,
+                class: vue.normalizeClass([
+                  "im-modal-wrapper w-full transition duration-300 ease-in-out",
+                  __props.modalContext.onTopOfStack ? "" : "blur-xs",
+                  entered.value && !isLeaving.value ? "translate-y-0 opacity-100 sm:scale-100" : "translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95",
+                  maxWidthClass.value
+                ])
+              }, [
+                vue.createElementVNode("div", {
+                  class: vue.normalizeClass(["im-modal-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                  "data-inertiaui-modal-entered": entered.value
+                }, [
+                  __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_3$1, [
+                    vue.createVNode(_sfc_main$5)
+                  ])) : vue.createCommentVNode("", true),
+                  vue.renderSlot(_ctx.$slots, "default", {
+                    modalContext: __props.modalContext,
+                    config: __props.config
+                  })
+                ], 10, _hoisted_2$2)
+              ], 2)
+            ], 2)
+          ])
+        ], 34)) : (vue.openBlock(), vue.createElementBlock("div", {
+          key: 1,
+          class: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",
+          onMousedown: vue.withModifiers(handleClickOutside, ["self"])
+        }, [
+          vue.createElementVNode("div", {
+            class: vue.normalizeClass(["im-modal-positioner flex min-h-full justify-center", {
+              "items-start": __props.config.position === "top",
+              "items-center": __props.config.position === "center",
+              "items-end": __props.config.position === "bottom"
+            }]),
+            onMousedown: vue.withModifiers(handleClickOutside, ["self"])
+          }, [
+            vue.createVNode(vue.Transition, {
+              appear: "",
+              "enter-active-class": "transition duration-300 ease-in-out",
+              "enter-from-class": "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
+              "enter-to-class": "opacity-100 translate-y-0 sm:scale-100",
+              "leave-active-class": "transition duration-300 ease-in-out",
+              "leave-from-class": "opacity-100 translate-y-0 sm:scale-100",
+              "leave-to-class": "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
+              onAfterEnter,
+              onAfterLeave
+            }, {
+              default: vue.withCtx(() => [
+                __props.modalContext.isOpen ? (vue.openBlock(), vue.createElementBlock("div", {
+                  key: 0,
+                  ref_key: "wrapperRef",
+                  ref: wrapperRef,
+                  role: "dialog",
+                  "aria-modal": "true",
+                  class: vue.normalizeClass(["im-modal-wrapper w-full", __props.modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass.value])
+                }, [
+                  _cache[0] || (_cache[0] = vue.createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
+                  vue.createElementVNode("div", {
+                    class: vue.normalizeClass(["im-modal-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                    "data-inertiaui-modal-entered": entered.value
+                  }, [
+                    __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_5$1, [
+                      vue.createVNode(_sfc_main$5)
+                    ])) : vue.createCommentVNode("", true),
+                    vue.renderSlot(_ctx.$slots, "default", {
+                      modalContext: __props.modalContext,
+                      config: __props.config
+                    })
+                  ], 10, _hoisted_4$1)
+                ], 2)) : vue.createCommentVNode("", true)
+              ]),
+              _: 3
+            })
+          ], 34)
+        ], 32));
+      };
+    }
+  };
+  const _hoisted_1$1 = { class: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden" };
+  const _hoisted_2$1 = ["data-inertiaui-modal-entered"];
+  const _hoisted_3 = {
+    key: 0,
+    class: "absolute right-0 top-0 pr-3 pt-3"
+  };
+  const _hoisted_4 = ["data-inertiaui-modal-entered"];
+  const _hoisted_5 = {
+    key: 0,
+    class: "absolute right-0 top-0 pr-3 pt-3"
+  };
+  const _sfc_main$3 = {
+    __name: "SlideoverContent",
+    props: {
+      modalContext: Object,
+      config: Object,
+      useNativeDialog: Boolean,
+      isFirstModal: Boolean
+    },
+    emits: ["after-leave"],
+    setup(__props, { emit: __emit }) {
+      const props = __props;
+      const emit = __emit;
+      const entered = vue.ref(false);
+      const isLeaving = vue.ref(false);
+      const wrapperRef = vue.ref(null);
+      const dialogRef = vue.ref(null);
+      const nativeWrapperRef = vue.ref(null);
+      let cleanupFocusTrap = null;
+      let cleanupEscapeKey = null;
+      const maxWidthClass = vue.computed(() => getMaxWidthClass(props.config.maxWidth));
+      const transformEnterFrom = vue.computed(() => props.config.position === "left" ? "-translate-x-full" : "translate-x-full");
+      function setupFocusTrap() {
+        if (props.useNativeDialog) return;
+        if (!wrapperRef.value || !props.modalContext.onTopOfStack) return;
+        if (cleanupFocusTrap) return;
+        cleanupFocusTrap = vanilla.createFocusTrap(wrapperRef.value, {
+          initialFocus: true,
+          returnFocus: false
+        });
+      }
+      function cleanupFocusTrap_() {
+        if (cleanupFocusTrap) {
+          cleanupFocusTrap();
+          cleanupFocusTrap = null;
+        }
+      }
+      function setupEscapeKey() {
+        if (props.useNativeDialog) return;
+        if (cleanupEscapeKey) return;
+        if (props.config?.closeExplicitly) return;
+        cleanupEscapeKey = vanilla.onEscapeKey(() => {
+          if (props.modalContext.onTopOfStack) {
+            props.modalContext.close();
+          }
+        });
+      }
+      function cleanupEscapeKey_() {
+        if (cleanupEscapeKey) {
+          cleanupEscapeKey();
+          cleanupEscapeKey = null;
+        }
+      }
+      function handleClickOutside(event) {
+        if (props.useNativeDialog) return;
+        if (!props.modalContext.onTopOfStack) return;
+        if (props.config?.closeExplicitly) return;
+        if (props.config?.closeOnClickOutside === false) return;
+        if (!wrapperRef.value) return;
+        if (!wrapperRef.value.contains(event.target)) {
+          props.modalContext.close();
+        }
+      }
+      function onAfterEnter() {
+        entered.value = true;
+        setupFocusTrap();
+      }
+      function onAfterLeave() {
+        emit("after-leave");
+        props.modalContext.afterLeave();
+      }
+      function handleCancel(event) {
+        event.preventDefault();
+        if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly) {
+          props.modalContext.close();
+        }
+      }
+      function handleDialogClick(event) {
+        if (event.target === dialogRef.value) {
+          if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly && props.config?.closeOnClickOutside !== false) {
+            props.modalContext.close();
+          }
+        }
+      }
+      function openDialog() {
+        if (dialogRef.value && !dialogRef.value.open) {
+          dialogRef.value.showModal();
+          vue.nextTick(() => {
+            requestAnimationFrame(() => {
+              entered.value = true;
+            });
+          });
+        }
+      }
+      function closeDialog() {
+        if (dialogRef.value && dialogRef.value.open) {
+          isLeaving.value = true;
+          entered.value = false;
+          const wrapper = nativeWrapperRef.value;
+          if (wrapper) {
+            vanilla.onTransitionEnd(wrapper, finishClose);
+          } else {
+            finishClose();
+          }
+        }
+      }
+      function finishClose() {
+        if (dialogRef.value) {
+          dialogRef.value.close();
+        }
+        isLeaving.value = false;
+        emit("after-leave");
+        props.modalContext.afterLeave();
+      }
+      vue.onMounted(() => {
+        if (props.useNativeDialog) {
+          if (props.modalContext.isOpen) {
+            openDialog();
+          }
+        } else {
+          setupEscapeKey();
+        }
+      });
+      vue.onUnmounted(() => {
+        if (props.useNativeDialog) {
+          if (dialogRef.value?.open) {
+            dialogRef.value.close();
+          }
+        } else {
+          cleanupFocusTrap_();
+          cleanupEscapeKey_();
+        }
+      });
+      vue.watch(
+        () => props.modalContext.onTopOfStack,
+        (onTop) => {
+          if (props.useNativeDialog) return;
+          if (onTop) {
+            setupEscapeKey();
+            if (entered.value) {
+              setupFocusTrap();
+            }
+          } else {
+            cleanupFocusTrap_();
+            cleanupEscapeKey_();
+          }
+        }
+      );
+      vue.watch(
+        () => props.modalContext.isOpen,
+        (isOpen) => {
+          if (!props.useNativeDialog) return;
+          if (isOpen) {
+            openDialog();
+          } else if (!isLeaving.value) {
+            closeDialog();
+          }
+        }
+      );
+      return (_ctx, _cache) => {
+        return __props.useNativeDialog ? (vue.openBlock(), vue.createElementBlock("dialog", {
+          key: 0,
+          ref_key: "dialogRef",
+          ref: dialogRef,
+          class: vue.normalizeClass([
+            "im-slideover-dialog m-0 overflow-visible bg-transparent p-0",
+            "size-full max-h-none max-w-none",
+            "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
+            entered.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
+            !__props.isFirstModal && "backdrop:bg-transparent"
+          ]),
+          onCancel: handleCancel,
+          onClick: handleDialogClick
+        }, [
+          vue.createElementVNode("div", _hoisted_1$1, [
+            vue.createElementVNode("div", {
+              class: vue.normalizeClass(["im-slideover-positioner flex min-h-full items-center", {
+                "justify-start rtl:justify-end": __props.config.position === "left",
+                "justify-end rtl:justify-start": __props.config.position === "right"
+              }])
+            }, [
+              vue.createElementVNode("div", {
+                ref_key: "nativeWrapperRef",
+                ref: nativeWrapperRef,
+                class: vue.normalizeClass([
+                  "im-slideover-wrapper w-full transition duration-300 ease-in-out",
+                  __props.modalContext.onTopOfStack ? "" : "blur-xs",
+                  entered.value && !isLeaving.value ? "translate-x-0 opacity-100" : __props.config.position === "left" ? "-translate-x-full opacity-0" : "translate-x-full opacity-0",
+                  maxWidthClass.value
+                ])
+              }, [
+                vue.createElementVNode("div", {
+                  class: vue.normalizeClass(["im-slideover-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                  "data-inertiaui-modal-entered": entered.value
+                }, [
+                  __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_3, [
+                    vue.createVNode(_sfc_main$5)
+                  ])) : vue.createCommentVNode("", true),
+                  vue.renderSlot(_ctx.$slots, "default", {
+                    modalContext: __props.modalContext,
+                    config: __props.config
+                  })
+                ], 10, _hoisted_2$1)
+              ], 2)
+            ], 2)
+          ])
+        ], 34)) : (vue.openBlock(), vue.createElementBlock("div", {
+          key: 1,
+          class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
+          onMousedown: vue.withModifiers(handleClickOutside, ["self"])
+        }, [
+          vue.createElementVNode("div", {
+            class: vue.normalizeClass(["im-slideover-positioner flex min-h-full items-center", {
+              "justify-start rtl:justify-end": __props.config.position === "left",
+              "justify-end rtl:justify-start": __props.config.position === "right"
+            }]),
+            onMousedown: vue.withModifiers(handleClickOutside, ["self"])
+          }, [
+            vue.createVNode(vue.Transition, {
+              appear: "",
+              "enter-active-class": "transition duration-300 ease-in-out",
+              "enter-from-class": "opacity-0 " + transformEnterFrom.value,
+              "enter-to-class": "opacity-100 translate-x-0",
+              "leave-active-class": "transition duration-300 ease-in-out",
+              "leave-from-class": "opacity-100 translate-x-0",
+              "leave-to-class": "opacity-0 " + transformEnterFrom.value,
+              onAfterEnter,
+              onAfterLeave
+            }, {
+              default: vue.withCtx(() => [
+                __props.modalContext.isOpen ? (vue.openBlock(), vue.createElementBlock("div", {
+                  key: 0,
+                  ref_key: "wrapperRef",
+                  ref: wrapperRef,
+                  role: "dialog",
+                  "aria-modal": "true",
+                  class: vue.normalizeClass(["im-slideover-wrapper w-full", __props.modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass.value])
+                }, [
+                  _cache[0] || (_cache[0] = vue.createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
+                  vue.createElementVNode("div", {
+                    class: vue.normalizeClass(["im-slideover-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                    "data-inertiaui-modal-entered": entered.value
+                  }, [
+                    __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_5, [
+                      vue.createVNode(_sfc_main$5)
+                    ])) : vue.createCommentVNode("", true),
+                    vue.renderSlot(_ctx.$slots, "default", {
+                      modalContext: __props.modalContext,
+                      config: __props.config
+                    })
+                  ], 10, _hoisted_4)
+                ], 2)) : vue.createCommentVNode("", true)
+              ]),
+              _: 3
+            }, 8, ["enter-from-class", "leave-to-class"])
+          ], 34)
+        ], 32));
+      };
+    }
+  };
+  const _hoisted_1 = ["data-inertiaui-modal-id", "data-inertiaui-modal-index", "aria-hidden"];
+  const _hoisted_2 = {
+    key: 0,
+    class: "im-backdrop fixed inset-0 z-30 bg-black/75"
+  };
+  const _sfc_main$2 = {
+    __name: "Modal",
+    emits: ["after-leave", "blur", "close", "focus", "success"],
+    setup(__props, { expose: __expose, emit: __emit }) {
+      const modal = vue.ref(null);
+      const rendered = vue.ref(false);
+      const emits = __emit;
+      __expose({
+        afterLeave: () => modal.value?.afterLeave(),
+        close: () => modal.value?.close(),
+        emit: (...args) => modal.value?.emit(...args),
+        getChildModal: () => modal.value?.getChildModal(),
+        getParentModal: () => modal.value?.getParentModal(),
+        reload: (...args) => modal.value?.reload(...args),
+        setOpen: (...args) => modal.value?.setOpen(...args),
+        get config() {
+          return modal.value?.config;
+        },
+        get id() {
+          return modal.value?.id;
+        },
+        get index() {
+          return modal.value?.index;
+        },
+        get isOpen() {
+          return modal.value?.isOpen;
+        },
+        get modalContext() {
+          return modal.value?.modalContext;
+        },
+        get onTopOfStack() {
+          return modal.value?.onTopOfStack;
+        },
+        get shouldRender() {
+          return modal.value?.shouldRender;
+        }
+      });
+      let cleanupScrollLock = null;
+      let cleanupAriaHidden = null;
+      vue.onMounted(() => {
+        if (modal.value?.isOpen && !cleanupScrollLock) {
+          cleanupScrollLock = vanilla.lockScroll();
+          cleanupAriaHidden = vanilla.markAriaHidden(getConfig("appElement"));
+        }
+      });
+      vue.onUnmounted(() => {
+        cleanupScrollLock?.();
+        cleanupAriaHidden?.();
+      });
+      function onSuccessEvent() {
+        emits("success");
+        if (!cleanupScrollLock) {
+          cleanupScrollLock = vanilla.lockScroll();
+          cleanupAriaHidden = vanilla.markAriaHidden(getConfig("appElement"));
+        }
+      }
+      function onCloseEvent() {
+        emits("close");
+        cleanupScrollLock?.();
+        cleanupAriaHidden?.();
+        cleanupScrollLock = null;
+        cleanupAriaHidden = null;
+      }
+      const useNativeDialog = vue.computed(() => getConfig("useNativeDialog"));
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createBlock(_sfc_main$6, {
+          ref_key: "modal",
+          ref: modal,
+          onSuccess: onSuccessEvent,
+          onClose: onCloseEvent,
+          onFocus: _cache[2] || (_cache[2] = ($event) => emits("focus")),
+          onBlur: _cache[3] || (_cache[3] = ($event) => emits("blur"))
+        }, {
+          default: vue.withCtx(({
+            afterLeave,
+            close,
+            config,
+            emit,
+            getChildModal,
+            getParentModal,
+            id,
+            index,
+            isOpen,
+            modalContext,
+            onTopOfStack,
+            reload,
+            setOpen,
+            shouldRender,
+            ...props
+          }) => [
+            (vue.openBlock(), vue.createBlock(vue.Teleport, { to: "body" }, [
+              vue.createElementVNode("div", {
+                "data-inertiaui-modal-id": id,
+                "data-inertiaui-modal-index": index,
+                class: "im-dialog relative z-20",
+                "aria-hidden": !onTopOfStack
+              }, [
+                index === 0 && !useNativeDialog.value ? (vue.openBlock(), vue.createBlock(vue.Transition, {
+                  key: 0,
+                  appear: !rendered.value,
+                  "enter-active-class": "transition transform ease-in-out duration-300",
+                  "enter-from-class": "opacity-0",
+                  "enter-to-class": "opacity-100",
+                  "leave-active-class": "transition transform ease-in-out duration-300",
+                  "leave-from-class": "opacity-100",
+                  "leave-to-class": "opacity-0",
+                  onAfterAppear: _cache[0] || (_cache[0] = ($event) => rendered.value = true)
+                }, {
+                  default: vue.withCtx(() => [
+                    isOpen ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_2)) : vue.createCommentVNode("", true)
+                  ]),
+                  _: 2
+                }, 1032, ["appear"])) : vue.createCommentVNode("", true),
+                (vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(config?.slideover ? _sfc_main$3 : _sfc_main$4), {
+                  "modal-context": modalContext,
+                  config,
+                  "use-native-dialog": useNativeDialog.value,
+                  "is-first-modal": index === 0,
+                  onAfterLeave: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("after-leave"))
+                }, {
+                  default: vue.withCtx(() => [
+                    vue.renderSlot(_ctx.$slots, "default", vue.mergeProps(props, {
+                      id,
+                      afterLeave,
+                      close,
+                      config,
+                      emit,
+                      getChildModal,
+                      getParentModal,
+                      index,
+                      isOpen,
+                      modalContext,
+                      onTopOfStack,
+                      reload,
+                      setOpen,
+                      shouldRender
+                    }))
+                  ]),
+                  _: 2
+                }, 1064, ["modal-context", "config", "use-native-dialog", "is-first-modal"]))
+              ], 8, _hoisted_1)
+            ]))
+          ]),
+          _: 3
+        }, 512);
+      };
+    }
+  };
+  const _sfc_main$1 = {
+    __name: "ModalLink",
+    props: {
+      href: {
+        type: String,
+        required: true
+      },
+      method: {
+        type: String,
+        default: "get"
+      },
+      data: {
+        type: Object,
+        default: () => ({})
+      },
+      as: {
+        type: [String, Object],
+        default: "a"
+      },
+      headers: {
+        type: Object,
+        default: () => ({})
+      },
+      queryStringArrayFormat: {
+        type: String,
+        default: "brackets"
+      },
+      navigate: {
+        type: Boolean,
+        default: null
+      },
+      // Prefetch options (#146)
+      prefetch: {
+        type: [Boolean, String, Array],
+        default: false
+      },
+      cacheFor: {
+        type: Number,
+        default: 3e4
+      },
+      // Passthrough to Modal.vue
+      closeButton: {
+        type: Boolean,
+        required: false,
+        default: null
+      },
+      closeExplicitly: {
+        type: Boolean,
+        required: false,
+        default: null
+      },
+      closeOnClickOutside: {
+        type: Boolean,
+        required: false,
+        default: null
+      },
+      maxWidth: {
+        type: String,
+        required: false,
+        default: null
+      },
+      paddingClasses: {
+        type: [Boolean, String],
+        required: false,
+        default: null
+      },
+      panelClasses: {
+        type: [Boolean, String],
+        required: false,
+        default: null
+      },
+      position: {
+        type: String,
+        required: false,
+        default: null
+      },
+      slideover: {
+        type: Boolean,
+        required: false,
+        default: null
+      }
+    },
+    emits: ["after-leave", "blur", "close", "error", "focus", "start", "success", "prefetching", "prefetched"],
+    setup(__props, { emit: __emit }) {
+      const props = __props;
+      const loading = vue.ref(false);
+      const modalStack = useModalStack();
+      const modalContext = vue.ref(null);
+      vue.provide("modalContext", modalContext);
+      const emit = __emit;
+      const isBlurred = vue.ref(false);
+      const shouldNavigate = vue.computed(() => {
+        return props.navigate ?? getConfig("navigate");
+      });
+      const hoverTimeout = vue.ref(null);
+      const prefetchModes = vue.computed(() => {
+        if (props.prefetch === true) {
+          return ["hover"];
+        }
+        if (props.prefetch === false) {
+          return [];
+        }
+        if (Array.isArray(props.prefetch)) {
+          return props.prefetch;
+        }
+        return [props.prefetch];
+      });
+      function doPrefetch() {
+        prefetch(props.href, {
+          method: props.method,
+          data: props.data,
+          headers: props.headers,
+          queryStringArrayFormat: props.queryStringArrayFormat,
+          cacheFor: props.cacheFor,
+          onPrefetching: () => emit("prefetching"),
+          onPrefetched: () => emit("prefetched")
+        });
+      }
+      function onMouseenter() {
+        if (!prefetchModes.value.includes("hover")) return;
+        hoverTimeout.value = setTimeout(() => {
+          doPrefetch();
+        }, 75);
+      }
+      function onMouseleave() {
+        if (hoverTimeout.value) {
+          clearTimeout(hoverTimeout.value);
+          hoverTimeout.value = null;
+        }
+      }
+      function onMousedown(event) {
+        if (!prefetchModes.value.includes("click")) return;
+        if (event.button !== 0) return;
+        doPrefetch();
+      }
+      vue.onMounted(() => {
+        if (prefetchModes.value.includes("mount")) {
+          doPrefetch();
+        }
+      });
+      vue.watch(
+        () => modalContext.value?.onTopOfStack,
+        (onTopOfStack) => {
+          if (modalContext.value) {
+            if (onTopOfStack && isBlurred.value) {
+              emit("focus");
+            } else if (!onTopOfStack) {
+              emit("blur");
+            }
+            isBlurred.value = !onTopOfStack;
+          }
+        }
+      );
+      const unsubscribeEventListeners = vue.ref(null);
+      vue.onBeforeUnmount(() => {
+        unsubscribeEventListeners.value?.();
+        if (hoverTimeout.value) {
+          clearTimeout(hoverTimeout.value);
+        }
+      });
+      const $attrs = vue.useAttrs();
+      function registerEventListeners() {
+        unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs);
+      }
+      vue.watch(modalContext, (value, oldValue) => {
+        if (value && !oldValue) {
+          registerEventListeners();
+          emit("success");
+        }
+      });
+      function onClose() {
+        emit("close");
+      }
+      function onAfterLeave() {
+        modalContext.value = null;
+        emit("after-leave");
+      }
+      function handle() {
+        if (loading.value) {
+          return;
+        }
+        if (!props.href.startsWith("#")) {
+          loading.value = true;
+          emit("start");
+        }
+        modalStack.visit(
+          props.href,
+          props.method,
+          props.data,
+          props.headers,
+          vanilla.rejectNullValues(vanilla.only(props, modalPropNames)),
+          onClose,
+          onAfterLeave,
+          props.queryStringArrayFormat,
+          shouldNavigate.value
+        ).then((context) => {
+          modalContext.value = context;
+        }).catch((error) => {
+          console.error(error);
+          emit("error", error);
+        }).finally(() => loading.value = false);
+      }
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(__props.as), vue.mergeProps(vue.unref($attrs), {
+          href: __props.href,
+          onClick: vue.withModifiers(handle, ["prevent"]),
+          onMouseenter,
+          onMouseleave,
+          onMousedown
+        }), {
+          default: vue.withCtx(() => [
+            vue.renderSlot(_ctx.$slots, "default", { loading: loading.value })
+          ]),
+          _: 3
+        }, 16, ["href"]);
+      };
+    }
+  };
+  const _sfc_main = {
+    __name: "WhenVisible",
+    props: {
+      data: [String, Array],
+      params: Object,
+      buffer: { type: Number, default: 0 },
+      as: { type: String, default: "div" },
+      always: { type: Boolean, default: false }
+    },
+    setup(__props) {
+      const props = __props;
+      const modalContext = vue.inject("modalContext");
+      if (!modalContext) {
+        throw new Error("Deferred component must be used inside a Modal component");
+      }
+      const loaded = vue.ref(false);
+      const fetching = vue.ref(false);
+      const rootElement = vue.ref(null);
+      let observer = null;
+      const getReloadParams = () => {
+        if (props.data) {
+          return { only: Array.isArray(props.data) ? props.data : [props.data] };
+        }
+        if (!props.params) {
+          throw new Error("You must provide either a `data` or `params` prop.");
+        }
+        return props.params;
+      };
+      const observeElement = () => {
+        if (!rootElement.value) {
+          return;
+        }
+        observer = new IntersectionObserver(
+          (entries) => {
+            if (!entries[0].isIntersecting) {
+              return;
+            }
+            if (!props.always) {
+              observer.disconnect();
+            }
+            if (fetching.value) {
+              return;
+            }
+            fetching.value = true;
+            const reloadParams = getReloadParams();
+            modalContext.value.reload({
+              ...reloadParams,
+              onStart: () => {
+                fetching.value = true;
+                reloadParams.onStart?.();
+              },
+              onFinish: () => {
+                loaded.value = true;
+                fetching.value = false;
+                reloadParams.onFinish?.();
+              }
+            });
+          },
+          { rootMargin: `${props.buffer}px` }
+        );
+        observer.observe(rootElement.value);
+      };
+      vue.onMounted(observeElement);
+      vue.onUnmounted(() => observer?.disconnect());
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(props.as), {
+          ref_key: "rootElement",
+          ref: rootElement
+        }, {
+          default: vue.withCtx(() => [
+            loaded.value ? vue.renderSlot(_ctx.$slots, "default", { key: 0 }) : vue.renderSlot(_ctx.$slots, "fallback", { key: 1 })
+          ]),
+          _: 3
+        }, 512);
+      };
+    }
+  };
+  function visitModal(url, options = {}) {
+    return useModalStack().visit(
+      url,
+      options.method ?? "get",
+      options.data ?? {},
+      options.headers ?? {},
+      options.config ?? {},
+      options.onClose,
+      options.onAfterLeave,
+      options.queryStringArrayFormat ?? "brackets",
+      options.navigate ?? getConfig("navigate"),
+      options.onStart,
+      options.onSuccess,
+      options.onError,
+      options.props ?? null
+    ).then((modal) => {
+      const listeners = options.listeners ?? {};
+      Object.keys(listeners).forEach((event) => {
+        const eventName = vanilla.kebabCase(event);
+        modal.on(eventName, listeners[event]);
+      });
+      return modal;
+    });
+  }
+  exports2.Deferred = _sfc_main$7;
+  exports2.HeadlessModal = _sfc_main$6;
+  exports2.Modal = _sfc_main$2;
+  exports2.ModalInstance = Modal;
+  exports2.ModalLink = _sfc_main$1;
+  exports2.ModalRoot = _sfc_main$8;
+  exports2.WhenVisible = _sfc_main;
+  exports2.dialogUtils = dialog;
+  exports2.getConfig = getConfig;
+  exports2.initFromPageProps = initFromPageProps;
+  exports2.modalPropNames = modalPropNames;
+  exports2.prefetch = prefetch;
+  exports2.putConfig = putConfig;
+  exports2.renderApp = renderApp;
+  exports2.resetConfig = resetConfig;
+  exports2.useModal = useModal;
+  exports2.useModalStack = useModalStack;
+  exports2.visitModal = visitModal;
+  Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
+}));
 //# sourceMappingURL=inertiaui-modal.umd.cjs.map

@@ -92,7 +92,7 @@ const Modal = forwardRef<HeadlessModalRef, ModalProps>(
             onSuccess?.()
             if (!cleanupScrollLockRef.current) {
                 cleanupScrollLockRef.current = lockScroll()
-                cleanupAriaHiddenRef.current = markAriaHidden('#app')
+                cleanupAriaHiddenRef.current = markAriaHidden(getConfig('appElement') as string)
             }
         }, [onSuccess])
 
@@ -234,6 +234,7 @@ function BackdropTransition({ show, appear, onAfterAppear }: BackdropTransitionP
         return show ? 'entered' : 'exited'
     })
     const initialRender = useRef(true)
+    const backdropRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         if (initialRender.current) {
@@ -241,7 +242,15 @@ function BackdropTransition({ show, appear, onAfterAppear }: BackdropTransitionP
             if (appear && show) {
                 requestAnimationFrame(() => {
                     setState('entered')
-                    setTimeout(() => onAfterAppear?.(), 300)
+                    const backdrop = backdropRef.current
+                    if (backdrop) {
+                        const onTransitionEnd = (e: TransitionEvent) => {
+                            if (e.target !== backdrop) return
+                            backdrop.removeEventListener('transitionend', onTransitionEnd)
+                            onAfterAppear?.()
+                        }
+                        backdrop.addEventListener('transitionend', onTransitionEnd)
+                    }
                 })
             }
             return
@@ -254,7 +263,15 @@ function BackdropTransition({ show, appear, onAfterAppear }: BackdropTransitionP
             })
         } else {
             setState('leaving')
-            setTimeout(() => setState('exited'), 300)
+            const backdrop = backdropRef.current
+            if (backdrop) {
+                const onTransitionEnd = (e: TransitionEvent) => {
+                    if (e.target !== backdrop) return
+                    backdrop.removeEventListener('transitionend', onTransitionEnd)
+                    setState('exited')
+                }
+                backdrop.addEventListener('transitionend', onTransitionEnd)
+            }
         }
     }, [show, appear, onAfterAppear])
 
@@ -264,6 +281,7 @@ function BackdropTransition({ show, appear, onAfterAppear }: BackdropTransitionP
 
     return (
         <div
+            ref={backdropRef}
             className={`im-backdrop fixed inset-0 z-30 bg-black/75 transition-opacity duration-300 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}
             aria-hidden="true"
         />

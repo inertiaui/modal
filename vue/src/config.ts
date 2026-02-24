@@ -12,6 +12,7 @@ export interface ModalConfig {
     type: 'modal' | 'slideover'
     navigate: boolean
     useNativeDialog: boolean
+    appElement: string | null
     modal: ModalTypeConfig
     slideover: ModalTypeConfig
 }
@@ -20,6 +21,7 @@ const defaultConfig: ModalConfig = {
     type: 'modal',
     navigate: false,
     useNativeDialog: true,
+    appElement: '#app',
     modal: {
         closeButton: true,
         closeExplicitly: false,
@@ -58,6 +60,7 @@ class Config {
                 type: key.type ?? defaultConfig.type,
                 navigate: key.navigate ?? defaultConfig.navigate,
                 useNativeDialog: key.useNativeDialog ?? defaultConfig.useNativeDialog,
+                appElement: key.appElement !== undefined ? key.appElement : defaultConfig.appElement,
                 modal: { ...defaultConfig.modal, ...(key.modal ?? {}) },
                 slideover: { ...defaultConfig.slideover, ...(key.slideover ?? {}) },
             }

@@ -11,12 +11,18 @@ const reactStack = env.APP_STACK !== 'vue';
 const packagesAreInstalled = fs.existsSync('node_modules/@inertiaui/modal-react') && fs.existsSync('node_modules/@inertiaui/modal-vue');
 
 export default defineConfig({
-    resolve: packagesAreInstalled ? {} : {
-        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios'],
-        alias: {
-            '@inertiaui/modal-react': '/../react',
-            '@inertiaui/modal-vue': '/../vue'
-        }
+    build: {
+        minify: false,
+    },
+
+    resolve: {
+        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios', 'vue', 'react', 'react-dom'],
+        ...(packagesAreInstalled ? {} : {
+            alias: {
+                '@inertiaui/modal-react': '/../react',
+                '@inertiaui/modal-vue': '/../vue'
+            }
+        })
     },
 
     plugins: [
@@ -24,7 +30,7 @@ export default defineConfig({
             input: reactStack ? 'resources/js/app.jsx' : 'resources/js/app.js',
             refresh: true,
         }),
-        reactStack ? react() : vue({
+        reactStack ? react({ fastRefresh: false }) : vue({
             template: {
                 transformAssetUrls: {
                     base: null,
