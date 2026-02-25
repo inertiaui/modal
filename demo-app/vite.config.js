@@ -17,12 +17,10 @@ export default defineConfig({
 
     resolve: {
         dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios', 'vue', 'react', 'react-dom'],
-        ...(packagesAreInstalled ? {} : {
-            alias: {
-                '@inertiaui/modal-react': '/../react',
-                '@inertiaui/modal-vue': '/../vue'
-            }
-        })
+        alias: {
+            '@inertiaui/modal-react': '/../react',
+            '@inertiaui/modal-vue': '/../vue'
+        }
     },
 
     plugins: [
@@ -30,7 +28,7 @@ export default defineConfig({
             input: reactStack ? 'resources/js/app.jsx' : 'resources/js/app.js',
             refresh: true,
         }),
-        reactStack ? react({ fastRefresh: false }) : vue({
+        reactStack ? react() : vue({
             template: {
                 transformAssetUrls: {
                     base: null,

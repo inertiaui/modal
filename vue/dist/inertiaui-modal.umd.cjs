@@ -835,7 +835,6 @@
     markAriaHidden: vanilla.markAriaHidden,
     onClickOutside: vanilla.onClickOutside,
     onEscapeKey: vanilla.onEscapeKey,
-    onTransitionEnd: vanilla.onTransitionEnd,
     unlockScroll: vanilla.unlockScroll,
     unmarkAriaHidden: vanilla.unmarkAriaHidden
   }, Symbol.toStringTag, { value: "Module" }));
@@ -878,14 +877,64 @@
     setup(__props, { emit: __emit }) {
       const props = __props;
       const emit = __emit;
+      const isRendered = vue.ref(false);
+      const isVisible = vue.ref(false);
       const entered = vue.ref(false);
-      const isLeaving = vue.ref(false);
       const wrapperRef = vue.ref(null);
       const dialogRef = vue.ref(null);
       const nativeWrapperRef = vue.ref(null);
       let cleanupFocusTrap = null;
       let cleanupEscapeKey = null;
+      let currentAnimation = null;
       const maxWidthClass = vue.computed(() => getMaxWidthClass(props.config.maxWidth));
+      async function animateIn(element) {
+        if (!element) return;
+        isVisible.value = true;
+        const animation = element.animate([
+          { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 },
+          { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 }
+        ], {
+          duration: 300,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+          // Tailwind's ease-in-out
+          fill: "forwards"
+        });
+        await animation.finished;
+        entered.value = true;
+        setupFocusTrap();
+      }
+      async function animateOut(element) {
+        if (!element) return;
+        isVisible.value = false;
+        currentAnimation = element.animate([
+          { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
+          { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 }
+        ], {
+          duration: 300,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+          // Tailwind's ease-in-out
+          fill: "forwards"
+        });
+        await currentAnimation.finished;
+        isRendered.value = false;
+        if (props.useNativeDialog && dialogRef.value) {
+          dialogRef.value.close();
+        }
+        emit("after-leave");
+        props.modalContext.afterLeave();
+      }
+      function show() {
+        isRendered.value = true;
+        vue.nextTick(() => {
+          const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+          animateIn(wrapper);
+        });
+      }
+      function hide() {
+        entered.value = false;
+        const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+        animateOut(wrapper);
+      }
       function setupFocusTrap() {
         if (props.useNativeDialog) return;
         if (!wrapperRef.value || !props.modalContext.onTopOfStack) return;
@@ -927,14 +976,6 @@
           props.modalContext.close();
         }
       }
-      function onAfterEnter() {
-        entered.value = true;
-        setupFocusTrap();
-      }
-      function onAfterLeave() {
-        emit("after-leave");
-        props.modalContext.afterLeave();
-      }
       function handleCancel(event) {
         event.preventDefault();
         if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly) {
@@ -952,31 +993,15 @@
         if (dialogRef.value && !dialogRef.value.open) {
           dialogRef.value.showModal();
           vue.nextTick(() => {
-            requestAnimationFrame(() => {
-              entered.value = true;
-            });
+            animateIn(nativeWrapperRef.value);
           });
         }
       }
       function closeDialog() {
         if (dialogRef.value && dialogRef.value.open) {
-          isLeaving.value = true;
           entered.value = false;
-          const wrapper = nativeWrapperRef.value;
-          if (wrapper) {
-            vanilla.onTransitionEnd(wrapper, finishClose);
-          } else {
-            finishClose();
-          }
+          animateOut(nativeWrapperRef.value);
         }
-      }
-      function finishClose() {
-        if (dialogRef.value) {
-          dialogRef.value.close();
-        }
-        isLeaving.value = false;
-        emit("after-leave");
-        props.modalContext.afterLeave();
       }
       vue.onMounted(() => {
         if (props.useNativeDialog) {
@@ -985,9 +1010,15 @@
           }
         } else {
           setupEscapeKey();
+          if (props.modalContext.isOpen) {
+            show();
+          }
         }
       });
       vue.onUnmounted(() => {
+        if (currentAnimation) {
+          currentAnimation.cancel();
+        }
         if (props.useNativeDialog) {
           if (dialogRef.value?.open) {
             dialogRef.value.close();
@@ -1015,11 +1046,18 @@
       vue.watch(
         () => props.modalContext.isOpen,
         (isOpen) => {
-          if (!props.useNativeDialog) return;
-          if (isOpen) {
-            openDialog();
-          } else if (!isLeaving.value) {
-            closeDialog();
+          if (props.useNativeDialog) {
+            if (isOpen) {
+              openDialog();
+            } else {
+              closeDialog();
+            }
+          } else {
+            if (isOpen) {
+              show();
+            } else {
+              hide();
+            }
           }
         }
       );
@@ -1032,7 +1070,7 @@
             "im-modal-dialog m-0 overflow-visible bg-transparent p-0",
             "size-full max-h-none max-w-none",
             "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
-            entered.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
+            isVisible.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
             !__props.isFirstModal && "backdrop:bg-transparent"
           ]),
           onCancel: handleCancel,
@@ -1050,9 +1088,8 @@
                 ref_key: "nativeWrapperRef",
                 ref: nativeWrapperRef,
                 class: vue.normalizeClass([
-                  "im-modal-wrapper w-full transition duration-300 ease-in-out",
+                  "im-modal-wrapper w-full transition-[filter] duration-300",
                   __props.modalContext.onTopOfStack ? "" : "blur-xs",
-                  entered.value && !isLeaving.value ? "translate-y-0 opacity-100 sm:scale-100" : "translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95",
                   maxWidthClass.value
                 ])
               }, [
@@ -1071,7 +1108,7 @@
               ], 2)
             ], 2)
           ])
-        ], 34)) : (vue.openBlock(), vue.createElementBlock("div", {
+        ], 34)) : isRendered.value ? (vue.openBlock(), vue.createElementBlock("div", {
           key: 1,
           class: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",
           onMousedown: vue.withModifiers(handleClickOutside, ["self"])
@@ -1084,45 +1121,33 @@
             }]),
             onMousedown: vue.withModifiers(handleClickOutside, ["self"])
           }, [
-            vue.createVNode(vue.Transition, {
-              appear: "",
-              "enter-active-class": "transition duration-300 ease-in-out",
-              "enter-from-class": "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
-              "enter-to-class": "opacity-100 translate-y-0 sm:scale-100",
-              "leave-active-class": "transition duration-300 ease-in-out",
-              "leave-from-class": "opacity-100 translate-y-0 sm:scale-100",
-              "leave-to-class": "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
-              onAfterEnter,
-              onAfterLeave
-            }, {
-              default: vue.withCtx(() => [
-                __props.modalContext.isOpen ? (vue.openBlock(), vue.createElementBlock("div", {
-                  key: 0,
-                  ref_key: "wrapperRef",
-                  ref: wrapperRef,
-                  role: "dialog",
-                  "aria-modal": "true",
-                  class: vue.normalizeClass(["im-modal-wrapper w-full", __props.modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass.value])
-                }, [
-                  _cache[0] || (_cache[0] = vue.createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
-                  vue.createElementVNode("div", {
-                    class: vue.normalizeClass(["im-modal-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
-                    "data-inertiaui-modal-entered": entered.value
-                  }, [
-                    __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_5$1, [
-                      vue.createVNode(_sfc_main$5)
-                    ])) : vue.createCommentVNode("", true),
-                    vue.renderSlot(_ctx.$slots, "default", {
-                      modalContext: __props.modalContext,
-                      config: __props.config
-                    })
-                  ], 10, _hoisted_4$1)
-                ], 2)) : vue.createCommentVNode("", true)
-              ]),
-              _: 3
-            })
+            vue.createElementVNode("div", {
+              ref_key: "wrapperRef",
+              ref: wrapperRef,
+              role: "dialog",
+              "aria-modal": "true",
+              class: vue.normalizeClass([
+                "im-modal-wrapper w-full transition-[filter] duration-300",
+                __props.modalContext.onTopOfStack ? "" : "blur-xs",
+                maxWidthClass.value
+              ])
+            }, [
+              _cache[0] || (_cache[0] = vue.createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
+              vue.createElementVNode("div", {
+                class: vue.normalizeClass(["im-modal-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                "data-inertiaui-modal-entered": entered.value
+              }, [
+                __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_5$1, [
+                  vue.createVNode(_sfc_main$5)
+                ])) : vue.createCommentVNode("", true),
+                vue.renderSlot(_ctx.$slots, "default", {
+                  modalContext: __props.modalContext,
+                  config: __props.config
+                })
+              ], 10, _hoisted_4$1)
+            ], 2)
           ], 34)
-        ], 32));
+        ], 32)) : vue.createCommentVNode("", true);
       };
     }
   };
@@ -1149,15 +1174,67 @@
     setup(__props, { emit: __emit }) {
       const props = __props;
       const emit = __emit;
+      const isRendered = vue.ref(false);
+      const isVisible = vue.ref(false);
       const entered = vue.ref(false);
-      const isLeaving = vue.ref(false);
       const wrapperRef = vue.ref(null);
       const dialogRef = vue.ref(null);
       const nativeWrapperRef = vue.ref(null);
       let cleanupFocusTrap = null;
       let cleanupEscapeKey = null;
+      let currentAnimation = null;
       const maxWidthClass = vue.computed(() => getMaxWidthClass(props.config.maxWidth));
-      const transformEnterFrom = vue.computed(() => props.config.position === "left" ? "-translate-x-full" : "translate-x-full");
+      const getTranslateX = () => props.config.position === "left" ? "-100%" : "100%";
+      async function animateIn(element) {
+        if (!element) return;
+        isVisible.value = true;
+        const translateX = getTranslateX();
+        currentAnimation = element.animate([
+          { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+          { transform: "translate3d(0, 0, 0)", opacity: 1 }
+        ], {
+          duration: 300,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+          // Tailwind's ease-in-out
+          fill: "forwards"
+        });
+        await currentAnimation.finished;
+        entered.value = true;
+        setupFocusTrap();
+      }
+      async function animateOut(element) {
+        if (!element) return;
+        isVisible.value = false;
+        const translateX = getTranslateX();
+        currentAnimation = element.animate([
+          { transform: "translate3d(0, 0, 0)", opacity: 1 },
+          { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
+        ], {
+          duration: 300,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+          // Tailwind's ease-in-out
+          fill: "forwards"
+        });
+        await currentAnimation.finished;
+        isRendered.value = false;
+        if (props.useNativeDialog && dialogRef.value) {
+          dialogRef.value.close();
+        }
+        emit("after-leave");
+        props.modalContext.afterLeave();
+      }
+      function show() {
+        isRendered.value = true;
+        vue.nextTick(() => {
+          const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+          animateIn(wrapper);
+        });
+      }
+      function hide() {
+        entered.value = false;
+        const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+        animateOut(wrapper);
+      }
       function setupFocusTrap() {
         if (props.useNativeDialog) return;
         if (!wrapperRef.value || !props.modalContext.onTopOfStack) return;
@@ -1199,14 +1276,6 @@
           props.modalContext.close();
         }
       }
-      function onAfterEnter() {
-        entered.value = true;
-        setupFocusTrap();
-      }
-      function onAfterLeave() {
-        emit("after-leave");
-        props.modalContext.afterLeave();
-      }
       function handleCancel(event) {
         event.preventDefault();
         if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly) {
@@ -1224,31 +1293,15 @@
         if (dialogRef.value && !dialogRef.value.open) {
           dialogRef.value.showModal();
           vue.nextTick(() => {
-            requestAnimationFrame(() => {
-              entered.value = true;
-            });
+            animateIn(nativeWrapperRef.value);
           });
         }
       }
       function closeDialog() {
         if (dialogRef.value && dialogRef.value.open) {
-          isLeaving.value = true;
           entered.value = false;
-          const wrapper = nativeWrapperRef.value;
-          if (wrapper) {
-            vanilla.onTransitionEnd(wrapper, finishClose);
-          } else {
-            finishClose();
-          }
+          animateOut(nativeWrapperRef.value);
         }
-      }
-      function finishClose() {
-        if (dialogRef.value) {
-          dialogRef.value.close();
-        }
-        isLeaving.value = false;
-        emit("after-leave");
-        props.modalContext.afterLeave();
       }
       vue.onMounted(() => {
         if (props.useNativeDialog) {
@@ -1257,9 +1310,15 @@
           }
         } else {
           setupEscapeKey();
+          if (props.modalContext.isOpen) {
+            show();
+          }
         }
       });
       vue.onUnmounted(() => {
+        if (currentAnimation) {
+          currentAnimation.cancel();
+        }
         if (props.useNativeDialog) {
           if (dialogRef.value?.open) {
             dialogRef.value.close();
@@ -1287,11 +1346,18 @@
       vue.watch(
         () => props.modalContext.isOpen,
         (isOpen) => {
-          if (!props.useNativeDialog) return;
-          if (isOpen) {
-            openDialog();
-          } else if (!isLeaving.value) {
-            closeDialog();
+          if (props.useNativeDialog) {
+            if (isOpen) {
+              openDialog();
+            } else {
+              closeDialog();
+            }
+          } else {
+            if (isOpen) {
+              show();
+            } else {
+              hide();
+            }
           }
         }
       );
@@ -1304,7 +1370,7 @@
             "im-slideover-dialog m-0 overflow-visible bg-transparent p-0",
             "size-full max-h-none max-w-none",
             "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
-            entered.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
+            isVisible.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
             !__props.isFirstModal && "backdrop:bg-transparent"
           ]),
           onCancel: handleCancel,
@@ -1321,9 +1387,8 @@
                 ref_key: "nativeWrapperRef",
                 ref: nativeWrapperRef,
                 class: vue.normalizeClass([
-                  "im-slideover-wrapper w-full transition duration-300 ease-in-out",
+                  "im-slideover-wrapper w-full transition-[filter] duration-300",
                   __props.modalContext.onTopOfStack ? "" : "blur-xs",
-                  entered.value && !isLeaving.value ? "translate-x-0 opacity-100" : __props.config.position === "left" ? "-translate-x-full opacity-0" : "translate-x-full opacity-0",
                   maxWidthClass.value
                 ])
               }, [
@@ -1342,7 +1407,7 @@
               ], 2)
             ], 2)
           ])
-        ], 34)) : (vue.openBlock(), vue.createElementBlock("div", {
+        ], 34)) : isRendered.value ? (vue.openBlock(), vue.createElementBlock("div", {
           key: 1,
           class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
           onMousedown: vue.withModifiers(handleClickOutside, ["self"])
@@ -1354,45 +1419,33 @@
             }]),
             onMousedown: vue.withModifiers(handleClickOutside, ["self"])
           }, [
-            vue.createVNode(vue.Transition, {
-              appear: "",
-              "enter-active-class": "transition duration-300 ease-in-out",
-              "enter-from-class": "opacity-0 " + transformEnterFrom.value,
-              "enter-to-class": "opacity-100 translate-x-0",
-              "leave-active-class": "transition duration-300 ease-in-out",
-              "leave-from-class": "opacity-100 translate-x-0",
-              "leave-to-class": "opacity-0 " + transformEnterFrom.value,
-              onAfterEnter,
-              onAfterLeave
-            }, {
-              default: vue.withCtx(() => [
-                __props.modalContext.isOpen ? (vue.openBlock(), vue.createElementBlock("div", {
-                  key: 0,
-                  ref_key: "wrapperRef",
-                  ref: wrapperRef,
-                  role: "dialog",
-                  "aria-modal": "true",
-                  class: vue.normalizeClass(["im-slideover-wrapper w-full", __props.modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass.value])
-                }, [
-                  _cache[0] || (_cache[0] = vue.createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
-                  vue.createElementVNode("div", {
-                    class: vue.normalizeClass(["im-slideover-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
-                    "data-inertiaui-modal-entered": entered.value
-                  }, [
-                    __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_5, [
-                      vue.createVNode(_sfc_main$5)
-                    ])) : vue.createCommentVNode("", true),
-                    vue.renderSlot(_ctx.$slots, "default", {
-                      modalContext: __props.modalContext,
-                      config: __props.config
-                    })
-                  ], 10, _hoisted_4)
-                ], 2)) : vue.createCommentVNode("", true)
-              ]),
-              _: 3
-            }, 8, ["enter-from-class", "leave-to-class"])
+            vue.createElementVNode("div", {
+              ref_key: "wrapperRef",
+              ref: wrapperRef,
+              role: "dialog",
+              "aria-modal": "true",
+              class: vue.normalizeClass([
+                "im-slideover-wrapper w-full transition-[filter] duration-300",
+                __props.modalContext.onTopOfStack ? "" : "blur-xs",
+                maxWidthClass.value
+              ])
+            }, [
+              _cache[0] || (_cache[0] = vue.createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
+              vue.createElementVNode("div", {
+                class: vue.normalizeClass(["im-slideover-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                "data-inertiaui-modal-entered": entered.value
+              }, [
+                __props.config.closeButton ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_5, [
+                  vue.createVNode(_sfc_main$5)
+                ])) : vue.createCommentVNode("", true),
+                vue.renderSlot(_ctx.$slots, "default", {
+                  modalContext: __props.modalContext,
+                  config: __props.config
+                })
+              ], 10, _hoisted_4)
+            ], 2)
           ], 34)
-        ], 32));
+        ], 32)) : vue.createCommentVNode("", true);
       };
     }
   };

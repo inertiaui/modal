@@ -22,7 +22,6 @@ import { default as ModalLink } from './ModalLink.vue';
 import { default as ModalRoot } from './ModalRoot.vue';
 import { onClickOutside } from '@inertiaui/vanilla';
 import { onEscapeKey } from '@inertiaui/vanilla';
-import { onTransitionEnd } from '@inertiaui/vanilla';
 import { Ref } from 'vue';
 import { RequestPayload } from '@inertiajs/core';
 import { unlockScroll } from '@inertiaui/vanilla';
@@ -53,7 +52,6 @@ declare namespace dialogUtils {
         onEscapeKey,
         markAriaHidden,
         unmarkAriaHidden,
-        onTransitionEnd,
         createDialog,
         CleanupFunction,
         FocusTrapOptions,

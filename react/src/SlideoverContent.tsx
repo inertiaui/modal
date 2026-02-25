@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, ReactNode, SyntheticEvent, MouseEvent } from 'react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
-import { createFocusTrap, onEscapeKey, onTransitionEnd } from '@inertiaui/vanilla'
+import { createFocusTrap, onEscapeKey } from '@inertiaui/vanilla'
 import { getMaxWidthClass } from './constants'
 import type { Modal } from './types'
 
@@ -25,29 +25,79 @@ interface SlideoverContentProps {
 }
 
 const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }: SlideoverContentProps) => {
-    const [entered, setEntered] = useState(false)
-    const [isLeaving, setIsLeaving] = useState(false)
-    const [transitionState, setTransitionState] = useState<'entering' | 'entered' | 'leaving' | 'exited'>('entering')
+    const [isRendered, setIsRendered] = useState(false)
+    const [isVisible, setIsVisible] = useState(false)  // For backdrop sync
+    const [entered, setEntered] = useState(false)      // After animation completes
     const wrapperRef = useRef<HTMLDivElement>(null)
     const dialogRef = useRef<HTMLDialogElement>(null)
     const nativeWrapperRef = useRef<HTMLDivElement>(null)
     const cleanupFocusTrapRef = useRef<(() => void) | null>(null)
     const cleanupEscapeKeyRef = useRef<(() => void) | null>(null)
-    const initialRender = useRef(true)
+    const currentAnimationRef = useRef<Animation | null>(null)
 
     const isLeft = config.position === 'left'
 
     const maxWidthClass = useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth])
 
-    // Transform classes for slideover animation
-    const getTransformClass = useCallback(
-        (isHidden: boolean) => {
-            if (isHidden) {
-                return isLeft ? '-translate-x-full opacity-0' : 'translate-x-full opacity-0'
-            }
-            return 'translate-x-0 opacity-100'
+    // Get translate value based on position
+    const getTranslateX = useCallback(() => (isLeft ? '-100%' : '100%'), [isLeft])
+
+    // ============ Animation handlers using Web Animations API ============
+
+    const animateIn = useCallback(
+        async (element: HTMLElement | null) => {
+            if (!element) return
+
+            setIsVisible(true) // Trigger backdrop immediately
+            const translateX = getTranslateX()
+
+            currentAnimationRef.current = element.animate(
+                [
+                    { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+                    { transform: 'translate3d(0, 0, 0)', opacity: 1 },
+                ],
+                {
+                    duration: 300,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Tailwind's ease-in-out
+                    fill: 'forwards',
+                },
+            )
+
+            await currentAnimationRef.current.finished
+            setEntered(true)
         },
-        [isLeft],
+        [getTranslateX],
+    )
+
+    const animateOut = useCallback(
+        async (element: HTMLElement | null) => {
+            if (!element) return
+
+            setIsVisible(false) // Trigger backdrop fade out immediately
+            const translateX = getTranslateX()
+
+            currentAnimationRef.current = element.animate(
+                [
+                    { transform: 'translate3d(0, 0, 0)', opacity: 1 },
+                    { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+                ],
+                {
+                    duration: 300,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Tailwind's ease-in-out
+                    fill: 'forwards',
+                },
+            )
+
+            await currentAnimationRef.current.finished
+
+            setIsRendered(false)
+            if (useNativeDialog && dialogRef.current) {
+                dialogRef.current.close()
+            }
+            onAfterLeave?.()
+            modalContext.afterLeave()
+        },
+        [getTranslateX, useNativeDialog, onAfterLeave, modalContext],
     )
 
     // ============ Non-native dialog handlers ============
@@ -127,62 +177,50 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
         [modalContext, config?.closeExplicitly, config?.closeOnClickOutside],
     )
 
-    const openDialog = useCallback(() => {
-        if (dialogRef.current && !dialogRef.current.open) {
-            dialogRef.current.showModal()
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setEntered(true)
-                })
-            })
-        }
-    }, [])
-
-    const finishClose = useCallback(() => {
-        if (dialogRef.current) {
-            dialogRef.current.close()
-        }
-        setIsLeaving(false)
-        onAfterLeave?.()
-        modalContext.afterLeave()
-    }, [onAfterLeave, modalContext])
-
-    const closeDialog = useCallback(() => {
-        if (dialogRef.current && dialogRef.current.open) {
-            setIsLeaving(true)
-            setEntered(false)
-
-            const wrapper = nativeWrapperRef.current
-            if (wrapper) {
-                onTransitionEnd(wrapper, finishClose)
-            } else {
-                finishClose()
-            }
-        }
-    }, [finishClose])
-
     // ============ Lifecycle ============
 
-    // Initial mount
+    // Track previous isOpen state for detecting close
+    const prevIsOpenRef = useRef(modalContext.isOpen)
+
+    // Initial mount and open state changes
     useEffect(() => {
         if (useNativeDialog) {
-            if (modalContext.isOpen) {
-                openDialog()
+            if (modalContext.isOpen && !dialogRef.current?.open) {
+                dialogRef.current?.showModal()
+                animateIn(nativeWrapperRef.current)
+            } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+                setEntered(false)
+                animateOut(nativeWrapperRef.current)
             }
         } else {
+            if (modalContext.isOpen && !isRendered) {
+                setIsRendered(true)
+            } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+                setEntered(false)
+                animateOut(wrapperRef.current)
+            }
+        }
+        prevIsOpenRef.current = modalContext.isOpen
+    }, [modalContext.isOpen, useNativeDialog, animateIn, animateOut, isRendered])
+
+    // Trigger animation after render (non-native)
+    useEffect(() => {
+        if (!useNativeDialog && isRendered && !entered && modalContext.isOpen) {
+            animateIn(wrapperRef.current).then(() => {
+                setupFocusTrap()
+            })
+        }
+    }, [isRendered, useNativeDialog, entered, modalContext.isOpen, animateIn, setupFocusTrap])
+
+    // Setup escape key (non-native)
+    useEffect(() => {
+        if (!useNativeDialog) {
             setupEscapeKey()
         }
         return () => {
-            if (useNativeDialog) {
-                if (dialogRef.current?.open) {
-                    dialogRef.current.close()
-                }
-            } else {
-                cleanupFocusTrap()
-                cleanupEscapeKey()
-            }
+            cleanupEscapeKey()
         }
-    }, [])
+    }, [useNativeDialog, setupEscapeKey, cleanupEscapeKey])
 
     // Handle becoming top of stack / losing top of stack (non-native only)
     useEffect(() => {
@@ -199,54 +237,22 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
         }
     }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog])
 
-    // Handle enter animation (non-native only)
+    // Cleanup on unmount
     useEffect(() => {
-        if (useNativeDialog) return
-
-        if (initialRender.current && modalContext.isOpen) {
-            initialRender.current = false
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTransitionState('entered')
-                    const wrapper = wrapperRef.current
-                    if (wrapper) {
-                        onTransitionEnd(wrapper, () => {
-                            setEntered(true)
-                            setupFocusTrap()
-                        })
-                    }
-                })
-            })
-        }
-    }, [modalContext.isOpen, setupFocusTrap, useNativeDialog])
-
-    // Handle leave animation (non-native only)
-    useEffect(() => {
-        if (useNativeDialog) return
-
-        if (!modalContext.isOpen && transitionState === 'entered') {
-            setTransitionState('leaving')
-            const wrapper = wrapperRef.current
-            if (wrapper) {
-                onTransitionEnd(wrapper, () => {
-                    setTransitionState('exited')
-                    onAfterLeave?.()
-                    modalContext.afterLeave()
-                })
+        return () => {
+            if (currentAnimationRef.current) {
+                currentAnimationRef.current.cancel()
+            }
+            if (useNativeDialog) {
+                if (dialogRef.current?.open) {
+                    dialogRef.current.close()
+                }
+            } else {
+                cleanupFocusTrap()
+                cleanupEscapeKey()
             }
         }
-    }, [modalContext.isOpen, transitionState, onAfterLeave, modalContext, useNativeDialog])
-
-    // Watch for open state changes (native only)
-    useEffect(() => {
-        if (!useNativeDialog) return
-
-        if (modalContext.isOpen) {
-            openDialog()
-        } else if (!isLeaving) {
-            closeDialog()
-        }
-    }, [modalContext.isOpen, openDialog, closeDialog, isLeaving, useNativeDialog])
+    }, [useNativeDialog, cleanupFocusTrap, cleanupEscapeKey])
 
     // ============ Render ============
 
@@ -273,7 +279,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
                     'im-slideover-dialog m-0 overflow-visible bg-transparent p-0',
                     'size-full max-h-none max-w-none',
                     'backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300',
-                    entered ? 'backdrop:opacity-100' : 'backdrop:opacity-0',
+                    isVisible ? 'backdrop:opacity-100' : 'backdrop:opacity-0',
                     !isFirstModal && 'backdrop:bg-transparent',
                 )}
                 onCancel={handleCancel}
@@ -288,12 +294,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
                     >
                         <div
                             ref={nativeWrapperRef}
-                            className={clsx(
-                                'im-slideover-wrapper w-full transition duration-300 ease-in-out',
-                                modalContext.onTopOfStack ? '' : 'blur-xs',
-                                getTransformClass(!(entered && !isLeaving)),
-                                maxWidthClass,
-                            )}
+                            className={clsx('im-slideover-wrapper w-full transition-[filter] duration-300', modalContext.onTopOfStack ? '' : 'blur-xs', maxWidthClass)}
                         >
                             {renderContent()}
                         </div>
@@ -304,10 +305,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
     }
 
     // Non-native dialog mode
-    if (transitionState === 'exited') return null
-
-    const isEntering = transitionState === 'entering'
-    const isLeavingNonNative = transitionState === 'leaving'
+    if (!isRendered) return null
 
     return (
         <div
@@ -325,12 +323,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
                     ref={wrapperRef}
                     role="dialog"
                     aria-modal="true"
-                    className={clsx(
-                        'im-slideover-wrapper w-full transition duration-300 ease-in-out',
-                        modalContext.onTopOfStack ? '' : 'blur-xs',
-                        getTransformClass(isEntering || isLeavingNonNative),
-                        maxWidthClass,
-                    )}
+                    className={clsx('im-slideover-wrapper w-full transition-[filter] duration-300', modalContext.onTopOfStack ? '' : 'blur-xs', maxWidthClass)}
                 >
                     <span className="sr-only">Dialog</span>
                     {renderContent()}

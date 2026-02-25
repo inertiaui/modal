@@ -21,6 +21,8 @@ The following commands can be run without asking for permission:
 
 ### Development Servers
 
+**IMPORTANT**: When dev servers are running, do NOT run `npm run build` - Vite watches for changes and rebuilds automatically.
+
 For active development, spin up these servers in background (hot reloading, no manual rebuilds needed):
 
 ```bash

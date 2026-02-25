@@ -34,6 +34,7 @@ export default defineConfig({
           {text: 'Introduction', link: '/introduction'},
           {text: 'Requirements', link: '/requirements'},
           {text: 'Installation', link: '/installation'},
+          {text: 'Upgrade Guide', link: '/upgrade-guide'},
         ]
       },
       {

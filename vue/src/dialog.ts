@@ -10,7 +10,6 @@ export {
     onEscapeKey,
     markAriaHidden,
     unmarkAriaHidden,
-    onTransitionEnd,
     createDialog,
 } from '@inertiaui/vanilla'
 
