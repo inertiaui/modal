@@ -90,6 +90,9 @@
   const putConfig = (key, value) => configInstance.put(key, value);
   const getConfig = (key) => configInstance.get(key);
   const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+  function generateId(prefix = "inertiaui_") {
+    return vanilla.generateId(prefix);
+  }
   const ModalStackContext = React.createContext(null);
   ModalStackContext.displayName = "ModalStackContext";
   let pageVersion = null;
@@ -148,7 +151,7 @@
       "X-Requested-With": "XMLHttpRequest",
       "X-Inertia": "true",
       "X-Inertia-Version": pageVersion ?? "",
-      "X-InertiaUI-Modal": vanilla.generateId(),
+      "X-InertiaUI-Modal": generateId(),
       "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
     };
     const request = Axios({
@@ -320,7 +323,7 @@
               "X-Inertia-Partial-Component": this.response.component,
               "X-Inertia-Version": this.response.version ?? "",
               "X-Inertia-Partial-Data": keys.join(","),
-              "X-InertiaUI-Modal": vanilla.generateId(),
+              "X-InertiaUI-Modal": generateId(),
               "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
             }
           }).then((response2) => {
@@ -336,7 +339,7 @@
           Object.assign(this.props, props);
           updateStack((prevStack) => prevStack);
         };
-        this.id = response.id ?? vanilla.generateId();
+        this.id = response.id ?? generateId();
         this.isOpen = false;
         this.shouldRender = false;
         this.listeners = {};
@@ -438,7 +441,7 @@
       });
     };
     const visit = (href, method, payload = {}, headers = {}, config = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = "brackets", useBrowserHistory = false, onStart = null, onSuccess = null, onError = null, props = null) => {
-      const modalId = vanilla.generateId();
+      const modalId = generateId();
       return new Promise((resolve, reject) => {
         if (href.startsWith("#")) {
           resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave, props));

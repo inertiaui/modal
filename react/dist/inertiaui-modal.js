@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useRef, useEffect, useReducer, useState, createElement, useMemo, forwardRef, useImperativeHandle, useCallback } from "react";
 import { jsxs, Fragment, jsx } from "react/jsx-runtime";
 import Axios from "axios";
-import { sameUrlPath, generateId, kebabCase, except, createFocusTrap, onEscapeKey, onTransitionEnd, lockScroll, markAriaHidden, isStandardDomEvent, rejectNullValues, only } from "@inertiaui/vanilla";
+import { generateId as generateId$1, sameUrlPath, kebabCase, except, createFocusTrap, onEscapeKey, onTransitionEnd, lockScroll, markAriaHidden, isStandardDomEvent, rejectNullValues, only } from "@inertiaui/vanilla";
 import * as vanilla from "@inertiaui/vanilla";
 import { usePage, router, progress } from "@inertiajs/react";
 import { mergeDataIntoQueryString } from "@inertiajs/core";
@@ -77,6 +77,9 @@ const resetConfig = () => configInstance.reset();
 const putConfig = (key, value) => configInstance.put(key, value);
 const getConfig = (key) => configInstance.get(key);
 const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+function generateId(prefix = "inertiaui_") {
+  return generateId$1(prefix);
+}
 const ModalStackContext = createContext(null);
 ModalStackContext.displayName = "ModalStackContext";
 let pageVersion = null;
