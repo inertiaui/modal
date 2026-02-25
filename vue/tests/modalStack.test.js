@@ -159,12 +159,12 @@ describe('modalStack', () => {
                 params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
-                    'X-Inertia': true,
+                    'X-Inertia': 'true',
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,another',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                                        'X-InertiaUI-Modal-Base-Url': null,
+                    'X-InertiaUI-Modal-Base-Url': '',
                 },
             })
 
@@ -196,12 +196,12 @@ describe('modalStack', () => {
                 params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
-                    'X-Inertia': true,
+                    'X-Inertia': 'true',
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                                        'X-InertiaUI-Modal-Base-Url': null,
+                    'X-InertiaUI-Modal-Base-Url': '',
                 },
             })
 
@@ -233,12 +233,12 @@ describe('modalStack', () => {
                 params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
-                    'X-Inertia': true,
+                    'X-Inertia': 'true',
                     'X-Inertia-Partial-Component': 'TestComponent',
                     'X-Inertia-Version': '1',
                     'X-Inertia-Partial-Data': 'test,third',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                                        'X-InertiaUI-Modal-Base-Url': null,
+                    'X-InertiaUI-Modal-Base-Url': '',
                 },
             })
 
@@ -288,10 +288,10 @@ describe('modalStack', () => {
                     'Custom-Header': 'Test',
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-Inertia': true,
+                    'X-Inertia': 'true',
                     'X-Inertia-Version': '1.0',
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
-                                        'X-InertiaUI-Modal-Base-Url': expect.any(String),
+                    'X-InertiaUI-Modal-Base-Url': expect.any(String),
                 },
             })
 
