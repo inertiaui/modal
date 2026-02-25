@@ -148,7 +148,7 @@ export declare interface ModalStack {
     setBaseUrl: (url: string | null) => void;
     isClosingToBaseUrl: (pageUrl: string) => boolean;
     clearClosingToBaseUrl: () => void;
-    stack: any;
+    stack: Readonly<Ref<readonly ModalInstance[]>>;
     push: typeof push;
     pushFromResponseData: typeof pushFromResponseData;
     closeAll: (force?: boolean) => void;

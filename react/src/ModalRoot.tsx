@@ -816,7 +816,7 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                             })
                         }
                     })
-                    .then(() => {
+                    .finally(() => {
                         pendingModalKeysRef.current.delete(modalKey)
                     })
             }),

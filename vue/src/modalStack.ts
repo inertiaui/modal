@@ -144,11 +144,11 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
 
     options.onPrefetching?.()
 
-    const requestHeaders: Record<string, string | number | boolean | null> = {
+    const requestHeaders: Record<string, string> = {
         ...headers,
         Accept: 'text/html, application/xhtml+xml',
         'X-Requested-With': 'XMLHttpRequest',
-        'X-Inertia': true,
+        'X-Inertia': 'true',
         'X-Inertia-Version': usePage().version ?? '',
         'X-InertiaUI-Modal': generateId(),
         'X-InertiaUI-Modal-Base-Url': baseUrl.value ?? '',
@@ -413,12 +413,12 @@ export class Modal {
             headers: {
                 ...(options.headers ?? {}),
                 Accept: 'text/html, application/xhtml+xml',
-                'X-Inertia': true,
+                'X-Inertia': 'true',
                 'X-Inertia-Partial-Component': this.response.component,
                 'X-Inertia-Version': this.response.version ?? '',
                 'X-Inertia-Partial-Data': keys.join(','),
                 'X-InertiaUI-Modal': generateId(),
-                                'X-InertiaUI-Modal-Base-Url': baseUrl.value,
+                'X-InertiaUI-Modal-Base-Url': baseUrl.value ?? '',
             },
         })
             .then((response) => {
@@ -558,14 +558,14 @@ function visit(
             baseUrl.value = typeof window !== 'undefined' ? window.location.href : ''
         }
 
-        const requestHeaders: Record<string, string | number | boolean | null> = {
+        const requestHeaders: Record<string, string> = {
             ...headers,
             Accept: 'text/html, application/xhtml+xml',
             'X-Requested-With': 'XMLHttpRequest',
-            'X-Inertia': true,
+            'X-Inertia': 'true',
             'X-Inertia-Version': usePage().version ?? '',
             'X-InertiaUI-Modal': modalId,
-                        'X-InertiaUI-Modal-Base-Url': baseUrl.value,
+            'X-InertiaUI-Modal-Base-Url': baseUrl.value ?? '',
         }
 
         onStart?.()
@@ -637,8 +637,7 @@ export interface ModalStack {
     setBaseUrl: (url: string | null) => void
     isClosingToBaseUrl: (pageUrl: string) => boolean
     clearClosingToBaseUrl: () => void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    stack: any
+    stack: Readonly<Ref<readonly Modal[]>>
     push: typeof push
     pushFromResponseData: typeof pushFromResponseData
     closeAll: (force?: boolean) => void
@@ -661,7 +660,7 @@ export function useModalStack(): ModalStack {
             return targetPath === pagePath
         },
         clearClosingToBaseUrl: () => (closingToBaseUrlTarget = null),
-        stack: readonly(stack),
+        stack: readonly(stack) as unknown as Readonly<Ref<readonly Modal[]>>,
         push,
         pushFromResponseData,
         closeAll: (force = false) => {

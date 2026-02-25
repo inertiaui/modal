@@ -151,7 +151,7 @@
                 preserveState: true
               });
             }
-          }).then(() => {
+          }).finally(() => {
             pendingModalKeys.delete(modalKey);
           });
         })
@@ -252,7 +252,7 @@
       ...headers,
       Accept: "text/html, application/xhtml+xml",
       "X-Requested-With": "XMLHttpRequest",
-      "X-Inertia": true,
+      "X-Inertia": "true",
       "X-Inertia-Version": vue3.usePage().version ?? "",
       "X-InertiaUI-Modal": generateId(),
       "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
@@ -411,12 +411,12 @@
           headers: {
             ...options.headers ?? {},
             Accept: "text/html, application/xhtml+xml",
-            "X-Inertia": true,
+            "X-Inertia": "true",
             "X-Inertia-Partial-Component": this.response.component,
             "X-Inertia-Version": this.response.version ?? "",
             "X-Inertia-Partial-Data": keys.join(","),
             "X-InertiaUI-Modal": generateId(),
-            "X-InertiaUI-Modal-Base-Url": baseUrl.value
+            "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
           }
         }).then((response2) => {
           this.updateProps(response2.data.props);
@@ -524,10 +524,10 @@
         ...headers,
         Accept: "text/html, application/xhtml+xml",
         "X-Requested-With": "XMLHttpRequest",
-        "X-Inertia": true,
+        "X-Inertia": "true",
         "X-Inertia-Version": vue3.usePage().version ?? "",
         "X-InertiaUI-Modal": modalId,
-        "X-InertiaUI-Modal-Base-Url": baseUrl.value
+        "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
       };
       onStart?.();
       vue3.progress?.start();

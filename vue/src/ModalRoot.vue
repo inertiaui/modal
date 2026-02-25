@@ -88,7 +88,7 @@ onUnmounted(
                     })
                 }
             })
-            .then(() => {
+            .finally(() => {
                 pendingModalKeys.delete(modalKey)
             })
     }),

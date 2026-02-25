@@ -73,6 +73,25 @@ function clickModalCloseButton(Webpage|AwaitableWebpage $page, int $index = 0): 
 }
 
 /**
+ * Click outside the modal content (on the modal container).
+ * Uses dispatchEvent to trigger the mousedown.self handler directly.
+ */
+function clickOutsideModal(Webpage|AwaitableWebpage $page, int $index = 0): Webpage|AwaitableWebpage
+{
+    // Use JavaScript to dispatch a mousedown event on the container element itself
+    // This simulates clicking on the container (not its children), triggering @mousedown.self
+    $page->page()->evaluate('() => {
+        const container = document.querySelector(".im-modal-container, .im-slideover-container");
+        if (container) {
+            const event = new MouseEvent("mousedown", { bubbles: true, cancelable: true });
+            container.dispatchEvent(event);
+        }
+    }');
+
+    return $page;
+}
+
+/**
  * Dataset for navigate parameter testing.
  */
 dataset('navigate', [

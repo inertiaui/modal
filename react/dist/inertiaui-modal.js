@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useRef, useEffect, useReducer, useState, createElement, useMemo, forwardRef, useImperativeHandle, useCallback } from "react";
+import { jsxs, Fragment, jsx } from "react/jsx-runtime";
 import Axios from "axios";
 import { sameUrlPath, generateId, kebabCase, except, createFocusTrap, onEscapeKey, onTransitionEnd, lockScroll, markAriaHidden, isStandardDomEvent, rejectNullValues, only } from "@inertiaui/vanilla";
 import * as vanilla from "@inertiaui/vanilla";
@@ -76,305 +77,6 @@ const resetConfig = () => configInstance.reset();
 const putConfig = (key, value) => configInstance.put(key, value);
 const getConfig = (key) => configInstance.get(key);
 const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
-var jsxRuntime = { exports: {} };
-var reactJsxRuntime_production = {};
-var hasRequiredReactJsxRuntime_production;
-function requireReactJsxRuntime_production() {
-  if (hasRequiredReactJsxRuntime_production) return reactJsxRuntime_production;
-  hasRequiredReactJsxRuntime_production = 1;
-  var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element"), REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
-  function jsxProd(type, config, maybeKey) {
-    var key = null;
-    void 0 !== maybeKey && (key = "" + maybeKey);
-    void 0 !== config.key && (key = "" + config.key);
-    if ("key" in config) {
-      maybeKey = {};
-      for (var propName in config)
-        "key" !== propName && (maybeKey[propName] = config[propName]);
-    } else maybeKey = config;
-    config = maybeKey.ref;
-    return {
-      $$typeof: REACT_ELEMENT_TYPE,
-      type,
-      key,
-      ref: void 0 !== config ? config : null,
-      props: maybeKey
-    };
-  }
-  reactJsxRuntime_production.Fragment = REACT_FRAGMENT_TYPE;
-  reactJsxRuntime_production.jsx = jsxProd;
-  reactJsxRuntime_production.jsxs = jsxProd;
-  return reactJsxRuntime_production;
-}
-var reactJsxRuntime_development = {};
-var hasRequiredReactJsxRuntime_development;
-function requireReactJsxRuntime_development() {
-  if (hasRequiredReactJsxRuntime_development) return reactJsxRuntime_development;
-  hasRequiredReactJsxRuntime_development = 1;
-  "production" !== process.env.NODE_ENV && (function() {
-    function getComponentNameFromType(type) {
-      if (null == type) return null;
-      if ("function" === typeof type)
-        return type.$$typeof === REACT_CLIENT_REFERENCE ? null : type.displayName || type.name || null;
-      if ("string" === typeof type) return type;
-      switch (type) {
-        case REACT_FRAGMENT_TYPE:
-          return "Fragment";
-        case REACT_PROFILER_TYPE:
-          return "Profiler";
-        case REACT_STRICT_MODE_TYPE:
-          return "StrictMode";
-        case REACT_SUSPENSE_TYPE:
-          return "Suspense";
-        case REACT_SUSPENSE_LIST_TYPE:
-          return "SuspenseList";
-        case REACT_ACTIVITY_TYPE:
-          return "Activity";
-      }
-      if ("object" === typeof type)
-        switch ("number" === typeof type.tag && console.error(
-          "Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."
-        ), type.$$typeof) {
-          case REACT_PORTAL_TYPE:
-            return "Portal";
-          case REACT_CONTEXT_TYPE:
-            return type.displayName || "Context";
-          case REACT_CONSUMER_TYPE:
-            return (type._context.displayName || "Context") + ".Consumer";
-          case REACT_FORWARD_REF_TYPE:
-            var innerType = type.render;
-            type = type.displayName;
-            type || (type = innerType.displayName || innerType.name || "", type = "" !== type ? "ForwardRef(" + type + ")" : "ForwardRef");
-            return type;
-          case REACT_MEMO_TYPE:
-            return innerType = type.displayName || null, null !== innerType ? innerType : getComponentNameFromType(type.type) || "Memo";
-          case REACT_LAZY_TYPE:
-            innerType = type._payload;
-            type = type._init;
-            try {
-              return getComponentNameFromType(type(innerType));
-            } catch (x) {
-            }
-        }
-      return null;
-    }
-    function testStringCoercion(value) {
-      return "" + value;
-    }
-    function checkKeyStringCoercion(value) {
-      try {
-        testStringCoercion(value);
-        var JSCompiler_inline_result = false;
-      } catch (e) {
-        JSCompiler_inline_result = true;
-      }
-      if (JSCompiler_inline_result) {
-        JSCompiler_inline_result = console;
-        var JSCompiler_temp_const = JSCompiler_inline_result.error;
-        var JSCompiler_inline_result$jscomp$0 = "function" === typeof Symbol && Symbol.toStringTag && value[Symbol.toStringTag] || value.constructor.name || "Object";
-        JSCompiler_temp_const.call(
-          JSCompiler_inline_result,
-          "The provided key is an unsupported type %s. This value must be coerced to a string before using it here.",
-          JSCompiler_inline_result$jscomp$0
-        );
-        return testStringCoercion(value);
-      }
-    }
-    function getTaskName(type) {
-      if (type === REACT_FRAGMENT_TYPE) return "<>";
-      if ("object" === typeof type && null !== type && type.$$typeof === REACT_LAZY_TYPE)
-        return "<...>";
-      try {
-        var name = getComponentNameFromType(type);
-        return name ? "<" + name + ">" : "<...>";
-      } catch (x) {
-        return "<...>";
-      }
-    }
-    function getOwner() {
-      var dispatcher = ReactSharedInternals.A;
-      return null === dispatcher ? null : dispatcher.getOwner();
-    }
-    function UnknownOwner() {
-      return Error("react-stack-top-frame");
-    }
-    function hasValidKey(config) {
-      if (hasOwnProperty.call(config, "key")) {
-        var getter = Object.getOwnPropertyDescriptor(config, "key").get;
-        if (getter && getter.isReactWarning) return false;
-      }
-      return void 0 !== config.key;
-    }
-    function defineKeyPropWarningGetter(props, displayName) {
-      function warnAboutAccessingKey() {
-        specialPropKeyWarningShown || (specialPropKeyWarningShown = true, console.error(
-          "%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)",
-          displayName
-        ));
-      }
-      warnAboutAccessingKey.isReactWarning = true;
-      Object.defineProperty(props, "key", {
-        get: warnAboutAccessingKey,
-        configurable: true
-      });
-    }
-    function elementRefGetterWithDeprecationWarning() {
-      var componentName = getComponentNameFromType(this.type);
-      didWarnAboutElementRef[componentName] || (didWarnAboutElementRef[componentName] = true, console.error(
-        "Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release."
-      ));
-      componentName = this.props.ref;
-      return void 0 !== componentName ? componentName : null;
-    }
-    function ReactElement(type, key, props, owner, debugStack, debugTask) {
-      var refProp = props.ref;
-      type = {
-        $$typeof: REACT_ELEMENT_TYPE,
-        type,
-        key,
-        props,
-        _owner: owner
-      };
-      null !== (void 0 !== refProp ? refProp : null) ? Object.defineProperty(type, "ref", {
-        enumerable: false,
-        get: elementRefGetterWithDeprecationWarning
-      }) : Object.defineProperty(type, "ref", { enumerable: false, value: null });
-      type._store = {};
-      Object.defineProperty(type._store, "validated", {
-        configurable: false,
-        enumerable: false,
-        writable: true,
-        value: 0
-      });
-      Object.defineProperty(type, "_debugInfo", {
-        configurable: false,
-        enumerable: false,
-        writable: true,
-        value: null
-      });
-      Object.defineProperty(type, "_debugStack", {
-        configurable: false,
-        enumerable: false,
-        writable: true,
-        value: debugStack
-      });
-      Object.defineProperty(type, "_debugTask", {
-        configurable: false,
-        enumerable: false,
-        writable: true,
-        value: debugTask
-      });
-      Object.freeze && (Object.freeze(type.props), Object.freeze(type));
-      return type;
-    }
-    function jsxDEVImpl(type, config, maybeKey, isStaticChildren, debugStack, debugTask) {
-      var children = config.children;
-      if (void 0 !== children)
-        if (isStaticChildren)
-          if (isArrayImpl(children)) {
-            for (isStaticChildren = 0; isStaticChildren < children.length; isStaticChildren++)
-              validateChildKeys(children[isStaticChildren]);
-            Object.freeze && Object.freeze(children);
-          } else
-            console.error(
-              "React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead."
-            );
-        else validateChildKeys(children);
-      if (hasOwnProperty.call(config, "key")) {
-        children = getComponentNameFromType(type);
-        var keys = Object.keys(config).filter(function(k) {
-          return "key" !== k;
-        });
-        isStaticChildren = 0 < keys.length ? "{key: someKey, " + keys.join(": ..., ") + ": ...}" : "{key: someKey}";
-        didWarnAboutKeySpread[children + isStaticChildren] || (keys = 0 < keys.length ? "{" + keys.join(": ..., ") + ": ...}" : "{}", console.error(
-          'A props object containing a "key" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />',
-          isStaticChildren,
-          children,
-          keys,
-          children
-        ), didWarnAboutKeySpread[children + isStaticChildren] = true);
-      }
-      children = null;
-      void 0 !== maybeKey && (checkKeyStringCoercion(maybeKey), children = "" + maybeKey);
-      hasValidKey(config) && (checkKeyStringCoercion(config.key), children = "" + config.key);
-      if ("key" in config) {
-        maybeKey = {};
-        for (var propName in config)
-          "key" !== propName && (maybeKey[propName] = config[propName]);
-      } else maybeKey = config;
-      children && defineKeyPropWarningGetter(
-        maybeKey,
-        "function" === typeof type ? type.displayName || type.name || "Unknown" : type
-      );
-      return ReactElement(
-        type,
-        children,
-        maybeKey,
-        getOwner(),
-        debugStack,
-        debugTask
-      );
-    }
-    function validateChildKeys(node) {
-      isValidElement(node) ? node._store && (node._store.validated = 1) : "object" === typeof node && null !== node && node.$$typeof === REACT_LAZY_TYPE && ("fulfilled" === node._payload.status ? isValidElement(node._payload.value) && node._payload.value._store && (node._payload.value._store.validated = 1) : node._store && (node._store.validated = 1));
-    }
-    function isValidElement(object) {
-      return "object" === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE;
-    }
-    var React$1 = React, REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = /* @__PURE__ */ Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = /* @__PURE__ */ Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = /* @__PURE__ */ Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = /* @__PURE__ */ Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = /* @__PURE__ */ Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = /* @__PURE__ */ Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = /* @__PURE__ */ Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = /* @__PURE__ */ Symbol.for("react.memo"), REACT_LAZY_TYPE = /* @__PURE__ */ Symbol.for("react.lazy"), REACT_ACTIVITY_TYPE = /* @__PURE__ */ Symbol.for("react.activity"), REACT_CLIENT_REFERENCE = /* @__PURE__ */ Symbol.for("react.client.reference"), ReactSharedInternals = React$1.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, isArrayImpl = Array.isArray, createTask = console.createTask ? console.createTask : function() {
-      return null;
-    };
-    React$1 = {
-      react_stack_bottom_frame: function(callStackForError) {
-        return callStackForError();
-      }
-    };
-    var specialPropKeyWarningShown;
-    var didWarnAboutElementRef = {};
-    var unknownOwnerDebugStack = React$1.react_stack_bottom_frame.bind(
-      React$1,
-      UnknownOwner
-    )();
-    var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
-    var didWarnAboutKeySpread = {};
-    reactJsxRuntime_development.Fragment = REACT_FRAGMENT_TYPE;
-    reactJsxRuntime_development.jsx = function(type, config, maybeKey) {
-      var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
-      return jsxDEVImpl(
-        type,
-        config,
-        maybeKey,
-        false,
-        trackActualOwner ? Error("react-stack-top-frame") : unknownOwnerDebugStack,
-        trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask
-      );
-    };
-    reactJsxRuntime_development.jsxs = function(type, config, maybeKey) {
-      var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
-      return jsxDEVImpl(
-        type,
-        config,
-        maybeKey,
-        true,
-        trackActualOwner ? Error("react-stack-top-frame") : unknownOwnerDebugStack,
-        trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask
-      );
-    };
-  })();
-  return reactJsxRuntime_development;
-}
-var hasRequiredJsxRuntime;
-function requireJsxRuntime() {
-  if (hasRequiredJsxRuntime) return jsxRuntime.exports;
-  hasRequiredJsxRuntime = 1;
-  if (process.env.NODE_ENV === "production") {
-    jsxRuntime.exports = requireReactJsxRuntime_production();
-  } else {
-    jsxRuntime.exports = requireReactJsxRuntime_development();
-  }
-  return jsxRuntime.exports;
-}
-var jsxRuntimeExports = requireJsxRuntime();
 const ModalStackContext = createContext(null);
 ModalStackContext.displayName = "ModalStackContext";
 let pageVersion = null;
@@ -806,7 +508,7 @@ const ModalStackProvider = ({ children }) => {
     registerLocalModal,
     removeLocalModal
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(ModalStackContext.Provider, { value, children });
+  return /* @__PURE__ */ jsx(ModalStackContext.Provider, { value, children });
 };
 const useModalStack = () => {
   const context = useContext(ModalStackContext);
@@ -840,12 +542,12 @@ const renderApp = (App, pageProps) => {
       }
       return child;
     };
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    return /* @__PURE__ */ jsxs(Fragment, { children: [
       renderComponent(),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ModalRoot, {})
+      /* @__PURE__ */ jsx(ModalRoot, {})
     ] });
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(ModalStackProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, { ...pageProps, children: renderInertiaApp }) });
+  return /* @__PURE__ */ jsx(ModalStackProvider, { children: /* @__PURE__ */ jsx(App, { ...pageProps, children: renderInertiaApp }) });
 };
 const ModalRoot = ({ children }) => {
   const context = useContext(ModalStackContext);
@@ -907,7 +609,7 @@ const ModalRoot = ({ children }) => {
             preserveState: true
           });
         }
-      }).then(() => {
+      }).finally(() => {
         pendingModalKeysRef.current.delete(modalKey);
       });
     }),
@@ -945,9 +647,9 @@ const ModalRoot = ({ children }) => {
       }
     }
   }, [$page.props?._inertiaui_modal]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
     children,
-    context && context.stack.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(ModalRenderer, { index: 0 })
+    context && context.stack.length > 0 && /* @__PURE__ */ jsx(ModalRenderer, { index: 0 })
   ] });
 };
 const ModalIndexContext = React.createContext(null);
@@ -963,7 +665,7 @@ const ModalRenderer = ({ index }) => {
   if (!modalContext?.component) {
     return null;
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(ModalIndexContext.Provider, { value: index, children: createElement(modalContext.component, {
+  return /* @__PURE__ */ jsx(ModalIndexContext.Provider, { value: index, children: createElement(modalContext.component, {
     ...modalContext.props,
     onModalEvent: (...args) => modalContext.emit("modal-event", ...args)
   }) });
@@ -1094,7 +796,7 @@ const HeadlessModal = forwardRef(
     if (!modalContext?.shouldRender) {
       return null;
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    return /* @__PURE__ */ jsxs(Fragment, { children: [
       typeof children === "function" ? children({
         // Spread props first so they can be overridden by built-in props
         ...modalContext.props,
@@ -1113,21 +815,21 @@ const HeadlessModal = forwardRef(
         setOpen: modalContext.setOpen,
         shouldRender: modalContext.shouldRender
       }) : children,
-      nextIndex !== void 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(ModalRenderer, { index: nextIndex })
+      nextIndex !== void 0 && /* @__PURE__ */ jsx(ModalRenderer, { index: nextIndex })
     ] });
   }
 );
 HeadlessModal.displayName = "HeadlessModal";
 function CloseButton({ onClick }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxs(
     "button",
     {
       type: "button",
       className: "im-close-button text-gray-400 hover:text-gray-500",
       onClick,
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Close" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsx("span", { className: "sr-only", children: "Close" }),
+        /* @__PURE__ */ jsx(
           "svg",
           {
             className: "size-6",
@@ -1137,7 +839,7 @@ function CloseButton({ onClick }) {
             strokeWidth: "2",
             stroke: "currentColor",
             "aria-hidden": "true",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            children: /* @__PURE__ */ jsx(
               "path",
               {
                 strokeLinecap: "round",
@@ -1355,19 +1057,19 @@ const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onA
       closeDialog();
     }
   }, [modalContext.isOpen, openDialog, closeDialog, isLeaving, useNativeDialog]);
-  const renderContent = () => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  const renderContent = () => /* @__PURE__ */ jsxs(
     "div",
     {
       className: `im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`,
       "data-inertiaui-modal-entered": entered,
       children: [
-        config.closeButton && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { onClick: modalContext.close }) }),
+        config.closeButton && /* @__PURE__ */ jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsx(CloseButton, { onClick: modalContext.close }) }),
         typeof children === "function" ? children({ modalContext, config }) : children
       ]
     }
   );
   if (useNativeDialog) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    return /* @__PURE__ */ jsx(
       "dialog",
       {
         ref: dialogRef,
@@ -1380,7 +1082,7 @@ const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onA
         ),
         onCancel: handleCancel,
         onClick: handleDialogClick,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "im-modal-container fixed inset-0 overflow-y-auto p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        children: /* @__PURE__ */ jsx("div", { className: "im-modal-container fixed inset-0 overflow-y-auto p-4", children: /* @__PURE__ */ jsx(
           "div",
           {
             className: clsx("im-modal-positioner flex min-h-full justify-center", {
@@ -1388,7 +1090,7 @@ const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onA
               "items-center": config.position === "center",
               "items-end": config.position === "bottom"
             }),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            children: /* @__PURE__ */ jsx(
               "div",
               {
                 ref: nativeWrapperRef,
@@ -1409,12 +1111,12 @@ const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onA
   if (transitionState === "exited") return null;
   const isEntering = transitionState === "entering";
   const isLeavingNonNative = transitionState === "leaving";
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsx(
     "div",
     {
       className: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",
       onMouseDown: handleClickOutside,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      children: /* @__PURE__ */ jsx(
         "div",
         {
           className: clsx("im-modal-positioner flex min-h-full justify-center", {
@@ -1423,7 +1125,7 @@ const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onA
             "items-end": config.position === "bottom"
           }),
           onMouseDown: handleClickOutside,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          children: /* @__PURE__ */ jsxs(
             "div",
             {
               ref: wrapperRef,
@@ -1436,7 +1138,7 @@ const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onA
                 maxWidthClass
               ),
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Dialog" }),
+                /* @__PURE__ */ jsx("span", { className: "sr-only", children: "Dialog" }),
                 renderContent()
               ]
             }
@@ -1631,19 +1333,19 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
       closeDialog();
     }
   }, [modalContext.isOpen, openDialog, closeDialog, isLeaving, useNativeDialog]);
-  const renderContent = () => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  const renderContent = () => /* @__PURE__ */ jsxs(
     "div",
     {
       className: `im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`,
       "data-inertiaui-modal-entered": entered,
       children: [
-        config.closeButton && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { onClick: modalContext.close }) }),
+        config.closeButton && /* @__PURE__ */ jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsx(CloseButton, { onClick: modalContext.close }) }),
         typeof children === "function" ? children({ modalContext, config }) : children
       ]
     }
   );
   if (useNativeDialog) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    return /* @__PURE__ */ jsx(
       "dialog",
       {
         ref: dialogRef,
@@ -1656,14 +1358,14 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
         ),
         onCancel: handleCancel,
         onClick: handleDialogClick,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        children: /* @__PURE__ */ jsx("div", { className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden", children: /* @__PURE__ */ jsx(
           "div",
           {
             className: clsx("im-slideover-positioner flex min-h-full items-center", {
               "justify-start rtl:justify-end": config?.position === "left",
               "justify-end rtl:justify-start": config?.position === "right"
             }),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            children: /* @__PURE__ */ jsx(
               "div",
               {
                 ref: nativeWrapperRef,
@@ -1684,12 +1386,12 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
   if (transitionState === "exited") return null;
   const isEntering = transitionState === "entering";
   const isLeavingNonNative = transitionState === "leaving";
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsx(
     "div",
     {
       className: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
       onMouseDown: handleClickOutside,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      children: /* @__PURE__ */ jsx(
         "div",
         {
           className: clsx("im-slideover-positioner flex min-h-full items-center", {
@@ -1697,7 +1399,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
             "justify-end rtl:justify-start": config?.position === "right"
           }),
           onMouseDown: handleClickOutside,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          children: /* @__PURE__ */ jsxs(
             "div",
             {
               ref: wrapperRef,
@@ -1710,7 +1412,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
                 maxWidthClass
               ),
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Dialog" }),
+                /* @__PURE__ */ jsx("span", { className: "sr-only", children: "Dialog" }),
                 renderContent()
               ]
             }
@@ -1758,7 +1460,7 @@ const Modal = forwardRef(
     const handleAfterLeave = useCallback(() => {
       onAfterLeave?.();
     }, [onAfterLeave]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    return /* @__PURE__ */ jsx(
       HeadlessModal,
       {
         ref: headlessModalRef,
@@ -1784,7 +1486,7 @@ const Modal = forwardRef(
           setOpen,
           shouldRender,
           ...extraProps
-        }) => /* @__PURE__ */ jsxRuntimeExports.jsx(ModalPortal, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        }) => /* @__PURE__ */ jsx(ModalPortal, { children: /* @__PURE__ */ jsxs(
           "div",
           {
             className: "im-dialog relative z-20",
@@ -1792,7 +1494,7 @@ const Modal = forwardRef(
             "data-inertiaui-modal-index": index,
             "aria-hidden": !onTopOfStack,
             children: [
-              index === 0 && !useNativeDialog && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              index === 0 && !useNativeDialog && /* @__PURE__ */ jsx(
                 BackdropTransition,
                 {
                   show: isOpen,
@@ -1800,7 +1502,7 @@ const Modal = forwardRef(
                   onAfterAppear: () => setRendered(true)
                 }
               ),
-              config.slideover ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              config.slideover ? /* @__PURE__ */ jsx(
                 SlideoverContent,
                 {
                   modalContext,
@@ -1826,7 +1528,7 @@ const Modal = forwardRef(
                     shouldRender
                   })
                 }
-              ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              ) : /* @__PURE__ */ jsx(
                 ModalContent,
                 {
                   modalContext,
@@ -1914,7 +1616,7 @@ function BackdropTransition({ show, appear, onAfterAppear }) {
   }, [show, appear, onAfterAppear]);
   if (state === "exited") return null;
   const isVisible = state === "entered";
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsx(
     "div",
     {
       ref: backdropRef,
@@ -2072,7 +1774,7 @@ const ModalLink = ({
     },
     [href, method, data, headers, queryStringArrayFormat, props, onCloseCallback, onAfterLeaveCallback]
   );
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsx(
     Component,
     {
       ...standardProps,

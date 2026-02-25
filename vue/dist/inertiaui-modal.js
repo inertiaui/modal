@@ -152,7 +152,7 @@ const _sfc_main$8 = {
               preserveState: true
             });
           }
-        }).then(() => {
+        }).finally(() => {
           pendingModalKeys.delete(modalKey);
         });
       })
@@ -253,7 +253,7 @@ function prefetch(href, options = {}) {
     ...headers,
     Accept: "text/html, application/xhtml+xml",
     "X-Requested-With": "XMLHttpRequest",
-    "X-Inertia": true,
+    "X-Inertia": "true",
     "X-Inertia-Version": usePage().version ?? "",
     "X-InertiaUI-Modal": generateId(),
     "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
@@ -412,12 +412,12 @@ class Modal {
         headers: {
           ...options.headers ?? {},
           Accept: "text/html, application/xhtml+xml",
-          "X-Inertia": true,
+          "X-Inertia": "true",
           "X-Inertia-Partial-Component": this.response.component,
           "X-Inertia-Version": this.response.version ?? "",
           "X-Inertia-Partial-Data": keys.join(","),
           "X-InertiaUI-Modal": generateId(),
-          "X-InertiaUI-Modal-Base-Url": baseUrl.value
+          "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
         }
       }).then((response2) => {
         this.updateProps(response2.data.props);
@@ -525,10 +525,10 @@ function visit(href, method, payload = {}, headers = {}, config = {}, onClose = 
       ...headers,
       Accept: "text/html, application/xhtml+xml",
       "X-Requested-With": "XMLHttpRequest",
-      "X-Inertia": true,
+      "X-Inertia": "true",
       "X-Inertia-Version": usePage().version ?? "",
       "X-InertiaUI-Modal": modalId,
-      "X-InertiaUI-Modal-Base-Url": baseUrl.value
+      "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
     };
     onStart?.();
     progress?.start();

@@ -5,13 +5,18 @@ import dts from 'vite-plugin-dts'
 
 export default defineConfig({
     plugins: [
-        react(),
+        react({
+            jsxRuntime: 'automatic',
+        }),
         dts({
             insertTypesEntry: true,
             rollupTypes: false,
             include: ['src/**/*.ts', 'src/**/*.tsx'],
         }),
     ],
+    define: {
+        'process.env.NODE_ENV': '"production"',
+    },
     build: {
         lib: {
             entry: resolve(__dirname, 'src/inertiauiModal.ts'),
@@ -21,11 +26,21 @@ export default defineConfig({
         sourcemap: true,
         minify: false,
         rollupOptions: {
-            external: ['@inertiajs/core', '@inertiajs/react', '@inertiaui/vanilla', 'axios', 'react', 'react-dom'],
+            external: [
+                '@inertiajs/core',
+                '@inertiajs/react',
+                '@inertiaui/vanilla',
+                'axios',
+                'react',
+                'react-dom',
+                'react/jsx-runtime',
+                'react/jsx-dev-runtime',
+            ],
             output: {
                 globals: {
                     react: 'React',
                     'react-dom': 'ReactDOM',
+                    'react/jsx-runtime': 'ReactJSXRuntime',
                     '@inertiajs/core': 'InertiaCore',
                     '@inertiajs/react': 'InertiaReact',
                     '@inertiaui/vanilla': 'InertiaUIVanilla',
