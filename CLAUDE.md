@@ -59,7 +59,7 @@ This is a monorepo with three main components:
 - `/src` - PHP Laravel package source (published to Composer)
 - `/react` - React implementation (published to NPM as separate package)
 - `/vue` - Vue 3 implementation (published to NPM as separate package)
-- `/demo-app` - Full Laravel application for testing/development with Dusk tests
+- `/demo-app` - Full Laravel application for testing/development with Pest Browser tests
 - `/docs` - Documentation files (not published)
 
 ## Commands
@@ -449,7 +449,7 @@ Currently no TypeScript definitions included. React uses JSX, Vue uses single-fi
 
 ### PHP Tests
 
-No PHPUnit tests in main package (testing via demo app Dusk tests).
+No PHPUnit tests in main package (testing via demo app Pest Browser tests).
 
 Static analysis via PHPStan (Level 5):
 
@@ -471,9 +471,42 @@ End-to-end browser tests using Pest Browser Testing (Playwright) in demo app:
 
 ```bash
 cd demo-app && ./vendor/bin/pest tests/Browser
+cd demo-app && ./vendor/bin/pest tests/Browser --parallel  # Run in parallel
 ```
 
 Helper functions are defined in `tests/Pest.php`.
+
+#### Test Selectors with data-testid
+
+Use `data-testid` attributes for test element selection (not `dusk`):
+
+```vue
+<!-- Vue -->
+<ModalLink data-testid="edit-user-123" href="/users/123/edit">Edit</ModalLink>
+```
+
+```jsx
+// React (JSX)
+<ModalLink data-testid={`edit-user-${user.id}`} href={`/users/${user.id}/edit`}>Edit</ModalLink>
+```
+
+```php
+// Test selectors
+$page->click("[data-testid='edit-user-123']");
+$page->assertSeeIn("[data-testid='message']", 'Success');
+```
+
+#### Parallel Test Isolation
+
+Tests run in parallel. To avoid conflicts when multiple tests interact with the same data, use `nthUser()` with unique offsets:
+
+```php
+// Bad - multiple parallel tests may conflict
+$user = firstUser();
+
+// Good - each test uses a unique user
+$user = nthUser(5);  // Use a different offset per test
+```
 
 #### Debugging Browser Tests
 
