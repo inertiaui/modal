@@ -8,8 +8,8 @@ it('prefetches on mount and fires callbacks', function () {
         ->waitForText('mount-prefetched');
 
     // Verify the prefetching and prefetched callbacks were fired
-    $page->assertSeeIn("[dusk='log']", 'mount-prefetching')
-        ->assertSeeIn("[dusk='log']", 'mount-prefetched');
+    $page->assertSeeIn("[data-testid='log']", 'mount-prefetching')
+        ->assertSeeIn("[data-testid='log']", 'mount-prefetched');
 });
 
 it('prefetches on hover and fires callbacks', function () {
@@ -17,17 +17,17 @@ it('prefetches on hover and fires callbacks', function () {
         ->waitForText('Prefetch Test');
 
     // Hover over the prefetch-hover link and wait a moment for the 75ms delay
-    $page->hover("[dusk='prefetch-hover']");
+    $page->hover("[data-testid='prefetch-hover']");
 
     // Wait for the prefetch to complete
     $page->waitForText('prefetched');
 
     // Verify the prefetching and prefetched callbacks were fired
-    $page->assertSeeIn("[dusk='log']", 'prefetching')
-        ->assertSeeIn("[dusk='log']", 'prefetched');
+    $page->assertSeeIn("[data-testid='log']", 'prefetching')
+        ->assertSeeIn("[data-testid='log']", 'prefetched');
 
     // Click to open the modal - it should use the cached response
-    $page->click("[dusk='prefetch-hover']")
+    $page->click("[data-testid='prefetch-hover']")
         ->assertPresent(waitForModalSelector())
         ->assertSeeIn('.im-modal-content', 'Edit User');
 });
@@ -37,12 +37,12 @@ it('opens modal after clicking prefetch link', function () {
         ->waitForText('Prefetch Test');
 
     // Click the prefetch-click link - this should prefetch on mousedown then open
-    $page->click("[dusk='prefetch-click']");
+    $page->click("[data-testid='prefetch-click']");
 
     // Wait for modal to open
     $page->assertPresent(waitForModalSelector())
         ->assertSeeIn('.im-modal-content', 'Edit User');
 
     // The click-success callback should have fired
-    $page->assertSeeIn("[dusk='log']", 'click-success');
+    $page->assertSeeIn("[data-testid='log']", 'click-success');
 });

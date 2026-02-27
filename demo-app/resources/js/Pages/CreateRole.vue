@@ -31,19 +31,19 @@ function submit() {
             <h2 class="text-lg font-medium text-gray-900">Create Role</h2>
             <p
                 v-if="greetingRef"
-                dusk="greeting"
+                data-testid="greeting"
                 class="text-sm text-gray-500"
                 v-text="greetingRef"
             />
             <p
                 v-if="headerValue"
-                dusk="headerValue"
+                data-testid="headerValue"
                 class="text-sm text-gray-500"
                 v-text="headerValue"
             />
             <p
                 v-if="name"
-                dusk="name"
+                data-testid="name"
                 class="text-sm text-gray-500"
                 v-text="name"
             />

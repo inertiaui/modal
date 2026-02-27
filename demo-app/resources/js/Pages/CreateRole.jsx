@@ -29,17 +29,17 @@ export default function CreateRole({ headerValue, name }) {
                     <div>
                         <h2 className="text-lg font-medium text-gray-900">Create Role</h2>
                         {greeting && (
-                            <p dusk="greeting" className="text-sm text-gray-500">
+                            <p data-testid="greeting" className="text-sm text-gray-500">
                                 {greeting}
                             </p>
                         )}
                         {headerValue && (
-                            <p dusk="headerValue" className="text-sm text-gray-500">
+                            <p data-testid="headerValue" className="text-sm text-gray-500">
                                 {headerValue}
                             </p>
                         )}
                         {name && (
-                            <p dusk="name" className="text-sm text-gray-500">
+                            <p data-testid="name" className="text-sm text-gray-500">
                                 {name}
                             </p>
                         )}

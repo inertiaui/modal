@@ -14,12 +14,12 @@ export default function Prefetch() {
             <div className="flex flex-col items-start gap-4">
                 <h2 className="text-lg font-medium text-gray-900">Prefetch Test</h2>
 
-                <p dusk="log">{log.join(',')}</p>
+                <p data-testid="log">{log.join(',')}</p>
 
                 <ModalLink
                     href="/users/1/edit"
                     prefetch="hover"
-                    dusk="prefetch-hover"
+                    data-testid="prefetch-hover"
                     className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                     onPrefetching={() => push('prefetching')}
                     onPrefetched={() => push('prefetched')}
@@ -31,7 +31,7 @@ export default function Prefetch() {
                 <ModalLink
                     href="/users/1/edit"
                     prefetch="click"
-                    dusk="prefetch-click"
+                    data-testid="prefetch-click"
                     className="px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded-md"
                     onPrefetching={() => push('click-prefetching')}
                     onPrefetched={() => push('click-prefetched')}
@@ -43,7 +43,7 @@ export default function Prefetch() {
                 <ModalLink
                     href="/users/1/edit"
                     prefetch="mount"
-                    dusk="prefetch-mount"
+                    data-testid="prefetch-mount"
                     className="px-2 py-1 text-xs font-medium text-purple-600 bg-purple-100 rounded-md"
                     onPrefetching={() => push('mount-prefetching')}
                     onPrefetched={() => push('mount-prefetched')}
@@ -55,7 +55,7 @@ export default function Prefetch() {
                 <ModalLink
                     href="/users/1/edit"
                     prefetch={['hover', 'click']}
-                    dusk="prefetch-multiple"
+                    data-testid="prefetch-multiple"
                     className="px-2 py-1 text-xs font-medium text-orange-600 bg-orange-100 rounded-md"
                     onPrefetching={() => push('multi-prefetching')}
                     onPrefetched={() => push('multi-prefetched')}
@@ -67,7 +67,7 @@ export default function Prefetch() {
                 <ModalLink
                     href="/users/1/edit"
                     prefetch={true}
-                    dusk="prefetch-true"
+                    data-testid="prefetch-true"
                     className="px-2 py-1 text-xs font-medium text-teal-600 bg-teal-100 rounded-md"
                     onPrefetching={() => push('true-prefetching')}
                     onPrefetched={() => push('true-prefetched')}

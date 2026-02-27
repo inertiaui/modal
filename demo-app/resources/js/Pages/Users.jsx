@@ -28,10 +28,10 @@ export default function Users({ users, random, navigate, deferred }) {
                 {
                     InertiaReact.Deferred ?
                         <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
-                            <p dusk="deferred">
+                            <p data-testid="deferred">
                                 {deferred}
                             </p>
-                        </InertiaReact.Deferred> : <p dusk="deferred"> No Deferred Component</p>
+                        </InertiaReact.Deferred> : <p data-testid="deferred"> No Deferred Component</p>
                 }
             </div>
             <div className="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
@@ -45,7 +45,7 @@ export default function Users({ users, random, navigate, deferred }) {
                                 </div>
                                 <div className="ml-auto flex items-center space-x-2">
                                     <Link
-                                        dusk={`view-user-${user.id}`}
+                                        data-testid={`view-user-${user.id}`}
                                         href={`/users/${user.id}`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                     >
@@ -54,7 +54,7 @@ export default function Users({ users, random, navigate, deferred }) {
 
                                     <ModalLink
                                         navigate={navigate}
-                                        dusk={`edit-user-${user.id}`}
+                                        data-testid={`edit-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                         onUserGreets={alertGreeting}
@@ -64,7 +64,7 @@ export default function Users({ users, random, navigate, deferred }) {
                                     <ModalLink
                                         slideover={true}
                                         navigate={navigate}
-                                        dusk={`slideover-user-${user.id}`}
+                                        data-testid={`slideover-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                         onUserGreets={alertGreeting}
@@ -82,21 +82,21 @@ export default function Users({ users, random, navigate, deferred }) {
             {/* Test redirect()->back() after modal close (issue #153) */}
             <div className="mt-4 flex space-x-4">
                 <button
-                    dusk="test-redirect-back"
+                    data-testid="test-redirect-back"
                     onClick={testRedirectBack}
                     className="px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
                 >
                     Test Redirect Back
                 </button>
                 <button
-                    dusk="test-modal-header-check"
+                    data-testid="test-modal-header-check"
                     onClick={testModalHeaderCheck}
                     className="px-3 py-2 text-sm font-medium text-white bg-orange-600 rounded-md"
                 >
                     Check Modal Header
                 </button>
                 <Link
-                    dusk="nav-visit"
+                    data-testid="nav-visit"
                     href="/visit"
                     className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md"
                 >

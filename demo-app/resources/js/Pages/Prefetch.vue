@@ -15,12 +15,12 @@ function push(value) {
         <div class="flex flex-col items-start gap-4">
             <h2 class="text-lg font-medium text-gray-900">Prefetch Test</h2>
 
-            <p dusk="log">{{ log.join(',') }}</p>
+            <p data-testid="log">{{ log.join(',') }}</p>
 
             <ModalLink
                 href="/users/1/edit"
                 prefetch="hover"
-                dusk="prefetch-hover"
+                data-testid="prefetch-hover"
                 class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                 @prefetching="push('prefetching')"
                 @prefetched="push('prefetched')"
@@ -32,7 +32,7 @@ function push(value) {
             <ModalLink
                 href="/users/1/edit"
                 prefetch="click"
-                dusk="prefetch-click"
+                data-testid="prefetch-click"
                 class="px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded-md"
                 @prefetching="push('click-prefetching')"
                 @prefetched="push('click-prefetched')"
@@ -44,7 +44,7 @@ function push(value) {
             <ModalLink
                 href="/users/1/edit"
                 prefetch="mount"
-                dusk="prefetch-mount"
+                data-testid="prefetch-mount"
                 class="px-2 py-1 text-xs font-medium text-purple-600 bg-purple-100 rounded-md"
                 @prefetching="push('mount-prefetching')"
                 @prefetched="push('mount-prefetched')"
@@ -56,7 +56,7 @@ function push(value) {
             <ModalLink
                 href="/users/1/edit"
                 :prefetch="['hover', 'click']"
-                dusk="prefetch-multiple"
+                data-testid="prefetch-multiple"
                 class="px-2 py-1 text-xs font-medium text-orange-600 bg-orange-100 rounded-md"
                 @prefetching="push('multi-prefetching')"
                 @prefetched="push('multi-prefetched')"
@@ -68,7 +68,7 @@ function push(value) {
             <ModalLink
                 href="/users/1/edit"
                 :prefetch="true"
-                dusk="prefetch-true"
+                data-testid="prefetch-true"
                 class="px-2 py-1 text-xs font-medium text-teal-600 bg-teal-100 rounded-md"
                 @prefetching="push('true-prefetching')"
                 @prefetched="push('true-prefetched')"

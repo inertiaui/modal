@@ -4,7 +4,7 @@ it('closes the modal when clicking outside by default', function () {
     $page = visit('/close-on-click-outside')
         ->resize(1024, 768)
         ->waitForText('Close on Click Outside Test')
-        ->click("[dusk='open-with-click-outside']")
+        ->click("[data-testid='open-with-click-outside']")
         ->assertPresent(waitForModalSelector());
 
     // Click outside the modal to close it
@@ -18,7 +18,7 @@ it('does not close the modal when clicking outside with closeOnClickOutside=fals
     $page = visit('/close-on-click-outside')
         ->resize(1024, 768)
         ->waitForText('Close on Click Outside Test')
-        ->click("[dusk='open-without-click-outside']")
+        ->click("[data-testid='open-without-click-outside']")
         ->assertPresent(waitForModalSelector());
 
     // Click outside the modal - should NOT close it
@@ -38,7 +38,7 @@ it('closes the slideover when clicking outside by default', function () {
     $page = visit('/close-on-click-outside')
         ->resize(1024, 768)
         ->waitForText('Close on Click Outside Test')
-        ->click("[dusk='open-slideover-with-click-outside']")
+        ->click("[data-testid='open-slideover-with-click-outside']")
         ->assertPresent(waitForModalSelector());
 
     // Click outside the slideover to close it
@@ -52,7 +52,7 @@ it('does not close the slideover when clicking outside with closeOnClickOutside=
     $page = visit('/close-on-click-outside')
         ->resize(1024, 768)
         ->waitForText('Close on Click Outside Test')
-        ->click("[dusk='open-slideover-without-click-outside']")
+        ->click("[data-testid='open-slideover-without-click-outside']")
         ->assertPresent(waitForModalSelector());
 
     // Click outside the slideover - should NOT close it

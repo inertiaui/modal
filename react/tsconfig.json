@@ -15,6 +15,6 @@
         "jsx": "react-jsx",
         "types": ["vite/client"]
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "../vue/src/**/*.ts"],
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
     "exclude": ["node_modules", "dist", "tests"]
 }

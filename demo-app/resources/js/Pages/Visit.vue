@@ -46,11 +46,11 @@ function testRedirectBack() {
         <div class="mt-8">
             <h2 class="text-lg font-medium text-gray-900">Other stuff</h2>
             <div class="flex flex-col items-start">
-                <Link href="/conditionally-redirect?redirect=1" dusk="conditional-redirect">
+                <Link href="/conditionally-redirect?redirect=1" data-testid="conditional-redirect">
                     Open page that redirects to modal
                 </Link>
 
-                <ModalLink :navigate href="/modal-props-ignore-first-load" dusk="modal-props-ignore-first-load">
+                <ModalLink :navigate href="/modal-props-ignore-first-load" data-testid="modal-props-ignore-first-load">
                     Open Modal with props that ignore first load
                 </ModalLink>
             </div>
@@ -59,7 +59,7 @@ function testRedirectBack() {
         <div class="mt-8">
             <p class="text-lg font-medium text-gray-900">Visit Page</p>
             <button
-                dusk="test-redirect-back"
+                data-testid="test-redirect-back"
                 @click="testRedirectBack"
                 class="mt-2 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
             >

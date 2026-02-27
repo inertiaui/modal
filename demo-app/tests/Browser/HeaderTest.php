@@ -5,5 +5,5 @@ it('can open a modal with a custom header', function (bool $navigate) {
         ->waitForText('Header')
         ->click('Open Modal')
         ->assertPresent(waitForModalSelector())
-        ->assertSeeIn("[dusk='headerValue']", 'Test Header Value');
+        ->assertSeeIn("[data-testid='headerValue']", 'Test Header Value');
 })->with('navigate');

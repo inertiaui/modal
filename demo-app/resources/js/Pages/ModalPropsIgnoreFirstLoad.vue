@@ -16,14 +16,14 @@ const visible = ref(false)
     <Modal v-slot="{reload}">
         <Deferred :data="['deferA', 'deferB']">
             <template #fallback>
-                <p dusk="defer">Loading defer...</p>
+                <p data-testid="defer">Loading defer...</p>
             </template>
 
-            <p dusk="defer" class="text-green-500">
+            <p data-testid="defer" class="text-green-500">
                 {{ deferA }}
             </p>
 
-            <p dusk="defer-b" class="text-green-500">
+            <p data-testid="defer-b" class="text-green-500">
                 {{ deferB }}
             </p>
         </Deferred>
@@ -33,7 +33,7 @@ const visible = ref(false)
                 Load lazy
             </button>
 
-            <p dusk="lazy" :class="lazy ? 'text-green-500' : ''">
+            <p data-testid="lazy" :class="lazy ? 'text-green-500' : ''">
                 {{ lazy ?? 'No lazy data loaded' }}
             </p>
         </div>
@@ -46,10 +46,10 @@ const visible = ref(false)
             <div v-show="visible">
                 <WhenVisible data="optional" always>
                     <template #fallback>
-                        <p dusk="optional">Loading optional...</p>
+                        <p data-testid="optional">Loading optional...</p>
                     </template>
 
-                    <p dusk="optional" class="text-green-500">
+                    <p data-testid="optional" class="text-green-500">
                         {{ optional }}
                     </p>
                 </WhenVisible>

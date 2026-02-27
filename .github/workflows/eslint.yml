@@ -45,18 +45,12 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Checkout vanilla package
-        run: |
-          cd ..
-          git clone https://github.com/inertiaui/vanilla.git vanilla
-          cd vanilla && npm ci && npm run build
-
       - name: Install dependencies
         run: |
           cd vue
-          npm install
+          npm ci
           cd ../react
-          npm install
+          npm ci
 
       - name: Run ESLint
         run: |

@@ -20,18 +20,18 @@ function openWithProps() {
         <div class="flex flex-col items-start gap-4">
             <h2 class="text-lg font-medium text-gray-900">Local Modal with Props</h2>
 
-            <button @click="openWithProps" dusk="open-with-props">
+            <button @click="openWithProps" data-testid="open-with-props">
                 Open Local Modal with Props
             </button>
 
-            <p dusk="received-message">{{ receivedMessage }}</p>
+            <p data-testid="received-message">{{ receivedMessage }}</p>
         </div>
     </Container>
 
     <Modal name="local-props" v-slot="{ message, count }">
         <div class="p-4">
-            <p dusk="modal-message">{{ message }}</p>
-            <p dusk="modal-count">{{ count }}</p>
+            <p data-testid="modal-message">{{ message }}</p>
+            <p data-testid="modal-count">{{ count }}</p>
         </div>
     </Modal>
 </template>

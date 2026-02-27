@@ -4,11 +4,11 @@ use App\Models\Role;
 use Illuminate\Support\Str;
 
 it('maintains body scroll lock when opening nested modals', function (bool $navigate) {
-    $firstUser = firstUser();
+    $user = firstUser();
 
     $page = visit('/users?'.($navigate ? 'navigate=1' : ''))
-        ->waitForText($firstUser->name)
-        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
         ->assertPresent(waitForModalSelector());
 
     // Check that body has scroll lock after first modal opens
@@ -41,11 +41,11 @@ it('maintains body scroll lock when opening nested modals', function (bool $navi
 })->with('navigate');
 
 it('can open a second modal on top of the first one', function (bool $navigate) {
-    $firstUser = firstUser();
+    $user = nthUser(7);  // Use unique user to avoid parallel test conflicts
 
     $page = visit('/users?'.($navigate ? 'navigate=1' : ''))
-        ->waitForText($firstUser->name)
-        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
         ->assertPresent(waitForModalSelector())
         ->click('Add Role')
         ->assertPresent(waitForModalSelector(1))
@@ -66,10 +66,11 @@ it('can open a second modal on top of the first one', function (bool $navigate) 
 
 it('can refresh props after closing the second modal', function () {
     $newRoleName = Str::random();
+    $user = nthUser(8);  // Use unique user to avoid parallel test conflicts
 
     $page = visit('/users')
-        ->waitForText(firstUser('name'))
-        ->click("[dusk='edit-user-".firstUser()->id."']")
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
         ->assertPresent(waitForModalSelector())
         ->click('Add Role')
         ->assertPresent(waitForModalSelector(1));

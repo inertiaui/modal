@@ -14,7 +14,7 @@ export default function CloseOnClickOutside() {
 
                 <ModalLink
                     href="/users/1/edit"
-                    dusk="open-with-click-outside"
+                    data-testid="open-with-click-outside"
                     className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                 >
                     Open Modal (default - closes on click outside)
@@ -23,7 +23,7 @@ export default function CloseOnClickOutside() {
                 <ModalLink
                     href="/users/1/edit"
                     closeOnClickOutside={false}
-                    dusk="open-without-click-outside"
+                    data-testid="open-without-click-outside"
                     className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                 >
                     Open Modal (closeOnClickOutside=false)
@@ -32,7 +32,7 @@ export default function CloseOnClickOutside() {
                 <ModalLink
                     href="/users/1/edit"
                     slideover
-                    dusk="open-slideover-with-click-outside"
+                    data-testid="open-slideover-with-click-outside"
                     className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                 >
                     Open Slideover (default - closes on click outside)
@@ -42,7 +42,7 @@ export default function CloseOnClickOutside() {
                     href="/users/1/edit"
                     slideover
                     closeOnClickOutside={false}
-                    dusk="open-slideover-without-click-outside"
+                    data-testid="open-slideover-without-click-outside"
                     className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                 >
                     Open Slideover (closeOnClickOutside=false)

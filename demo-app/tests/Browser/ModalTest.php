@@ -5,7 +5,7 @@ it('can open the modal and close it with the close button', function () {
 
     $page = visit('/users')
         ->waitForText($firstUser->name)
-        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->click("[data-testid='edit-user-{$firstUser->id}']")
         ->assertPresent(waitForModalSelector())
         ->assertSeeIn('.im-modal-content', 'Edit User');
 
@@ -20,7 +20,7 @@ it('can open the slideover and close it with the close button', function (bool $
 
     $page = visit('/users'.($navigate ? '?navigate=1' : ''))
         ->waitForText($firstUser->name)
-        ->click("[dusk='slideover-user-{$firstUser->id}']")
+        ->click("[data-testid='slideover-user-{$firstUser->id}']")
         ->assertPresent(waitForModalSelector())
         ->assertSeeIn('.im-slideover-content', 'Edit User');
 
@@ -36,7 +36,7 @@ it('can close the modal by pressing Escape key', function () {
     $page = visit('/users')
         ->resize(1024, 768)
         ->waitForText($firstUser->name)
-        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->click("[data-testid='edit-user-{$firstUser->id}']")
         ->assertPresent(waitForModalSelector());
 
     // Press Escape key using the page keyboard
@@ -53,7 +53,7 @@ it('can close the modal with a custom button', function () {
     $page = visit('/users')
         ->resize(1024, 768)
         ->waitForText($firstUser->name)
-        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->click("[data-testid='edit-user-{$firstUser->id}']")
         ->assertPresent(waitForModalSelector())
         ->press('Cancel');
 
@@ -66,15 +66,15 @@ it('can refetch the same base modal', function () {
 
     $page = visit('/users?navigate=1')
         ->waitForText($firstUser->name)
-        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->click("[data-testid='edit-user-{$firstUser->id}']")
         ->assertPresent(waitForModalSelector());
 
-    $randomKey = $page->text("[dusk='randomKey']");
+    $randomKey = $page->text("[data-testid='randomKey']");
 
     $page->click('Edit again!')
         ->assertDontSee($randomKey);
 
-    $newRandomKey = $page->text("[dusk='randomKey']");
+    $newRandomKey = $page->text("[data-testid='randomKey']");
 
     expect($newRandomKey)->not->toBe($randomKey);
     expect($page->url())->toContain($randomKey);
@@ -105,10 +105,10 @@ it('can reload with data and headers', function () {
 
     $page = visit('/users?navigate=1')
         ->waitForText($firstUser->name)
-        ->click("[dusk='edit-user-{$firstUser->id}']")
+        ->click("[data-testid='edit-user-{$firstUser->id}']")
         ->assertPresent(waitForModalSelector())
         ->press('Random Key from Data')
-        ->assertSeeIn("[dusk='randomKey']", 'from-data')
+        ->assertSeeIn("[data-testid='randomKey']", 'from-data')
         ->press('Random Key from Header')
-        ->assertSeeIn("[dusk='randomKey']", 'from-header');
+        ->assertSeeIn("[data-testid='randomKey']", 'from-header');
 });

@@ -45,11 +45,11 @@ export default function Visit({ navigate }) {
                 <div className="mt-8">
                     <h2 className="text-lg font-medium text-gray-900">Other stuff</h2>
                     <div className="flex flex-col items-start">
-                        <Link href="/conditionally-redirect?redirect=1" dusk="conditional-redirect">
+                        <Link href="/conditionally-redirect?redirect=1" data-testid="conditional-redirect">
                             Open page that redirects to modal
                         </Link>
 
-                        <ModalLink navigate={navigate} href="/modal-props-ignore-first-load" dusk="modal-props-ignore-first-load">
+                        <ModalLink navigate={navigate} href="/modal-props-ignore-first-load" data-testid="modal-props-ignore-first-load">
                             Open Modal with props that ignore first load
                         </ModalLink>
                     </div>
@@ -58,7 +58,7 @@ export default function Visit({ navigate }) {
                 <div className="mt-8">
                     <p className="text-lg font-medium text-gray-900">Visit Page</p>
                     <button
-                        dusk="test-redirect-back"
+                        data-testid="test-redirect-back"
                         onClick={testRedirectBack}
                         className="mt-2 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
                     >

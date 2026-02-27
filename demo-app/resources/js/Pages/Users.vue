@@ -43,18 +43,18 @@ function alertGreeting(greeting) {
     <Container>
         <div class="flex justify-between">
             <h2 class="text-lg font-medium text-gray-900">Users</h2>
-            <!-- <p dusk="state-a">S: {{ random }}</p>
-            <p dusk="state-a">A: {{ stateA }}</p>
-            <p dusk="state-b">B: {{ stateB }}</p> -->
+            <!-- <p data-testid="state-a">S: {{ random }}</p>
+            <p data-testid="state-a">A: {{ stateA }}</p>
+            <p data-testid="state-b">B: {{ stateB }}</p> -->
             <component v-if="InertiaVue.Deferred" :is="InertiaVue.Deferred" data="deferred">
                 <template #fallback>
                     Loading...
                 </template>
 
-                <p dusk="deferred">{{ deferred }}</p>
+                <p data-testid="deferred">{{ deferred }}</p>
             </component>
 
-            <p v-else dusk="deferred">No Deferred Component</p>
+            <p v-else data-testid="deferred">No Deferred Component</p>
         </div>
 
         <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
@@ -68,14 +68,14 @@ function alertGreeting(greeting) {
                         <div class="ml-auto flex items-center space-x-2">
                             <Link
                                 :href="`/users/${user.id}`"
-                                :dusk="'view-user-' + user.id"
+                                :data-testid="'view-user-' + user.id"
                                 class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                             >
                                 View
                             </Link>
                             <ModalLink
                                 :navigate="navigate"
-                                :dusk="'edit-user-' + user.id"
+                                :data-testid="'edit-user-' + user.id"
                                 :href="`/users/${user.id}/edit`"
                                 class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                 @user-greets="alertGreeting"
@@ -85,7 +85,7 @@ function alertGreeting(greeting) {
                             <ModalLink
                                 slideover
                                 :navigate="navigate"
-                                :dusk="'slideover-user-' + user.id"
+                                :data-testid="'slideover-user-' + user.id"
                                 :href="`/users/${user.id}/edit`"
                                 class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                 @user-greets="alertGreeting"
@@ -95,7 +95,7 @@ function alertGreeting(greeting) {
                             <ModalLink
                                 :as="CustomButton"
                                 :navigate="navigate"
-                                :dusk="'custom-button-user-' + user.id"
+                                :data-testid="'custom-button-user-' + user.id"
                                 :href="`/users/${user.id}/edit`"
                             >
                                 Custom
@@ -110,21 +110,21 @@ function alertGreeting(greeting) {
         <!-- Test redirect()->back() after modal close (issue #153) -->
         <div class="mt-4 flex space-x-4">
             <button
-                dusk="test-redirect-back"
+                data-testid="test-redirect-back"
                 @click="testRedirectBack"
                 class="px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
             >
                 Test Redirect Back
             </button>
             <button
-                dusk="test-modal-header-check"
+                data-testid="test-modal-header-check"
                 @click="testModalHeaderCheck"
                 class="px-3 py-2 text-sm font-medium text-white bg-orange-600 rounded-md"
             >
                 Check Modal Header
             </button>
             <Link
-                dusk="nav-visit"
+                data-testid="nav-visit"
                 href="/visit"
                 class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md"
             >

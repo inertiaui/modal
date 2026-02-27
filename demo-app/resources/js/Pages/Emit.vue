@@ -10,7 +10,7 @@ import { ModalLink } from '@inertiaui/modal-vue'
         </div>
 
         <ModalLink
-            dusk="modal-link"
+            data-testid="modal-link"
             href="/users/1/edit"
             class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
         >

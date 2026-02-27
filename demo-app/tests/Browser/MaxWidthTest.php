@@ -4,7 +4,7 @@ it('can have a modal with different max widths', function (string $size, int $ex
     $page = visit('/max-width')
         ->resize(1680, 900)
         ->waitForText('Max Width')
-        ->click("[dusk='modal-size-{$size}']")
+        ->click("[data-testid='modal-size-{$size}']")
         ->waitForText('Edit User');
 
     $width = $page->script("document.querySelector('body .im-modal-wrapper').offsetWidth");
@@ -16,7 +16,7 @@ it('can have a slideover with different max widths', function (string $size, int
     $page = visit('/max-width')
         ->resize(1680, 900)
         ->waitForText('Max Width')
-        ->click("[dusk='slideover-size-{$size}']")
+        ->click("[data-testid='slideover-size-{$size}']")
         ->waitForText('Edit User');
 
     $width = $page->script("document.querySelector('body .im-slideover-wrapper').offsetWidth");

@@ -27,7 +27,6 @@
     },
     "dependencies": {
         "@inertiaui/modal-react": "file:../react",
-        "@inertiaui/modal-vue": "file:../vue",
-        "@inertiaui/vanilla": "file:../../vanilla"
+        "@inertiaui/modal-vue": "file:../vue"
     }
 }

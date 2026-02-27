@@ -29,6 +29,8 @@ export type {
     PrefetchOptions,
 } from './types'
 
+export type { ModalTypeConfig } from './config'
+
 export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla'
 
 const setPageLayout = <T extends { default: { layout?: (page: React.ReactNode) => React.ReactNode } }>(

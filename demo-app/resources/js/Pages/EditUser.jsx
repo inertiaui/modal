@@ -49,8 +49,8 @@ export default function EditUser({ user, roles, randomKey }) {
                 <>
                     <div>
                         <h2 className="text-lg font-medium text-gray-900">Edit User {user.name}</h2>
-                        <p className="text-sm text-gray-500">Random key: <span dusk="randomKey">{randomKey}</span></p>
-                        {message && <p dusk="message" className="text-sm text-gray-500">{message}</p>}
+                        <p className="text-sm text-gray-500">Random key: <span data-testid="randomKey">{randomKey}</span></p>
+                        {message && <p data-testid="message" className="text-sm text-gray-500">{message}</p>}
                     </div>
 
                     <div className="mt-4 flex flex-col items-start">

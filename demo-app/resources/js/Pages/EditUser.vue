@@ -53,8 +53,8 @@ function reloadWithHeader() {
     >
         <div class="">
             <h2 class="text-lg font-medium text-gray-900">Edit User {{ user.name }}</h2>
-            <p class="text-sm text-gray-500">Random key: <span dusk="randomKey">{{ randomKey }}</span></p>
-            <p dusk="message" v-text="messageRef" v-if="messageRef" class="text-sm text-gray-500" />
+            <p class="text-sm text-gray-500">Random key: <span data-testid="randomKey">{{ randomKey }}</span></p>
+            <p data-testid="message" v-text="messageRef" v-if="messageRef" class="text-sm text-gray-500" />
         </div>
 
         <div class="mt-4 flex flex-col items-start">

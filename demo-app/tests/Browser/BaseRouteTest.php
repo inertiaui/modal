@@ -1,16 +1,15 @@
 <?php
 
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Support\Str;
 
 it('can open a modal with a base route', function () {
-    $firstUser = User::orderBy('name')->first();
+    $user = firstUser();
 
-    $page = visit("/users/{$firstUser->id}/edit")
-        ->assertSee($firstUser->name)
+    $page = visit("/users/{$user->id}/edit")
+        ->assertSee($user->name)
         ->assertSeeIn('.im-modal-content', 'Edit User')
-        ->assertPresent("[dusk='edit-user-{$firstUser->id}']");
+        ->assertPresent("[data-testid='edit-user-{$user->id}']");
 
     clickModalCloseButton($page);
 
@@ -19,14 +18,14 @@ it('can open a modal with a base route', function () {
 });
 
 it('can open a stacked modal on top of a modal with a base route', function () {
-    $firstUser = User::orderBy('name')->first();
+    $user = firstUser();
     $newRoleName = Str::random();
 
-    $page = visit("/users/{$firstUser->id}/edit")
+    $page = visit("/users/{$user->id}/edit")
         ->assertSeeIn('.im-modal-content', 'Edit User')
         ->click('Add Role')
         ->assertPresent(waitForModalSelector(1))
-        ->assertPathIs('/users/'.$firstUser->id.'/edit');
+        ->assertPathIs('/users/'.$user->id.'/edit');
 
     // Type in the nested modal and press its save button
     $page->page()->locator(modalSelector(1).' input[name="name"]')->fill($newRoleName);

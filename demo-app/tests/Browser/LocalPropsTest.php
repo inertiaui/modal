@@ -3,10 +3,10 @@
 it('can pass props to a local modal via visitModal', function () {
     $page = visit('/local-with-props')
         ->waitForText('Local Modal with Props')
-        ->press("[dusk='open-with-props']")
+        ->press("[data-testid='open-with-props']")
         ->assertPresent(waitForModalSelector());
 
     // Assert the props were passed to the modal
-    $page->assertSeeIn("[dusk='modal-message']", 'Hello from props!')
-        ->assertSeeIn("[dusk='modal-count']", '42');
+    $page->assertSeeIn("[data-testid='modal-message']", 'Hello from props!')
+        ->assertSeeIn("[data-testid='modal-count']", '42');
 });

@@ -39,13 +39,26 @@ function closeButtonSelector(int $index = 0): string
 }
 
 /**
- * Get the first user ordered by name.
+ * Get a user by offset (0-indexed), ordered by ID.
+ * Using ID ordering ensures consistent results when tests modify user names in parallel.
+ * Different tests should use different offsets to avoid conflicts in parallel execution.
  */
-function firstUser(?string $attribute = null, string $orderBy = 'name'): mixed
+function nthUser(int $offset = 0, ?string $attribute = null): mixed
 {
-    $user = User::query()->orderBy($orderBy)->first();
+    $user = User::query()->orderBy('id')->offset($offset)->first();
 
     return $user && $attribute ? $user->{$attribute} : $user;
+}
+
+/**
+ * Get the first user ordered by ID.
+ * Using ID ordering (not name) ensures consistent results when tests modify user names in parallel.
+ *
+ * @deprecated Use nthUser() with different offsets for tests that modify data
+ */
+function firstUser(?string $attribute = null, string $orderBy = 'id'): mixed
+{
+    return nthUser(0, $attribute);
 }
 
 /**
