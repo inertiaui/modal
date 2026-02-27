@@ -54,6 +54,8 @@ The modal packages depend on `@inertiaui/vanilla`. For local development:
 
 **Important**: Always run `./switch-vanilla-npm.sh` before pushing to CI, as CI cannot access local file paths.
 
+**Demo-app note**: The demo-app does NOT have `@inertiaui/vanilla` as a direct dependency. It gets vanilla through peer dependencies from the modal packages. When updating vanilla versions in react/vue packages, just delete `demo-app/package-lock.json` and run `npm install` to pick up the new version.
+
 ## Project Overview
 
 Inertia Modal is a Laravel package that enables opening any route in a Modal or Slideover without modifying existing routes or controllers. It's part of the Inertia UI suite and supports both React and Vue 3 frontends.
