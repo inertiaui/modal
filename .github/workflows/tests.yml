@@ -124,7 +124,7 @@ jobs:
           composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:^2.0
           composer install --no-progress --prefer-dist --optimize-autoloader
           php artisan about
-          npm ci
+          npm install
           if [ "${{ matrix.stack }}" == "react" ]; then
             npm install react@^19.0.0 react-dom@^19.0.0
           fi
