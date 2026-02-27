@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, ReactNode, SyntheticEvent, MouseEvent } from 'react'
 import CloseButton from './CloseButton'
 import clsx from 'clsx'
-import { createFocusTrap, onEscapeKey } from '@inertiaui/vanilla'
+import { createFocusTrap, onEscapeKey, animate, cancelAnimations } from '@inertiaui/vanilla'
 import { getMaxWidthClass } from './constants'
 import type { Modal } from './types'
 
@@ -33,7 +33,6 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
     const nativeWrapperRef = useRef<HTMLDivElement>(null)
     const cleanupFocusTrapRef = useRef<(() => void) | null>(null)
     const cleanupEscapeKeyRef = useRef<(() => void) | null>(null)
-    const currentAnimationRef = useRef<Animation | null>(null)
 
     const isLeft = config.position === 'left'
 
@@ -51,19 +50,11 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
             setIsVisible(true) // Trigger backdrop immediately
             const translateX = getTranslateX()
 
-            currentAnimationRef.current = element.animate(
-                [
-                    { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
-                    { transform: 'translate3d(0, 0, 0)', opacity: 1 },
-                ],
-                {
-                    duration: 300,
-                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Tailwind's ease-in-out
-                    fill: 'forwards',
-                },
-            )
+            await animate(element, [
+                { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+                { transform: 'translate3d(0, 0, 0)', opacity: 1 },
+            ])
 
-            await currentAnimationRef.current.finished
             setEntered(true)
         },
         [getTranslateX],
@@ -76,19 +67,10 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
             setIsVisible(false) // Trigger backdrop fade out immediately
             const translateX = getTranslateX()
 
-            currentAnimationRef.current = element.animate(
-                [
-                    { transform: 'translate3d(0, 0, 0)', opacity: 1 },
-                    { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
-                ],
-                {
-                    duration: 300,
-                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Tailwind's ease-in-out
-                    fill: 'forwards',
-                },
-            )
-
-            await currentAnimationRef.current.finished
+            await animate(element, [
+                { transform: 'translate3d(0, 0, 0)', opacity: 1 },
+                { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+            ])
 
             setIsRendered(false)
             if (useNativeDialog && dialogRef.current) {
@@ -240,8 +222,9 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
     // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (currentAnimationRef.current) {
-                currentAnimationRef.current.cancel()
+            const wrapper = useNativeDialog ? nativeWrapperRef.current : wrapperRef.current
+            if (wrapper) {
+                cancelAnimations(wrapper)
             }
             if (useNativeDialog) {
                 if (dialogRef.current?.open) {

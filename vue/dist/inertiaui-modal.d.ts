@@ -1,66 +1,26 @@
 import { AxiosResponse } from 'axios';
 import { CleanupFunction } from '@inertiaui/vanilla';
-import { ClickOutsideOptions } from '@inertiaui/vanilla';
 import { Component } from 'vue';
 import { ComputedRef } from 'vue';
-import { createDialog } from '@inertiaui/vanilla';
-import { createFocusTrap } from '@inertiaui/vanilla';
 import { default as Deferred } from './Deferred.vue';
-import { Dialog } from '@inertiaui/vanilla';
-import { DialogOptions } from '@inertiaui/vanilla';
+import * as dialogUtils from '@inertiaui/vanilla';
 import { EscapeKeyOptions } from '@inertiaui/vanilla';
-import { focusFirstElement } from '@inertiaui/vanilla';
 import { FocusTrapOptions } from '@inertiaui/vanilla';
-import { getFocusableElements } from '@inertiaui/vanilla';
-import { getScrollLockCount } from '@inertiaui/vanilla';
 import { h } from 'vue';
 import { default as HeadlessModal } from './HeadlessModal.vue';
-import { lockScroll } from '@inertiaui/vanilla';
-import { markAriaHidden } from '@inertiaui/vanilla';
 import { default as Modal } from './Modal.vue';
 import { default as ModalLink } from './ModalLink.vue';
 import { default as ModalRoot } from './ModalRoot.vue';
-import { onClickOutside } from '@inertiaui/vanilla';
-import { onEscapeKey } from '@inertiaui/vanilla';
 import { Ref } from 'vue';
 import { RequestPayload } from '@inertiajs/core';
-import { unlockScroll } from '@inertiaui/vanilla';
-import { unmarkAriaHidden } from '@inertiaui/vanilla';
 import { default as WhenVisible } from './WhenVisible.vue';
 
 export { CleanupFunction }
-
-export { ClickOutsideOptions }
 
 declare type ComponentResolver = (name: string) => Promise<Component>;
 
 export { Deferred }
 
-export { Dialog }
-
-export { DialogOptions }
-
-declare namespace dialogUtils {
-    export {
-        lockScroll,
-        unlockScroll,
-        getScrollLockCount,
-        getFocusableElements,
-        createFocusTrap,
-        focusFirstElement,
-        onClickOutside,
-        onEscapeKey,
-        markAriaHidden,
-        unmarkAriaHidden,
-        createDialog,
-        CleanupFunction,
-        FocusTrapOptions,
-        ClickOutsideOptions,
-        EscapeKeyOptions,
-        DialogOptions,
-        Dialog
-    }
-}
 export { dialogUtils }
 
 export { EscapeKeyOptions }

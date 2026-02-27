@@ -8,7 +8,7 @@ import ModalComponent from './Modal.vue'
 import ModalLink from './ModalLink.vue'
 import ModalRoot from './ModalRoot.vue'
 import WhenVisible from './WhenVisible.vue'
-import * as dialogUtils from './dialog'
+import * as dialogUtils from '@inertiaui/vanilla'
 import { kebabCase } from './helpers'
 
 function visitModal(url: string, options: VisitOptions = {}): Promise<ModalClass> {
@@ -71,11 +71,4 @@ export {
 // Export types
 export type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, PrefetchOption, PrefetchOptions }
 export type { ModalTypeConfig } from './config'
-export type {
-    CleanupFunction,
-    FocusTrapOptions,
-    ClickOutsideOptions,
-    EscapeKeyOptions,
-    DialogOptions,
-    Dialog,
-} from './dialog'
+export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla'

@@ -29,14 +29,7 @@ export type {
     PrefetchOptions,
 } from './types'
 
-export type {
-    CleanupFunction,
-    FocusTrapOptions,
-    ClickOutsideOptions,
-    EscapeKeyOptions,
-    DialogOptions,
-    Dialog,
-} from '@inertiaui/vanilla'
+export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla'
 
 const setPageLayout = <T extends { default: { layout?: (page: React.ReactNode) => React.ReactNode } }>(
     layout: React.ComponentType<{ children?: React.ReactNode }>,

@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react"), require("react/jsx-dev-runtime"), require("axios"), require("@inertiaui/vanilla"), require("@inertiajs/react"), require("@inertiajs/core"), require("react-dom")) : typeof define === "function" && define.amd ? define(["exports", "react", "react/jsx-dev-runtime", "axios", "@inertiaui/vanilla", "@inertiajs/react", "@inertiajs/core", "react-dom"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.React, global.jsxDevRuntime, global.axios, global.InertiaUIVanilla, global.InertiaReact, global.InertiaCore, global.ReactDOM));
-})(this, (function(exports2, React, jsxDevRuntime, Axios, vanilla, react, core, reactDom) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react"), require("react/jsx-runtime"), require("axios"), require("@inertiaui/vanilla"), require("@inertiajs/react"), require("@inertiajs/core"), require("react-dom")) : typeof define === "function" && define.amd ? define(["exports", "react", "react/jsx-runtime", "axios", "@inertiaui/vanilla", "@inertiajs/react", "@inertiajs/core", "react-dom"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.React, global.ReactJSXRuntime, global.axios, global.InertiaUIVanilla, global.InertiaReact, global.InertiaCore, global.ReactDOM));
+})(this, (function(exports2, React, jsxRuntime, Axios, vanilla, react, core, reactDom) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -524,11 +524,7 @@
       registerLocalModal,
       removeLocalModal
     };
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(ModalStackContext.Provider, { value, children }, void 0, false, {
-      fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRoot.tsx",
-      lineNumber: 659,
-      columnNumber: 12
-    }, void 0);
+    return /* @__PURE__ */ jsxRuntime.jsx(ModalStackContext.Provider, { value, children });
   };
   const useModalStack = () => {
     const context = React.useContext(ModalStackContext);
@@ -562,28 +558,12 @@
         }
         return child;
       };
-      return /* @__PURE__ */ jsxDevRuntime.jsxDEV(jsxDevRuntime.Fragment, { children: [
+      return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
         renderComponent(),
-        /* @__PURE__ */ jsxDevRuntime.jsxDEV(ModalRoot, {}, void 0, false, {
-          fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRoot.tsx",
-          lineNumber: 715,
-          columnNumber: 17
-        }, void 0)
-      ] }, void 0, true, {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRoot.tsx",
-        lineNumber: 713,
-        columnNumber: 13
-      }, void 0);
+        /* @__PURE__ */ jsxRuntime.jsx(ModalRoot, {})
+      ] });
     };
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(ModalStackProvider, { children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(App, { ...pageProps, children: renderInertiaApp }, void 0, false, {
-      fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRoot.tsx",
-      lineNumber: 722,
-      columnNumber: 13
-    }, void 0) }, void 0, false, {
-      fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRoot.tsx",
-      lineNumber: 721,
-      columnNumber: 9
-    }, void 0);
+    return /* @__PURE__ */ jsxRuntime.jsx(ModalStackProvider, { children: /* @__PURE__ */ jsxRuntime.jsx(App, { ...pageProps, children: renderInertiaApp }) });
   };
   const ModalRoot = ({ children }) => {
     const context = React.useContext(ModalStackContext);
@@ -683,18 +663,10 @@
         }
       }
     }, [$page.props?._inertiaui_modal]);
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(jsxDevRuntime.Fragment, { children: [
+    return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
       children,
-      context && context.stack.length > 0 && /* @__PURE__ */ jsxDevRuntime.jsxDEV(ModalRenderer, { index: 0 }, void 0, false, {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRoot.tsx",
-        lineNumber: 877,
-        columnNumber: 53
-      }, void 0)
-    ] }, void 0, true, {
-      fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRoot.tsx",
-      lineNumber: 875,
-      columnNumber: 9
-    }, void 0);
+      context && context.stack.length > 0 && /* @__PURE__ */ jsxRuntime.jsx(ModalRenderer, { index: 0 })
+    ] });
   };
   const ModalIndexContext = React.createContext(null);
   ModalIndexContext.displayName = "ModalIndexContext";
@@ -709,14 +681,10 @@
     if (!modalContext?.component) {
       return null;
     }
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(ModalIndexContext.Provider, { value: index, children: React.createElement(modalContext.component, {
+    return /* @__PURE__ */ jsxRuntime.jsx(ModalIndexContext.Provider, { value: index, children: React.createElement(modalContext.component, {
       ...modalContext.props,
       onModalEvent: (...args) => modalContext.emit("modal-event", ...args)
-    }) }, void 0, false, {
-      fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalRenderer.tsx",
-      lineNumber: 24,
-      columnNumber: 9
-    }, void 0);
+    }) });
   };
   function useModal() {
     return useModalStack().stack[useModalIndex()] ?? null;
@@ -844,7 +812,7 @@
       if (!modalContext?.shouldRender) {
         return null;
       }
-      return /* @__PURE__ */ jsxDevRuntime.jsxDEV(jsxDevRuntime.Fragment, { children: [
+      return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
         typeof children === "function" ? children({
           // Spread props first so they can be overridden by built-in props
           ...modalContext.props,
@@ -863,33 +831,21 @@
           setOpen: modalContext.setOpen,
           shouldRender: modalContext.shouldRender
         }) : children,
-        nextIndex !== void 0 && /* @__PURE__ */ jsxDevRuntime.jsxDEV(ModalRenderer, { index: nextIndex }, void 0, false, {
-          fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/HeadlessModal.tsx",
-          lineNumber: 231,
-          columnNumber: 45
-        }, void 0)
-      ] }, void 0, true, {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/HeadlessModal.tsx",
-        lineNumber: 208,
-        columnNumber: 13
-      }, void 0);
+        nextIndex !== void 0 && /* @__PURE__ */ jsxRuntime.jsx(ModalRenderer, { index: nextIndex })
+      ] });
     }
   );
   HeadlessModal.displayName = "HeadlessModal";
   function CloseButton({ onClick }) {
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+    return /* @__PURE__ */ jsxRuntime.jsxs(
       "button",
       {
         type: "button",
         className: "im-close-button text-gray-400 hover:text-gray-500",
         onClick,
         children: [
-          /* @__PURE__ */ jsxDevRuntime.jsxDEV("span", { className: "sr-only", children: "Close" }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/CloseButton.tsx",
-            lineNumber: 12,
-            columnNumber: 13
-          }, this),
-          /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "sr-only", children: "Close" }),
+          /* @__PURE__ */ jsxRuntime.jsx(
             "svg",
             {
               className: "size-6",
@@ -899,42 +855,18 @@
               strokeWidth: "2",
               stroke: "currentColor",
               "aria-hidden": "true",
-              children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+              children: /* @__PURE__ */ jsxRuntime.jsx(
                 "path",
                 {
                   strokeLinecap: "round",
                   strokeLinejoin: "round",
                   d: "M6 18L18 6M6 6l12 12"
-                },
-                void 0,
-                false,
-                {
-                  fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/CloseButton.tsx",
-                  lineNumber: 22,
-                  columnNumber: 17
-                },
-                this
+                }
               )
-            },
-            void 0,
-            false,
-            {
-              fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/CloseButton.tsx",
-              lineNumber: 13,
-              columnNumber: 13
-            },
-            this
+            }
           )
         ]
-      },
-      void 0,
-      true,
-      {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/CloseButton.tsx",
-        lineNumber: 7,
-        columnNumber: 9
-      },
-      this
+      }
     );
   }
   function r(e) {
@@ -975,43 +907,24 @@
     const nativeWrapperRef = React.useRef(null);
     const cleanupFocusTrapRef = React.useRef(null);
     const cleanupEscapeKeyRef = React.useRef(null);
-    const currentAnimationRef = React.useRef(null);
     const maxWidthClass = React.useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth]);
     const animateIn = React.useCallback(async (element) => {
       if (!element) return;
       setIsVisible(true);
-      currentAnimationRef.current = element.animate(
-        [
-          { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 },
-          { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 }
-        ],
-        {
-          duration: 300,
-          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-          // Tailwind's ease-in-out
-          fill: "forwards"
-        }
-      );
-      await currentAnimationRef.current.finished;
+      await vanilla.animate(element, [
+        { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 },
+        { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 }
+      ]);
       setEntered(true);
     }, []);
     const animateOut = React.useCallback(
       async (element) => {
         if (!element) return;
         setIsVisible(false);
-        currentAnimationRef.current = element.animate(
-          [
-            { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-            { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 }
-          ],
-          {
-            duration: 300,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            // Tailwind's ease-in-out
-            fill: "forwards"
-          }
-        );
-        await currentAnimationRef.current.finished;
+        await vanilla.animate(element, [
+          { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
+          { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 }
+        ]);
         setIsRendered(false);
         if (useNativeDialog && dialogRef.current) {
           dialogRef.current.close();
@@ -1133,8 +1046,9 @@
     }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog]);
     React.useEffect(() => {
       return () => {
-        if (currentAnimationRef.current) {
-          currentAnimationRef.current.cancel();
+        const wrapper = useNativeDialog ? nativeWrapperRef.current : wrapperRef.current;
+        if (wrapper) {
+          vanilla.cancelAnimations(wrapper);
         }
         if (useNativeDialog) {
           if (dialogRef.current?.open) {
@@ -1146,35 +1060,19 @@
         }
       };
     }, [useNativeDialog, cleanupFocusTrap, cleanupEscapeKey]);
-    const renderContent = () => /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+    const renderContent = () => /* @__PURE__ */ jsxRuntime.jsxs(
       "div",
       {
         className: `im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`,
         "data-inertiaui-modal-entered": entered,
         children: [
-          config.closeButton && /* @__PURE__ */ jsxDevRuntime.jsxDEV("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(CloseButton, { onClick: modalContext.close }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-            lineNumber: 256,
-            columnNumber: 21
-          }, void 0) }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-            lineNumber: 255,
-            columnNumber: 17
-          }, void 0),
+          config.closeButton && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntime.jsx(CloseButton, { onClick: modalContext.close }) }),
           typeof children === "function" ? children({ modalContext, config }) : children
         ]
-      },
-      void 0,
-      true,
-      {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-        lineNumber: 250,
-        columnNumber: 9
-      },
-      void 0
+      }
     );
     if (useNativeDialog) {
-      return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+      return /* @__PURE__ */ jsxRuntime.jsx(
         "dialog",
         {
           ref: dialogRef,
@@ -1187,7 +1085,7 @@
           ),
           onCancel: handleCancel,
           onClick: handleDialogClick,
-          children: /* @__PURE__ */ jsxDevRuntime.jsxDEV("div", { className: "im-modal-container fixed inset-0 overflow-y-auto p-4", children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+          children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "im-modal-container fixed inset-0 overflow-y-auto p-4", children: /* @__PURE__ */ jsxRuntime.jsx(
             "div",
             {
               className: clsx("im-modal-positioner flex min-h-full justify-center", {
@@ -1195,54 +1093,26 @@
                 "items-center": config.position === "center",
                 "items-end": config.position === "bottom"
               }),
-              children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+              children: /* @__PURE__ */ jsxRuntime.jsx(
                 "div",
                 {
                   ref: nativeWrapperRef,
                   className: clsx("im-modal-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
                   children: renderContent()
-                },
-                void 0,
-                false,
-                {
-                  fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-                  lineNumber: 286,
-                  columnNumber: 25
-                },
-                void 0
+                }
               )
-            },
-            void 0,
-            false,
-            {
-              fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-              lineNumber: 279,
-              columnNumber: 21
-            },
-            void 0
-          ) }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-            lineNumber: 278,
-            columnNumber: 17
-          }, void 0)
-        },
-        void 0,
-        false,
-        {
-          fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-          lineNumber: 266,
-          columnNumber: 13
-        },
-        void 0
+            }
+          ) })
+        }
       );
     }
     if (!isRendered) return null;
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+    return /* @__PURE__ */ jsxRuntime.jsx(
       "div",
       {
         className: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",
         onMouseDown: handleClickOutside,
-        children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+        children: /* @__PURE__ */ jsxRuntime.jsx(
           "div",
           {
             className: clsx("im-modal-positioner flex min-h-full justify-center", {
@@ -1251,7 +1121,7 @@
               "items-end": config.position === "bottom"
             }),
             onMouseDown: handleClickOutside,
-            children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+            children: /* @__PURE__ */ jsxRuntime.jsxs(
               "div",
               {
                 ref: wrapperRef,
@@ -1259,42 +1129,14 @@
                 "aria-modal": "true",
                 className: clsx("im-modal-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
                 children: [
-                  /* @__PURE__ */ jsxDevRuntime.jsxDEV("span", { className: "sr-only", children: "Dialog" }, void 0, false, {
-                    fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-                    lineNumber: 320,
-                    columnNumber: 21
-                  }, void 0),
+                  /* @__PURE__ */ jsxRuntime.jsx("span", { className: "sr-only", children: "Dialog" }),
                   renderContent()
                 ]
-              },
-              void 0,
-              true,
-              {
-                fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-                lineNumber: 314,
-                columnNumber: 17
-              },
-              void 0
+              }
             )
-          },
-          void 0,
-          false,
-          {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-            lineNumber: 306,
-            columnNumber: 13
-          },
-          void 0
+          }
         )
-      },
-      void 0,
-      false,
-      {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalContent.tsx",
-        lineNumber: 302,
-        columnNumber: 9
-      },
-      void 0
+      }
     );
   };
   const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }) => {
@@ -1306,7 +1148,6 @@
     const nativeWrapperRef = React.useRef(null);
     const cleanupFocusTrapRef = React.useRef(null);
     const cleanupEscapeKeyRef = React.useRef(null);
-    const currentAnimationRef = React.useRef(null);
     const isLeft = config.position === "left";
     const maxWidthClass = React.useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth]);
     const getTranslateX = React.useCallback(() => isLeft ? "-100%" : "100%", [isLeft]);
@@ -1315,19 +1156,10 @@
         if (!element) return;
         setIsVisible(true);
         const translateX = getTranslateX();
-        currentAnimationRef.current = element.animate(
-          [
-            { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
-            { transform: "translate3d(0, 0, 0)", opacity: 1 }
-          ],
-          {
-            duration: 300,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            // Tailwind's ease-in-out
-            fill: "forwards"
-          }
-        );
-        await currentAnimationRef.current.finished;
+        await vanilla.animate(element, [
+          { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+          { transform: "translate3d(0, 0, 0)", opacity: 1 }
+        ]);
         setEntered(true);
       },
       [getTranslateX]
@@ -1337,19 +1169,10 @@
         if (!element) return;
         setIsVisible(false);
         const translateX = getTranslateX();
-        currentAnimationRef.current = element.animate(
-          [
-            { transform: "translate3d(0, 0, 0)", opacity: 1 },
-            { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
-          ],
-          {
-            duration: 300,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            // Tailwind's ease-in-out
-            fill: "forwards"
-          }
-        );
-        await currentAnimationRef.current.finished;
+        await vanilla.animate(element, [
+          { transform: "translate3d(0, 0, 0)", opacity: 1 },
+          { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
+        ]);
         setIsRendered(false);
         if (useNativeDialog && dialogRef.current) {
           dialogRef.current.close();
@@ -1471,8 +1294,9 @@
     }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog]);
     React.useEffect(() => {
       return () => {
-        if (currentAnimationRef.current) {
-          currentAnimationRef.current.cancel();
+        const wrapper = useNativeDialog ? nativeWrapperRef.current : wrapperRef.current;
+        if (wrapper) {
+          vanilla.cancelAnimations(wrapper);
         }
         if (useNativeDialog) {
           if (dialogRef.current?.open) {
@@ -1484,35 +1308,19 @@
         }
       };
     }, [useNativeDialog, cleanupFocusTrap, cleanupEscapeKey]);
-    const renderContent = () => /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+    const renderContent = () => /* @__PURE__ */ jsxRuntime.jsxs(
       "div",
       {
         className: `im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`,
         "data-inertiaui-modal-entered": entered,
         children: [
-          config.closeButton && /* @__PURE__ */ jsxDevRuntime.jsxDEV("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(CloseButton, { onClick: modalContext.close }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-            lineNumber: 266,
-            columnNumber: 21
-          }, void 0) }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-            lineNumber: 265,
-            columnNumber: 17
-          }, void 0),
+          config.closeButton && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntime.jsx(CloseButton, { onClick: modalContext.close }) }),
           typeof children === "function" ? children({ modalContext, config }) : children
         ]
-      },
-      void 0,
-      true,
-      {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-        lineNumber: 260,
-        columnNumber: 9
-      },
-      void 0
+      }
     );
     if (useNativeDialog) {
-      return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+      return /* @__PURE__ */ jsxRuntime.jsx(
         "dialog",
         {
           ref: dialogRef,
@@ -1525,61 +1333,33 @@
           ),
           onCancel: handleCancel,
           onClick: handleDialogClick,
-          children: /* @__PURE__ */ jsxDevRuntime.jsxDEV("div", { className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden", children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+          children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden", children: /* @__PURE__ */ jsxRuntime.jsx(
             "div",
             {
               className: clsx("im-slideover-positioner flex min-h-full items-center", {
                 "justify-start rtl:justify-end": config?.position === "left",
                 "justify-end rtl:justify-start": config?.position === "right"
               }),
-              children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+              children: /* @__PURE__ */ jsxRuntime.jsx(
                 "div",
                 {
                   ref: nativeWrapperRef,
                   className: clsx("im-slideover-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
                   children: renderContent()
-                },
-                void 0,
-                false,
-                {
-                  fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-                  lineNumber: 295,
-                  columnNumber: 25
-                },
-                void 0
+                }
               )
-            },
-            void 0,
-            false,
-            {
-              fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-              lineNumber: 289,
-              columnNumber: 21
-            },
-            void 0
-          ) }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-            lineNumber: 288,
-            columnNumber: 17
-          }, void 0)
-        },
-        void 0,
-        false,
-        {
-          fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-          lineNumber: 276,
-          columnNumber: 13
-        },
-        void 0
+            }
+          ) })
+        }
       );
     }
     if (!isRendered) return null;
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+    return /* @__PURE__ */ jsxRuntime.jsx(
       "div",
       {
         className: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
         onMouseDown: handleClickOutside,
-        children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+        children: /* @__PURE__ */ jsxRuntime.jsx(
           "div",
           {
             className: clsx("im-slideover-positioner flex min-h-full items-center", {
@@ -1587,7 +1367,7 @@
               "justify-end rtl:justify-start": config?.position === "right"
             }),
             onMouseDown: handleClickOutside,
-            children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+            children: /* @__PURE__ */ jsxRuntime.jsxs(
               "div",
               {
                 ref: wrapperRef,
@@ -1595,42 +1375,14 @@
                 "aria-modal": "true",
                 className: clsx("im-slideover-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
                 children: [
-                  /* @__PURE__ */ jsxDevRuntime.jsxDEV("span", { className: "sr-only", children: "Dialog" }, void 0, false, {
-                    fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-                    lineNumber: 328,
-                    columnNumber: 21
-                  }, void 0),
+                  /* @__PURE__ */ jsxRuntime.jsx("span", { className: "sr-only", children: "Dialog" }),
                   renderContent()
                 ]
-              },
-              void 0,
-              true,
-              {
-                fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-                lineNumber: 322,
-                columnNumber: 17
-              },
-              void 0
+              }
             )
-          },
-          void 0,
-          false,
-          {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-            lineNumber: 315,
-            columnNumber: 13
-          },
-          void 0
+          }
         )
-      },
-      void 0,
-      false,
-      {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/SlideoverContent.tsx",
-        lineNumber: 311,
-        columnNumber: 9
-      },
-      void 0
+      }
     );
   };
   const Modal = React.forwardRef(
@@ -1671,7 +1423,7 @@
       const handleAfterLeave = React.useCallback(() => {
         onAfterLeave?.();
       }, [onAfterLeave]);
-      return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+      return /* @__PURE__ */ jsxRuntime.jsx(
         HeadlessModal,
         {
           ref: headlessModalRef,
@@ -1697,7 +1449,7 @@
             setOpen,
             shouldRender,
             ...extraProps
-          }) => /* @__PURE__ */ jsxDevRuntime.jsxDEV(ModalPortal, { children: /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+          }) => /* @__PURE__ */ jsxRuntime.jsx(ModalPortal, { children: /* @__PURE__ */ jsxRuntime.jsxs(
             "div",
             {
               className: "im-dialog relative z-20",
@@ -1705,23 +1457,15 @@
               "data-inertiaui-modal-index": index,
               "aria-hidden": !onTopOfStack,
               children: [
-                index === 0 && !useNativeDialog && /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+                index === 0 && !useNativeDialog && /* @__PURE__ */ jsxRuntime.jsx(
                   BackdropTransition,
                   {
                     show: isOpen,
                     appear: !rendered,
                     onAfterAppear: () => setRendered(true)
-                  },
-                  void 0,
-                  false,
-                  {
-                    fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/Modal.tsx",
-                    lineNumber: 148,
-                    columnNumber: 33
-                  },
-                  void 0
+                  }
                 ),
-                config.slideover ? /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+                config.slideover ? /* @__PURE__ */ jsxRuntime.jsx(
                   SlideoverContent,
                   {
                     modalContext,
@@ -1746,16 +1490,8 @@
                       setOpen,
                       shouldRender
                     })
-                  },
-                  void 0,
-                  false,
-                  {
-                    fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/Modal.tsx",
-                    lineNumber: 157,
-                    columnNumber: 33
-                  },
-                  void 0
-                ) : /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+                  }
+                ) : /* @__PURE__ */ jsxRuntime.jsx(
                   ModalContent,
                   {
                     modalContext,
@@ -1780,40 +1516,12 @@
                       setOpen,
                       shouldRender
                     })
-                  },
-                  void 0,
-                  false,
-                  {
-                    fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/Modal.tsx",
-                    lineNumber: 183,
-                    columnNumber: 33
-                  },
-                  void 0
+                  }
                 )
               ]
-            },
-            void 0,
-            true,
-            {
-              fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/Modal.tsx",
-              lineNumber: 139,
-              columnNumber: 25
-            },
-            void 0
-          ) }, void 0, false, {
-            fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/Modal.tsx",
-            lineNumber: 138,
-            columnNumber: 21
-          }, void 0)
-        },
-        void 0,
-        false,
-        {
-          fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/Modal.tsx",
-          lineNumber: 112,
-          columnNumber: 13
-        },
-        void 0
+            }
+          ) })
+        }
       );
     }
   );
@@ -1871,21 +1579,13 @@
     }, [show, appear, onAfterAppear]);
     if (state === "exited") return null;
     const isVisible = state === "entered";
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+    return /* @__PURE__ */ jsxRuntime.jsx(
       "div",
       {
         ref: backdropRef,
         className: `im-backdrop fixed inset-0 z-30 bg-black/75 transition-opacity duration-300 ease-in-out ${isVisible ? "opacity-100" : "opacity-0"}`,
         "aria-hidden": "true"
-      },
-      void 0,
-      false,
-      {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/Modal.tsx",
-        lineNumber: 283,
-        columnNumber: 9
-      },
-      this
+      }
     );
   }
   Modal.displayName = "Modal";
@@ -2037,7 +1737,7 @@
       },
       [href, method, data, headers, queryStringArrayFormat, props, onCloseCallback, onAfterLeaveCallback]
     );
-    return /* @__PURE__ */ jsxDevRuntime.jsxDEV(
+    return /* @__PURE__ */ jsxRuntime.jsx(
       Component,
       {
         ...standardProps,
@@ -2047,15 +1747,7 @@
         onMouseLeave: handleMouseLeave,
         onMouseDown: handleMouseDown,
         children: typeof children === "function" ? children({ loading }) : children
-      },
-      void 0,
-      false,
-      {
-        fileName: "/Users/pascalbaljet/Sites/inertiaui-modal/react/src/ModalLink.tsx",
-        lineNumber: 211,
-        columnNumber: 9
-      },
-      void 0
+      }
     );
   };
   const WhenVisible = ({ children, data, params, buffer, as, always, fallback }) => {

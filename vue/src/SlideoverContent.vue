@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import CloseButton from './CloseButton.vue'
-import { createFocusTrap, onEscapeKey } from './dialog'
+import { createFocusTrap, onEscapeKey, animate, cancelAnimations } from '@inertiaui/vanilla'
 import { getMaxWidthClass } from './constants'
 
 const props = defineProps({
@@ -22,7 +22,6 @@ const nativeWrapperRef = ref(null)
 
 let cleanupFocusTrap = null
 let cleanupEscapeKey = null
-let currentAnimation = null
 
 const maxWidthClass = computed(() => getMaxWidthClass(props.config.maxWidth))
 
@@ -37,16 +36,11 @@ async function animateIn(element) {
     isVisible.value = true  // Trigger backdrop immediately
     const translateX = getTranslateX()
 
-    currentAnimation = element.animate([
+    await animate(element, [
         { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
         { transform: 'translate3d(0, 0, 0)', opacity: 1 }
-    ], {
-        duration: 300,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',  // Tailwind's ease-in-out
-        fill: 'forwards'
-    })
+    ])
 
-    await currentAnimation.finished
     entered.value = true
     setupFocusTrap()
 }
@@ -57,16 +51,10 @@ async function animateOut(element) {
     isVisible.value = false  // Trigger backdrop fade out immediately
     const translateX = getTranslateX()
 
-    currentAnimation = element.animate([
+    await animate(element, [
         { transform: 'translate3d(0, 0, 0)', opacity: 1 },
         { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
-    ], {
-        duration: 300,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',  // Tailwind's ease-in-out
-        fill: 'forwards'
-    })
-
-    await currentAnimation.finished
+    ])
 
     isRendered.value = false
     if (props.useNativeDialog && dialogRef.value) {
@@ -190,8 +178,9 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    if (currentAnimation) {
-        currentAnimation.cancel()
+    const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value
+    if (wrapper) {
+        cancelAnimations(wrapper)
     }
     if (props.useNativeDialog) {
         if (dialogRef.value?.open) {

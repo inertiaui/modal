@@ -9,7 +9,7 @@ import { default as ModalLink } from './ModalLink';
 import { default as WhenVisible } from './WhenVisible';
 import * as dialogUtils from '@inertiaui/vanilla';
 export type { Modal as ModalInstance, ModalConfig, ModalResponseData, ModalStackContextValue, VisitOptions, ReloadOptions, EventCallback, ComponentResolver, PageProps, ModalRootProps, ModalRendererProps, LocalModal, PrefetchOption, PrefetchOptions, } from './types';
-export type { CleanupFunction, FocusTrapOptions, ClickOutsideOptions, EscapeKeyOptions, DialogOptions, Dialog, } from '@inertiaui/vanilla';
+export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla';
 declare const setPageLayout: <T extends {
     default: {
         layout?: (page: React.ReactNode) => React.ReactNode;

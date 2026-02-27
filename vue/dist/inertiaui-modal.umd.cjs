@@ -2,6 +2,23 @@
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue"), require("@inertiaui/vanilla"), require("@inertiajs/vue3"), require("@inertiajs/core"), require("axios")) : typeof define === "function" && define.amd ? define(["exports", "vue", "@inertiaui/vanilla", "@inertiajs/vue3", "@inertiajs/core", "axios"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.Vue, global.InertiaUIVanilla, global.InertiaVue3, global.InertiaCore, global.axios));
 })(this, (function(exports2, vue, vanilla, vue3, core, Axios) {
   "use strict";
+  function _interopNamespaceDefault(e) {
+    const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
+    if (e) {
+      for (const k in e) {
+        if (k !== "default") {
+          const d = Object.getOwnPropertyDescriptor(e, k);
+          Object.defineProperty(n, k, d.get ? d : {
+            enumerable: true,
+            get: () => e[k]
+          });
+        }
+      }
+    }
+    n.default = e;
+    return Object.freeze(n);
+  }
+  const vanilla__namespace = /* @__PURE__ */ _interopNamespaceDefault(vanilla);
   const defaultConfig = {
     type: "modal",
     navigate: false,
@@ -824,20 +841,6 @@
       };
     }
   };
-  const dialog = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-    __proto__: null,
-    createDialog: vanilla.createDialog,
-    createFocusTrap: vanilla.createFocusTrap,
-    focusFirstElement: vanilla.focusFirstElement,
-    getFocusableElements: vanilla.getFocusableElements,
-    getScrollLockCount: vanilla.getScrollLockCount,
-    lockScroll: vanilla.lockScroll,
-    markAriaHidden: vanilla.markAriaHidden,
-    onClickOutside: vanilla.onClickOutside,
-    onEscapeKey: vanilla.onEscapeKey,
-    unlockScroll: vanilla.unlockScroll,
-    unmarkAriaHidden: vanilla.unmarkAriaHidden
-  }, Symbol.toStringTag, { value: "Module" }));
   const maxWidthClasses = {
     sm: "sm:max-w-sm",
     md: "sm:max-w-md",
@@ -885,37 +888,24 @@
       const nativeWrapperRef = vue.ref(null);
       let cleanupFocusTrap = null;
       let cleanupEscapeKey = null;
-      let currentAnimation = null;
       const maxWidthClass = vue.computed(() => getMaxWidthClass(props.config.maxWidth));
       async function animateIn(element) {
         if (!element) return;
         isVisible.value = true;
-        const animation = element.animate([
+        await vanilla.animate(element, [
           { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 },
           { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 }
-        ], {
-          duration: 300,
-          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-          // Tailwind's ease-in-out
-          fill: "forwards"
-        });
-        await animation.finished;
+        ]);
         entered.value = true;
         setupFocusTrap();
       }
       async function animateOut(element) {
         if (!element) return;
         isVisible.value = false;
-        currentAnimation = element.animate([
+        await vanilla.animate(element, [
           { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
           { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 }
-        ], {
-          duration: 300,
-          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-          // Tailwind's ease-in-out
-          fill: "forwards"
-        });
-        await currentAnimation.finished;
+        ]);
         isRendered.value = false;
         if (props.useNativeDialog && dialogRef.value) {
           dialogRef.value.close();
@@ -1016,8 +1006,9 @@
         }
       });
       vue.onUnmounted(() => {
-        if (currentAnimation) {
-          currentAnimation.cancel();
+        const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+        if (wrapper) {
+          vanilla.cancelAnimations(wrapper);
         }
         if (props.useNativeDialog) {
           if (dialogRef.value?.open) {
@@ -1182,23 +1173,16 @@
       const nativeWrapperRef = vue.ref(null);
       let cleanupFocusTrap = null;
       let cleanupEscapeKey = null;
-      let currentAnimation = null;
       const maxWidthClass = vue.computed(() => getMaxWidthClass(props.config.maxWidth));
       const getTranslateX = () => props.config.position === "left" ? "-100%" : "100%";
       async function animateIn(element) {
         if (!element) return;
         isVisible.value = true;
         const translateX = getTranslateX();
-        currentAnimation = element.animate([
+        await vanilla.animate(element, [
           { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
           { transform: "translate3d(0, 0, 0)", opacity: 1 }
-        ], {
-          duration: 300,
-          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-          // Tailwind's ease-in-out
-          fill: "forwards"
-        });
-        await currentAnimation.finished;
+        ]);
         entered.value = true;
         setupFocusTrap();
       }
@@ -1206,16 +1190,10 @@
         if (!element) return;
         isVisible.value = false;
         const translateX = getTranslateX();
-        currentAnimation = element.animate([
+        await vanilla.animate(element, [
           { transform: "translate3d(0, 0, 0)", opacity: 1 },
           { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
-        ], {
-          duration: 300,
-          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-          // Tailwind's ease-in-out
-          fill: "forwards"
-        });
-        await currentAnimation.finished;
+        ]);
         isRendered.value = false;
         if (props.useNativeDialog && dialogRef.value) {
           dialogRef.value.close();
@@ -1316,8 +1294,9 @@
         }
       });
       vue.onUnmounted(() => {
-        if (currentAnimation) {
-          currentAnimation.cancel();
+        const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+        if (wrapper) {
+          vanilla.cancelAnimations(wrapper);
         }
         if (props.useNativeDialog) {
           if (dialogRef.value?.open) {
@@ -1921,6 +1900,7 @@
       return modal;
     });
   }
+  exports2.dialogUtils = vanilla__namespace;
   exports2.Deferred = _sfc_main$7;
   exports2.HeadlessModal = _sfc_main$6;
   exports2.Modal = _sfc_main$2;
@@ -1928,7 +1908,6 @@
   exports2.ModalLink = _sfc_main$1;
   exports2.ModalRoot = _sfc_main$8;
   exports2.WhenVisible = _sfc_main;
-  exports2.dialogUtils = dialog;
   exports2.getConfig = getConfig;
   exports2.initFromPageProps = initFromPageProps;
   exports2.modalPropNames = modalPropNames;

@@ -3,7 +3,7 @@ import ModalContent from './ModalContent.vue'
 import HeadlessModal from './HeadlessModal.vue'
 import SlideoverContent from './SlideoverContent.vue'
 import { onMounted, onUnmounted, ref, computed } from 'vue'
-import { lockScroll, markAriaHidden } from './dialog'
+import { lockScroll, markAriaHidden } from '@inertiaui/vanilla'
 import { getConfig } from './config'
 
 const modal = ref(null)

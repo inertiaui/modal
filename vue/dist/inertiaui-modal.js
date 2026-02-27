@@ -1,5 +1,6 @@
 import { computed, provide, openBlock, createBlock, unref, mergeProps, createCommentVNode, onUnmounted, onMounted, watch, createElementBlock, Fragment, renderSlot, ref, h, readonly, markRaw, nextTick, toValue, inject, onBeforeUnmount, useAttrs, createElementVNode, normalizeClass, createVNode, withModifiers, withCtx, Teleport, Transition, resolveDynamicComponent } from "vue";
-import { generateId as generateId$1, only, sameUrlPath, kebabCase, except, createDialog, createFocusTrap, focusFirstElement, getFocusableElements, getScrollLockCount, lockScroll, markAriaHidden, onClickOutside, onEscapeKey, unlockScroll, unmarkAriaHidden, rejectNullValues } from "@inertiaui/vanilla";
+import { generateId as generateId$1, only, sameUrlPath, kebabCase, except, cancelAnimations, onEscapeKey, createFocusTrap, animate, lockScroll, markAriaHidden, rejectNullValues } from "@inertiaui/vanilla";
+import * as vanilla from "@inertiaui/vanilla";
 import { usePage, router, progress } from "@inertiajs/vue3";
 import { mergeDataIntoQueryString } from "@inertiajs/core";
 import Axios from "axios";
@@ -825,20 +826,6 @@ const _sfc_main$5 = {
     };
   }
 };
-const dialog = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  createDialog,
-  createFocusTrap,
-  focusFirstElement,
-  getFocusableElements,
-  getScrollLockCount,
-  lockScroll,
-  markAriaHidden,
-  onClickOutside,
-  onEscapeKey,
-  unlockScroll,
-  unmarkAriaHidden
-}, Symbol.toStringTag, { value: "Module" }));
 const maxWidthClasses = {
   sm: "sm:max-w-sm",
   md: "sm:max-w-md",
@@ -886,37 +873,24 @@ const _sfc_main$4 = {
     const nativeWrapperRef = ref(null);
     let cleanupFocusTrap = null;
     let cleanupEscapeKey = null;
-    let currentAnimation = null;
     const maxWidthClass = computed(() => getMaxWidthClass(props.config.maxWidth));
     async function animateIn(element) {
       if (!element) return;
       isVisible.value = true;
-      const animation = element.animate([
+      await animate(element, [
         { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 },
         { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 }
-      ], {
-        duration: 300,
-        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        // Tailwind's ease-in-out
-        fill: "forwards"
-      });
-      await animation.finished;
+      ]);
       entered.value = true;
       setupFocusTrap();
     }
     async function animateOut(element) {
       if (!element) return;
       isVisible.value = false;
-      currentAnimation = element.animate([
+      await animate(element, [
         { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
         { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 }
-      ], {
-        duration: 300,
-        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        // Tailwind's ease-in-out
-        fill: "forwards"
-      });
-      await currentAnimation.finished;
+      ]);
       isRendered.value = false;
       if (props.useNativeDialog && dialogRef.value) {
         dialogRef.value.close();
@@ -1017,8 +991,9 @@ const _sfc_main$4 = {
       }
     });
     onUnmounted(() => {
-      if (currentAnimation) {
-        currentAnimation.cancel();
+      const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+      if (wrapper) {
+        cancelAnimations(wrapper);
       }
       if (props.useNativeDialog) {
         if (dialogRef.value?.open) {
@@ -1183,23 +1158,16 @@ const _sfc_main$3 = {
     const nativeWrapperRef = ref(null);
     let cleanupFocusTrap = null;
     let cleanupEscapeKey = null;
-    let currentAnimation = null;
     const maxWidthClass = computed(() => getMaxWidthClass(props.config.maxWidth));
     const getTranslateX = () => props.config.position === "left" ? "-100%" : "100%";
     async function animateIn(element) {
       if (!element) return;
       isVisible.value = true;
       const translateX = getTranslateX();
-      currentAnimation = element.animate([
+      await animate(element, [
         { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
         { transform: "translate3d(0, 0, 0)", opacity: 1 }
-      ], {
-        duration: 300,
-        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        // Tailwind's ease-in-out
-        fill: "forwards"
-      });
-      await currentAnimation.finished;
+      ]);
       entered.value = true;
       setupFocusTrap();
     }
@@ -1207,16 +1175,10 @@ const _sfc_main$3 = {
       if (!element) return;
       isVisible.value = false;
       const translateX = getTranslateX();
-      currentAnimation = element.animate([
+      await animate(element, [
         { transform: "translate3d(0, 0, 0)", opacity: 1 },
         { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
-      ], {
-        duration: 300,
-        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        // Tailwind's ease-in-out
-        fill: "forwards"
-      });
-      await currentAnimation.finished;
+      ]);
       isRendered.value = false;
       if (props.useNativeDialog && dialogRef.value) {
         dialogRef.value.close();
@@ -1317,8 +1279,9 @@ const _sfc_main$3 = {
       }
     });
     onUnmounted(() => {
-      if (currentAnimation) {
-        currentAnimation.cancel();
+      const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+      if (wrapper) {
+        cancelAnimations(wrapper);
       }
       if (props.useNativeDialog) {
         if (dialogRef.value?.open) {
@@ -1930,7 +1893,7 @@ export {
   _sfc_main$1 as ModalLink,
   _sfc_main$8 as ModalRoot,
   _sfc_main as WhenVisible,
-  dialog as dialogUtils,
+  vanilla as dialogUtils,
   getConfig,
   initFromPageProps,
   modalPropNames,
