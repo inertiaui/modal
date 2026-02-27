@@ -42,6 +42,18 @@ cd demo-app
 
 Changes to React/Vue source will automatically rebuild and the demo-app will pick them up.
 
+### Vanilla Package Development
+
+The modal packages depend on `@inertiaui/vanilla`. For local development:
+
+```bash
+./switch-vanilla-local.sh   # Use local ../../vanilla (for development)
+./switch-vanilla-npm.sh     # Use npm published version (for CI/release)
+./switch-vanilla-npm.sh 0.1.3  # Use specific npm version
+```
+
+**Important**: Always run `./switch-vanilla-npm.sh` before pushing to CI, as CI cannot access local file paths.
+
 ## Project Overview
 
 Inertia Modal is a Laravel package that enables opening any route in a Modal or Slideover without modifying existing routes or controllers. It's part of the Inertia UI suite and supports both React and Vue 3 frontends.
