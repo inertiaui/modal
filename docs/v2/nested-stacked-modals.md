@@ -178,7 +178,7 @@ export default function EditUser() {
 
 :::
 
-Another great example is reloading the parent modal when the child modal is closed. This is described in the [Reload Props](/reload-props#example-with-nested-stack-modal) documentation.
+Another great example is reloading the parent modal when the child modal is closed. This is described in the [Reload Props](/v2/reload-props#example-with-nested-stack-modal) documentation.
 
 ## Form Submissions in Nested Modals
 

@@ -4,13 +4,13 @@ Though the package comes with a default customizable UI, you can also use it in 
 
 ## `HeadlessModal` component
 
-The `Headless` component provides the following props:
+The `HeadlessModal` component provides the following props:
 
 | Prop | Description |
 | --- | --- |
 | afterLeave | Function to call after the modal has left the screen to remove it from the DOM |
 | close | Function to close the modal |
-| config | The [configuration](/configuration) passed to the modal |
+| config | The [configuration](/v2/configuration) passed to the modal |
 | emit | Function to emit an event |
 | getChildModal | Function to get first the child modal |
 | getParentModal | Function to get the parent modal |
@@ -19,8 +19,9 @@ The `Headless` component provides the following props:
 | isOpen | Boolean indicating if the modal is open |
 | modalContext | Object with all of the props in this table |
 | onTopOfStack | Boolean indicating if the modal is on top of the stack |
-| reload | Function to [reload](/reload-props) props |
+| reload | Function to [reload](/v2/reload-props) props |
 | setOpen | Function to toggle the modal's open state |
+| shouldRender | Boolean indicating if the modal should render its content |
 
 Here is an example of how to use the `HeadlessModal` component:
 

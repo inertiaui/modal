@@ -1,6 +1,6 @@
 # Styling
 
-A fair bit of styling can be adjusted using the [configuration](/configuration) options. However, you may want to customize the modal even further using CSS. The components use Tailwind CSS classes, but all major elements have their own class names, so you can easily target them with your own styles.
+A fair bit of styling can be adjusted using the [configuration](/v2/configuration) options. However, you may want to customize the modal even further using CSS. The components use Tailwind CSS classes, but all major elements have their own class names, so you can easily target them with your own styles.
 
 ## Available Classes
 

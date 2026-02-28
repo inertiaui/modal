@@ -11,7 +11,7 @@ Inertia::modal('Team', [
 ]);
 ```
 
-Then in the frontend, you can use the `reload` method to load the lazy prop. For a deeper dive into how reload works, check out the [Reload Props](/reload-props) documentation.
+Then in the frontend, you can use the `reload` method to load the lazy prop. For a deeper dive into how reload works, check out the [Reload Props](/v2/reload-props) documentation.
 
 ::: code-group
 

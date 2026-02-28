@@ -79,14 +79,34 @@ If you need more refined control over the mounting process, you should check out
 
 ## Tailwind Configuration
 
-Inertia Modal uses Tailwind CSS for styling. You need to include the package path in the *content* array of your `tailwind.config.js` file:
+Inertia Modal uses Tailwind CSS for styling. You need to tell Tailwind to scan the package's source files so that the utility classes are included in your CSS output.
+
+### Tailwind CSS 4
+
+In Tailwind CSS 4, add an `@source` directive to your CSS file:
+
+::: code-group
+
+```css [Vue]
+@source "../node_modules/@inertiaui/modal-vue/src";
+```
+
+```css [React]
+@source "../node_modules/@inertiaui/modal-react/src";
+```
+
+:::
+
+### Tailwind CSS 3
+
+If you're still on Tailwind CSS 3, include the package path in the *content* array of your `tailwind.config.js` file:
 
 ::: code-group
 
 ```js [Vue]
 export default {
     content: [
-        './node_modules/@inertiaui/modal-vue/src/**/*.{js,vue}',
+        './node_modules/@inertiaui/modal-vue/src/**/*.{js,ts,vue}',
         // other paths...
     ]
 }
@@ -95,7 +115,7 @@ export default {
 ```js [React]
 export default {
     content: [
-        './node_modules/@inertiaui/modal-react/src/**/*.{js,jsx}',
+        './node_modules/@inertiaui/modal-react/src/**/*.{js,ts,jsx,tsx}',
         // other paths...
     ]
 }

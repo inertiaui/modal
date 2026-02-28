@@ -1,6 +1,6 @@
 # Custom App Mounting
 
-If you need more refined control over the mounting process, contrary to the regular [Inertia.js installation](/installation#inertia-js-configuration), you may ignore the `renderApp` helper method and perform the mounting manually.
+If you need more refined control over the mounting process, contrary to the regular [Inertia.js installation](/v2/installation#inertia-js-configuration), you may ignore the `renderApp` helper method and perform the mounting manually.
 
 ## React
 

@@ -8,7 +8,7 @@ The following props can be used on both the `ModalLink` and `Modal` components. 
 
 ### `close-button`
 
-The `close-button` prop allows you to show or hide the close button in the modal. By default, the close button is shown. To render a custom close button, you can check out the [Close Modal](/close-modal) section.
+The `close-button` prop allows you to show or hide the close button in the modal. By default, the close button is shown. To render a custom close button, you can check out the [Close Modal](/v2/close-modal) section.
 
 ::: code-group
 
@@ -244,6 +244,7 @@ putConfig({
     type: 'modal',
     navigate: false,
     useNativeDialog: true,
+    appElement: '#app',
     modal: {
         closeButton: true,
         closeExplicitly: false,
@@ -275,6 +276,20 @@ putConfig({
 })
 ```
 
+### App Element
+
+The `appElement` option specifies which DOM element should be marked as `aria-hidden` when a modal is open. This improves accessibility by hiding the background content from screen readers. The default value is `'#app'`.
+
+If your application uses a different root element, update this value:
+
+```js
+putConfig({
+    appElement: '#root',
+})
+```
+
+Set to `null` to disable this behavior entirely.
+
 Instead of passing a whole object, you can also pass just the keys that you want to override. The other values will be taken from the default configuration.
 
 ```js
@@ -290,3 +305,47 @@ Alternatively, you can pass a key and a value to the `putConfig` function using 
 ```js
 putConfig('modal.closeButton', false)
 ```
+
+### Reading Configuration
+
+You can read the current configuration using the `getConfig` function:
+
+::: code-group
+
+```js [Vue]
+import { getConfig } from '@inertiaui/modal-vue'
+
+const navigate = getConfig('navigate')
+const maxWidth = getConfig('modal.maxWidth')
+const allConfig = getConfig() // returns entire config object
+```
+
+```js [React]
+import { getConfig } from '@inertiaui/modal-react'
+
+const navigate = getConfig('navigate')
+const maxWidth = getConfig('modal.maxWidth')
+const allConfig = getConfig() // returns entire config object
+```
+
+:::
+
+### Resetting Configuration
+
+To reset all configuration to the defaults, use `resetConfig`:
+
+::: code-group
+
+```js [Vue]
+import { resetConfig } from '@inertiaui/modal-vue'
+
+resetConfig()
+```
+
+```js [React]
+import { resetConfig } from '@inertiaui/modal-react'
+
+resetConfig()
+```
+
+:::
