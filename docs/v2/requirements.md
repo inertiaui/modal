@@ -10,7 +10,7 @@ Inertia Modal has the following requirements:
 
 ## Frontend
 
-- Tailwind CSS 4+
+- Tailwind CSS 4+ (or use [headless mode](/v2/headless-mode) with Tailwind CSS 3)
 - **React**: React 19+ with `@inertiajs/react` 2.3.15+
 - **Vue**: Vue 3.4+ with `@inertiajs/vue3` 2.3.15+
 

@@ -5,7 +5,7 @@ There are two ways to install Inertia Modal. First, you can install the package 
 ## Composer Installation
 
 ```bash
-composer require inertiaui/modal
+composer require inertiaui/modal:^2.0.0-beta.1
 ```
 
 After installing the package, you can link the React or Vue package into your project. This will create a symlink in your `node_modules` directory to the package in the `vendor` directory.
@@ -29,11 +29,11 @@ You may also install the frontend packages separately.
 ::: code-group
 
 ```bash [Vue]
-npm install @inertiaui/modal-vue
+npm install @inertiaui/modal-vue@^2.0.0-beta.1
 ```
 
 ```bash [React]
-npm install @inertiaui/modal-react
+npm install @inertiaui/modal-react@^2.0.0-beta.1
 ```
 
 :::
@@ -75,7 +75,7 @@ createInertiaApp({
 
 :::
 
-If you need more refined control over the mounting process, you should check out the [Custom App Mounting](/custom-app-mounting.md) documentation.
+If you need more refined control over the mounting process, you should check out the [Custom App Mounting](/v2/custom-app-mounting) documentation.
 
 ## Tailwind Configuration
 

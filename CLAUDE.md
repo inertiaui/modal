@@ -54,7 +54,7 @@ The modal packages depend on `@inertiaui/vanilla`. For local development:
 
 **Important**: Always run `./switch-vanilla-npm.sh` before pushing to CI, as CI cannot access local file paths.
 
-**Demo-app note**: The demo-app does NOT have `@inertiaui/vanilla` as a direct dependency. It gets vanilla through peer dependencies from the modal packages. When updating vanilla versions in react/vue packages:
+**Demo-app note**: The demo-app does NOT have `@inertiaui/vanilla` as a direct dependency. It gets vanilla as a transitive dependency from the modal packages. When updating vanilla versions in react/vue packages:
 
 ```bash
 cd demo-app

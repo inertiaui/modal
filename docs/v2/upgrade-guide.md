@@ -1,6 +1,24 @@
 # Upgrade Guide
 
-This guide covers upgrading from Inertia Modal 0.x or 1.x-beta to version 2.x.
+This guide covers upgrading from Inertia Modal 0.x to version 2.x.
+
+## Installation
+
+::: code-group
+
+```bash [Composer]
+composer require inertiaui/modal:^2.0.0-beta.1
+```
+
+```bash [NPM (Vue)]
+npm install @inertiaui/modal-vue@^2.0.0-beta.1
+```
+
+```bash [NPM (React)]
+npm install @inertiaui/modal-react@^2.0.0-beta.1
+```
+
+:::
 
 ## Requirements Changes
 
@@ -16,24 +34,6 @@ Version 2.x has updated minimum requirements:
 | `@inertiajs/react` | 1.3+ or 2.x | 2.3.15+ |
 | `@inertiajs/vue3` | 1.3+ or 2.x | 2.3.15+ |
 | Tailwind CSS | 3.x | 4+ |
-
-### New Peer Dependency
-
-Version 2.x requires the `@inertiaui/vanilla` package as a peer dependency. This package contains shared utilities used by both React and Vue implementations.
-
-When using Composer installation (recommended), this is handled automatically. For NPM installations, install it alongside the modal package:
-
-::: code-group
-
-```bash [Vue]
-npm install @inertiaui/modal-vue @inertiaui/vanilla
-```
-
-```bash [React]
-npm install @inertiaui/modal-react @inertiaui/vanilla
-```
-
-:::
 
 ## Configuration Changes
 
@@ -118,7 +118,7 @@ export default {
 
 ### Tailwind CSS 4
 
-Version 2.x is designed for Tailwind CSS 4. If you're still on Tailwind CSS 3, the package should work, but you may encounter styling differences. We recommend upgrading to Tailwind CSS 4.
+Version 2.x is designed for Tailwind CSS 4. If you're still on Tailwind CSS 3, you can use the package in [headless mode](/v2/headless-mode) and provide your own UI, or stay on v0.x which supports Tailwind CSS 3.
 
 ## New Features
 
@@ -240,18 +240,4 @@ import type { ModalConfig, ModalTypeConfig } from '@inertiaui/modal-react'
 1. **React 18 is no longer supported** - upgrade to React 19
 2. **Inertia.js v1 is no longer supported** - upgrade to v2.3.15+
 3. **Configuration is now nested** - update your `putConfig` calls
-4. **New peer dependency** - install `@inertiaui/vanilla`
-5. **Tailwind content paths** - add `.ts` and `.tsx` extensions
-
-## Migration Checklist
-
-- [ ] Update PHP to 8.2+
-- [ ] Update Laravel to 11.11+ or 12+
-- [ ] Update Inertia Laravel to 2.0+
-- [ ] Update React to 19+ (or Vue to 3.4+)
-- [ ] Update `@inertiajs/react` or `@inertiajs/vue3` to 2.3.15+
-- [ ] Install `@inertiaui/vanilla` peer dependency (NPM only)
-- [ ] Update `putConfig` calls to use nested structure
-- [ ] Update Tailwind content paths to include TypeScript files
-- [ ] Update Tailwind CSS to version 4 (recommended)
-- [ ] Test your modals and slideovers
+4. **Tailwind content paths** - add `.ts` and `.tsx` extensions

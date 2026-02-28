@@ -6,6 +6,6 @@
     "docs:preview": "vitepress preview"
   },
   "dependencies": {
-    "vitepress": "^1.2.3"
+    "vitepress": "^1.6.4"
   }
 }

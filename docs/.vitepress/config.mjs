@@ -1,5 +1,92 @@
 import { defineConfig } from 'vitepress'
 
+const v0Sidebar = [
+  {
+    text: 'Getting Started',
+    items: [
+      { text: 'Introduction', link: '/introduction' },
+      { text: 'Requirements', link: '/requirements' },
+      { text: 'Installation', link: '/installation' },
+    ]
+  },
+  {
+    text: 'Usage',
+    items: [
+      { text: 'Basic Usage', link: '/basic-usage' },
+      { text: 'Configuration', link: '/configuration' },
+      { text: 'Modal Props', link: '/modal-props' },
+      { text: 'Base Route / URL', link: '/base-route-url' },
+      { text: 'Close Modal', link: '/close-modal' },
+      { text: 'Event Bus', link: '/event-bus' },
+      { text: 'Nested / Stacked Modals', link: '/nested-stacked-modals' },
+      { text: 'Reload Props', link: '/reload-props' },
+      { text: 'Lazy Props', link: '/lazy-props' },
+      { text: 'Deferred Props', link: '/deferred-props' },
+      { text: 'Load When Visible', link: '/load-when-visible' },
+      { text: 'Local Modals', link: '/local-modals' },
+      { text: 'Styling', link: '/styling' },
+    ]
+  },
+  {
+    text: 'Advanced',
+    items: [
+      { text: 'Custom App Mounting', link: '/custom-app-mounting' },
+      { text: 'Headless Mode', link: '/headless-mode' },
+    ]
+  }
+]
+
+const v2Sidebar = [
+  {
+    text: 'Getting Started',
+    items: [
+      { text: 'Introduction', link: '/v2/introduction' },
+      { text: 'Requirements', link: '/v2/requirements' },
+      { text: 'Installation', link: '/v2/installation' },
+      { text: 'Upgrade Guide', link: '/v2/upgrade-guide' },
+    ]
+  },
+  {
+    text: 'Usage',
+    items: [
+      { text: 'Basic Usage', link: '/v2/basic-usage' },
+      { text: 'Configuration', link: '/v2/configuration' },
+      { text: 'Modal Props', link: '/v2/modal-props' },
+      { text: 'Base Route / URL', link: '/v2/base-route-url' },
+      { text: 'Close Modal', link: '/v2/close-modal' },
+      { text: 'Event Bus', link: '/v2/event-bus' },
+      { text: 'Nested / Stacked Modals', link: '/v2/nested-stacked-modals' },
+      { text: 'Reload Props', link: '/v2/reload-props' },
+      { text: 'Lazy Props', link: '/v2/lazy-props' },
+      { text: 'Deferred Props', link: '/v2/deferred-props' },
+      { text: 'Load When Visible', link: '/v2/load-when-visible' },
+      { text: 'Local Modals', link: '/v2/local-modals' },
+      { text: 'Styling', link: '/v2/styling' },
+    ]
+  },
+  {
+    text: 'Advanced',
+    items: [
+      { text: 'Custom App Mounting', link: '/v2/custom-app-mounting' },
+      { text: 'Headless Mode', link: '/v2/headless-mode' },
+    ]
+  }
+]
+
+// Build rewrites: v0/foo.md -> foo.md (v0 is default/stable)
+const v0Files = [
+  'introduction', 'requirements', 'installation',
+  'basic-usage', 'configuration', 'modal-props', 'base-route-url',
+  'close-modal', 'event-bus', 'nested-stacked-modals', 'reload-props',
+  'lazy-props', 'deferred-props', 'load-when-visible', 'local-modals',
+  'styling', 'custom-app-mounting', 'headless-mode',
+]
+
+const rewrites = {}
+for (const file of v0Files) {
+  rewrites[`v0/${file}.md`] = `${file}.md`
+}
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Inertia Modal Documentation",
@@ -17,52 +104,27 @@ export default defineConfig({
   description: "Documentation for the Inertia Modal package",
   base: process.env.NODE_ENV === 'production' ? '/inertia-modal/docs/' : null,
   cleanUrls: process.env.NODE_ENV === 'production',
+  rewrites,
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Documentation', link: '/introduction' },
+      {
+        text: 'v0 (Stable)',
+        items: [
+          { text: 'v0 (Stable)', link: '/introduction' },
+          { text: 'v2 (Beta)', link: '/v2/introduction' },
+        ]
+      },
       { text: 'Demo', link: 'https://www.youtube.com/watch?v=KAKOosmWV14' },
       { text: 'Inertia UI portal', link: 'https://inertiaui.com/dashboard' }
     ],
 
     search: { provider: 'local' },
 
-    sidebar: [
-      {
-        text: 'Getting Started',
-        items: [
-          {text: 'Introduction', link: '/introduction'},
-          {text: 'Requirements', link: '/requirements'},
-          {text: 'Installation', link: '/installation'},
-          {text: 'Upgrade Guide', link: '/upgrade-guide'},
-        ]
-      },
-      {
-        text: 'Usage',
-        items: [
-          {text: 'Basic Usage', link: '/basic-usage'},
-          {text: 'Configuration', link: '/configuration'},
-          {text: 'Modal Props', link: '/modal-props'},
-          {text: 'Base Route / URL', link: '/base-route-url'},
-          {text: 'Close Modal', link: '/close-modal'},
-          {text: 'Event Bus', link: '/event-bus'},
-          {text: 'Nested / Stacked Modals', link: '/nested-stacked-modals'},
-          {text: 'Reload Props', link: '/reload-props'},
-          {text: 'Lazy Props', link: '/lazy-props'},
-          {text: 'Deferred Props', link: '/deferred-props'},
-          {text: 'Load When Visible', link: '/load-when-visible'},
-          {text: 'Local Modals', link: '/local-modals'},
-          {text: 'Styling', link: '/styling'},
-        ]
-      },
-      {
-        text: 'Advanced',
-        items: [
-          {text: 'Custom App Mounting', link: '/custom-app-mounting'},
-          {text: 'Headless Mode', link: '/headless-mode'},
-        ]
-      }
-    ],
+    sidebar: {
+      '/v2/': v2Sidebar,
+      '/': v0Sidebar,
+    },
 
     logoLink: process.env.NODE_ENV === 'production' ? '/inertia-modal/docs/introduction' : '/introduction',
 
