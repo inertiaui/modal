@@ -1,20 +1,30 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vitepress'
+import { useData, useRoute, withBase } from 'vitepress'
 
 const route = useRoute()
+const { site } = useData()
 
-const isV2 = computed(() => route.path.startsWith('/v2/') || route.path === '/v2')
-const isV0 = computed(() => !isV2.value && route.path !== '/')
+// Strip the base path to get the clean route (e.g. /v2/modal-props)
+const cleanPath = computed(() => {
+  const base = site.value.base || '/'
+  if (base !== '/' && route.path.startsWith(base)) {
+    return route.path.slice(base.length - 1) // keep leading /
+  }
+  return route.path
+})
+
+const isV2 = computed(() => cleanPath.value.startsWith('/v2/') || cleanPath.value === '/v2')
+const isV0 = computed(() => !isV2.value && cleanPath.value !== '/')
 
 const equivalentV2Path = computed(() => {
   if (!isV0.value) return null
-  return '/v2' + route.path
+  return withBase('/v2' + cleanPath.value)
 })
 
 const equivalentV0Path = computed(() => {
   if (!isV2.value) return null
-  return route.path.replace(/^\/v2/, '') || '/introduction'
+  return withBase(cleanPath.value.replace(/^\/v2/, '') || '/introduction')
 })
 </script>
 
