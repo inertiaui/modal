@@ -4,21 +4,27 @@ This guide covers upgrading from Inertia Modal 0.x to version 2.x.
 
 ## Installation
 
-::: code-group
+Update the Composer package:
 
-```bash [Composer]
+```bash
 composer require inertiaui/modal:^2.0.0-beta.1
 ```
 
-```bash [NPM (Vue)]
+If you originally installed the frontend package via NPM (instead of using the Composer symlink), update it as well:
+
+::: code-group
+
+```bash [Vue]
 npm install @inertiaui/modal-vue@^2.0.0-beta.1
 ```
 
-```bash [NPM (React)]
+```bash [React]
 npm install @inertiaui/modal-react@^2.0.0-beta.1
 ```
 
 :::
+
+If you're unsure which method you used, check the [Installation](/v2/installation) docs for more details.
 
 ## Requirements Changes
 
