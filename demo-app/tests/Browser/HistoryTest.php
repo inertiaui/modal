@@ -1,82 +1,65 @@
 <?php
 
-namespace Tests\Browser;
-
-use App\Models\User;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\DuskTestCase;
 
-class HistoryTest extends DuskTestCase
-{
-    #[Test]
-    public function it_can_open_a_modal_and_state_it_in_the_history()
-    {
-        $this->browse(function (Browser $browser) {
-            $firstUser = User::orderBy('name')->first();
+it('can open a modal and state it in the history', function () {
+    $user = firstUser();
 
-            $browser->visit('/users?navigate=1')
-                ->waitForFirstUser()
-                ->click("@edit-user-{$firstUser->id}")
-                ->waitForModal()
-                ->assertSeeIn('.im-modal-content', 'Edit User')
-                ->assertRouteIs('users.edit', ['user' => $firstUser->id])
-                ->back()
-                ->waitUntilMissingModal()
-                ->waitForLocation('/users')
-                ->assertQueryStringHas('navigate', '1')
-                ->forward()
-                ->waitForModal()
-                ->assertSeeIn('.im-modal-content', 'Edit User')
-                ->assertRouteIs('users.edit', ['user' => $firstUser->id]);
-        });
-    }
+    $page = visit('/users?navigate=1')
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
+        ->assertPresent(waitForModalSelector())
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->assertPathIs('/users/'.$user->id.'/edit')
+        ->back();
 
-    #[Test]
-    public function it_can_redirect_back_to_the_same_base_route()
-    {
-        $this->browse(function (Browser $browser) {
-            $firstUser = User::orderBy('name')->first();
+    waitUntilMissingModal($page)
+        ->assertPathIs('/users')
+        ->assertQueryStringHas('navigate', '1')
+        ->forward()
+        ->assertPresent(waitForModalSelector())
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->assertPathIs('/users/'.$user->id.'/edit');
+});
 
-            $browser->visit('/users?navigate=1')
-                ->waitForFirstUser()
-                ->click("@edit-user-{$firstUser->id}")
-                ->waitForTextIn('.im-modal-content', 'Edit User')
-                ->assertRouteIs('users.edit', ['user' => $firstUser->id])
-                ->type('name', $newName = Str::random(10))
-                ->press('Save')
-                ->waitForText('User updated successfully!')
-                ->waitUntilMissingModal()
-                ->assertPathIs('/users');
+it('can redirect back to the same base route', function () {
+    $user = nthUser(4);  // Use unique user to avoid parallel test conflicts
 
-            $this->assertDatabaseHas('users', [
-                'id' => $firstUser->id,
-                'name' => $newName,
-            ]);
-        });
-    }
+    $page = visit('/users?navigate=1')
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->assertPathIs('/users/'.$user->id.'/edit')
+        ->type('name', $newName = Str::random(10))
+        ->press('Save')
+        ->waitForText('User updated successfully!');
 
-    #[Test]
-    public function it_can_redirect_back_to_a_different_base_route()
-    {
-        $this->browse(function (Browser $browser) {
-            $firstUser = User::orderBy('name')->first();
+    waitUntilMissingModal($page)
+        ->assertPathIs('/users');
 
-            $browser->visit("/users/{$firstUser->id}")
-                ->waitForFirstUser()
-                ->click("@edit-user-{$firstUser->id}")
-                ->waitForTextIn('.im-modal-content', 'Edit User')
-                ->assertRouteIs('users.edit', ['user' => $firstUser->id])
-                ->type('name', $newName = Str::random(10))
-                ->press('Save')
-                ->waitForText('User updated successfully!')
-                ->waitUntilMissingModal()
-                ->assertPathIs('/users/'.$firstUser->id);
+    test()->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'name' => $newName,
+    ]);
+});
 
-            $this->assertDatabaseHas('users', [
-                'id' => $firstUser->id,
-                'name' => $newName,
-            ]);
-        });
-    }
-}
+it('can redirect back to a different base route', function () {
+    $user = nthUser(5);  // Use unique user to avoid parallel test conflicts
+
+    $page = visit("/users/{$user->id}")
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->assertPathIs('/users/'.$user->id.'/edit')
+        ->type('name', $newName = Str::random(10))
+        ->press('Save')
+        ->waitForText('User updated successfully!');
+
+    waitUntilMissingModal($page)
+        ->assertPathIs('/users/'.$user->id);
+
+    test()->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'name' => $newName,
+    ]);
+});

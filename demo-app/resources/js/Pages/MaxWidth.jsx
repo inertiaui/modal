@@ -8,7 +8,7 @@ export default function MaxWidth() {
         return modalSizes.map(size => (
             <ModalLink
                 key={`${isSlideOver ? 'slideover' : 'modal'}-size-${size}`}
-                dusk={`${isSlideOver ? 'slideover' : 'modal'}-size-${size}`}
+                data-testid={`${isSlideOver ? 'slideover' : 'modal'}-size-${size}`}
                 maxWidth={size}
                 href="/users/1/edit"
                 slideover={isSlideOver}

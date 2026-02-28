@@ -15,7 +15,7 @@ const sizes = ['sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl']
             <ModalLink
                 v-for="size in sizes"
                 :key="size"
-                :dusk="`modal-size-${size}`"
+                :data-testid="`modal-size-${size}`"
                 :max-width="size"
                 href="/users/1/edit"
             >Modal {{ size }}</ModalLink>
@@ -24,7 +24,7 @@ const sizes = ['sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl']
                 v-for="size in sizes"
                 slideover
                 :key="size"
-                :dusk="`slideover-size-${size}`"
+                :data-testid="`slideover-size-${size}`"
                 :max-width="size"
                 href="/users/1/edit"
             >Slideover {{ size }}</ModalLink>

@@ -31,19 +31,19 @@ function submit() {
             <h2 class="text-lg font-medium text-gray-900">Create Role</h2>
             <p
                 v-if="greetingRef"
-                dusk="greeting"
+                data-testid="greeting"
                 class="text-sm text-gray-500"
                 v-text="greetingRef"
             />
             <p
                 v-if="headerValue"
-                dusk="headerValue"
+                data-testid="headerValue"
                 class="text-sm text-gray-500"
                 v-text="headerValue"
             />
             <p
                 v-if="name"
-                dusk="name"
+                data-testid="name"
                 class="text-sm text-gray-500"
                 v-text="name"
             />
@@ -70,7 +70,7 @@ function submit() {
                         type="text"
                         name="name"
                         autocomplete="off"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                     <p
                         v-if="form.errors.name"

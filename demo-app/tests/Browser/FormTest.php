@@ -1,57 +1,37 @@
 <?php
 
-namespace Tests\Browser;
-
-use App\Models\User;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\DuskTestCase;
 
-class FormTest extends DuskTestCase
-{
-    #[DataProvider('booleanProvider')]
-    #[Test]
-    public function it_can_submit_a_form_from_within_the_modal_and_show_the_validation_error(bool $navigate)
-    {
-        $this->browse(function (Browser $browser) use ($navigate) {
-            $firstUser = User::orderBy('name')->first();
+it('can submit a form from within the modal and show the validation error', function (bool $navigate) {
+    $user = nthUser(2);  // Use unique user to avoid parallel test conflicts
 
-            $browser->visit('/users'.($navigate ? '?navigate=1' : ''))
-                ->waitForFirstUser()
-                ->click("@edit-user-{$firstUser->id}")
-                ->waitForTextIn('.im-modal-content', 'Edit User')
-                ->type('name', 'a')
-                ->press('Save')
-                ->waitForTextIn('.im-modal-content', 'The name field must be at least 3 characters.')
-                ->withinModal(function (Browser $browser) {
-                    $browser->assertSee('The name field must be at least 3 characters.');
-                })
-                ->assertMissing('.im-dialog[data-inertiaui-modal-index="1"]');
-        });
-    }
+    $page = visit('/users'.($navigate ? '?navigate=1' : ''))
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->type('name', 'a')
+        ->press('Save')
+        ->assertSeeIn('.im-modal-content', 'The name field must be at least 3 characters.')
+        ->assertSeeIn(modalSelector(), 'The name field must be at least 3 characters.')
+        ->assertNotPresent('.im-dialog[data-inertiaui-modal-index="1"]');
+})->with('navigate');
 
-    #[DataProvider('booleanProvider')]
-    #[Test]
-    public function it_can_submit_a_form_and_redirect(bool $navigate)
-    {
-        $this->browse(function (Browser $browser) use ($navigate) {
-            $firstUser = User::orderBy('name')->first();
+it('can submit a form and redirect', function (bool $navigate) {
+    $user = nthUser(3);  // Use unique user to avoid parallel test conflicts
 
-            $browser->visit('/users'.($navigate ? '?navigate=1' : ''))
-                ->waitForFirstUser()
-                ->click("@edit-user-{$firstUser->id}")
-                ->waitForTextIn('.im-modal-content', 'Edit User')
-                ->type('name', $newName = Str::random(10))
-                ->press('Save')
-                ->waitForText('User updated successfully!')
-                ->waitUntilMissingModal()
-                ->assertPathIs('/users');
+    $page = visit('/users'.($navigate ? '?navigate=1' : ''))
+        ->waitForText($user->name)
+        ->click("[data-testid='edit-user-{$user->id}']")
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->type('name', $newName = Str::random(10))
+        ->press('Save')
+        ->waitForText('User updated successfully!');
 
-            $this->assertDatabaseHas('users', [
-                'id' => $firstUser->id,
-                'name' => $newName,
-            ]);
-        });
-    }
-}
+    waitUntilMissingModal($page)
+        ->assertPathIs('/users');
+
+    test()->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'name' => $newName,
+    ]);
+})->with('navigate');

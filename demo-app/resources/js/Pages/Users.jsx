@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
@@ -10,6 +10,17 @@ export default function Users({ users, random, navigate, deferred }) {
         alert(greeting);
     };
 
+    const testRedirectBackForm = useForm({});
+    const testModalHeaderForm = useForm({});
+
+    const testRedirectBack = () => {
+        testRedirectBackForm.post('/test-redirect-back');
+    };
+
+    const testModalHeaderCheck = () => {
+        testModalHeaderForm.post('/test-modal-header-check');
+    };
+
     return (
         <Container>
             <div className="flex justify-between">
@@ -17,10 +28,10 @@ export default function Users({ users, random, navigate, deferred }) {
                 {
                     InertiaReact.Deferred ?
                         <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
-                            <p dusk="deferred">
+                            <p data-testid="deferred">
                                 {deferred}
                             </p>
-                        </InertiaReact.Deferred> : <p dusk="deferred"> No Deferred Component</p>
+                        </InertiaReact.Deferred> : <p data-testid="deferred"> No Deferred Component</p>
                 }
             </div>
             <div className="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
@@ -34,7 +45,7 @@ export default function Users({ users, random, navigate, deferred }) {
                                 </div>
                                 <div className="ml-auto flex items-center space-x-2">
                                     <Link
-                                        dusk={`view-user-${user.id}`}
+                                        data-testid={`view-user-${user.id}`}
                                         href={`/users/${user.id}`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                     >
@@ -43,7 +54,7 @@ export default function Users({ users, random, navigate, deferred }) {
 
                                     <ModalLink
                                         navigate={navigate}
-                                        dusk={`edit-user-${user.id}`}
+                                        data-testid={`edit-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                         onUserGreets={alertGreeting}
@@ -53,7 +64,7 @@ export default function Users({ users, random, navigate, deferred }) {
                                     <ModalLink
                                         slideover={true}
                                         navigate={navigate}
-                                        dusk={`slideover-user-${user.id}`}
+                                        data-testid={`slideover-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
                                         className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                                         onUserGreets={alertGreeting}
@@ -67,6 +78,45 @@ export default function Users({ users, random, navigate, deferred }) {
                 </ul>
             </div>
             <ComponentThatUsesModalInstance />
+
+            {/* Test redirect()->back() after modal close (issue #153) */}
+            <div className="mt-4 flex space-x-4">
+                <button
+                    data-testid="test-redirect-back"
+                    onClick={testRedirectBack}
+                    className="px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
+                >
+                    Test Redirect Back
+                </button>
+                <button
+                    data-testid="test-modal-header-check"
+                    onClick={testModalHeaderCheck}
+                    className="px-3 py-2 text-sm font-medium text-white bg-orange-600 rounded-md"
+                >
+                    Check Modal Header
+                </button>
+                <Link
+                    data-testid="nav-visit"
+                    href="/visit"
+                    className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md"
+                >
+                    Go to Visit Page
+                </Link>
+                <ModalLink
+                    navigate={navigate}
+                    href="/modal-with-modal-base"
+                    className="px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-md"
+                >
+                    Modal with Modal Base
+                </ModalLink>
+                <ModalLink
+                    navigate={navigate}
+                    href="/modal-invalid-response"
+                    className="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md"
+                >
+                    Invalid Response
+                </ModalLink>
+            </div>
         </Container>
     );
 };

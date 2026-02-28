@@ -22,12 +22,12 @@ defineProps({
 
             <p>Page ID: {{ $page.props._inertiaui_modal_page_id }}</p>
 
-            <p dusk="log">{{ log.join(',') }}</p>
+            <p data-testid="log">{{ log.join(',') }}</p>
         </div>
 
         <ModalLink
             :navigate="navigate"
-            dusk="modal-link"
+            data-testid="modal-link"
             href="/users/1/edit"
             class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
             @close="push('close')"

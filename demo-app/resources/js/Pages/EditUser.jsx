@@ -49,8 +49,8 @@ export default function EditUser({ user, roles, randomKey }) {
                 <>
                     <div>
                         <h2 className="text-lg font-medium text-gray-900">Edit User {user.name}</h2>
-                        <p className="text-sm text-gray-500">Random key: <span dusk="randomKey">{randomKey}</span></p>
-                        {message && <p dusk="message" className="text-sm text-gray-500">{message}</p>}
+                        <p className="text-sm text-gray-500">Random key: <span data-testid="randomKey">{randomKey}</span></p>
+                        {message && <p data-testid="message" className="text-sm text-gray-500">{message}</p>}
                     </div>
 
                     <div className="mt-4 flex flex-col items-start">
@@ -81,7 +81,7 @@ export default function EditUser({ user, roles, randomKey }) {
                                     id="name"
                                     name="name"
                                     autoComplete="off"
-                                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-xs sm:text-sm border-gray-300 rounded-md"
                                 />
                                 {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
                             </div>
@@ -95,7 +95,7 @@ export default function EditUser({ user, roles, randomKey }) {
                                     id="email"
                                     name="email"
                                     autoComplete="off"
-                                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-xs sm:text-sm border-gray-300 rounded-md"
                                 />
                                 {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
                             </div>
@@ -108,7 +108,7 @@ export default function EditUser({ user, roles, randomKey }) {
                                     id="role"
                                     name="role"
                                     autoComplete="off"
-                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-xs focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 >
                                     {Object.entries(roles).map(([id, role]) => (
                                         <option key={id} value={id}>{role}</option>

@@ -1,55 +1,42 @@
 <?php
 
-namespace Tests\Browser;
-
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\DuskTestCase;
 
-class BaseRouteTest extends DuskTestCase
-{
-    #[Test]
-    public function it_can_open_a_modal_with_a_base_route()
-    {
-        $this->browse(function (Browser $browser) {
-            $firstUser = User::orderBy('name')->first();
+it('can open a modal with a base route', function () {
+    $user = firstUser();
 
-            $browser->visit("/users/{$firstUser->id}/edit")
-                ->waitForFirstUser()
-                ->assertSeeIn('.im-modal-content', 'Edit User')
-                ->assertPresent("@edit-user-{$firstUser->id}")
-                ->clickModalCloseButton()
-                ->waitUntilMissingModal()
-                ->waitForLocation('/users');
-        });
-    }
+    $page = visit("/users/{$user->id}/edit")
+        ->assertSee($user->name)
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->assertPresent("[data-testid='edit-user-{$user->id}']");
 
-    #[Test]
-    public function it_can_open_a_stacked_modal_on_top_of_a_modal_with_a_base_route()
-    {
-        $this->browse(function (Browser $browser) {
-            $firstUser = User::orderBy('name')->first();
-            $newRoleName = Str::random();
+    clickModalCloseButton($page);
 
-            $browser->visit("/users/{$firstUser->id}/edit")
-                ->waitForTextIn('.im-modal-content', 'Edit User')
-                ->clickLink('Add Role')
-                ->waitForModal(1)
-                ->assertRouteIs('users.edit', ['user' => $firstUser->id])
-                ->withinModal(function (Browser $browser) use ($newRoleName) {
-                    $browser->type('name', $newRoleName)->press('Save');
-                }, 1)
-                ->waitUntilMissingModal(1)
-                ->withinModal(function (Browser $browser) use ($newRoleName) {
-                    $newRole = Role::where('name', $newRoleName)->firstOr(
-                        fn () => $this->fail('New role was not saved.')
-                    );
+    waitUntilMissingModal($page)
+        ->assertPathIs('/users');
+});
 
-                    $browser->select('role', $newRole->id)
-                        ->assertSelected('role', $newRole->id);
-                });
-        });
-    }
-}
+it('can open a stacked modal on top of a modal with a base route', function () {
+    $user = firstUser();
+    $newRoleName = Str::random();
+
+    $page = visit("/users/{$user->id}/edit")
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->click('Add Role')
+        ->assertPresent(waitForModalSelector(1))
+        ->assertPathIs('/users/'.$user->id.'/edit');
+
+    // Type in the nested modal and press its save button
+    $page->page()->locator(modalSelector(1).' input[name="name"]')->fill($newRoleName);
+    $page->page()->locator(modalSelector(1).' button:has-text("Save")')->click();
+
+    waitUntilMissingModal($page, 1);
+
+    $newRole = Role::where('name', $newRoleName)->firstOr(
+        fn () => test()->fail('New role was not saved.')
+    );
+
+    $page->select('role', $newRole->id)
+        ->assertSelected('role', $newRole->id);
+});

@@ -13,10 +13,10 @@ export default function Events({ navigate }) {
         <Container>
             <div className="flex justify-between">
                 <h2 className="text-lg font-medium text-gray-900">Events</h2>
-                <p dusk="log">{log.join(',')}</p>
+                <p data-testid="log">{log.join(',')}</p>
             </div>
             <ModalLink
-                dusk="modal-link"
+                data-testid="modal-link"
                 href="/users/1/edit"
                 className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
                 navigate={navigate}

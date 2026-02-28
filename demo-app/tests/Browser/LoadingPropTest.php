@@ -1,24 +1,35 @@
 <?php
 
-namespace Tests\Browser;
+it('indicates when a modal is loading', function (bool $navigate) {
+    $page = visit('/loading-prop'.($navigate ? '?navigate=1' : ''))
+        ->waitForText('Loading Prop');
 
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
-use Tests\DuskTestCase;
+    // Before click
+    $beforeClick = $page->page()->locator("[data-testid='modal-link']")->textContent();
+    expect($beforeClick)->toBe('Open Slideover');
 
-class LoadingPropTest extends DuskTestCase
-{
-    #[DataProvider('booleanProvider')]
-    #[Test]
-    public function it_indicates_when_a_modal_is_loading(bool $navigate)
-    {
-        $this->browse(function (Browser $browser) use ($navigate) {
-            $browser->visit('/loading-prop'.($navigate ? '?navigate=1' : ''))
-                ->waitForText('Loading Prop')
-                ->clickLink('Open Slideover')
-                ->assertSeeIn('@modal-link', 'Loading...')
-                ->waitForModal()
-                ->assertDontSeeIn('@modal-link', 'Loading...');
+    // Set up a MutationObserver to catch the loading state before clicking
+    $page->page()->evaluate("
+        window.__loadingStateObserved = false;
+        const link = document.querySelector('[data-testid=\"modal-link\"]');
+        const observer = new MutationObserver(() => {
+            if (link.textContent.includes('Loading')) {
+                window.__loadingStateObserved = true;
+            }
         });
-    }
-}
+        observer.observe(link, { childList: true, subtree: true, characterData: true });
+    ");
+
+    // Click the link
+    $page->click('Open Slideover');
+
+    // Wait for modal to appear (this happens after server responds)
+    $page->assertPresent(waitForModalSelector());
+
+    // Check if loading state was observed
+    $foundLoading = $page->page()->evaluate('window.__loadingStateObserved');
+    expect($foundLoading)->toBeTrue('Loading state was never visible');
+
+    // After modal opens, loading should be done
+    $page->assertDontSeeIn("[data-testid='modal-link']", 'Loading...');
+})->with('navigate');

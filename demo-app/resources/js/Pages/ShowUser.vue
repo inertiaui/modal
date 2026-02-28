@@ -21,12 +21,12 @@ const props = defineProps({
                 Loading...
             </template>
 
-            <p dusk="deferred">{{ deferred }}</p>
+            <p data-testid="deferred">{{ deferred }}</p>
         </component>
 
-        <p v-else dusk="deferred">No Deferred Component</p>
+        <p v-else data-testid="deferred">No Deferred Component</p>
 
-        <ModalLink navigate as="button" :dusk="'edit-user-' + user.id"
+        <ModalLink navigate as="button" :data-testid="'edit-user-' + user.id"
             :href="`/users/${user.id}/edit`"
             class="mt-4 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md">
             Edit

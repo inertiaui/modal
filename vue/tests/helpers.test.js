@@ -1,179 +1,97 @@
-import { describe, it, expect, vi } from 'vitest'
-import { except, only, rejectNullValues, kebabCase, isStandardDomEvent } from '../src/helpers'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { except, only, rejectNullValues, kebabCase, isStandardDomEvent, generateId, generateIdUsing, sameUrlPath } from '../src/helpers'
 
 describe('helpers', () => {
-    describe('except', () => {
-        it('should return an object without the specified keys', () => {
-            const obj = { a: 1, b: 2, c: 3 }
-            expect(except(obj, ['b'])).toEqual({ a: 1, c: 3 })
+    describe('re-exports from vanilla', () => {
+        it('should re-export except from vanilla', () => {
+            expect(typeof except).toBe('function')
+            expect(except({ a: 1, b: 2 }, ['b'])).toEqual({ a: 1 })
         })
 
-        it('should return an empty object if all keys are excluded', () => {
-            const obj = { a: 1, b: 2 }
-            expect(except(obj, ['a', 'b'])).toEqual({})
+        it('should re-export only from vanilla', () => {
+            expect(typeof only).toBe('function')
+            expect(only({ a: 1, b: 2 }, ['a'])).toEqual({ a: 1 })
         })
 
-        it('should return the same object if no keys are excluded', () => {
-            const obj = { a: 1, b: 2 }
-            expect(except(obj, [])).toEqual(obj)
+        it('should re-export rejectNullValues from vanilla', () => {
+            expect(typeof rejectNullValues).toBe('function')
+            expect(rejectNullValues({ a: 1, b: null })).toEqual({ a: 1 })
         })
 
-        it('should return an array without the specified elements', () => {
-            const arr = ['a', 'b', 'c', 'd']
-            expect(except(arr, ['b', 'd'])).toEqual(['a', 'c'])
+        it('should re-export kebabCase from vanilla', () => {
+            expect(typeof kebabCase).toBe('function')
+            expect(kebabCase('camelCase')).toBe('camel-case')
         })
 
-        it('should return an empty array if all elements are excluded', () => {
-            const arr = ['a', 'b']
-            expect(except(arr, ['a', 'b'])).toEqual([])
-        })
-
-        it('should return the same array if no elements are excluded', () => {
-            const arr = ['a', 'b']
-            expect(except(arr, [])).toEqual(arr)
-        })
-    })
-
-    describe('only', () => {
-        it('should return an object with only the specified keys', () => {
-            const obj = { a: 1, b: 2, c: 3 }
-            expect(only(obj, ['a', 'c'])).toEqual({ a: 1, c: 3 })
-        })
-
-        it('should return an empty object if no keys are specified', () => {
-            const obj = { a: 1, b: 2 }
-            expect(only(obj, [])).toEqual({})
-        })
-
-        it('should ignore keys that do not exist in the object', () => {
-            const obj = { a: 1, b: 2 }
-            expect(only(obj, ['a', 'c'])).toEqual({ a: 1 })
-        })
-
-        it('should return an array with only the specified elements', () => {
-            const arr = ['a', 'b', 'c', 'd']
-            expect(only(arr, ['b', 'd'])).toEqual(['b', 'd'])
-        })
-
-        it('should return an empty array if no elements are specified', () => {
-            const arr = ['a', 'b']
-            expect(only(arr, [])).toEqual([])
-        })
-
-        it('should ignore elements that do not exist in the array', () => {
-            const arr = ['a', 'b']
-            expect(only(arr, ['a', 'c'])).toEqual(['a'])
-        })
-    })
-
-    describe('rejectNullValues', () => {
-        it('should remove keys with null values from an object', () => {
-            const obj = { a: 1, b: null, c: 3 }
-            expect(rejectNullValues(obj)).toEqual({ a: 1, c: 3 })
-        })
-
-        it('should return the same object if no null values exist', () => {
-            const obj = { a: 1, b: 2 }
-            expect(rejectNullValues(obj)).toEqual(obj)
-        })
-
-        it('should return an empty object if all values are null', () => {
-            const obj = { a: null, b: null }
-            expect(rejectNullValues(obj)).toEqual({})
-        })
-
-        it('should remove null values from an array', () => {
-            const arr = [1, null, 3, null, 5]
-            expect(rejectNullValues(arr)).toEqual([1, 3, 5])
-        })
-
-        it('should return the same array if no null values exist', () => {
-            const arr = [1, 2, 3]
-            expect(rejectNullValues(arr)).toEqual([1, 2, 3])
-        })
-
-        it('should return an empty array if all values are null', () => {
-            const arr = [null, null, null]
-            expect(rejectNullValues(arr)).toEqual([])
-        })
-    })
-
-    describe('kebabCase', () => {
-        it.each([
-            // Basic camelCase/PascalCase
-            ['camelCase', 'camel-case'],
-            ['ThisIsPascalCase', 'this-is-pascal-case'],
-
-            // With numbers
-            ['user123Name', 'user123-name'],
-            ['FirstName1', 'first-name1'],
-
-            // With acronyms
-            ['parseXMLDocument', 'parse-x-m-l-document'],
-
-            // Mixed cases and special chars
-            ['snake_case_value', 'snake-case-value'],
-            ['already-kebab-case', 'already-kebab-case'],
-            ['UPPERCASE', 'u-p-p-e-r-c-a-s-e'],
-            ['multiple__underscores', 'multiple-underscores'],
-        ])('should convert %s to %s', (input, expected) => {
-            expect(kebabCase(input)).toBe(expected)
-        })
-    })
-
-    describe('isStandardDomEvent', () => {
-        it('should identify standard DOM events', () => {
+        it('should re-export isStandardDomEvent from vanilla', () => {
+            expect(typeof isStandardDomEvent).toBe('function')
             expect(isStandardDomEvent('onClick')).toBe(true)
-            expect(isStandardDomEvent('onMouseOver')).toBe(true)
-            expect(isStandardDomEvent('onKeyDown')).toBe(true)
-            expect(isStandardDomEvent('onFocus')).toBe(true)
-            expect(isStandardDomEvent('onSubmit')).toBe(true)
-            expect(isStandardDomEvent('onTouchStart')).toBe(true)
-            expect(isStandardDomEvent('onDragStart')).toBe(true)
-            expect(isStandardDomEvent('onAnimationEnd')).toBe(true)
+        })
+    })
+
+    describe('generateId (modal-specific)', () => {
+        beforeEach(() => {
+            generateIdUsing(null)
         })
 
-        it('should reject custom modal events', () => {
-            expect(isStandardDomEvent('onUserUpdated')).toBe(false)
-            expect(isStandardDomEvent('onModalReady')).toBe(false)
-            expect(isStandardDomEvent('onDataRefresh')).toBe(false)
-            expect(isStandardDomEvent('onCustomEvent')).toBe(false)
+        it('should generate a unique id with modal prefix', () => {
+            const id = generateId()
+            expect(id).toMatch(/^inertiaui_modal_/)
         })
 
-        it('should be case insensitive', () => {
-            expect(isStandardDomEvent('onclick')).toBe(true)
-            expect(isStandardDomEvent('ONCLICK')).toBe(true)
-            expect(isStandardDomEvent('OnClick')).toBe(true)
+        it('should generate a unique id with custom prefix', () => {
+            const id = generateId('custom_')
+            expect(id).toMatch(/^custom_/)
         })
 
-        it('should work in different environments', () => {
-            // Mock Node.js environment (no window or document)
-            const originalWindow = global.window
-            const originalDocument = global.document
+        it('should generate different ids each time', () => {
+            const id1 = generateId()
+            const id2 = generateId()
+            expect(id1).not.toBe(id2)
+        })
+    })
 
-            delete global.window
-            delete global.document
-
-            // Should fall back to regex patterns
-            expect(isStandardDomEvent('onClick')).toBe(true)
-            expect(isStandardDomEvent('onUserUpdated')).toBe(false)
-
-            // Restore globals
-            global.window = originalWindow
-            global.document = originalDocument
+    describe('generateIdUsing (modal-specific)', () => {
+        beforeEach(() => {
+            generateIdUsing(null)
         })
 
-        it('should work with document.createElement fallback', () => {
-            // Mock SSR environment (document available, no window)
-            const originalWindow = global.window
-            delete global.window
+        it('should use custom callback when set', () => {
+            generateIdUsing(() => 'custom-id')
+            expect(generateId()).toBe('custom-id')
+        })
 
-            // Should use document.createElement test
-            expect(isStandardDomEvent('onClick')).toBe(true)
-            expect(isStandardDomEvent('onUserUpdated')).toBe(false)
+        it('should fall back to default when callback is null', () => {
+            generateIdUsing(() => 'custom-id')
+            generateIdUsing(null)
+            expect(generateId()).toMatch(/^inertiaui_modal_/)
+        })
+    })
 
-            // Restore window
-            global.window = originalWindow
+    describe('sameUrlPath (modal-specific)', () => {
+        it('should return true for same paths', () => {
+            expect(sameUrlPath('/users', '/users')).toBe(true)
+            expect(sameUrlPath('/users/1', '/users/1')).toBe(true)
+        })
+
+        it('should return false for different paths', () => {
+            expect(sameUrlPath('/users', '/posts')).toBe(false)
+            expect(sameUrlPath('/users/1', '/users/2')).toBe(false)
+        })
+
+        it('should ignore query strings', () => {
+            expect(sameUrlPath('/users?page=1', '/users?page=2')).toBe(true)
+        })
+
+        it('should handle full URLs', () => {
+            expect(sameUrlPath('http://localhost/users', 'http://localhost/users')).toBe(true)
+            expect(sameUrlPath('http://localhost/users', 'http://localhost/posts')).toBe(false)
+        })
+
+        it('should handle URL objects', () => {
+            const url1 = new URL('http://localhost/users')
+            const url2 = new URL('http://localhost/users')
+            expect(sameUrlPath(url1, url2)).toBe(true)
         })
     })
 })

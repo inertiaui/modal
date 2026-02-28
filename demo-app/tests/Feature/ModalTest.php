@@ -29,12 +29,13 @@ class ModalTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_the_modal_as_is_when_not_using_the_router()
+    public function it_returns_simple_modal_response_for_xhr_requests()
     {
         $user = UserFactory::new()->create();
 
+        // XHR requests (with X-InertiaUI-Modal header) get simple modal response
         $this->getJson(route('users.edit', $user), [
-            Modal::HEADER_USE_ROUTER => '0',
+            Modal::HEADER_MODAL => 'test-modal-id',
         ])
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $assert) => $assert
@@ -45,13 +46,10 @@ class ModalTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_the_modal_as_is_when_no_base_route_is_set()
+    public function it_returns_simple_modal_response_when_no_base_route_is_set()
     {
-        $user = UserFactory::new()->create();
-
-        $this->getJson(route('roles.create'), [
-            Modal::HEADER_USE_ROUTER => '1',
-        ])
+        // No base URL configured for this route, so always returns simple response
+        $this->getJson(route('roles.create'))
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $assert) => $assert
                 ->component('CreateRole')
@@ -59,13 +57,13 @@ class ModalTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_the_base_page_with_the_modal_as_a_separate_prop_when_using_the_router()
+    public function it_returns_dual_request_response_for_direct_url_visits()
     {
         $user = UserFactory::new()->create();
 
-        $this->getJson(route('users.edit', $user), [
-            Modal::HEADER_USE_ROUTER => '1',
-        ])
+        // Direct URL visits (no X-InertiaUI-Modal header) get dual-request pattern
+        // which renders the base page with modal data in _inertiaui_modal prop
+        $this->getJson(route('users.edit', $user))
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $assert) => $assert
                 ->component('Users')

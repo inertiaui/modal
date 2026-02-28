@@ -8,6 +8,11 @@ import { putConfig, renderApp } from '@inertiaui/modal-react'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+// Configure native dialog mode (defaults to true if not set)
+if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
+    putConfig({ useNativeDialog: import.meta.env.VITE_USE_NATIVE_DIALOG === 'true' })
+}
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),

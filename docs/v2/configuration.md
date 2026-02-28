@@ -1,0 +1,351 @@
+# Configuration
+
+The `ModalLink` and `Modal` components have a number of props that allow you to customize their behavior and style. Let's take a look at all the available props.
+
+## Available Props
+
+The following props can be used on both the `ModalLink` and `Modal` components. The props passed to `ModalLink` will take precedence over those passed to `Modal`.
+
+### `close-button`
+
+The `close-button` prop allows you to show or hide the close button in the modal. By default, the close button is shown. To render a custom close button, you can check out the [Close Modal](/v2/close-modal) section.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" :close-button="false">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" closeButton={false}>
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+### `close-explicitly`
+
+The `close-explicitly` prop allows you to close the modal explicitly. By default, the modal closes when the user clicks outside of the modal or presses the `Esc` key. If you set `close-explicitly` to `true`, the modal will only close when you press the close button or close it programmatically.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" :close-explicitly="true">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" closeExplicitly={true}>
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+### `close-on-click-outside`
+
+The `close-on-click-outside` prop allows you to control whether the modal closes when clicking outside of it (on the backdrop). By default, this is set to `true`. If you set `close-on-click-outside` to `false`, the modal will not close when clicking on the backdrop, but will still close when pressing the `Esc` key.
+
+This is useful when you want to prevent accidental closes from backdrop clicks, but still allow the user to press `Esc` to close the modal.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" :close-on-click-outside="false">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" closeOnClickOutside={false}>
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+> [!TIP] closeExplicitly vs closeOnClickOutside
+> Use `closeExplicitly` when you want to disable **both** the backdrop click and `Esc` key close behavior. Use `closeOnClickOutside` when you only want to disable the backdrop click but still allow `Esc` to close the modal.
+
+### `max-width`
+
+The `max-width` lets you specify the maximum width of the modal. For modals, the default value is `2xl`, and for slideover, the default value is `md`. These values correspond to Tailwind CSS conventions. Valid values are `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `4xl`, `5xl`, `6xl`, and `7xl`.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" max-width="lg">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" maxWidth="lg">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+### `padding-classes`
+
+The `padding-classes` prop allows you to add custom padding classes to the modal. This is useful if you want to add extra padding to the modal content or if you want to remove the default padding. The default classes are `p-4 sm:p-6`.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" padding-classes="p-8">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" paddingClasses="p-8">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+### `panel-classes`
+
+The `panel-classes` prop allows you to add custom classes to the panel of the modal. This is useful if you want to add extra styles to the modal panel, such as a border or shadow. The default classes are `bg-white rounded` for modals and `bg-white min-h-screen` for slideover.
+
+These classes are merged with the padding classes. They are separated by a different prop to allow for more flexibility.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" panel-classes="bg-blue-50 rounded-lg">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" panelClasses="bg-blue-50 rounded-lg">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+### `position`
+
+The `position` prop allows you to specify the position of the modal. The default value is `center` for modals and `right` for slideover. Valid values for modals are `bottom`, `center`, and `top`. Valid values for slideover are `left` and `right`.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" position="top">
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" position="top">
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+### `slideover`
+
+The `slideover` prop allows you to open the modal as a slideover instead of a modal. The default value is `false`. When you add the `slideover` prop, the modal will open as a slideover.
+
+::: code-group
+
+```vue [Vue]
+<template>
+    <ModalLink href="/users/create" slideover>
+        Create User
+    </ModalLink>
+</template>
+```
+
+```jsx [React]
+export default function UserIndex() {
+    return (
+        <ModalLink href="/users/create" slideover>
+            Create User
+        </ModalLink>
+    );
+}
+```
+
+:::
+
+## Default configuration
+
+You can set the default configuration for all modals and slideovers by importing the `putConfig` function from the package, for example, in your `app.js` file.
+
+::: code-group
+
+```js [Vue]
+import { putConfig } from '@inertiaui/modal-vue'
+```
+
+```js [React]
+import { putConfig } from '@inertiaui/modal-react'
+```
+
+:::
+
+You can call the `putConfig` function with an object containing the configuration that you want to set as the default. Here is an example with the default configuration. Note that there are separate keys for modals and slideovers.
+
+```js
+putConfig({
+    type: 'modal',
+    navigate: false,
+    useNativeDialog: true,
+    appElement: '#app',
+    modal: {
+        closeButton: true,
+        closeExplicitly: false,
+        closeOnClickOutside: true,
+        maxWidth: '2xl',
+        paddingClasses: 'p-4 sm:p-6',
+        panelClasses: 'bg-white rounded',
+        position: 'center',
+    },
+    slideover: {
+        closeButton: true,
+        closeExplicitly: false,
+        closeOnClickOutside: true,
+        maxWidth: 'md',
+        paddingClasses: 'p-4 sm:p-6',
+        panelClasses: 'bg-white min-h-screen',
+        position: 'right',
+    },
+})
+```
+
+### Native Dialog
+
+By default, modals use the native HTML `<dialog>` element, which provides better accessibility and native backdrop handling. You can disable this behavior by setting `useNativeDialog` to `false`:
+
+```js
+putConfig({
+    useNativeDialog: false,
+})
+```
+
+### App Element
+
+The `appElement` option specifies which DOM element should be marked as `aria-hidden` when a modal is open. This improves accessibility by hiding the background content from screen readers. The default value is `'#app'`.
+
+If your application uses a different root element, update this value:
+
+```js
+putConfig({
+    appElement: '#root',
+})
+```
+
+Set to `null` to disable this behavior entirely.
+
+Instead of passing a whole object, you can also pass just the keys that you want to override. The other values will be taken from the default configuration.
+
+```js
+putConfig({
+    modal: {
+        closeButton: false,
+    },
+})
+```
+
+Alternatively, you can pass a key and a value to the `putConfig` function using dot notation.
+
+```js
+putConfig('modal.closeButton', false)
+```
+
+### Reading Configuration
+
+You can read the current configuration using the `getConfig` function:
+
+::: code-group
+
+```js [Vue]
+import { getConfig } from '@inertiaui/modal-vue'
+
+const navigate = getConfig('navigate')
+const maxWidth = getConfig('modal.maxWidth')
+const allConfig = getConfig() // returns entire config object
+```
+
+```js [React]
+import { getConfig } from '@inertiaui/modal-react'
+
+const navigate = getConfig('navigate')
+const maxWidth = getConfig('modal.maxWidth')
+const allConfig = getConfig() // returns entire config object
+```
+
+:::
+
+### Resetting Configuration
+
+To reset all configuration to the defaults, use `resetConfig`:
+
+::: code-group
+
+```js [Vue]
+import { resetConfig } from '@inertiaui/modal-vue'
+
+resetConfig()
+```
+
+```js [React]
+import { resetConfig } from '@inertiaui/modal-react'
+
+resetConfig()
+```
+
+:::

@@ -1,7 +1,7 @@
 <script setup>
 import Container from './Container.vue'
 import { Modal, ModalLink, visitModal } from '@inertiaui/modal-vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 
 defineProps({
     navigate: Boolean,
@@ -16,6 +16,11 @@ function visitEdit() {
             }
         }
     })
+}
+
+const testRedirectBackForm = useForm({});
+function testRedirectBack() {
+    testRedirectBackForm.post('/test-redirect-back');
 }
 </script>
 
@@ -41,14 +46,25 @@ function visitEdit() {
         <div class="mt-8">
             <h2 class="text-lg font-medium text-gray-900">Other stuff</h2>
             <div class="flex flex-col items-start">
-                <Link href="/conditionally-redirect?redirect=1" dusk="conditional-redirect">
+                <Link href="/conditionally-redirect?redirect=1" data-testid="conditional-redirect">
                     Open page that redirects to modal
                 </Link>
 
-                <ModalLink :navigate href="/modal-props-ignore-first-load" dusk="modal-props-ignore-first-load">
+                <ModalLink :navigate href="/modal-props-ignore-first-load" data-testid="modal-props-ignore-first-load">
                     Open Modal with props that ignore first load
                 </ModalLink>
             </div>
+        </div>
+
+        <div class="mt-8">
+            <p class="text-lg font-medium text-gray-900">Visit Page</p>
+            <button
+                data-testid="test-redirect-back"
+                @click="testRedirectBack"
+                class="mt-2 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
+            >
+                Test Redirect Back
+            </button>
         </div>
     </Container>
 

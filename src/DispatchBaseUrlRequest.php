@@ -56,6 +56,13 @@ class DispatchBaseUrlRequest
 
                 $response = $route->run();
 
+                // If the base URL route returns a Modal, convert it to a simple Inertia response
+                // without dispatching its own base URL to prevent infinite recursion (#115)
+                if ($response instanceof Modal) {
+                    return inertia()->render($response->getComponent(), $response->getProps())
+                        ->toResponse($requestForBaseUrl);
+                }
+
                 if ($response instanceof Responsable) {
                     return $response->toResponse($requestForBaseUrl);
                 }

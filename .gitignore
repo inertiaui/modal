@@ -14,3 +14,6 @@ node_modules
 /demo-app/tests/Browser/downloads
 react/inertiaui-modal-react-*.tgz
 vue/inertiaui-modal-vue-*.tgz
+/agents
+CLAUDE.md
+/docs/.vitepress/dist

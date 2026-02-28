@@ -1,0 +1,6 @@
+data:
+  device: airco_keuken
+  command: power_off
+target:
+  device_id: 072b14772b4f8fcfc624378ae02dd56c
+action: remote.learn_command
