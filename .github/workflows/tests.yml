@@ -2,29 +2,32 @@ name: Tests
 
 on:
   pull_request:
-    branches: [develop]
+    branches:
+      - develop
   push:
     paths:
-      - "**.js"
-      - "**.jsx"
-      - "**.php"
-      - "**.vue"
-      - "**/composer.json"
-      - "**/package.json"
-      - "**/package-lock.json"
-      - "demo-app/{.env.example,composer.json,package.json,phpunit.xml.dist}"
-      - ".github/workflows/tests.yml"
+      - '**.js'
+      - '**.jsx'
+      - '**.php'
+      - '**.vue'
+      - '**/composer.json'
+      - '**/package.json'
+      - '**/package-lock.json'
+      - demo-app/{.env.example,composer.json,package.json,phpunit.xml.dist}
+      - .github/workflows/tests.yml
 
 jobs:
   tests:
     name: Dusk L${{ matrix.laravel }} - Inertia ${{ matrix.inertia }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}
+
     timeout-minutes: 10
+
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: true
       matrix:
-        laravel: [12.0, 11.0, 10.0]
+        laravel: ['10.0', '11.0', '12.0', '13.0']
         inertia: [v1, v2]
         stack: [react-18, react-19, vue]
         app_mounting: [auto, custom]
@@ -43,7 +46,7 @@ jobs:
             stack: react-19
 
     env:
-      APP_URL: "http://127.0.0.1:8000"
+      APP_URL: http://127.0.0.1:8000
       DB_CONNECTION: sqlite
       APP_STACK: ${{ matrix.stack }}
 
