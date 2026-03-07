@@ -8,6 +8,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Inertia\PropsResolver;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 use Tighten\Ziggy\BladeRouteGenerator;
@@ -50,6 +51,19 @@ class ModalServiceProvider extends ServiceProvider
         // class to pass the modal data as a prop to the base URL.
         Response::macro('toArray', function (): array {
             $request = app('request');
+
+            if (Support::isInertiaV3()) {
+                $resolver = new PropsResolver($request, $this->component);
+                [$resolvedProps, $resolvedMetadata] = $resolver->resolve($this->sharedProps ?? [], $this->props);
+
+                return [
+                    'component' => $this->component,
+                    'props' => $resolvedProps,
+                    'version' => $this->version,
+                    'url' => Str::start(Str::after($request->fullUrl(), $request->getSchemeAndHttpHost()), '/'),
+                    'meta' => $resolvedMetadata,
+                ];
+            }
 
             if (Support::isInertiaV2()) {
                 $props = $this->resolveProperties($request, $this->props);
