@@ -26,7 +26,7 @@
         "test": "vitest"
     },
     "devDependencies": {
-        "@inertiajs/vue3": "^1.3.0||^2.1.11",
+        "@inertiajs/vue3": "^1.3.0||^2.1.11||^3.0.0-beta",
         "@vitejs/plugin-vue": "^5.2.0",
         "@vitest/coverage-v8": "^4.0.0",
         "@vitest/ui": "^4.0.0",
@@ -47,7 +47,7 @@
         "vue": "^3.4.x"
     },
     "peerDependencies": {
-        "@inertiajs/vue3": "^1.3.0||^2.1.11",
+        "@inertiajs/vue3": "^1.3.0||^2.1.11||^3.0.0-beta",
         "axios": "^1.6.0",
         "vue": "^3.4.x"
     },
