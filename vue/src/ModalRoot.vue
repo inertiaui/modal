@@ -36,6 +36,7 @@ onUnmounted(
                 }
 
                 if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
+                    modalStack.setBaseUrl(null)
                     router.visit(modalOnBase.baseUrl, {
                         preserveScroll: true,
                         preserveState: true,
@@ -51,7 +52,7 @@ const requestInterceptor = (config) => {
     // so it can redirect back with the back() helper method...
     const baseUrlHeader = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
 
-    if (config.headers) {
+    if (config.headers && baseUrlHeader) {
         config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlHeader
     }
 

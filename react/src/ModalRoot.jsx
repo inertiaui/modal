@@ -576,6 +576,7 @@ export const ModalRoot = ({ children }) => {
                             return
                         }
                         if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
+                            baseUrl = null
                             router.visit(modalOnBase.baseUrl, {
                                 preserveScroll: true,
                                 preserveState: true,
@@ -592,7 +593,7 @@ export const ModalRoot = ({ children }) => {
         // so it can redirect back with the back() helper method...
         const baseUrlHeader = baseUrl ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
 
-        if (config.headers) {
+        if (config.headers && baseUrlHeader) {
             config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlHeader
         }
 
