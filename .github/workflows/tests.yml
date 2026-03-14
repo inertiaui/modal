@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - develop
+      - main
+      - 1.x
+      - 2.x
+      - 3.x
   push:
     paths:
       - '**.js'
