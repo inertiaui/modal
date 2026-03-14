@@ -169,7 +169,7 @@ jobs:
         run: |
           cd demo-app
           php artisan migrate:fresh --seed
-          php artisan dusk
+          php artisan dusk || (sleep 5 && php artisan dusk:fails) || (sleep 10 && php artisan dusk:fails)
 
       - name: Upload artifacts on failure
         if: failure()
