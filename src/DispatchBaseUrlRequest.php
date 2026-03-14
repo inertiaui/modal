@@ -37,15 +37,10 @@ class DispatchBaseUrlRequest
         $requestForBaseUrl->setRequestLocale($originalRequest->getLocale());
         $requestForBaseUrl->setDefaultRequestLocale($originalRequest->getDefaultLocale());
 
-        // Copy the session from the original request so that middleware
-        // that runs before StartSession can access it without errors.
-        if ($originalRequest->hasSession()) {
-            $requestForBaseUrl->setLaravelSession($originalRequest->session());
-        }
-
         $route = $this->router->getRoutes()->match($requestForBaseUrl);
         $requestForBaseUrl->setRouteResolver(fn () => $route);
 
+        // No need to call setLaravelSession() as it's done by the StartSession middleware
         // No need to call setUserResolver() as it's done by AuthServiceProvider::registerRequestRebindHandler()
 
         // Dispatch the request without encrypting cookies because that has
