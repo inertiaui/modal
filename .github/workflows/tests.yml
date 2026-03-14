@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        laravel: [13.0, 12.0, 11.0]
+        laravel: ['13.0', '12.0', '11.0']
         stack: [react, vue]
         app_mounting: [auto, custom]
         native_dialog: [true, false]
