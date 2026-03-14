@@ -2,7 +2,7 @@ name: Tests
 
 on:
   pull_request:
-    branches: [develop, main, 1.x, 2.x, 3.x]
+    branches: [develop]
   push:
     paths:
       - "**.js"
@@ -24,13 +24,13 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        laravel: [13.0, 12.0, 11.0]
+        laravel: [12.0, 11.0, 10.0]
         inertia: [v1, v2]
         stack: [react-18, react-19, vue]
         app_mounting: [auto, custom]
         exclude:
-          - inertia: v1
-            laravel: 13.0
+          - inertia: v2
+            laravel: 10.0
           - inertia: v1
             laravel: 12.0
           - laravel: 12.0
