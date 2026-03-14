@@ -577,6 +577,7 @@ export const ModalRoot = ({ children }) => {
                         }
                         if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                             baseUrl = null
+                            initialModalStillOpened = false
                             router.visit(modalOnBase.baseUrl, {
                                 preserveScroll: true,
                                 preserveState: true,

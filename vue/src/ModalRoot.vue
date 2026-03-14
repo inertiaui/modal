@@ -37,6 +37,7 @@ onUnmounted(
 
                 if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                     modalStack.setBaseUrl(null)
+                    initialModalStillOpened = false
                     router.visit(modalOnBase.baseUrl, {
                         preserveScroll: true,
                         preserveState: true,
