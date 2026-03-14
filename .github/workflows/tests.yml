@@ -122,7 +122,7 @@ jobs:
         run: |
           cd demo-app
           if [ "${{ matrix.laravel }}" == "13.0" ]; then
-            composer remove laravel/tinker --no-update
+            composer remove laravel/tinker --no-interaction
           fi
           composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:^2.0
           composer install --no-progress --prefer-dist --optimize-autoloader
