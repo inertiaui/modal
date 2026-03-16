@@ -13,13 +13,31 @@ After installing the package, you can link the React or Vue package into your pr
 ::: code-group
 
 ```bash [Vue]
+# npm
 npm install vendor/inertiaui/modal/vue
+
+# bun
+bun add vendor/inertiaui/modal/vue
+
+# pnpm
+pnpm add file:vendor/inertiaui/modal/vue
 ```
 
 ```bash [React]
+# npm
 npm install vendor/inertiaui/modal/react
+
+# bun
+bun add vendor/inertiaui/modal/react
+
+# pnpm
+pnpm add file:vendor/inertiaui/modal/react
 ```
 
+:::
+
+::: info pnpm users
+When using pnpm, you must use the `file:` protocol (`pnpm add file:...`) instead of `pnpm install`. This ensures that transitive dependencies are resolved correctly.
 :::
 
 ## NPM Installation
