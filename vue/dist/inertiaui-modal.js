@@ -1,401 +1,640 @@
-var pt = Object.defineProperty;
-var mt = (t, e, n) => e in t ? pt(t, e, { enumerable: !0, configurable: !0, writable: !0, value: n }) : t[e] = n;
-var I = (t, e, n) => mt(t, typeof e != "symbol" ? e + "" : e, n);
-import * as ue from "vue";
-import { computed as A, provide as Se, createBlock as _, createCommentVNode as F, openBlock as w, unref as m, mergeProps as k, onUnmounted as U, onBeforeMount as je, onMounted as te, watch as P, createElementBlock as H, Fragment as Me, renderSlot as E, ref as x, h as Y, readonly as vt, markRaw as yt, nextTick as K, toValue as L, inject as le, onBeforeUnmount as me, useAttrs as Ke, effectScope as Ve, getCurrentScope as gt, onScopeDispose as ht, getCurrentInstance as ne, shallowRef as xt, toHandlerKey as bt, camelize as wt, defineComponent as S, toRefs as He, Comment as Ct, cloneVNode as Ot, withCtx as C, watchEffect as ee, reactive as Xe, normalizeStyle as Et, createVNode as M, Teleport as _t, normalizeProps as Dt, guardReactiveProps as At, createElementVNode as W, normalizeClass as Z, Transition as Ie, resolveDynamicComponent as Pe, withModifiers as St } from "vue";
-import * as Fe from "@inertiajs/vue3";
-import { usePage as ze, router as re } from "@inertiajs/vue3";
-import { mergeDataIntoQueryString as Mt } from "@inertiajs/core";
-import ve from "axios";
-const ae = {
+import { computed, provide, openBlock, createBlock, unref, mergeProps, createCommentVNode, onUnmounted, onMounted, watch, createElementBlock, Fragment, renderSlot, ref, h, readonly, markRaw, nextTick, toValue, inject, onBeforeUnmount, useAttrs, createElementVNode, normalizeClass, createVNode, withModifiers, withCtx, Teleport, Transition, resolveDynamicComponent } from "vue";
+import { generateId as generateId$1, only, sameUrlPath, kebabCase, except, cancelAnimations, onEscapeKey, createFocusTrap, animate, lockScroll, markAriaHidden, rejectNullValues } from "@inertiaui/vanilla";
+import * as vanilla from "@inertiaui/vanilla";
+import { usePage, router, progress } from "@inertiajs/vue3";
+import { mergeDataIntoQueryString } from "@inertiajs/core";
+import Axios from "axios";
+const defaultConfig = {
   type: "modal",
-  navigate: !1,
+  navigate: false,
+  useNativeDialog: true,
+  appElement: "#app",
   modal: {
-    closeButton: !0,
-    closeExplicitly: !1,
+    closeButton: true,
+    closeExplicitly: false,
+    closeOnClickOutside: true,
     maxWidth: "2xl",
     paddingClasses: "p-4 sm:p-6",
     panelClasses: "bg-white rounded",
     position: "center"
   },
   slideover: {
-    closeButton: !0,
-    closeExplicitly: !1,
+    closeButton: true,
+    closeExplicitly: false,
+    closeOnClickOutside: true,
     maxWidth: "md",
     paddingClasses: "p-4 sm:p-6",
     panelClasses: "bg-white min-h-screen",
     position: "right"
   }
 };
-class It {
+class Config {
   constructor() {
-    this.config = {}, this.reset();
+    this.config = {};
+    this.reset();
   }
   reset() {
-    this.config = JSON.parse(JSON.stringify(ae));
+    this.config = JSON.parse(JSON.stringify(defaultConfig));
   }
-  put(e, n) {
-    if (typeof e == "object") {
+  put(key, value) {
+    if (typeof key === "object") {
       this.config = {
-        type: e.type ?? ae.type,
-        navigate: e.navigate ?? ae.navigate,
-        modal: { ...ae.modal, ...e.modal ?? {} },
-        slideover: { ...ae.slideover, ...e.slideover ?? {} }
+        type: key.type ?? defaultConfig.type,
+        navigate: key.navigate ?? defaultConfig.navigate,
+        useNativeDialog: key.useNativeDialog ?? defaultConfig.useNativeDialog,
+        appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
+        modal: { ...defaultConfig.modal, ...key.modal ?? {} },
+        slideover: { ...defaultConfig.slideover, ...key.slideover ?? {} }
       };
       return;
     }
-    const o = e.split(".");
-    let r = this.config;
-    for (let a = 0; a < o.length - 1; a++)
-      r = r[o[a]] = r[o[a]] || {};
-    r[o[o.length - 1]] = n;
-  }
-  get(e) {
-    if (typeof e > "u")
-      return this.config;
-    const n = e.split(".");
-    let o = this.config;
-    for (const r of n) {
-      if (o[r] === void 0)
-        return null;
-      o = o[r];
+    const keys = key.split(".");
+    let current = this.config;
+    for (let i = 0; i < keys.length - 1; i++) {
+      current = current[keys[i]] = current[keys[i]] || {};
     }
-    return o;
+    current[keys[keys.length - 1]] = value;
+  }
+  get(key) {
+    if (typeof key === "undefined") {
+      return this.config;
+    }
+    const keys = key.split(".");
+    let current = this.config;
+    for (const k of keys) {
+      if (current === null || current === void 0 || typeof current !== "object") {
+        return null;
+      }
+      current = current[k];
+    }
+    return current === void 0 ? null : current;
   }
 }
-const ge = new It(), Co = () => ge.reset(), Oo = (t, e) => ge.put(t, e), Be = (t) => ge.get(t), z = (t, e) => ge.get(t ? `slideover.${e}` : `modal.${e}`);
-function Pt(t, e) {
-  const n = typeof window < "u" ? window.location.origin : "http://localhost";
-  return t = typeof t == "string" ? new URL(t, n) : t, e = typeof e == "string" ? new URL(e, n) : e, `${t.origin}${t.pathname}` == `${e.origin}${e.pathname}`;
+const configInstance = new Config();
+const resetConfig = () => configInstance.reset();
+const putConfig = (key, value) => configInstance.put(key, value);
+const getConfig = (key) => configInstance.get(key);
+const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+function generateId(prefix = "inertiaui_modal_") {
+  return generateId$1(prefix);
 }
-function _e(t = "inertiaui_modal_") {
-  return typeof crypto < "u" && typeof crypto.randomUUID == "function" ? `${t}${crypto.randomUUID()}` : `${t}${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`;
-}
-function Q(t) {
-  return typeof t == "string" ? t.toLowerCase() : t;
-}
-function Bt(t, e, n = !1) {
-  return n && (e = e.map(Q)), Array.isArray(t) ? t.filter((o) => !e.includes(n ? Q(o) : o)) : Object.keys(t).reduce((o, r) => (e.includes(n ? Q(r) : r) || (o[r] = t[r]), o), {});
-}
-function Ge(t, e, n = !1) {
-  return n && (e = e.map(Q)), Array.isArray(t) ? t.filter((o) => e.includes(n ? Q(o) : o)) : Object.keys(t).reduce((o, r) => (e.includes(n ? Q(r) : r) && (o[r] = t[r]), o), {});
-}
-function $t(t) {
-  return Array.isArray(t) ? t.filter((e) => e !== null) : Object.keys(t).reduce((e, n) => (n in t && t[n] !== null && (e[n] = t[n]), e), {});
-}
-function de(t) {
-  return t ? (t = t.replace(/_/g, "-"), t = t.replace(/-+/g, "-"), /[A-Z]/.test(t) ? (t = t.replace(/\s+/g, "").replace(/_/g, "").replace(/(?:^|\s|-)+([A-Za-z])/g, (e, n) => n.toUpperCase()), t = t.replace(/(.)(?=[A-Z])/g, "$1-"), t.toLowerCase()) : t) : "";
-}
-const Je = {
+const _sfc_main$9 = {
   __name: "ModalRenderer",
   props: {
     index: {
       type: Number,
-      required: !0
+      required: true
     }
   },
-  setup(t) {
-    const e = t, n = ie(), o = A(() => n.stack.value[e.index]);
-    return Se("modalContext", o), (r, a) => {
-      var s;
-      return (s = o.value) != null && s.component ? (w(), _(m(o).component, k({ key: 0 }, m(Ge)(o.value.props ?? {}, o.value.getComponentPropKeys(), !0), {
-        onModalEvent: a[0] || (a[0] = (l, ...d) => o.value.emit(l, ...d))
-      }), null, 16)) : F("", !0);
+  setup(__props) {
+    const props = __props;
+    const modalStack = useModalStack();
+    const modalContext = computed(() => {
+      return modalStack.stack.value[props.index];
+    });
+    provide("modalContext", modalContext);
+    return (_ctx, _cache) => {
+      return modalContext.value?.component ? (openBlock(), createBlock(unref(modalContext).component, mergeProps({ key: 0 }, unref(only)(modalContext.value.props ?? {}, modalContext.value.getComponentPropKeys(), true), {
+        onModalEvent: _cache[0] || (_cache[0] = (event, ...args) => modalContext.value.emit(event, ...args))
+      }), null, 16)) : createCommentVNode("", true);
     };
   }
-}, Lt = {
+};
+const _sfc_main$8 = {
   __name: "ModalRoot",
-  setup(t) {
-    const e = ie(), n = ze();
-    let o = !1, r = !1;
-    U(re.on("start", () => o = !0)), U(re.on("finish", () => o = !1)), U(
-      re.on("navigate", (s) => {
-        const l = s.detail.page.props._inertiaui_modal;
-        if (!l) {
-          e.closeAll(), e.setBaseUrl(null), r = !1;
+  setup(__props) {
+    const modalStack = useModalStack();
+    const $page = usePage();
+    let isNavigating = false;
+    const pendingModalKeys = /* @__PURE__ */ new Set();
+    const getModalKey = (modalData) => modalData.id || `${modalData.component}:${modalData.url}`;
+    onUnmounted(router.on("start", () => isNavigating = true));
+    onUnmounted(router.on("finish", () => isNavigating = false));
+    onUnmounted(
+      router.on("navigate", ($event) => {
+        const modalOnBase = $event.detail.page.props._inertiaui_modal;
+        const pageUrl = $event.detail.page.url;
+        if (modalStack.isClosingToBaseUrl(pageUrl)) {
+          modalStack.clearClosingToBaseUrl();
+          modalStack.closeAll(true);
+          modalStack.setBaseUrl(null);
           return;
         }
-        e.setBaseUrl(l.baseUrl), e.pushFromResponseData(l, {}, () => {
-          if (!l.baseUrl) {
+        if (!modalOnBase) {
+          modalStack.closeAll(true);
+          modalStack.setBaseUrl(null);
+          return;
+        }
+        if (!sameUrlPath(pageUrl, modalOnBase.url)) {
+          modalStack.closeAll(true);
+          modalStack.setBaseUrl(null);
+          return;
+        }
+        const modalKey = getModalKey(modalOnBase);
+        if (pendingModalKeys.has(modalKey)) {
+          return;
+        }
+        if (modalOnBase.id && modalStack.stack.value.some((m) => m.id === modalOnBase.id)) {
+          return;
+        }
+        if (modalStack.stack.value.some((m) => m.response?.component === modalOnBase.component && sameUrlPath(m.response?.url, modalOnBase.url))) {
+          return;
+        }
+        modalStack.setBaseUrl(modalOnBase.baseUrl);
+        pendingModalKeys.add(modalKey);
+        modalStack.pushFromResponseData(modalOnBase, {}, () => {
+          if (!modalOnBase.baseUrl) {
             console.error("No base url in modal response data so cannot navigate back");
             return;
           }
-          !o && typeof window < "u" && window.location.href !== l.baseUrl && re.visit(l.baseUrl, {
-            preserveScroll: !0,
-            preserveState: !0
-          });
-        }).then(e.onModalOnBase);
+          if (!isNavigating && typeof window !== "undefined" && window.location.href !== modalOnBase.baseUrl) {
+            router.visit(modalOnBase.baseUrl, {
+              preserveScroll: true,
+              preserveState: true
+            });
+          }
+        }).finally(() => {
+          pendingModalKeys.delete(modalKey);
+        });
       })
     );
-    const a = (s) => {
-      var l;
-      return s.headers["X-InertiaUI-Modal-Base-Url"] = e.getBaseUrl() ?? (r ? (l = n.props._inertiaui_modal) == null ? void 0 : l.baseUrl : null), s;
+    const axiosRequestInterceptor = (config) => {
+      const baseUrlValue = modalStack.getBaseUrl() ?? $page.props?._inertiaui_modal?.baseUrl ?? null;
+      if (baseUrlValue) {
+        config.headers["X-InertiaUI-Modal-Base-Url"] = baseUrlValue;
+      }
+      return config;
     };
-    return je(() => ve.interceptors.request.use(a)), te(() => r = !!n.props._inertiaui_modal), U(() => ve.interceptors.request.eject(a)), P(
-      () => {
-        var s;
-        return (s = n.props) == null ? void 0 : s._inertiaui_modal;
-      },
-      (s, l) => {
-        var d;
-        s && l && s.component === l.component && Pt(s.url, l.url) && ((d = e.stack.value[0]) == null || d.updateProps(s.props ?? {}));
-      }
-    ), (s, l) => (w(), H(Me, null, [
-      E(s.$slots, "default"),
-      m(e).stack.value.length ? (w(), _(Je, {
-        key: 0,
-        index: 0
-      })) : F("", !0)
-    ], 64));
-  }
-};
-let he = null;
-const J = x({}), se = x(null), De = x({}), D = x([]), ye = x({}), kt = (t) => {
-  he = t;
-}, Eo = (t) => {
-  t.resolveComponent && (he = t.resolveComponent);
-};
-class Tt {
-  constructor(e, n, o, r, a) {
-    I(this, "getComponentPropKeys", () => Array.isArray(this.component.props) ? this.component.props : this.component.props ? Object.keys(this.component.props) : []);
-    I(this, "getParentModal", () => {
-      const e = this.index.value;
-      return e < 1 ? null : D.value.slice(0, e).reverse().find((n) => n.isOpen);
-    });
-    I(this, "getChildModal", () => {
-      const e = this.index.value;
-      return e === D.value.length - 1 ? null : D.value.slice(e + 1).find((n) => n.isOpen);
-    });
-    I(this, "show", () => {
-      const e = this.index.value;
-      if (e > -1) {
-        if (D.value[e].isOpen)
+    let axiosInterceptorId = null;
+    onMounted(() => axiosInterceptorId = Axios.interceptors.request.use(axiosRequestInterceptor));
+    onUnmounted(() => axiosInterceptorId !== null && Axios.interceptors.request.eject(axiosInterceptorId));
+    watch(
+      () => $page.props?._inertiaui_modal,
+      (newModal, previousModal) => {
+        if (!newModal) {
           return;
-        D.value[e].isOpen = !0, D.value[e].shouldRender = !0;
-      }
-    });
-    I(this, "close", () => {
-      var n;
-      const e = this.index.value;
-      if (e > -1) {
-        if (!D.value[e].isOpen)
-          return;
-        Object.keys(this.listeners).forEach((o) => {
-          this.off(o);
-        }), D.value[e].isOpen = !1, (n = this.onCloseCallback) == null || n.call(this), this.onCloseCallback = null;
-      }
-    });
-    I(this, "setOpen", (e) => {
-      e ? this.show() : this.close();
-    });
-    I(this, "afterLeave", () => {
-      var n;
-      const e = this.index.value;
-      if (e > -1) {
-        if (D.value[e].isOpen)
-          return;
-        D.value[e].shouldRender = !1, (n = this.afterLeaveCallback) == null || n.call(this), this.afterLeaveCallback = null;
-      }
-      e === 0 && (D.value = []);
-    });
-    I(this, "on", (e, n) => {
-      e = de(e), this.listeners[e] = this.listeners[e] ?? [], this.listeners[e].push(n);
-    });
-    I(this, "off", (e, n) => {
-      var o;
-      e = de(e), n ? this.listeners[e] = ((o = this.listeners[e]) == null ? void 0 : o.filter((r) => r !== n)) ?? [] : delete this.listeners[e];
-    });
-    I(this, "emit", (e, ...n) => {
-      var o;
-      (o = this.listeners[de(e)]) == null || o.forEach((r) => r(...n));
-    });
-    I(this, "registerEventListenersFromAttrs", (e) => {
-      const n = [];
-      return Object.keys(e).filter((o) => o.startsWith("on")).forEach((o) => {
-        const r = de(o).replace(/^on-/, "");
-        this.on(r, e[o]), n.push(() => this.off(r, e[o]));
-      }), () => n.forEach((o) => o());
-    });
-    I(this, "reload", (e = {}) => {
-      var a, s;
-      let n = Object.keys(this.response.props);
-      if (e.only && (n = e.only), e.except && (n = Bt(n, e.except)), !((a = this.response) != null && a.url))
-        return;
-      const o = (e.method ?? "get").toLowerCase(), r = e.data ?? {};
-      (s = e.onStart) == null || s.call(e), ve({
-        url: this.response.url,
-        method: o,
-        data: o === "get" ? {} : r,
-        params: o === "get" ? r : {},
-        headers: {
-          ...e.headers ?? {},
-          Accept: "text/html, application/xhtml+xml",
-          "X-Inertia": !0,
-          "X-Inertia-Partial-Component": this.response.component,
-          "X-Inertia-Version": this.response.version,
-          "X-Inertia-Partial-Data": n.join(","),
-          "X-InertiaUI-Modal": _e(),
-          "X-InertiaUI-Modal-Use-Router": 0,
-          "X-InertiaUI-Modal-Base-Url": se.value
         }
-      }).then((l) => {
-        var d;
-        this.updateProps(l.data.props), (d = e.onSuccess) == null || d.call(e, l);
-      }).catch((l) => {
-        var d;
-        (d = e.onError) == null || d.call(e, l);
-      }).finally(() => {
-        var l;
-        (l = e.onFinish) == null || l.call(e);
+        if (previousModal && newModal.component === previousModal.component && sameUrlPath(newModal.url, previousModal.url)) {
+          modalStack.stack.value[0]?.updateProps(newModal.props ?? {});
+          return;
+        }
+        if (!previousModal && modalStack.stack.value.length > 0) {
+          const existingModal = modalStack.stack.value.find(
+            (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url)
+          );
+          if (existingModal) {
+            existingModal.updateProps(newModal.props ?? {});
+          }
+        }
+      }
+    );
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock(Fragment, null, [
+        renderSlot(_ctx.$slots, "default"),
+        unref(modalStack).stack.value.length ? (openBlock(), createBlock(_sfc_main$9, {
+          key: 0,
+          index: 0
+        })) : createCommentVNode("", true)
+      ], 64);
+    };
+  }
+};
+let resolveComponent = null;
+const baseUrl = ref(null);
+const stack = ref([]);
+const localModals = ref({});
+let closingToBaseUrlTarget = null;
+const prefetchCache = /* @__PURE__ */ new Map();
+const prefetchInFlight = /* @__PURE__ */ new Map();
+function getPrefetchCacheKey(url, method, data) {
+  return `${method}:${url}:${JSON.stringify(data)}`;
+}
+function getCachedResponse(url, method, data) {
+  const key = getPrefetchCacheKey(url, method, data);
+  const cached = prefetchCache.get(key);
+  if (!cached) {
+    return null;
+  }
+  if (Date.now() > cached.expiresAt) {
+    prefetchCache.delete(key);
+    return null;
+  }
+  return cached.response;
+}
+function setCachedResponse(url, method, data, response, cacheFor) {
+  const key = getPrefetchCacheKey(url, method, data);
+  prefetchCache.set(key, {
+    response,
+    timestamp: Date.now(),
+    expiresAt: Date.now() + cacheFor
+  });
+}
+function prefetch(href, options = {}) {
+  if (href.startsWith("#")) {
+    return Promise.resolve();
+  }
+  const method = (options.method ?? "get").toLowerCase();
+  const data = options.data ?? {};
+  const headers = options.headers ?? {};
+  const queryStringArrayFormat = options.queryStringArrayFormat ?? "brackets";
+  const cacheFor = options.cacheFor ?? 3e4;
+  const [url, mergedData] = mergeDataIntoQueryString(method, href || "", data, queryStringArrayFormat);
+  const cached = getCachedResponse(url, method, mergedData);
+  if (cached) {
+    return Promise.resolve();
+  }
+  const cacheKey = getPrefetchCacheKey(url, method, mergedData);
+  const inFlight = prefetchInFlight.get(cacheKey);
+  if (inFlight) {
+    return inFlight.then(() => {
+    });
+  }
+  options.onPrefetching?.();
+  const requestHeaders = {
+    ...headers,
+    Accept: "text/html, application/xhtml+xml",
+    "X-Requested-With": "XMLHttpRequest",
+    "X-Inertia": "true",
+    "X-Inertia-Version": usePage().version ?? "",
+    "X-InertiaUI-Modal": generateId(),
+    "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
+  };
+  const request = Axios({ url, method, data: mergedData, headers: requestHeaders }).then((response) => {
+    setCachedResponse(url, method, mergedData, response, cacheFor);
+    options.onPrefetched?.();
+    return response;
+  }).finally(() => {
+    prefetchInFlight.delete(cacheKey);
+  });
+  prefetchInFlight.set(cacheKey, request);
+  return request.then(() => {
+  });
+}
+const setComponentResolver = (resolver) => {
+  resolveComponent = resolver;
+};
+const initFromPageProps = (pageProps) => {
+  if (pageProps.resolveComponent) {
+    resolveComponent = pageProps.resolveComponent;
+  }
+};
+class Modal {
+  constructor(component, response, config, onClose, afterLeave) {
+    this.getComponentPropKeys = () => {
+      if (!this.component) {
+        return [];
+      }
+      const componentProps = this.component.props;
+      if (Array.isArray(componentProps)) {
+        return componentProps;
+      }
+      return componentProps ? Object.keys(componentProps) : [];
+    };
+    this.getParentModal = () => {
+      const index = this.index.value;
+      if (index < 1) {
+        return null;
+      }
+      return stack.value.slice(0, index).reverse().find((modal) => modal.isOpen);
+    };
+    this.getChildModal = () => {
+      const index = this.index.value;
+      if (index === stack.value.length - 1) {
+        return null;
+      }
+      return stack.value.slice(index + 1).find((modal) => modal.isOpen) ?? null;
+    };
+    this.show = () => {
+      const index = this.index.value;
+      if (index > -1) {
+        if (stack.value[index].isOpen) {
+          return;
+        }
+        stack.value[index].isOpen = true;
+        stack.value[index].shouldRender = true;
+      }
+    };
+    this.close = () => {
+      const index = this.index.value;
+      if (index > -1) {
+        if (!stack.value[index].isOpen) {
+          return;
+        }
+        Object.keys(this.listeners).forEach((event) => {
+          this.off(event);
+        });
+        stack.value[index].isOpen = false;
+        this.onCloseCallback?.();
+        this.onCloseCallback = null;
+      }
+    };
+    this.setOpen = (open) => {
+      if (open) {
+        this.show();
+      } else {
+        this.close();
+      }
+    };
+    this.afterLeave = () => {
+      const index = this.index.value;
+      if (index > -1) {
+        if (stack.value[index].isOpen) {
+          return;
+        }
+        stack.value[index].shouldRender = false;
+        this.afterLeaveCallback?.();
+        this.afterLeaveCallback = null;
+      }
+      if (index === 0) {
+        stack.value = [];
+        const savedBaseUrl = baseUrl.value;
+        baseUrl.value = null;
+        closingToBaseUrlTarget = savedBaseUrl;
+        if (savedBaseUrl && typeof window !== "undefined") {
+          router.push({
+            url: savedBaseUrl,
+            preserveScroll: true,
+            preserveState: true,
+            // Clear _inertiaui_modal prop to prevent modal from reopening
+            // Must explicitly set to undefined since props are merged
+            props: (currentProps) => {
+              const { _inertiaui_modal, ...rest } = currentProps;
+              return { ...rest, _inertiaui_modal: void 0 };
+            }
+          });
+        }
+      }
+    };
+    this.on = (event, callback) => {
+      event = kebabCase(event);
+      this.listeners[event] = this.listeners[event] ?? [];
+      this.listeners[event].push(callback);
+    };
+    this.off = (event, callback) => {
+      event = kebabCase(event);
+      if (callback) {
+        this.listeners[event] = this.listeners[event]?.filter((cb) => cb !== callback) ?? [];
+      } else {
+        delete this.listeners[event];
+      }
+    };
+    this.emit = (event, ...args) => {
+      this.listeners[kebabCase(event)]?.forEach((callback) => callback(...args));
+    };
+    this.registerEventListenersFromAttrs = ($attrs) => {
+      const unsubscribers = [];
+      Object.keys($attrs).filter((key) => key.startsWith("on")).forEach((key) => {
+        const eventName = kebabCase(key).replace(/^on-/, "");
+        const callback = $attrs[key];
+        this.on(eventName, callback);
+        unsubscribers.push(() => this.off(eventName, callback));
       });
-    });
-    I(this, "updateProps", (e) => {
-      Object.assign(this.props.value, e);
-    });
-    if (this.id = n.id ?? _e(), this.isOpen = !1, this.shouldRender = !1, this.listeners = {}, this.component = e, this.props = x(n.props), this.response = n, this.config = o ?? {}, this.onCloseCallback = r, this.afterLeaveCallback = a, J.value[this.id]) {
-      this.config = {
-        ...this.config,
-        ...J.value[this.id].config ?? {}
-      };
-      const s = J.value[this.id].onClose, l = J.value[this.id].onAfterLeave;
-      s && (this.onCloseCallback = r ? () => {
-        r(), s();
-      } : s), l && (this.afterLeaveCallback = a ? () => {
-        a(), l();
-      } : l), delete J.value[this.id];
-    }
-    this.index = A(() => D.value.findIndex((s) => s.id === this.id)), this.onTopOfStack = A(() => {
-      var l;
-      return D.value.length < 2 ? !0 : ((l = D.value.map((d) => ({ id: d.id, shouldRender: d.shouldRender })).reverse().find((d) => d.shouldRender)) == null ? void 0 : l.id) === this.id;
+      return () => unsubscribers.forEach((unsub) => unsub());
+    };
+    this.reload = (options = {}) => {
+      let keys = Object.keys(this.response.props);
+      if (options.only) {
+        keys = options.only;
+      }
+      if (options.except) {
+        keys = except(keys, options.except);
+      }
+      if (!this.response?.url) {
+        return;
+      }
+      const method = (options.method ?? "get").toLowerCase();
+      const data = options.data ?? {};
+      options.onStart?.();
+      Axios({
+        url: this.response.url,
+        method,
+        data: method === "get" ? {} : data,
+        params: method === "get" ? data : {},
+        headers: {
+          ...options.headers ?? {},
+          Accept: "text/html, application/xhtml+xml",
+          "X-Inertia": "true",
+          "X-Inertia-Partial-Component": this.response.component,
+          "X-Inertia-Version": this.response.version ?? "",
+          "X-Inertia-Partial-Data": keys.join(","),
+          "X-InertiaUI-Modal": generateId(),
+          "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
+        }
+      }).then((response2) => {
+        this.updateProps(response2.data.props);
+        options.onSuccess?.(response2);
+      }).catch((error) => {
+        options.onError?.(error);
+      }).finally(() => {
+        options.onFinish?.();
+      });
+    };
+    this.updateProps = (props) => {
+      Object.assign(this.props.value, props);
+    };
+    this.id = response.id ?? generateId();
+    this.isOpen = false;
+    this.shouldRender = false;
+    this.listeners = {};
+    this.component = component;
+    this.props = ref(response.props ?? {});
+    this.response = response;
+    this.config = config ?? {};
+    this.onCloseCallback = onClose ?? null;
+    this.afterLeaveCallback = afterLeave ?? null;
+    this.index = computed(() => stack.value.findIndex((m) => m.id === this.id));
+    this.onTopOfStack = computed(() => {
+      if (stack.value.length < 2) {
+        return true;
+      }
+      const modals = stack.value.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender }));
+      return modals.reverse().find((modal) => modal.shouldRender)?.id === this.id;
     });
   }
 }
-function Ft(t, e) {
-  ye.value[t] = { name: t, callback: e };
+function registerLocalModal(name, callback) {
+  localModals.value[name] = { name, callback };
 }
-function qt(t, e, n, o) {
-  if (!ye.value[t])
-    throw new Error(`The local modal "${t}" has not been registered.`);
-  const r = $e(null, {}, e, n, o);
-  return r.name = t, ye.value[t].callback(r), r;
+function pushLocalModal(name, config, onClose, afterLeave, props) {
+  if (!localModals.value[name]) {
+    throw new Error(`The local modal "${name}" has not been registered.`);
+  }
+  const responseData = { props: props ?? {} };
+  const modal = push(null, responseData, config, onClose, afterLeave);
+  modal.name = name;
+  localModals.value[name].callback(modal);
+  return modal;
 }
-function Ye(t, e = {}, n = null, o = null) {
-  return he(t.component).then((r) => $e(yt(r), t, e, n, o));
+function isValidModalResponse(data) {
+  return typeof data === "object" && data !== null && "component" in data && typeof data.component === "string";
 }
-function Rt(t, e, n = {}, o = {}, r = {}, a = null, s = null, l = "brackets", d = !1, f = null, u = null, c = null) {
-  const v = _e();
-  return new Promise((i, p) => {
-    if (t.startsWith("#")) {
-      i(qt(t.substring(1), r, a, s));
+function updateBrowserUrl(url, useBrowserHistory, modalData) {
+  if (!url || !useBrowserHistory || typeof window === "undefined") {
+    return;
+  }
+  router.push({
+    url,
+    preserveScroll: true,
+    preserveState: true,
+    // Store modal data in page props for history navigation
+    // This allows forward/back to restore the modal
+    props: modalData ? (currentProps) => ({
+      ...currentProps,
+      _inertiaui_modal: {
+        ...modalData,
+        baseUrl: baseUrl.value
+      }
+    }) : void 0
+  });
+}
+function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null) {
+  if (!resolveComponent) {
+    return Promise.reject(new Error("Component resolver not set"));
+  }
+  if (!isValidModalResponse(responseData)) {
+    return Promise.reject(
+      new Error(
+        "Invalid modal response. This usually happens when the server returns a redirect (e.g., due to session expiration). Check if the user is still authenticated."
+      )
+    );
+  }
+  return resolveComponent(responseData.component).then(
+    (component) => push(markRaw(component), responseData, config, onClose, onAfterLeave)
+  );
+}
+function visit(href, method, payload = {}, headers = {}, config = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = "brackets", useBrowserHistory = false, onStart = null, onSuccess = null, onError = null, props = null) {
+  const modalId = generateId();
+  return new Promise((resolve, reject) => {
+    if (href.startsWith("#")) {
+      resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave, props));
       return;
     }
-    const [y, b] = Mt(e, t || "", n, l);
-    let h = d && D.value.length === 0;
-    if (D.value.length === 0 && (se.value = typeof window < "u" ? window.location.href : ""), o = {
-      ...o,
+    const [url, data] = mergeDataIntoQueryString(method, href || "", payload, queryStringArrayFormat);
+    const cachedResponse = getCachedResponse(url, method, data);
+    if (cachedResponse) {
+      onSuccess?.(cachedResponse);
+      pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave).then((modal) => {
+        updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data);
+        resolve(modal);
+      }).catch(reject);
+      return;
+    }
+    if (stack.value.length === 0) {
+      baseUrl.value = typeof window !== "undefined" ? window.location.href : "";
+    }
+    const requestHeaders = {
+      ...headers,
       Accept: "text/html, application/xhtml+xml",
       "X-Requested-With": "XMLHttpRequest",
-      "X-Inertia": !0,
-      "X-Inertia-Version": ze().version,
-      "X-InertiaUI-Modal": v,
-      "X-InertiaUI-Modal-Use-Router": h ? 1 : 0,
-      "X-InertiaUI-Modal-Base-Url": se.value
-    }, h)
-      return J.value[v] = { config: r, onClose: a, onAfterLeave: s }, re.visit(y, {
-        method: e,
-        data: b,
-        headers: o,
-        preserveScroll: !0,
-        preserveState: !0,
-        onError(...g) {
-          c == null || c(...g), p(...g);
-        },
-        onStart(...g) {
-          f == null || f(...g);
-        },
-        onSuccess(...g) {
-          u == null || u(...g);
-        },
-        onBefore: () => {
-          De.value[v] = i;
-        }
-      });
-    f == null || f();
-    const O = (g) => {
-      try {
-        Fe.progress && g(Fe.progress);
-      } catch {
-      }
+      "X-Inertia": "true",
+      "X-Inertia-Version": usePage().version ?? "",
+      "X-InertiaUI-Modal": modalId,
+      "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
     };
-    O((g) => g.start()), ve({ url: y, method: e, data: b, headers: o }).then((g) => {
-      u == null || u(g), i(Ye(g.data, r, a, s));
-    }).catch((...g) => {
-      c == null || c(...g), p(...g);
+    onStart?.();
+    progress?.start();
+    Axios({ url, method, data, headers: requestHeaders }).then((response) => {
+      onSuccess?.(response);
+      pushFromResponseData(response.data, config, onClose, onAfterLeave).then((modal) => {
+        updateBrowserUrl(response.data.url, useBrowserHistory, response.data);
+        resolve(modal);
+      }).catch(reject);
+    }).catch((...args) => {
+      onError?.(...args);
+      reject(args[0]);
     }).finally(() => {
-      O((g) => g.finish());
+      progress?.finish();
     });
   });
 }
-function Nt(t) {
-  var n, o;
-  const e = (o = (n = t.response) == null ? void 0 : n.meta) == null ? void 0 : o.deferredProps;
-  e && Object.keys(e).forEach((r) => {
-    t.reload({ only: e[r] });
+function loadDeferredProps(modal) {
+  const deferred = modal.response?.meta?.deferredProps;
+  if (!deferred) {
+    return;
+  }
+  Object.keys(deferred).forEach((key) => {
+    modal.reload({ only: deferred[key] });
   });
 }
-function $e(t, e, n, o, r) {
-  const a = new Tt(t, e, n, o, r);
-  return D.value.push(a), Nt(a), K(() => a.show()), a;
+function push(component, response, config, onClose, afterLeave) {
+  const newModal = new Modal(component, response, config, onClose, afterLeave);
+  stack.value.push(newModal);
+  loadDeferredProps(newModal);
+  nextTick(() => newModal.show());
+  return newModal;
 }
-const Ut = ["closeButton", "closeExplicitly", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"], _o = (t, e) => (e.resolveComponent && (he = e.resolveComponent), () => Y(Lt, () => Y(t, e)));
-function ie() {
+const modalPropNames = ["closeButton", "closeExplicitly", "closeOnClickOutside", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"];
+const renderApp = (App, props) => {
+  if (props.resolveComponent) {
+    resolveComponent = props.resolveComponent;
+  }
+  return () => h(_sfc_main$8, () => h(App, props));
+};
+function useModalStack() {
   return {
-    setComponentResolver: kt,
-    getBaseUrl: () => se.value,
-    setBaseUrl: (t) => se.value = t,
-    stack: vt(D),
-    push: $e,
-    pushFromResponseData: Ye,
-    closeAll: () => [...D.value].reverse().forEach((t) => t.close()),
-    reset: () => D.value = [],
-    visit: Rt,
-    registerLocalModal: Ft,
-    removeLocalModal: (t) => delete ye.value[t],
-    onModalOnBase(t) {
-      const e = De.value[t.id];
-      e && (e(t), delete De.value[t.id]);
-    }
+    setComponentResolver,
+    getBaseUrl: () => baseUrl.value,
+    setBaseUrl: (url) => baseUrl.value = url,
+    isClosingToBaseUrl: (pageUrl) => {
+      if (!closingToBaseUrlTarget) return false;
+      const targetPath = new URL(closingToBaseUrlTarget, "http://x").pathname;
+      const pagePath = new URL(pageUrl, "http://x").pathname;
+      return targetPath === pagePath;
+    },
+    clearClosingToBaseUrl: () => closingToBaseUrlTarget = null,
+    stack: readonly(stack),
+    push,
+    pushFromResponseData,
+    closeAll: (force = false) => {
+      if (force) {
+        stack.value = [];
+      } else {
+        [...stack.value].reverse().forEach((modal) => modal.close());
+      }
+    },
+    reset: () => stack.value = [],
+    visit,
+    registerLocalModal,
+    removeLocalModal: (name) => delete localModals.value[name]
   };
 }
-function Do() {
-  return L(le("modalContext", null));
+function useModal() {
+  return toValue(inject("modalContext", null));
 }
-const Ao = {
+const _sfc_main$7 = {
   __name: "Deferred",
   props: {
     data: {
       type: [String, Array],
-      required: !0
+      required: true
     }
   },
-  setup(t) {
-    const e = t, n = le("modalContext");
-    if (!n)
+  setup(__props) {
+    const props = __props;
+    const modalContext = inject("modalContext");
+    if (!modalContext) {
       throw new Error("Deferred component must be used inside a Modal component");
-    const o = A(() => (Array.isArray(e.data) ? e.data : [e.data]).every((a) => n.value.props[a] !== void 0));
-    return (r, a) => o.value ? E(r.$slots, "default", { key: 0 }) : E(r.$slots, "fallback", { key: 1 });
+    }
+    const allKeysAreAvailable = computed(() => {
+      const keys = Array.isArray(props.data) ? props.data : [props.data];
+      return keys.every((key) => modalContext.value.props[key] !== void 0);
+    });
+    return (_ctx, _cache) => {
+      return allKeysAreAvailable.value ? renderSlot(_ctx.$slots, "default", { key: 0 }) : renderSlot(_ctx.$slots, "fallback", { key: 1 });
+    };
   }
-}, Wt = /* @__PURE__ */ Object.assign({
-  inheritAttrs: !1
+};
+const _sfc_main$6 = /* @__PURE__ */ Object.assign({
+  inheritAttrs: false
 }, {
   __name: "HeadlessModal",
   props: {
     name: {
       type: String,
-      required: !1
+      required: false
     },
-    // The slideover prop in on top because we need to know if it's a slideover
-    // before we can determine the defaule value of other props
+    // The slideover prop is on top because we need to know if it's a slideover
+    // before we can determine the default value of other props
     slideover: {
       type: Boolean,
       default: null
@@ -405,6 +644,10 @@ const Ao = {
       default: null
     },
     closeExplicitly: {
+      type: Boolean,
+      default: null
+    },
+    closeOnClickOutside: {
       type: Boolean,
       default: null
     },
@@ -426,1489 +669,145 @@ const Ao = {
     }
   },
   emits: ["modal-event", "focus", "blur", "close", "success"],
-  setup(t, { expose: e, emit: n }) {
-    const o = t, r = ie(), a = o.name ? x({}) : le("modalContext"), s = A(() => {
-      var p;
-      const i = ((p = a.value.config) == null ? void 0 : p.slideover) ?? o.slideover ?? Be("type") === "slideover";
+  setup(__props, { expose: __expose, emit: __emit }) {
+    const props = __props;
+    const modalStack = useModalStack();
+    const modalContext = props.name ? ref({}) : inject("modalContext");
+    const config = computed(() => {
+      const isSlideover = modalContext.value.config?.slideover ?? props.slideover ?? getConfig("type") === "slideover";
       return {
-        slideover: i,
-        closeButton: o.closeButton ?? z(i, "closeButton"),
-        closeExplicitly: o.closeExplicitly ?? z(i, "closeExplicitly"),
-        maxWidth: o.maxWidth ?? z(i, "maxWidth"),
-        paddingClasses: o.paddingClasses ?? z(i, "paddingClasses"),
-        panelClasses: o.panelClasses ?? z(i, "panelClasses"),
-        position: o.position ?? z(i, "position"),
-        ...a.value.config
+        slideover: isSlideover,
+        closeButton: props.closeButton ?? getConfigByType(isSlideover, "closeButton"),
+        closeExplicitly: props.closeExplicitly ?? getConfigByType(isSlideover, "closeExplicitly"),
+        closeOnClickOutside: props.closeOnClickOutside ?? getConfigByType(isSlideover, "closeOnClickOutside"),
+        maxWidth: props.maxWidth ?? getConfigByType(isSlideover, "maxWidth"),
+        paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, "paddingClasses"),
+        panelClasses: props.panelClasses ?? getConfigByType(isSlideover, "panelClasses"),
+        position: props.position ?? getConfigByType(isSlideover, "position"),
+        ...modalContext.value.config
       };
     });
-    o.name && (r.registerLocalModal(o.name, function(i) {
-      a.value = i, f();
-    }), me(() => {
-      r.removeLocalModal(o.name);
-    })), te(() => {
-      o.name || f();
-    });
-    const l = x(null);
-    me(() => {
-      var i;
-      return (i = l.value) == null ? void 0 : i.call(l);
-    });
-    const d = Ke();
-    function f() {
-      l.value = a.value.registerEventListenersFromAttrs(d);
+    if (props.name) {
+      modalStack.registerLocalModal(props.name, function(context) {
+        modalContext.value = context;
+        registerEventListeners();
+      });
+      onBeforeUnmount(() => {
+        modalStack.removeLocalModal(props.name);
+      });
     }
-    const u = n;
-    function c(i, ...p) {
-      u("modal-event", i, ...p);
+    onMounted(() => {
+      if (!props.name) {
+        registerEventListeners();
+      }
+    });
+    const unsubscribeEventListeners = ref(null);
+    onBeforeUnmount(() => unsubscribeEventListeners.value?.());
+    const $attrs = useAttrs();
+    function registerEventListeners() {
+      unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs);
     }
-    e({
-      emit: c,
-      afterLeave: () => {
-        var i;
-        return (i = a.value) == null ? void 0 : i.afterLeave();
-      },
-      close: () => {
-        var i;
-        return (i = a.value) == null ? void 0 : i.close();
-      },
-      reload: (...i) => {
-        var p;
-        return (p = a.value) == null ? void 0 : p.reload(...i);
-      },
-      setOpen: (...i) => {
-        var p;
-        return (p = a.value) == null ? void 0 : p.setOpen(...i);
-      },
-      getChildModal: () => {
-        var i;
-        return (i = a.value) == null ? void 0 : i.getChildModal();
-      },
-      getParentModal: () => {
-        var i;
-        return (i = a.value) == null ? void 0 : i.getParentModal();
-      },
+    const emits = __emit;
+    function emit(event, ...args) {
+      emits("modal-event", event, ...args);
+    }
+    __expose({
+      emit,
+      afterLeave: () => modalContext.value?.afterLeave(),
+      close: () => modalContext.value?.close(),
+      reload: (...args) => modalContext.value?.reload(...args),
+      setOpen: (...args) => modalContext.value?.setOpen(...args),
+      getChildModal: () => modalContext.value?.getChildModal(),
+      getParentModal: () => modalContext.value?.getParentModal(),
       get config() {
-        var i;
-        return (i = a.value) == null ? void 0 : i.config;
+        return modalContext.value?.config;
       },
       get id() {
-        var i;
-        return (i = a.value) == null ? void 0 : i.id;
+        return modalContext.value?.id;
       },
       get index() {
-        var i;
-        return (i = a.value) == null ? void 0 : i.index;
+        return modalContext.value?.index;
       },
       get isOpen() {
-        var i;
-        return (i = a.value) == null ? void 0 : i.isOpen;
+        return modalContext.value?.isOpen;
       },
       get modalContext() {
-        var i;
-        return (i = a.value) == null ? void 0 : i.modalContext;
+        return modalContext.value?.modalContext;
       },
       get onTopOfStack() {
-        var i;
-        return (i = a.value) == null ? void 0 : i.onTopOfStack;
+        return modalContext.value?.onTopOfStack;
       },
       get shouldRender() {
-        var i;
-        return (i = a.value) == null ? void 0 : i.shouldRender;
+        return modalContext.value?.shouldRender;
       }
-    }), P(
-      () => {
-        var i;
-        return (i = a.value) == null ? void 0 : i.onTopOfStack;
-      },
-      (i, p) => {
-        i && !p ? u("focus") : !i && p && u("blur");
+    });
+    watch(
+      () => modalContext.value?.onTopOfStack,
+      (onTopOfStack, previousOnTopOfStack) => {
+        if (onTopOfStack && !previousOnTopOfStack) {
+          emits("focus");
+        } else if (!onTopOfStack && previousOnTopOfStack) {
+          emits("blur");
+        }
       }
-    ), P(
-      () => {
-        var i;
-        return (i = a.value) == null ? void 0 : i.isOpen;
-      },
-      (i) => {
-        u(i ? "success" : "close");
-      },
-      { immediate: !0 }
     );
-    const v = A(() => {
-      var i;
-      return (i = r.stack.value.find((p) => p.shouldRender && p.index > a.value.index)) == null ? void 0 : i.index;
-    });
-    return (i, p) => (w(), H(Me, null, [
-      m(a).shouldRender ? E(i.$slots, "default", {
-        key: 0,
-        id: m(a).id,
-        afterLeave: m(a).afterLeave,
-        close: m(a).close,
-        config: s.value,
-        emit: c,
-        getChildModal: m(a).getChildModal,
-        getParentModal: m(a).getParentModal,
-        index: m(a).index,
-        isOpen: m(a).isOpen,
-        modalContext: m(a),
-        onTopOfStack: m(a).onTopOfStack,
-        reload: m(a).reload,
-        setOpen: m(a).setOpen,
-        shouldRender: m(a).shouldRender
-      }) : F("", !0),
-      v.value ? (w(), _(Je, {
-        key: 1,
-        index: v.value
-      }, null, 8, ["index"])) : F("", !0)
-    ], 64));
-  }
-});
-function Ze(t, e) {
-  const n = typeof t == "string" && !e ? `${t}Context` : e, o = Symbol(n);
-  return [(s) => {
-    const l = le(o, s);
-    if (l || l === null) return l;
-    throw new Error(`Injection \`${o.toString()}\` not found. Component must be used within ${Array.isArray(t) ? `one of the following components: ${t.join(", ")}` : `\`${t}\``}`);
-  }, (s) => (Se(o, s), s)];
-}
-function j() {
-  let t = document.activeElement;
-  if (t == null) return null;
-  for (; t != null && t.shadowRoot != null && t.shadowRoot.activeElement != null; ) t = t.shadowRoot.activeElement;
-  return t;
-}
-function Qe(t, e, n) {
-  const o = n.originalEvent.target, r = new CustomEvent(t, {
-    bubbles: !1,
-    cancelable: !0,
-    detail: n
-  });
-  e && o.addEventListener(t, e, { once: !0 }), o.dispatchEvent(r);
-}
-function Le(t) {
-  return t ? t.flatMap((e) => e.type === Me ? Le(e.children) : [e]) : [];
-}
-const [et] = Ze("ConfigProvider");
-function tt(t) {
-  return gt() ? (ht(t), !0) : !1;
-}
-function jt(t) {
-  let e = !1, n;
-  const o = Ve(!0);
-  return (...r) => (e || (n = o.run(() => t(...r)), e = !0), n);
-}
-function Kt(t) {
-  let e = 0, n, o;
-  const r = () => {
-    e -= 1, o && e <= 0 && (o.stop(), n = void 0, o = void 0);
-  };
-  return (...a) => (e += 1, o || (o = Ve(!0), n = o.run(() => t(...a))), tt(r), n);
-}
-const X = typeof window < "u" && typeof document < "u";
-typeof WorkerGlobalScope < "u" && globalThis instanceof WorkerGlobalScope;
-const Vt = (t) => typeof t < "u", Ht = Object.prototype.toString, Xt = (t) => Ht.call(t) === "[object Object]", qe = /* @__PURE__ */ zt();
-function zt() {
-  var t, e;
-  return X && ((t = window == null ? void 0 : window.navigator) == null ? void 0 : t.userAgent) && (/iP(?:ad|hone|od)/.test(window.navigator.userAgent) || ((e = window == null ? void 0 : window.navigator) == null ? void 0 : e.maxTouchPoints) > 2 && /iPad|Macintosh/.test(window == null ? void 0 : window.navigator.userAgent));
-}
-function Gt(t) {
-  return ne();
-}
-function be(t) {
-  return Array.isArray(t) ? t : [t];
-}
-function Jt(t, e) {
-  Gt() && me(t, e);
-}
-function Yt(t, e, n) {
-  return P(
-    t,
-    e,
-    {
-      ...n,
-      immediate: !0
-    }
-  );
-}
-const ke = X ? window : void 0;
-function xe(t) {
-  var e;
-  const n = L(t);
-  return (e = n == null ? void 0 : n.$el) != null ? e : n;
-}
-function nt(...t) {
-  const e = [], n = () => {
-    e.forEach((l) => l()), e.length = 0;
-  }, o = (l, d, f, u) => (l.addEventListener(d, f, u), () => l.removeEventListener(d, f, u)), r = A(() => {
-    const l = be(L(t[0])).filter((d) => d != null);
-    return l.every((d) => typeof d != "string") ? l : void 0;
-  }), a = Yt(
-    () => {
-      var l, d;
-      return [
-        (d = (l = r.value) == null ? void 0 : l.map((f) => xe(f))) != null ? d : [ke].filter((f) => f != null),
-        be(L(r.value ? t[1] : t[0])),
-        be(m(r.value ? t[2] : t[1])),
-        // @ts-expect-error - TypeScript gets the correct types, but somehow still complains
-        L(r.value ? t[3] : t[2])
-      ];
-    },
-    ([l, d, f, u]) => {
-      if (n(), !(l != null && l.length) || !(d != null && d.length) || !(f != null && f.length))
-        return;
-      const c = Xt(u) ? { ...u } : u;
-      e.push(
-        ...l.flatMap(
-          (v) => d.flatMap(
-            (i) => f.map((p) => o(v, i, p, c))
-          )
-        )
-      );
-    },
-    { flush: "post" }
-  ), s = () => {
-    a(), n();
-  };
-  return tt(n), s;
-}
-function Zt() {
-  const t = xt(!1), e = ne();
-  return e && te(() => {
-    t.value = !0;
-  }, e), t;
-}
-function Qt(t) {
-  return typeof t == "function" ? t : typeof t == "string" ? (e) => e.key === t : Array.isArray(t) ? (e) => t.includes(e.key) : () => !0;
-}
-function en(...t) {
-  let e, n, o = {};
-  t.length === 3 ? (e = t[0], n = t[1], o = t[2]) : t.length === 2 ? typeof t[1] == "object" ? (e = !0, n = t[0], o = t[1]) : (e = t[0], n = t[1]) : (e = !0, n = t[0]);
-  const {
-    target: r = ke,
-    eventName: a = "keydown",
-    passive: s = !1,
-    dedupe: l = !1
-  } = o, d = Qt(e);
-  return nt(r, a, (u) => {
-    u.repeat && L(l) || d(u) && n(u);
-  }, s);
-}
-function tn(t) {
-  return JSON.parse(JSON.stringify(t));
-}
-function nn(t, e, n, o = {}) {
-  var r, a, s;
-  const {
-    clone: l = !1,
-    passive: d = !1,
-    eventName: f,
-    deep: u = !1,
-    defaultValue: c,
-    shouldEmit: v
-  } = o, i = ne(), p = n || (i == null ? void 0 : i.emit) || ((r = i == null ? void 0 : i.$emit) == null ? void 0 : r.bind(i)) || ((s = (a = i == null ? void 0 : i.proxy) == null ? void 0 : a.$emit) == null ? void 0 : s.bind(i == null ? void 0 : i.proxy));
-  let y = f;
-  y = y || `update:${e.toString()}`;
-  const b = (g) => l ? typeof l == "function" ? l(g) : tn(g) : g, h = () => Vt(t[e]) ? b(t[e]) : c, O = (g) => {
-    v ? v(g) && p(y, g) : p(y, g);
-  };
-  if (d) {
-    const g = h(), $ = x(g);
-    let T = !1;
-    return P(
-      () => t[e],
-      (B) => {
-        T || (T = !0, $.value = b(B), K(() => T = !1));
-      }
-    ), P(
-      $,
-      (B) => {
-        !T && (B !== t[e] || u) && O(B);
-      },
-      { deep: u }
-    ), $;
-  } else
-    return A({
-      get() {
-        return h();
-      },
-      set(g) {
-        O(g);
-      }
-    });
-}
-function we(t) {
-  if (t === null || typeof t != "object")
-    return !1;
-  const e = Object.getPrototypeOf(t);
-  return e !== null && e !== Object.prototype && Object.getPrototypeOf(e) !== null || Symbol.iterator in t ? !1 : Symbol.toStringTag in t ? Object.prototype.toString.call(t) === "[object Module]" : !0;
-}
-function Ae(t, e, n = ".", o) {
-  if (!we(e))
-    return Ae(t, {}, n, o);
-  const r = Object.assign({}, e);
-  for (const a in t) {
-    if (a === "__proto__" || a === "constructor")
-      continue;
-    const s = t[a];
-    s != null && (o && o(r, a, s, n) || (Array.isArray(s) && Array.isArray(r[a]) ? r[a] = [...s, ...r[a]] : we(s) && we(r[a]) ? r[a] = Ae(
-      s,
-      r[a],
-      (n ? `${n}.` : "") + a.toString(),
-      o
-    ) : r[a] = s));
-  }
-  return r;
-}
-function on(t) {
-  return (...e) => (
-    // eslint-disable-next-line unicorn/no-array-reduce
-    e.reduce((n, o) => Ae(n, o, "", t), {})
-  );
-}
-const an = on(), rn = Kt(() => {
-  const t = x(/* @__PURE__ */ new Map()), e = x(), n = A(() => {
-    for (const s of t.value.values()) if (s) return !0;
-    return !1;
-  }), o = et({ scrollBody: x(!0) });
-  let r = null;
-  const a = () => {
-    document.body.style.paddingRight = "", document.body.style.marginRight = "", document.body.style.pointerEvents = "", document.documentElement.style.removeProperty("--scrollbar-width"), document.body.style.overflow = e.value ?? "", qe && (r == null || r()), e.value = void 0;
-  };
-  return P(n, (s, l) => {
-    var c;
-    if (!X) return;
-    if (!s) {
-      l && a();
-      return;
-    }
-    e.value === void 0 && (e.value = document.body.style.overflow);
-    const d = window.innerWidth - document.documentElement.clientWidth, f = {
-      padding: d,
-      margin: 0
-    }, u = (c = o.scrollBody) != null && c.value ? typeof o.scrollBody.value == "object" ? an({
-      padding: o.scrollBody.value.padding === !0 ? d : o.scrollBody.value.padding,
-      margin: o.scrollBody.value.margin === !0 ? d : o.scrollBody.value.margin
-    }, f) : f : {
-      padding: 0,
-      margin: 0
-    };
-    d > 0 && (document.body.style.paddingRight = typeof u.padding == "number" ? `${u.padding}px` : String(u.padding), document.body.style.marginRight = typeof u.margin == "number" ? `${u.margin}px` : String(u.margin), document.documentElement.style.setProperty("--scrollbar-width", `${d}px`), document.body.style.overflow = "hidden"), qe && (r = nt(document, "touchmove", (v) => ln(v), { passive: !1 })), K(() => {
-      document.body.style.pointerEvents = "none", document.body.style.overflow = "hidden";
-    });
-  }, {
-    immediate: !0,
-    flush: "sync"
-  }), t;
-});
-function sn(t) {
-  const e = Math.random().toString(36).substring(2, 7), n = rn();
-  n.value.set(e, t);
-  const o = A({
-    get: () => n.value.get(e) ?? !1,
-    set: (r) => n.value.set(e, r)
-  });
-  return Jt(() => {
-    n.value.delete(e);
-  }), o;
-}
-function ot(t) {
-  const e = window.getComputedStyle(t);
-  if (e.overflowX === "scroll" || e.overflowY === "scroll" || e.overflowX === "auto" && t.clientWidth < t.scrollWidth || e.overflowY === "auto" && t.clientHeight < t.scrollHeight) return !0;
-  {
-    const n = t.parentNode;
-    return !(n instanceof Element) || n.tagName === "BODY" ? !1 : ot(n);
-  }
-}
-function ln(t) {
-  const e = t || window.event, n = e.target;
-  return n instanceof Element && ot(n) ? !1 : e.touches.length > 1 ? !0 : (e.preventDefault && e.cancelable && e.preventDefault(), !1);
-}
-function Te(t) {
-  const e = ne(), n = e == null ? void 0 : e.type.emits, o = {};
-  return n != null && n.length || console.warn(`No emitted event found. Please check component: ${e == null ? void 0 : e.type.__name}`), n == null || n.forEach((r) => {
-    o[bt(wt(r))] = (...a) => t(r, ...a);
-  }), o;
-}
-function q() {
-  const t = ne(), e = x(), n = A(() => {
-    var s, l;
-    return ["#text", "#comment"].includes((s = e.value) == null ? void 0 : s.$el.nodeName) ? (l = e.value) == null ? void 0 : l.$el.nextElementSibling : xe(e);
-  }), o = Object.assign({}, t.exposed), r = {};
-  for (const s in t.props) Object.defineProperty(r, s, {
-    enumerable: !0,
-    configurable: !0,
-    get: () => t.props[s]
-  });
-  if (Object.keys(o).length > 0) for (const s in o) Object.defineProperty(r, s, {
-    enumerable: !0,
-    configurable: !0,
-    get: () => o[s]
-  });
-  Object.defineProperty(r, "$el", {
-    enumerable: !0,
-    configurable: !0,
-    get: () => t.vnode.el
-  }), t.exposed = r;
-  function a(s) {
-    e.value = s, s && (Object.defineProperty(r, "$el", {
-      enumerable: !0,
-      configurable: !0,
-      get: () => s instanceof Element ? s : s.$el
-    }), t.exposed = r);
-  }
-  return {
-    forwardRef: a,
-    currentRef: e,
-    currentElement: n
-  };
-}
-var un = function(t) {
-  if (typeof document > "u")
-    return null;
-  var e = Array.isArray(t) ? t[0] : t;
-  return e.ownerDocument.body;
-}, G = /* @__PURE__ */ new WeakMap(), ce = /* @__PURE__ */ new WeakMap(), fe = {}, Ce = 0, at = function(t) {
-  return t && (t.host || at(t.parentNode));
-}, dn = function(t, e) {
-  return e.map(function(n) {
-    if (t.contains(n))
-      return n;
-    var o = at(n);
-    return o && t.contains(o) ? o : (console.error("aria-hidden", n, "in not contained inside", t, ". Doing nothing"), null);
-  }).filter(function(n) {
-    return !!n;
-  });
-}, cn = function(t, e, n, o) {
-  var r = dn(e, Array.isArray(t) ? t : [t]);
-  fe[n] || (fe[n] = /* @__PURE__ */ new WeakMap());
-  var a = fe[n], s = [], l = /* @__PURE__ */ new Set(), d = new Set(r), f = function(c) {
-    !c || l.has(c) || (l.add(c), f(c.parentNode));
-  };
-  r.forEach(f);
-  var u = function(c) {
-    !c || d.has(c) || Array.prototype.forEach.call(c.children, function(v) {
-      if (l.has(v))
-        u(v);
-      else
-        try {
-          var i = v.getAttribute(o), p = i !== null && i !== "false", y = (G.get(v) || 0) + 1, b = (a.get(v) || 0) + 1;
-          G.set(v, y), a.set(v, b), s.push(v), y === 1 && p && ce.set(v, !0), b === 1 && v.setAttribute(n, "true"), p || v.setAttribute(o, "true");
-        } catch (h) {
-          console.error("aria-hidden: cannot operate on ", v, h);
+    watch(
+      () => modalContext.value?.isOpen,
+      (isOpen, previousIsOpen) => {
+        if (isOpen) {
+          emits("success");
+        } else if (previousIsOpen === true) {
+          emits("close");
         }
+      },
+      { immediate: true }
+    );
+    const nextIndex = computed(() => {
+      return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index;
     });
-  };
-  return u(e), l.clear(), Ce++, function() {
-    s.forEach(function(c) {
-      var v = G.get(c) - 1, i = a.get(c) - 1;
-      G.set(c, v), a.set(c, i), v || (ce.has(c) || c.removeAttribute(o), ce.delete(c)), i || c.removeAttribute(n);
-    }), Ce--, Ce || (G = /* @__PURE__ */ new WeakMap(), G = /* @__PURE__ */ new WeakMap(), ce = /* @__PURE__ */ new WeakMap(), fe = {});
-  };
-}, fn = function(t, e, n) {
-  n === void 0 && (n = "data-aria-hidden");
-  var o = Array.from(Array.isArray(t) ? t : [t]), r = un(t);
-  return r ? (o.push.apply(o, Array.from(r.querySelectorAll("[aria-live], script"))), cn(o, r, n, "aria-hidden")) : function() {
-    return null;
-  };
-};
-function pn(t) {
-  let e;
-  P(() => xe(t), (n) => {
-    n ? e = fn(n) : e && e();
-  }), U(() => {
-    e && e();
-  });
-}
-let mn = 0;
-function Re(t, e = "reka") {
-  var o;
-  if ("useId" in ue) return `${e}-${(o = ue.useId) == null ? void 0 : o.call(ue)}`;
-  const n = et({ useId: void 0 });
-  return n.useId ? `${e}-${n.useId()}` : `${e}-${++mn}`;
-}
-function vn(t, e) {
-  const n = x(t);
-  function o(a) {
-    return e[n.value][a] ?? n.value;
-  }
-  return {
-    state: n,
-    dispatch: (a) => {
-      n.value = o(a);
-    }
-  };
-}
-function yn(t, e) {
-  var b;
-  const n = x({}), o = x("none"), r = x(t), a = t.value ? "mounted" : "unmounted";
-  let s;
-  const l = ((b = e.value) == null ? void 0 : b.ownerDocument.defaultView) ?? ke, { state: d, dispatch: f } = vn(a, {
-    mounted: {
-      UNMOUNT: "unmounted",
-      ANIMATION_OUT: "unmountSuspended"
-    },
-    unmountSuspended: {
-      MOUNT: "mounted",
-      ANIMATION_END: "unmounted"
-    },
-    unmounted: { MOUNT: "mounted" }
-  }), u = (h) => {
-    var O;
-    if (X) {
-      const g = new CustomEvent(h, {
-        bubbles: !1,
-        cancelable: !1
-      });
-      (O = e.value) == null || O.dispatchEvent(g);
-    }
-  };
-  P(t, async (h, O) => {
-    var $;
-    const g = O !== h;
-    if (await K(), g) {
-      const T = o.value, B = pe(e.value);
-      h ? (f("MOUNT"), u("enter"), B === "none" && u("after-enter")) : B === "none" || B === "undefined" || (($ = n.value) == null ? void 0 : $.display) === "none" ? (f("UNMOUNT"), u("leave"), u("after-leave")) : O && T !== B ? (f("ANIMATION_OUT"), u("leave")) : (f("UNMOUNT"), u("after-leave"));
-    }
-  }, { immediate: !0 });
-  const c = (h) => {
-    const O = pe(e.value), g = O.includes(CSS.escape(h.animationName)), $ = d.value === "mounted" ? "enter" : "leave";
-    if (h.target === e.value && g && (u(`after-${$}`), f("ANIMATION_END"), !r.value)) {
-      const T = e.value.style.animationFillMode;
-      e.value.style.animationFillMode = "forwards", s = l == null ? void 0 : l.setTimeout(() => {
-        var B;
-        ((B = e.value) == null ? void 0 : B.style.animationFillMode) === "forwards" && (e.value.style.animationFillMode = T);
-      });
-    }
-    h.target === e.value && O === "none" && f("ANIMATION_END");
-  }, v = (h) => {
-    h.target === e.value && (o.value = pe(e.value));
-  }, i = P(e, (h, O) => {
-    h ? (n.value = getComputedStyle(h), h.addEventListener("animationstart", v), h.addEventListener("animationcancel", c), h.addEventListener("animationend", c)) : (f("ANIMATION_END"), s !== void 0 && (l == null || l.clearTimeout(s)), O == null || O.removeEventListener("animationstart", v), O == null || O.removeEventListener("animationcancel", c), O == null || O.removeEventListener("animationend", c));
-  }, { immediate: !0 }), p = P(d, () => {
-    const h = pe(e.value);
-    o.value = d.value === "mounted" ? h : "none";
-  });
-  return U(() => {
-    i(), p();
-  }), { isPresent: A(() => ["mounted", "unmountSuspended"].includes(d.value)) };
-}
-function pe(t) {
-  return t && getComputedStyle(t).animationName || "none";
-}
-var rt = S({
-  name: "Presence",
-  props: {
-    present: {
-      type: Boolean,
-      required: !0
-    },
-    forceMount: { type: Boolean }
-  },
-  slots: {},
-  setup(t, { slots: e, expose: n }) {
-    var f;
-    const { present: o, forceMount: r } = He(t), a = x(), { isPresent: s } = yn(o, a);
-    n({ present: s });
-    let l = e.default({ present: s.value });
-    l = Le(l || []);
-    const d = ne();
-    if (l && (l == null ? void 0 : l.length) > 1) {
-      const u = (f = d == null ? void 0 : d.parent) != null && f.type.name ? `<${d.parent.type.name} />` : "component";
-      throw new Error([
-        `Detected an invalid children for \`${u}\` for  \`Presence\` component.`,
-        "",
-        "Note: Presence works similarly to `v-if` directly, but it waits for animation/transition to finished before unmounting. So it expect only one direct child of valid VNode type.",
-        "You can apply a few solutions:",
-        ["Provide a single child element so that `presence` directive attach correctly.", "Ensure the first child is an actual element instead of a raw text node or comment node."].map((c) => `  - ${c}`).join(`
-`)
-      ].join(`
-`));
-    }
-    return () => r.value || o.value || s.value ? Y(e.default({ present: s.value })[0], { ref: (u) => {
-      const c = xe(u);
-      return typeof (c == null ? void 0 : c.hasAttribute) > "u" || (c != null && c.hasAttribute("data-reka-popper-content-wrapper") ? a.value = c.firstElementChild : a.value = c), c;
-    } }) : null;
+    const modalProps = computed(() => {
+      const ctx = modalContext.value;
+      if (!ctx) return {};
+      return unref(ctx.props) ?? {};
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock(Fragment, null, [
+        unref(modalContext).shouldRender ? renderSlot(_ctx.$slots, "default", mergeProps({ key: 0 }, modalProps.value, {
+          id: unref(modalContext).id,
+          afterLeave: unref(modalContext).afterLeave,
+          close: unref(modalContext).close,
+          config: config.value,
+          emit,
+          getChildModal: unref(modalContext).getChildModal,
+          getParentModal: unref(modalContext).getParentModal,
+          index: unref(modalContext).index,
+          isOpen: unref(modalContext).isOpen,
+          modalContext: unref(modalContext),
+          onTopOfStack: unref(modalContext).onTopOfStack,
+          reload: unref(modalContext).reload,
+          setOpen: unref(modalContext).setOpen,
+          shouldRender: unref(modalContext).shouldRender
+        })) : createCommentVNode("", true),
+        nextIndex.value ? (openBlock(), createBlock(_sfc_main$9, {
+          key: 1,
+          index: nextIndex.value
+        }, null, 8, ["index"])) : createCommentVNode("", true)
+      ], 64);
+    };
   }
 });
-const gn = S({
-  name: "PrimitiveSlot",
-  inheritAttrs: !1,
-  setup(t, { attrs: e, slots: n }) {
-    return () => {
-      var d;
-      if (!n.default) return null;
-      const o = Le(n.default()), r = o.findIndex((f) => f.type !== Ct);
-      if (r === -1) return o;
-      const a = o[r];
-      (d = a.props) == null || delete d.ref;
-      const s = a.props ? k(e, a.props) : e, l = Ot({
-        ...a,
-        props: {}
-      }, s);
-      return o.length === 1 ? l : (o[r] = l, o);
-    };
-  }
-}), hn = [
-  "area",
-  "img",
-  "input"
-], oe = S({
-  name: "Primitive",
-  inheritAttrs: !1,
-  props: {
-    asChild: {
-      type: Boolean,
-      default: !1
-    },
-    as: {
-      type: [String, Object],
-      default: "div"
-    }
-  },
-  setup(t, { attrs: e, slots: n }) {
-    const o = t.asChild ? "template" : t.as;
-    return typeof o == "string" && hn.includes(o) ? () => Y(o, e) : o !== "template" ? () => Y(t.as, e, { default: n.default }) : () => Y(gn, e, { default: n.default });
-  }
-}), [V, xn] = Ze("DialogRoot");
-var bn = /* @__PURE__ */ S({
-  inheritAttrs: !1,
-  __name: "DialogRoot",
-  props: {
-    open: {
-      type: Boolean,
-      required: !1,
-      default: void 0
-    },
-    defaultOpen: {
-      type: Boolean,
-      required: !1,
-      default: !1
-    },
-    modal: {
-      type: Boolean,
-      required: !1,
-      default: !0
-    }
-  },
-  emits: ["update:open"],
-  setup(t, { emit: e }) {
-    const n = t, r = nn(n, "open", e, {
-      defaultValue: n.defaultOpen,
-      passive: n.open === void 0
-    }), a = x(), s = x(), { modal: l } = He(n);
-    return xn({
-      open: r,
-      modal: l,
-      openModal: () => {
-        r.value = !0;
-      },
-      onOpenChange: (d) => {
-        r.value = d;
-      },
-      onOpenToggle: () => {
-        r.value = !r.value;
-      },
-      contentId: "",
-      titleId: "",
-      descriptionId: "",
-      triggerElement: a,
-      contentElement: s
-    }), (d, f) => E(d.$slots, "default", {
-      open: m(r),
-      close: () => r.value = !1
-    });
-  }
-}), wn = bn, Cn = /* @__PURE__ */ S({
-  __name: "DialogClose",
-  props: {
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1,
-      default: "button"
-    }
-  },
-  setup(t) {
-    const e = t;
-    q();
-    const n = V();
-    return (o, r) => (w(), _(m(oe), k(e, {
-      type: o.as === "button" ? "button" : void 0,
-      onClick: r[0] || (r[0] = (a) => m(n).onOpenChange(!1))
-    }), {
-      default: C(() => [E(o.$slots, "default")]),
-      _: 3
-    }, 16, ["type"]));
-  }
-}), On = Cn;
-const En = "dismissableLayer.pointerDownOutside", _n = "dismissableLayer.focusOutside";
-function st(t, e) {
-  const n = e.closest("[data-dismissable-layer]"), o = t.dataset.dismissableLayer === "" ? t : t.querySelector("[data-dismissable-layer]"), r = Array.from(t.ownerDocument.querySelectorAll("[data-dismissable-layer]"));
-  return !!(n && (o === n || r.indexOf(o) < r.indexOf(n)));
-}
-function Dn(t, e, n = !0) {
-  var s;
-  const o = ((s = e == null ? void 0 : e.value) == null ? void 0 : s.ownerDocument) ?? (globalThis == null ? void 0 : globalThis.document), r = x(!1), a = x(() => {
-  });
-  return ee((l) => {
-    if (!X || !L(n)) return;
-    const d = async (u) => {
-      const c = u.target;
-      if (!(!(e != null && e.value) || !c)) {
-        if (st(e.value, c)) {
-          r.value = !1;
-          return;
-        }
-        if (u.target && !r.value) {
-          let i = function() {
-            Qe(En, t, v);
-          };
-          const v = { originalEvent: u };
-          u.pointerType === "touch" ? (o.removeEventListener("click", a.value), a.value = i, o.addEventListener("click", a.value, { once: !0 })) : i();
-        } else o.removeEventListener("click", a.value);
-        r.value = !1;
-      }
-    }, f = window.setTimeout(() => {
-      o.addEventListener("pointerdown", d);
-    }, 0);
-    l(() => {
-      window.clearTimeout(f), o.removeEventListener("pointerdown", d), o.removeEventListener("click", a.value);
-    });
-  }), { onPointerDownCapture: () => {
-    L(n) && (r.value = !0);
-  } };
-}
-function An(t, e, n = !0) {
-  var a;
-  const o = ((a = e == null ? void 0 : e.value) == null ? void 0 : a.ownerDocument) ?? (globalThis == null ? void 0 : globalThis.document), r = x(!1);
-  return ee((s) => {
-    if (!X || !L(n)) return;
-    const l = async (d) => {
-      if (!(e != null && e.value)) return;
-      await K(), await K();
-      const f = d.target;
-      !e.value || !f || st(e.value, f) || d.target && !r.value && Qe(_n, t, { originalEvent: d });
-    };
-    o.addEventListener("focusin", l), s(() => o.removeEventListener("focusin", l));
-  }), {
-    onFocusCapture: () => {
-      L(n) && (r.value = !0);
-    },
-    onBlurCapture: () => {
-      L(n) && (r.value = !1);
-    }
-  };
-}
-const R = Xe({
-  layersRoot: /* @__PURE__ */ new Set(),
-  layersWithOutsidePointerEventsDisabled: /* @__PURE__ */ new Set(),
-  branches: /* @__PURE__ */ new Set()
-});
-var Sn = /* @__PURE__ */ S({
-  __name: "DismissableLayer",
-  props: {
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: !1,
-      default: !1
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "dismiss"
-  ],
-  setup(t, { emit: e }) {
-    const n = t, o = e, { forwardRef: r, currentElement: a } = q(), s = A(() => {
-      var p;
-      return ((p = a.value) == null ? void 0 : p.ownerDocument) ?? globalThis.document;
-    }), l = A(() => R.layersRoot), d = A(() => a.value ? Array.from(l.value).indexOf(a.value) : -1), f = A(() => R.layersWithOutsidePointerEventsDisabled.size > 0), u = A(() => {
-      const p = Array.from(l.value), [y] = [...R.layersWithOutsidePointerEventsDisabled].slice(-1), b = p.indexOf(y);
-      return d.value >= b;
-    }), c = Dn(async (p) => {
-      const y = [...R.branches].some((b) => b == null ? void 0 : b.contains(p.target));
-      !u.value || y || (o("pointerDownOutside", p), o("interactOutside", p), await K(), p.defaultPrevented || o("dismiss"));
-    }, a), v = An((p) => {
-      [...R.branches].some((b) => b == null ? void 0 : b.contains(p.target)) || (o("focusOutside", p), o("interactOutside", p), p.defaultPrevented || o("dismiss"));
-    }, a);
-    en("Escape", (p) => {
-      d.value === l.value.size - 1 && (o("escapeKeyDown", p), p.defaultPrevented || o("dismiss"));
-    });
-    let i;
-    return ee((p) => {
-      a.value && (n.disableOutsidePointerEvents && (R.layersWithOutsidePointerEventsDisabled.size === 0 && (i = s.value.body.style.pointerEvents, s.value.body.style.pointerEvents = "none"), R.layersWithOutsidePointerEventsDisabled.add(a.value)), l.value.add(a.value), p(() => {
-        n.disableOutsidePointerEvents && R.layersWithOutsidePointerEventsDisabled.size === 1 && (s.value.body.style.pointerEvents = i);
-      }));
-    }), ee((p) => {
-      p(() => {
-        a.value && (l.value.delete(a.value), R.layersWithOutsidePointerEventsDisabled.delete(a.value));
-      });
-    }), (p, y) => (w(), _(m(oe), {
-      ref: m(r),
-      "as-child": p.asChild,
-      as: p.as,
-      "data-dismissable-layer": "",
-      style: Et({ pointerEvents: f.value ? u.value ? "auto" : "none" : void 0 }),
-      onFocusCapture: m(v).onFocusCapture,
-      onBlurCapture: m(v).onBlurCapture,
-      onPointerdownCapture: m(c).onPointerDownCapture
-    }, {
-      default: C(() => [E(p.$slots, "default")]),
-      _: 3
-    }, 8, [
-      "as-child",
-      "as",
-      "style",
-      "onFocusCapture",
-      "onBlurCapture",
-      "onPointerdownCapture"
-    ]));
-  }
-}), Mn = Sn;
-const In = jt(() => x([]));
-function Pn() {
-  const t = In();
-  return {
-    add(e) {
-      const n = t.value[0];
-      e !== n && (n == null || n.pause()), t.value = Ne(t.value, e), t.value.unshift(e);
-    },
-    remove(e) {
-      var n;
-      t.value = Ne(t.value, e), (n = t.value[0]) == null || n.resume();
-    }
-  };
-}
-function Ne(t, e) {
-  const n = [...t], o = n.indexOf(e);
-  return o !== -1 && n.splice(o, 1), n;
-}
-function Bn(t) {
-  return t.filter((e) => e.tagName !== "A");
-}
-const Oe = "focusScope.autoFocusOnMount", Ee = "focusScope.autoFocusOnUnmount", Ue = {
-  bubbles: !1,
-  cancelable: !0
-};
-function $n(t, { select: e = !1 } = {}) {
-  const n = j();
-  for (const o of t)
-    if (N(o, { select: e }), j() !== n) return !0;
-}
-function Ln(t) {
-  const e = lt(t), n = We(e, t), o = We(e.reverse(), t);
-  return [n, o];
-}
-function lt(t) {
-  const e = [], n = document.createTreeWalker(t, NodeFilter.SHOW_ELEMENT, { acceptNode: (o) => {
-    const r = o.tagName === "INPUT" && o.type === "hidden";
-    return o.disabled || o.hidden || r ? NodeFilter.FILTER_SKIP : o.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-  } });
-  for (; n.nextNode(); ) e.push(n.currentNode);
-  return e;
-}
-function We(t, e) {
-  for (const n of t) if (!kn(n, { upTo: e })) return n;
-}
-function kn(t, { upTo: e }) {
-  if (getComputedStyle(t).visibility === "hidden") return !0;
-  for (; t; ) {
-    if (e !== void 0 && t === e) return !1;
-    if (getComputedStyle(t).display === "none") return !0;
-    t = t.parentElement;
-  }
-  return !1;
-}
-function Tn(t) {
-  return t instanceof HTMLInputElement && "select" in t;
-}
-function N(t, { select: e = !1 } = {}) {
-  if (t && t.focus) {
-    const n = j();
-    t.focus({ preventScroll: !0 }), t !== n && Tn(t) && e && t.select();
-  }
-}
-var Fn = /* @__PURE__ */ S({
-  __name: "FocusScope",
-  props: {
-    loop: {
-      type: Boolean,
-      required: !1,
-      default: !1
-    },
-    trapped: {
-      type: Boolean,
-      required: !1,
-      default: !1
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  emits: ["mountAutoFocus", "unmountAutoFocus"],
-  setup(t, { emit: e }) {
-    const n = t, o = e, { currentRef: r, currentElement: a } = q(), s = x(null), l = Pn(), d = Xe({
-      paused: !1,
-      pause() {
-        this.paused = !0;
-      },
-      resume() {
-        this.paused = !1;
-      }
-    });
-    ee((u) => {
-      if (!X) return;
-      const c = a.value;
-      if (!n.trapped) return;
-      function v(b) {
-        if (d.paused || !c) return;
-        const h = b.target;
-        c.contains(h) ? s.value = h : N(s.value, { select: !0 });
-      }
-      function i(b) {
-        if (d.paused || !c) return;
-        const h = b.relatedTarget;
-        h !== null && (c.contains(h) || N(s.value, { select: !0 }));
-      }
-      function p(b) {
-        c.contains(s.value) || N(c);
-      }
-      document.addEventListener("focusin", v), document.addEventListener("focusout", i);
-      const y = new MutationObserver(p);
-      c && y.observe(c, {
-        childList: !0,
-        subtree: !0
-      }), u(() => {
-        document.removeEventListener("focusin", v), document.removeEventListener("focusout", i), y.disconnect();
-      });
-    }), ee(async (u) => {
-      const c = a.value;
-      if (await K(), !c) return;
-      l.add(d);
-      const v = j();
-      if (!c.contains(v)) {
-        const p = new CustomEvent(Oe, Ue);
-        c.addEventListener(Oe, (y) => o("mountAutoFocus", y)), c.dispatchEvent(p), p.defaultPrevented || ($n(Bn(lt(c)), { select: !0 }), j() === v && N(c));
-      }
-      u(() => {
-        c.removeEventListener(Oe, (b) => o("mountAutoFocus", b));
-        const p = new CustomEvent(Ee, Ue), y = (b) => {
-          o("unmountAutoFocus", b);
-        };
-        c.addEventListener(Ee, y), c.dispatchEvent(p), setTimeout(() => {
-          p.defaultPrevented || N(v ?? document.body, { select: !0 }), c.removeEventListener(Ee, y), l.remove(d);
-        }, 0);
-      });
-    });
-    function f(u) {
-      if (!n.loop && !n.trapped || d.paused) return;
-      const c = u.key === "Tab" && !u.altKey && !u.ctrlKey && !u.metaKey, v = j();
-      if (c && v) {
-        const i = u.currentTarget, [p, y] = Ln(i);
-        p && y ? !u.shiftKey && v === y ? (u.preventDefault(), n.loop && N(p, { select: !0 })) : u.shiftKey && v === p && (u.preventDefault(), n.loop && N(y, { select: !0 })) : v === i && u.preventDefault();
-      }
-    }
-    return (u, c) => (w(), _(m(oe), {
-      ref_key: "currentRef",
-      ref: r,
-      tabindex: "-1",
-      "as-child": u.asChild,
-      as: u.as,
-      onKeydown: f
-    }, {
-      default: C(() => [E(u.$slots, "default")]),
-      _: 3
-    }, 8, ["as-child", "as"]));
-  }
-}), qn = Fn;
-function Rn(t) {
-  return t ? "open" : "closed";
-}
-const Nn = "DialogTitle", Un = "DialogContent";
-function Wn({ titleName: t = Nn, contentName: e = Un, componentLink: n = "dialog.html#title", titleId: o, descriptionId: r, contentElement: a }) {
-  const s = `Warning: \`${e}\` requires a \`${t}\` for the component to be accessible for screen reader users.
-
-If you want to hide the \`${t}\`, you can wrap it with our VisuallyHidden component.
-
-For more information, see https://www.reka-ui.com/docs/components/${n}`, l = `Warning: Missing \`Description\` or \`aria-describedby="undefined"\` for ${e}.`;
-  te(() => {
-    var u;
-    document.getElementById(o) || console.warn(s);
-    const f = (u = a.value) == null ? void 0 : u.getAttribute("aria-describedby");
-    r && f && (document.getElementById(r) || console.warn(l));
-  });
-}
-var jn = /* @__PURE__ */ S({
-  __name: "DialogContentImpl",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: !1
-    },
-    trapFocus: {
-      type: Boolean,
-      required: !1
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: !1
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(t, { emit: e }) {
-    const n = t, o = e, r = V(), { forwardRef: a, currentElement: s } = q();
-    return r.titleId || (r.titleId = Re(void 0, "reka-dialog-title")), r.descriptionId || (r.descriptionId = Re(void 0, "reka-dialog-description")), te(() => {
-      r.contentElement = s, j() !== document.body && (r.triggerElement.value = j());
-    }), process.env.NODE_ENV !== "production" && Wn({
-      titleName: "DialogTitle",
-      contentName: "DialogContent",
-      componentLink: "dialog.html#title",
-      titleId: r.titleId,
-      descriptionId: r.descriptionId,
-      contentElement: s
-    }), (l, d) => (w(), _(m(qn), {
-      "as-child": "",
-      loop: "",
-      trapped: n.trapFocus,
-      onMountAutoFocus: d[5] || (d[5] = (f) => o("openAutoFocus", f)),
-      onUnmountAutoFocus: d[6] || (d[6] = (f) => o("closeAutoFocus", f))
-    }, {
-      default: C(() => [M(m(Mn), k({
-        id: m(r).contentId,
-        ref: m(a),
-        as: l.as,
-        "as-child": l.asChild,
-        "disable-outside-pointer-events": l.disableOutsidePointerEvents,
-        role: "dialog",
-        "aria-describedby": m(r).descriptionId,
-        "aria-labelledby": m(r).titleId,
-        "data-state": m(Rn)(m(r).open.value)
-      }, l.$attrs, {
-        onDismiss: d[0] || (d[0] = (f) => m(r).onOpenChange(!1)),
-        onEscapeKeyDown: d[1] || (d[1] = (f) => o("escapeKeyDown", f)),
-        onFocusOutside: d[2] || (d[2] = (f) => o("focusOutside", f)),
-        onInteractOutside: d[3] || (d[3] = (f) => o("interactOutside", f)),
-        onPointerDownOutside: d[4] || (d[4] = (f) => o("pointerDownOutside", f))
-      }), {
-        default: C(() => [E(l.$slots, "default")]),
-        _: 3
-      }, 16, [
-        "id",
-        "as",
-        "as-child",
-        "disable-outside-pointer-events",
-        "aria-describedby",
-        "aria-labelledby",
-        "data-state"
-      ])]),
-      _: 3
-    }, 8, ["trapped"]));
-  }
-}), it = jn, Kn = /* @__PURE__ */ S({
-  __name: "DialogContentModal",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: !1
-    },
-    trapFocus: {
-      type: Boolean,
-      required: !1
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: !1
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(t, { emit: e }) {
-    const n = t, o = e, r = V(), a = Te(o), { forwardRef: s, currentElement: l } = q();
-    return pn(l), (d, f) => (w(), _(it, k({
-      ...n,
-      ...m(a)
-    }, {
-      ref: m(s),
-      "trap-focus": m(r).open.value,
-      "disable-outside-pointer-events": !0,
-      onCloseAutoFocus: f[0] || (f[0] = (u) => {
-        var c;
-        u.defaultPrevented || (u.preventDefault(), (c = m(r).triggerElement.value) == null || c.focus());
-      }),
-      onPointerDownOutside: f[1] || (f[1] = (u) => {
-        const c = u.detail.originalEvent, v = c.button === 0 && c.ctrlKey === !0;
-        (c.button === 2 || v) && u.preventDefault();
-      }),
-      onFocusOutside: f[2] || (f[2] = (u) => {
-        u.preventDefault();
-      })
-    }), {
-      default: C(() => [E(d.$slots, "default")]),
-      _: 3
-    }, 16, ["trap-focus"]));
-  }
-}), Vn = Kn, Hn = /* @__PURE__ */ S({
-  __name: "DialogContentNonModal",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: !1
-    },
-    trapFocus: {
-      type: Boolean,
-      required: !1
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: !1
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(t, { emit: e }) {
-    const n = t, r = Te(e);
-    q();
-    const a = V(), s = x(!1), l = x(!1);
-    return (d, f) => (w(), _(it, k({
-      ...n,
-      ...m(r)
-    }, {
-      "trap-focus": !1,
-      "disable-outside-pointer-events": !1,
-      onCloseAutoFocus: f[0] || (f[0] = (u) => {
-        var c;
-        u.defaultPrevented || (s.value || (c = m(a).triggerElement.value) == null || c.focus(), u.preventDefault()), s.value = !1, l.value = !1;
-      }),
-      onInteractOutside: f[1] || (f[1] = (u) => {
-        var i;
-        u.defaultPrevented || (s.value = !0, u.detail.originalEvent.type === "pointerdown" && (l.value = !0));
-        const c = u.target;
-        ((i = m(a).triggerElement.value) == null ? void 0 : i.contains(c)) && u.preventDefault(), u.detail.originalEvent.type === "focusin" && l.value && u.preventDefault();
-      })
-    }), {
-      default: C(() => [E(d.$slots, "default")]),
-      _: 3
-    }, 16));
-  }
-}), Xn = Hn, zn = /* @__PURE__ */ S({
-  __name: "DialogContent",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: !1
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: !1
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(t, { emit: e }) {
-    const n = t, o = e, r = V(), a = Te(o), { forwardRef: s } = q();
-    return (l, d) => (w(), _(m(rt), { present: l.forceMount || m(r).open.value }, {
-      default: C(() => [m(r).modal.value ? (w(), _(Vn, k({
-        key: 0,
-        ref: m(s)
-      }, {
-        ...n,
-        ...m(a),
-        ...l.$attrs
-      }), {
-        default: C(() => [E(l.$slots, "default")]),
-        _: 3
-      }, 16)) : (w(), _(Xn, k({
-        key: 1,
-        ref: m(s)
-      }, {
-        ...n,
-        ...m(a),
-        ...l.$attrs
-      }), {
-        default: C(() => [E(l.$slots, "default")]),
-        _: 3
-      }, 16))]),
-      _: 3
-    }, 8, ["present"]));
-  }
-}), ut = zn, Gn = /* @__PURE__ */ S({
-  __name: "DialogOverlayImpl",
-  props: {
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  setup(t) {
-    const e = V();
-    return sn(!0), q(), (n, o) => (w(), _(m(oe), {
-      as: n.as,
-      "as-child": n.asChild,
-      "data-state": m(e).open.value ? "open" : "closed",
-      style: { "pointer-events": "auto" }
-    }, {
-      default: C(() => [E(n.$slots, "default")]),
-      _: 3
-    }, 8, [
-      "as",
-      "as-child",
-      "data-state"
-    ]));
-  }
-}), Jn = Gn, Yn = /* @__PURE__ */ S({
-  __name: "DialogOverlay",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: !1
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1
-    }
-  },
-  setup(t) {
-    const e = V(), { forwardRef: n } = q();
-    return (o, r) => {
-      var a;
-      return (a = m(e)) != null && a.modal.value ? (w(), _(m(rt), {
-        key: 0,
-        present: o.forceMount || m(e).open.value
-      }, {
-        default: C(() => [M(Jn, k(o.$attrs, {
-          ref: m(n),
-          as: o.as,
-          "as-child": o.asChild
-        }), {
-          default: C(() => [E(o.$slots, "default")]),
-          _: 3
-        }, 16, ["as", "as-child"])]),
-        _: 3
-      }, 8, ["present"])) : F("v-if", !0);
-    };
-  }
-}), Zn = Yn, Qn = /* @__PURE__ */ S({
-  __name: "Teleport",
-  props: {
-    to: {
-      type: null,
-      required: !1,
-      default: "body"
-    },
-    disabled: {
-      type: Boolean,
-      required: !1
-    },
-    defer: {
-      type: Boolean,
-      required: !1
-    },
-    forceMount: {
-      type: Boolean,
-      required: !1
-    }
-  },
-  setup(t) {
-    const e = Zt();
-    return (n, o) => m(e) || n.forceMount ? (w(), _(_t, {
-      key: 0,
-      to: n.to,
-      disabled: n.disabled,
-      defer: n.defer
-    }, [E(n.$slots, "default")], 8, [
-      "to",
-      "disabled",
-      "defer"
-    ])) : F("v-if", !0);
-  }
-}), eo = Qn, to = /* @__PURE__ */ S({
-  __name: "DialogPortal",
-  props: {
-    to: {
-      type: null,
-      required: !1
-    },
-    disabled: {
-      type: Boolean,
-      required: !1
-    },
-    defer: {
-      type: Boolean,
-      required: !1
-    },
-    forceMount: {
-      type: Boolean,
-      required: !1
-    }
-  },
-  setup(t) {
-    const e = t;
-    return (n, o) => (w(), _(m(eo), Dt(At(e)), {
-      default: C(() => [E(n.$slots, "default")]),
-      _: 3
-    }, 16));
-  }
-}), no = to, oo = /* @__PURE__ */ S({
-  __name: "DialogTitle",
-  props: {
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1,
-      default: "h2"
-    }
-  },
-  setup(t) {
-    const e = t, n = V();
-    return q(), (o, r) => (w(), _(m(oe), k(e, { id: m(n).titleId }), {
-      default: C(() => [E(o.$slots, "default")]),
-      _: 3
-    }, 16, ["id"]));
-  }
-}), dt = oo, ao = /* @__PURE__ */ S({
-  __name: "VisuallyHidden",
-  props: {
-    feature: {
-      type: String,
-      required: !1,
-      default: "focusable"
-    },
-    asChild: {
-      type: Boolean,
-      required: !1
-    },
-    as: {
-      type: null,
-      required: !1,
-      default: "span"
-    }
-  },
-  setup(t) {
-    return (e, n) => (w(), _(m(oe), {
-      as: e.as,
-      "as-child": e.asChild,
-      "aria-hidden": e.feature === "focusable" ? "true" : void 0,
-      "data-hidden": e.feature === "fully-hidden" ? "" : void 0,
-      tabindex: e.feature === "fully-hidden" ? "-1" : void 0,
-      style: {
-        position: "absolute",
-        border: 0,
-        width: "1px",
-        height: "1px",
-        padding: 0,
-        margin: "-1px",
-        overflow: "hidden",
-        clip: "rect(0, 0, 0, 0)",
-        clipPath: "inset(50%)",
-        whiteSpace: "nowrap",
-        wordWrap: "normal",
-        top: "-1px",
-        left: "-1px"
-      }
-    }, {
-      default: C(() => [E(e.$slots, "default")]),
-      _: 3
-    }, 8, [
-      "as",
-      "as-child",
-      "aria-hidden",
-      "data-hidden",
-      "tabindex"
-    ]));
-  }
-}), ct = ao;
-const ft = {
+const _sfc_main$5 = {
   __name: "CloseButton",
-  setup(t) {
-    return (e, n) => (w(), _(m(On), { class: "im-close-button text-gray-400 hover:text-gray-500" }, {
-      default: C(() => [...n[0] || (n[0] = [
-        W("span", { class: "sr-only" }, "Close", -1),
-        W("svg", {
+  setup(__props) {
+    const modal = useModal();
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("button", {
+        type: "button",
+        class: "im-close-button text-gray-400 hover:text-gray-500",
+        onClick: _cache[0] || (_cache[0] = ($event) => unref(modal).close())
+      }, [..._cache[1] || (_cache[1] = [
+        createElementVNode("span", { class: "sr-only" }, "Close", -1),
+        createElementVNode("svg", {
           class: "size-6",
           xmlns: "http://www.w3.org/2000/svg",
           fill: "none",
@@ -1917,348 +816,762 @@ const ft = {
           stroke: "currentColor",
           "aria-hidden": "true"
         }, [
-          W("path", {
+          createElementVNode("path", {
             "stroke-linecap": "round",
             "stroke-linejoin": "round",
             d: "M6 18L18 6M6 6l12 12"
           })
         ], -1)
-      ])]),
-      _: 1
-    }));
+      ])]);
+    };
   }
-}, ro = { class: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4" }, so = ["data-inertiaui-modal-entered"], lo = {
+};
+const maxWidthClasses = {
+  sm: "sm:max-w-sm",
+  md: "sm:max-w-md",
+  lg: "sm:max-w-md md:max-w-lg",
+  xl: "sm:max-w-md md:max-w-xl",
+  "2xl": "sm:max-w-md md:max-w-xl lg:max-w-2xl",
+  "3xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl",
+  "4xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl",
+  "5xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl",
+  "6xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl",
+  "7xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl"
+};
+const defaultMaxWidth = "2xl";
+function getMaxWidthClass(maxWidth) {
+  return maxWidthClasses[maxWidth] || maxWidthClasses[defaultMaxWidth];
+}
+const _hoisted_1$2 = { class: "im-modal-container fixed inset-0 overflow-y-auto p-4" };
+const _hoisted_2$2 = ["data-inertiaui-modal-entered"];
+const _hoisted_3$1 = {
   key: 0,
   class: "absolute right-0 top-0 pr-3 pt-3"
-}, io = {
+};
+const _hoisted_4$1 = ["data-inertiaui-modal-entered"];
+const _hoisted_5$1 = {
+  key: 0,
+  class: "absolute right-0 top-0 pr-3 pt-3"
+};
+const _sfc_main$4 = {
   __name: "ModalContent",
   props: {
     modalContext: Object,
-    config: Object
+    config: Object,
+    useNativeDialog: Boolean,
+    isFirstModal: Boolean
   },
-  setup(t) {
-    const e = x(!1);
-    return (n, o) => (w(), H("div", ro, [
-      W("div", {
-        class: Z(["im-modal-positioner flex min-h-full justify-center", {
-          "items-start": t.config.position === "top",
-          "items-center": t.config.position === "center",
-          "items-end": t.config.position === "bottom"
-        }])
+  emits: ["after-leave"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit = __emit;
+    const isRendered = ref(false);
+    const isVisible = ref(false);
+    const entered = ref(false);
+    const wrapperRef = ref(null);
+    const dialogRef = ref(null);
+    const nativeWrapperRef = ref(null);
+    let cleanupFocusTrap = null;
+    let cleanupEscapeKey = null;
+    const maxWidthClass = computed(() => getMaxWidthClass(props.config.maxWidth));
+    async function animateIn(element) {
+      if (!element) return;
+      isVisible.value = true;
+      await animate(element, [
+        { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 },
+        { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 }
+      ]);
+      entered.value = true;
+      setupFocusTrap();
+    }
+    async function animateOut(element) {
+      if (!element) return;
+      isVisible.value = false;
+      await animate(element, [
+        { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
+        { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 }
+      ]);
+      isRendered.value = false;
+      if (props.useNativeDialog && dialogRef.value) {
+        dialogRef.value.close();
+      }
+      emit("after-leave");
+      props.modalContext.afterLeave();
+    }
+    function show() {
+      isRendered.value = true;
+      nextTick(() => {
+        const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+        animateIn(wrapper);
+      });
+    }
+    function hide() {
+      entered.value = false;
+      const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+      animateOut(wrapper);
+    }
+    function setupFocusTrap() {
+      if (props.useNativeDialog) return;
+      if (!wrapperRef.value || !props.modalContext.onTopOfStack) return;
+      if (cleanupFocusTrap) return;
+      cleanupFocusTrap = createFocusTrap(wrapperRef.value, {
+        initialFocus: true,
+        returnFocus: false
+      });
+    }
+    function cleanupFocusTrap_() {
+      if (cleanupFocusTrap) {
+        cleanupFocusTrap();
+        cleanupFocusTrap = null;
+      }
+    }
+    function setupEscapeKey() {
+      if (props.useNativeDialog) return;
+      if (cleanupEscapeKey) return;
+      if (props.config?.closeExplicitly) return;
+      cleanupEscapeKey = onEscapeKey(() => {
+        if (props.modalContext.onTopOfStack) {
+          props.modalContext.close();
+        }
+      });
+    }
+    function cleanupEscapeKey_() {
+      if (cleanupEscapeKey) {
+        cleanupEscapeKey();
+        cleanupEscapeKey = null;
+      }
+    }
+    function handleClickOutside(event) {
+      if (props.useNativeDialog) return;
+      if (!props.modalContext.onTopOfStack) return;
+      if (props.config?.closeExplicitly) return;
+      if (props.config?.closeOnClickOutside === false) return;
+      if (!wrapperRef.value) return;
+      if (!wrapperRef.value.contains(event.target)) {
+        props.modalContext.close();
+      }
+    }
+    function handleCancel(event) {
+      event.preventDefault();
+      if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly) {
+        props.modalContext.close();
+      }
+    }
+    function handleDialogClick(event) {
+      if (event.target === dialogRef.value) {
+        if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly && props.config?.closeOnClickOutside !== false) {
+          props.modalContext.close();
+        }
+      }
+    }
+    function openDialog() {
+      if (dialogRef.value && !dialogRef.value.open) {
+        dialogRef.value.showModal();
+        nextTick(() => {
+          animateIn(nativeWrapperRef.value);
+        });
+      }
+    }
+    function closeDialog() {
+      if (dialogRef.value && dialogRef.value.open) {
+        entered.value = false;
+        animateOut(nativeWrapperRef.value);
+      }
+    }
+    onMounted(() => {
+      if (props.useNativeDialog) {
+        if (props.modalContext.isOpen) {
+          openDialog();
+        }
+      } else {
+        setupEscapeKey();
+        if (props.modalContext.isOpen) {
+          show();
+        }
+      }
+    });
+    onUnmounted(() => {
+      const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+      if (wrapper) {
+        cancelAnimations(wrapper);
+      }
+      if (props.useNativeDialog) {
+        if (dialogRef.value?.open) {
+          dialogRef.value.close();
+        }
+      } else {
+        cleanupFocusTrap_();
+        cleanupEscapeKey_();
+      }
+    });
+    watch(
+      () => props.modalContext.onTopOfStack,
+      (onTop) => {
+        if (props.useNativeDialog) return;
+        if (onTop) {
+          setupEscapeKey();
+          if (entered.value) {
+            setupFocusTrap();
+          }
+        } else {
+          cleanupFocusTrap_();
+          cleanupEscapeKey_();
+        }
+      }
+    );
+    watch(
+      () => props.modalContext.isOpen,
+      (isOpen) => {
+        if (props.useNativeDialog) {
+          if (isOpen) {
+            openDialog();
+          } else {
+            closeDialog();
+          }
+        } else {
+          if (isOpen) {
+            show();
+          } else {
+            hide();
+          }
+        }
+      }
+    );
+    return (_ctx, _cache) => {
+      return __props.useNativeDialog ? (openBlock(), createElementBlock("dialog", {
+        key: 0,
+        ref_key: "dialogRef",
+        ref: dialogRef,
+        class: normalizeClass([
+          "im-modal-dialog m-0 overflow-visible bg-transparent p-0",
+          "size-full max-h-none max-w-none",
+          "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
+          isVisible.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
+          !__props.isFirstModal && "backdrop:bg-transparent"
+        ]),
+        onCancel: handleCancel,
+        onClick: handleDialogClick
       }, [
-        M(Ie, {
-          appear: "",
-          "enter-from-class": "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
-          "enter-to-class": "opacity-100 translate-y-0 sm:scale-100",
-          "leave-from-class": "opacity-100 translate-y-0 sm:scale-100",
-          "leave-to-class": "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
-          onAfterEnter: o[2] || (o[2] = (r) => e.value = !0),
-          onAfterLeave: t.modalContext.afterLeave
-        }, {
-          default: C(() => [
-            M(m(ut), {
-              "aria-describedby": void 0,
-              class: Z({
-                "im-modal-wrapper w-full transition duration-300 ease-in-out": !0,
-                "blur-sm": !t.modalContext.onTopOfStack,
-                "sm:max-w-sm": t.config.maxWidth == "sm",
-                "sm:max-w-md": t.config.maxWidth == "md",
-                "sm:max-w-md md:max-w-lg": t.config.maxWidth == "lg",
-                "sm:max-w-md md:max-w-xl": t.config.maxWidth == "xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-2xl": t.config.maxWidth == "2xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl": t.config.maxWidth == "3xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl": t.config.maxWidth == "4xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl": t.config.maxWidth == "5xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl": t.config.maxWidth == "6xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl": t.config.maxWidth == "7xl"
-              }),
-              onEscapeKeyDown: o[0] || (o[0] = (r) => {
-                var a;
-                return ((a = t.config) == null ? void 0 : a.closeExplicitly) && r.preventDefault();
-              }),
-              onInteractOutside: o[1] || (o[1] = (r) => {
-                var a;
-                return ((a = t.config) == null ? void 0 : a.closeExplicitly) && r.preventDefault();
+        createElementVNode("div", _hoisted_1$2, [
+          createElementVNode("div", {
+            class: normalizeClass(["im-modal-positioner flex min-h-full justify-center", {
+              "items-start": __props.config.position === "top",
+              "items-center": __props.config.position === "center",
+              "items-end": __props.config.position === "bottom"
+            }])
+          }, [
+            createElementVNode("div", {
+              ref_key: "nativeWrapperRef",
+              ref: nativeWrapperRef,
+              class: normalizeClass([
+                "im-modal-wrapper w-full transition-[filter] duration-300",
+                __props.modalContext.onTopOfStack ? "" : "blur-xs",
+                maxWidthClass.value
+              ])
+            }, [
+              createElementVNode("div", {
+                class: normalizeClass(["im-modal-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                "data-inertiaui-modal-entered": entered.value
+              }, [
+                __props.config.closeButton ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
+                  createVNode(_sfc_main$5)
+                ])) : createCommentVNode("", true),
+                renderSlot(_ctx.$slots, "default", {
+                  modalContext: __props.modalContext,
+                  config: __props.config
+                })
+              ], 10, _hoisted_2$2)
+            ], 2)
+          ], 2)
+        ])
+      ], 34)) : isRendered.value ? (openBlock(), createElementBlock("div", {
+        key: 1,
+        class: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",
+        onMousedown: withModifiers(handleClickOutside, ["self"])
+      }, [
+        createElementVNode("div", {
+          class: normalizeClass(["im-modal-positioner flex min-h-full justify-center", {
+            "items-start": __props.config.position === "top",
+            "items-center": __props.config.position === "center",
+            "items-end": __props.config.position === "bottom"
+          }]),
+          onMousedown: withModifiers(handleClickOutside, ["self"])
+        }, [
+          createElementVNode("div", {
+            ref_key: "wrapperRef",
+            ref: wrapperRef,
+            role: "dialog",
+            "aria-modal": "true",
+            class: normalizeClass([
+              "im-modal-wrapper w-full transition-[filter] duration-300",
+              __props.modalContext.onTopOfStack ? "" : "blur-xs",
+              maxWidthClass.value
+            ])
+          }, [
+            _cache[0] || (_cache[0] = createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
+            createElementVNode("div", {
+              class: normalizeClass(["im-modal-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+              "data-inertiaui-modal-entered": entered.value
+            }, [
+              __props.config.closeButton ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
+                createVNode(_sfc_main$5)
+              ])) : createCommentVNode("", true),
+              renderSlot(_ctx.$slots, "default", {
+                modalContext: __props.modalContext,
+                config: __props.config
               })
-            }, {
-              default: C(() => [
-                M(m(ct), { "as-child": "" }, {
-                  default: C(() => [
-                    M(m(dt))
-                  ]),
-                  _: 1
-                }),
-                W("div", {
-                  class: Z(["im-modal-content relative", [t.config.paddingClasses, t.config.panelClasses]]),
-                  "data-inertiaui-modal-entered": e.value
-                }, [
-                  t.config.closeButton ? (w(), H("div", lo, [
-                    M(ft)
-                  ])) : F("", !0),
-                  E(n.$slots, "default", {
-                    modalContext: t.modalContext,
-                    config: t.config
-                  })
-                ], 10, so)
-              ]),
-              _: 3
-            }, 8, ["class"])
-          ]),
-          _: 3
-        }, 8, ["onAfterLeave"])
-      ], 2)
-    ]));
+            ], 10, _hoisted_4$1)
+          ], 2)
+        ], 34)
+      ], 32)) : createCommentVNode("", true);
+    };
   }
-}, uo = { class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden" }, co = ["data-inertiaui-modal-entered"], fo = {
+};
+const _hoisted_1$1 = { class: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden" };
+const _hoisted_2$1 = ["data-inertiaui-modal-entered"];
+const _hoisted_3 = {
   key: 0,
   class: "absolute right-0 top-0 pr-3 pt-3"
-}, po = {
+};
+const _hoisted_4 = ["data-inertiaui-modal-entered"];
+const _hoisted_5 = {
+  key: 0,
+  class: "absolute right-0 top-0 pr-3 pt-3"
+};
+const _sfc_main$3 = {
   __name: "SlideoverContent",
   props: {
     modalContext: Object,
-    config: Object
+    config: Object,
+    useNativeDialog: Boolean,
+    isFirstModal: Boolean
   },
-  setup(t) {
-    const e = x(!1);
-    return (n, o) => (w(), H("div", uo, [
-      W("div", {
-        class: Z(["im-slideover-positioner flex min-h-full items-center", {
-          "justify-start rtl:justify-end": t.config.position === "left",
-          "justify-end rtl:justify-start": t.config.position === "right"
-        }])
-      }, [
-        M(Ie, {
-          appear: "",
-          "enter-from-class": "opacity-0 " + (t.config.position === "left" ? "-translate-x-full" : "translate-x-full"),
-          "enter-to-class": "opacity-100 translate-x-0",
-          "leave-from-class": "opacity-100 translate-x-0",
-          "leave-to-class": "opacity-0 " + (t.config.position === "left" ? "-translate-x-full" : "translate-x-full"),
-          onAfterEnter: o[2] || (o[2] = (r) => e.value = !0),
-          onAfterLeave: t.modalContext.afterLeave
-        }, {
-          default: C(() => [
-            M(m(ut), {
-              "aria-describedby": void 0,
-              class: Z({
-                "im-slideover-wrapper w-full transition duration-300 ease-in-out": !0,
-                "blur-sm": !t.modalContext.onTopOfStack,
-                "sm:max-w-sm": t.config.maxWidth == "sm",
-                "sm:max-w-md": t.config.maxWidth == "md",
-                "sm:max-w-md md:max-w-lg": t.config.maxWidth == "lg",
-                "sm:max-w-md md:max-w-xl": t.config.maxWidth == "xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-2xl": t.config.maxWidth == "2xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl": t.config.maxWidth == "3xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl": t.config.maxWidth == "4xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl": t.config.maxWidth == "5xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl": t.config.maxWidth == "6xl",
-                "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl": t.config.maxWidth == "7xl"
-              }),
-              onEscapeKeyDown: o[0] || (o[0] = (r) => {
-                var a;
-                return ((a = t.config) == null ? void 0 : a.closeExplicitly) && r.preventDefault();
-              }),
-              onInteractOutside: o[1] || (o[1] = (r) => {
-                var a;
-                return ((a = t.config) == null ? void 0 : a.closeExplicitly) && r.preventDefault();
-              })
-            }, {
-              default: C(() => [
-                M(m(ct), { "as-child": "" }, {
-                  default: C(() => [
-                    M(m(dt))
-                  ]),
-                  _: 1
-                }),
-                W("div", {
-                  class: Z(["im-slideover-content relative", [t.config.paddingClasses, t.config.panelClasses]]),
-                  "data-inertiaui-modal-entered": e.value
-                }, [
-                  t.config.closeButton ? (w(), H("div", fo, [
-                    M(ft)
-                  ])) : F("", !0),
-                  E(n.$slots, "default", {
-                    modalContext: t.modalContext,
-                    config: t.config
-                  })
-                ], 10, co)
-              ]),
-              _: 3
-            }, 8, ["class"])
-          ]),
-          _: 3
-        }, 8, ["enter-from-class", "leave-to-class", "onAfterLeave"])
-      ], 2)
-    ]));
-  }
-}, mo = ["data-inertiaui-modal-id", "data-inertiaui-modal-index", "aria-hidden"], vo = {
-  key: 1,
-  class: "im-backdrop fixed inset-0 z-30 bg-black/75"
-}, So = {
-  __name: "Modal",
-  emits: ["after-leave", "blur", "close", "focus", "success"],
-  setup(t, { expose: e }) {
-    const n = x(null), o = x(!1);
-    e({
-      afterLeave: () => {
-        var a;
-        return (a = n.value) == null ? void 0 : a.afterLeave();
-      },
-      close: () => {
-        var a;
-        return (a = n.value) == null ? void 0 : a.close();
-      },
-      emit: (...a) => {
-        var s;
-        return (s = n.value) == null ? void 0 : s.emit(...a);
-      },
-      getChildModal: () => {
-        var a;
-        return (a = n.value) == null ? void 0 : a.getChildModal();
-      },
-      getParentModal: () => {
-        var a;
-        return (a = n.value) == null ? void 0 : a.getParentModal();
-      },
-      reload: (...a) => {
-        var s;
-        return (s = n.value) == null ? void 0 : s.reload(...a);
-      },
-      setOpen: (...a) => {
-        var s;
-        return (s = n.value) == null ? void 0 : s.setOpen(...a);
-      },
-      get config() {
-        var a;
-        return (a = n.value) == null ? void 0 : a.config;
-      },
-      get id() {
-        var a;
-        return (a = n.value) == null ? void 0 : a.id;
-      },
-      get index() {
-        var a;
-        return (a = n.value) == null ? void 0 : a.index;
-      },
-      get isOpen() {
-        var a;
-        return (a = n.value) == null ? void 0 : a.isOpen;
-      },
-      get modalContext() {
-        var a;
-        return (a = n.value) == null ? void 0 : a.modalContext;
-      },
-      get onTopOfStack() {
-        var a;
-        return (a = n.value) == null ? void 0 : a.onTopOfStack;
-      },
-      get shouldRender() {
-        var a;
-        return (a = n.value) == null ? void 0 : a.shouldRender;
+  emits: ["after-leave"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit = __emit;
+    const isRendered = ref(false);
+    const isVisible = ref(false);
+    const entered = ref(false);
+    const wrapperRef = ref(null);
+    const dialogRef = ref(null);
+    const nativeWrapperRef = ref(null);
+    let cleanupFocusTrap = null;
+    let cleanupEscapeKey = null;
+    const maxWidthClass = computed(() => getMaxWidthClass(props.config.maxWidth));
+    const getTranslateX = () => props.config.position === "left" ? "-100%" : "100%";
+    async function animateIn(element) {
+      if (!element) return;
+      isVisible.value = true;
+      const translateX = getTranslateX();
+      await animate(element, [
+        { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+        { transform: "translate3d(0, 0, 0)", opacity: 1 }
+      ]);
+      entered.value = true;
+      setupFocusTrap();
+    }
+    async function animateOut(element) {
+      if (!element) return;
+      isVisible.value = false;
+      const translateX = getTranslateX();
+      await animate(element, [
+        { transform: "translate3d(0, 0, 0)", opacity: 1 },
+        { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
+      ]);
+      isRendered.value = false;
+      if (props.useNativeDialog && dialogRef.value) {
+        dialogRef.value.close();
+      }
+      emit("after-leave");
+      props.modalContext.afterLeave();
+    }
+    function show() {
+      isRendered.value = true;
+      nextTick(() => {
+        const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+        animateIn(wrapper);
+      });
+    }
+    function hide() {
+      entered.value = false;
+      const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+      animateOut(wrapper);
+    }
+    function setupFocusTrap() {
+      if (props.useNativeDialog) return;
+      if (!wrapperRef.value || !props.modalContext.onTopOfStack) return;
+      if (cleanupFocusTrap) return;
+      cleanupFocusTrap = createFocusTrap(wrapperRef.value, {
+        initialFocus: true,
+        returnFocus: false
+      });
+    }
+    function cleanupFocusTrap_() {
+      if (cleanupFocusTrap) {
+        cleanupFocusTrap();
+        cleanupFocusTrap = null;
+      }
+    }
+    function setupEscapeKey() {
+      if (props.useNativeDialog) return;
+      if (cleanupEscapeKey) return;
+      if (props.config?.closeExplicitly) return;
+      cleanupEscapeKey = onEscapeKey(() => {
+        if (props.modalContext.onTopOfStack) {
+          props.modalContext.close();
+        }
+      });
+    }
+    function cleanupEscapeKey_() {
+      if (cleanupEscapeKey) {
+        cleanupEscapeKey();
+        cleanupEscapeKey = null;
+      }
+    }
+    function handleClickOutside(event) {
+      if (props.useNativeDialog) return;
+      if (!props.modalContext.onTopOfStack) return;
+      if (props.config?.closeExplicitly) return;
+      if (props.config?.closeOnClickOutside === false) return;
+      if (!wrapperRef.value) return;
+      if (!wrapperRef.value.contains(event.target)) {
+        props.modalContext.close();
+      }
+    }
+    function handleCancel(event) {
+      event.preventDefault();
+      if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly) {
+        props.modalContext.close();
+      }
+    }
+    function handleDialogClick(event) {
+      if (event.target === dialogRef.value) {
+        if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly && props.config?.closeOnClickOutside !== false) {
+          props.modalContext.close();
+        }
+      }
+    }
+    function openDialog() {
+      if (dialogRef.value && !dialogRef.value.open) {
+        dialogRef.value.showModal();
+        nextTick(() => {
+          animateIn(nativeWrapperRef.value);
+        });
+      }
+    }
+    function closeDialog() {
+      if (dialogRef.value && dialogRef.value.open) {
+        entered.value = false;
+        animateOut(nativeWrapperRef.value);
+      }
+    }
+    onMounted(() => {
+      if (props.useNativeDialog) {
+        if (props.modalContext.isOpen) {
+          openDialog();
+        }
+      } else {
+        setupEscapeKey();
+        if (props.modalContext.isOpen) {
+          show();
+        }
       }
     });
-    let r;
-    return je(() => {
-      r = new MutationObserver(() => {
-        document.body.style.pointerEvents === "none" && (document.body.style.pointerEvents = "");
-      }), r.observe(document.body, { attributes: !0, attributeFilter: ["style"] });
-    }), U(() => {
-      r && (r.disconnect(), r = null);
-    }), (a, s) => (w(), _(Wt, {
-      ref_key: "modal",
-      ref: n,
-      onSuccess: s[2] || (s[2] = (l) => a.$emit("success")),
-      onClose: s[3] || (s[3] = (l) => a.$emit("close")),
-      onFocus: s[4] || (s[4] = (l) => a.$emit("focus")),
-      onBlur: s[5] || (s[5] = (l) => a.$emit("blur"))
-    }, {
-      default: C(({
-        afterLeave: l,
-        close: d,
-        config: f,
-        emit: u,
-        getChildModal: c,
-        getParentModal: v,
-        id: i,
-        index: p,
-        isOpen: y,
-        modalContext: b,
-        onTopOfStack: h,
-        reload: O,
-        setOpen: g,
-        shouldRender: $
-      }) => [
-        M(m(wn), {
-          open: y,
-          "onUpdate:open": g
-        }, {
-          default: C(() => [
-            M(m(no), null, {
-              default: C(() => [
-                W("div", {
-                  "data-inertiaui-modal-id": i,
-                  "data-inertiaui-modal-index": p,
-                  class: "im-dialog relative z-20",
-                  "aria-hidden": !h
-                }, [
-                  p === 0 && h ? (w(), _(Ie, {
-                    key: 0,
-                    appear: !o.value,
-                    "enter-active-class": "transition transform ease-in-out duration-300",
-                    "enter-from-class": "opacity-0",
-                    "enter-to-class": "opacity-100",
-                    "leave-active-class": "transition transform ease-in-out duration-300",
-                    "leave-from-class": "opacity-100",
-                    "leave-to-class": "opacity-0",
-                    onAfterAppear: s[0] || (s[0] = (T) => o.value = !0)
-                  }, {
-                    default: C(() => [
-                      M(m(Zn), { class: "im-backdrop fixed inset-0 z-30 bg-black/75" })
-                    ]),
-                    _: 1
-                  }, 8, ["appear"])) : F("", !0),
-                  p > 0 && h ? (w(), H("div", vo)) : F("", !0),
-                  (w(), _(Pe(f != null && f.slideover ? po : io), {
-                    "modal-context": b,
-                    config: f,
-                    onAfterLeave: s[1] || (s[1] = (T) => a.$emit("after-leave"))
-                  }, {
-                    default: C(() => [
-                      E(a.$slots, "default", {
-                        id: i,
-                        afterLeave: l,
-                        close: d,
-                        config: f,
-                        emit: u,
-                        getChildModal: c,
-                        getParentModal: v,
-                        index: p,
-                        isOpen: y,
-                        modalContext: b,
-                        onTopOfStack: h,
-                        reload: O,
-                        setOpen: g,
-                        shouldRender: $
-                      })
-                    ]),
-                    _: 2
-                  }, 1064, ["modal-context", "config"]))
-                ], 8, mo)
-              ]),
-              _: 2
-            }, 1024)
-          ]),
-          _: 2
-        }, 1032, ["open", "onUpdate:open"])
-      ]),
-      _: 3
-    }, 512));
+    onUnmounted(() => {
+      const wrapper = props.useNativeDialog ? nativeWrapperRef.value : wrapperRef.value;
+      if (wrapper) {
+        cancelAnimations(wrapper);
+      }
+      if (props.useNativeDialog) {
+        if (dialogRef.value?.open) {
+          dialogRef.value.close();
+        }
+      } else {
+        cleanupFocusTrap_();
+        cleanupEscapeKey_();
+      }
+    });
+    watch(
+      () => props.modalContext.onTopOfStack,
+      (onTop) => {
+        if (props.useNativeDialog) return;
+        if (onTop) {
+          setupEscapeKey();
+          if (entered.value) {
+            setupFocusTrap();
+          }
+        } else {
+          cleanupFocusTrap_();
+          cleanupEscapeKey_();
+        }
+      }
+    );
+    watch(
+      () => props.modalContext.isOpen,
+      (isOpen) => {
+        if (props.useNativeDialog) {
+          if (isOpen) {
+            openDialog();
+          } else {
+            closeDialog();
+          }
+        } else {
+          if (isOpen) {
+            show();
+          } else {
+            hide();
+          }
+        }
+      }
+    );
+    return (_ctx, _cache) => {
+      return __props.useNativeDialog ? (openBlock(), createElementBlock("dialog", {
+        key: 0,
+        ref_key: "dialogRef",
+        ref: dialogRef,
+        class: normalizeClass([
+          "im-slideover-dialog m-0 overflow-visible bg-transparent p-0",
+          "size-full max-h-none max-w-none",
+          "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
+          isVisible.value ? "backdrop:opacity-100" : "backdrop:opacity-0",
+          !__props.isFirstModal && "backdrop:bg-transparent"
+        ]),
+        onCancel: handleCancel,
+        onClick: handleDialogClick
+      }, [
+        createElementVNode("div", _hoisted_1$1, [
+          createElementVNode("div", {
+            class: normalizeClass(["im-slideover-positioner flex min-h-full items-center", {
+              "justify-start rtl:justify-end": __props.config.position === "left",
+              "justify-end rtl:justify-start": __props.config.position === "right"
+            }])
+          }, [
+            createElementVNode("div", {
+              ref_key: "nativeWrapperRef",
+              ref: nativeWrapperRef,
+              class: normalizeClass([
+                "im-slideover-wrapper w-full transition-[filter] duration-300",
+                __props.modalContext.onTopOfStack ? "" : "blur-xs",
+                maxWidthClass.value
+              ])
+            }, [
+              createElementVNode("div", {
+                class: normalizeClass(["im-slideover-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+                "data-inertiaui-modal-entered": entered.value
+              }, [
+                __props.config.closeButton ? (openBlock(), createElementBlock("div", _hoisted_3, [
+                  createVNode(_sfc_main$5)
+                ])) : createCommentVNode("", true),
+                renderSlot(_ctx.$slots, "default", {
+                  modalContext: __props.modalContext,
+                  config: __props.config
+                })
+              ], 10, _hoisted_2$1)
+            ], 2)
+          ], 2)
+        ])
+      ], 34)) : isRendered.value ? (openBlock(), createElementBlock("div", {
+        key: 1,
+        class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
+        onMousedown: withModifiers(handleClickOutside, ["self"])
+      }, [
+        createElementVNode("div", {
+          class: normalizeClass(["im-slideover-positioner flex min-h-full items-center", {
+            "justify-start rtl:justify-end": __props.config.position === "left",
+            "justify-end rtl:justify-start": __props.config.position === "right"
+          }]),
+          onMousedown: withModifiers(handleClickOutside, ["self"])
+        }, [
+          createElementVNode("div", {
+            ref_key: "wrapperRef",
+            ref: wrapperRef,
+            role: "dialog",
+            "aria-modal": "true",
+            class: normalizeClass([
+              "im-slideover-wrapper w-full transition-[filter] duration-300",
+              __props.modalContext.onTopOfStack ? "" : "blur-xs",
+              maxWidthClass.value
+            ])
+          }, [
+            _cache[0] || (_cache[0] = createElementVNode("span", { class: "sr-only" }, "Dialog", -1)),
+            createElementVNode("div", {
+              class: normalizeClass(["im-slideover-content relative", [__props.config.paddingClasses, __props.config.panelClasses]]),
+              "data-inertiaui-modal-entered": entered.value
+            }, [
+              __props.config.closeButton ? (openBlock(), createElementBlock("div", _hoisted_5, [
+                createVNode(_sfc_main$5)
+              ])) : createCommentVNode("", true),
+              renderSlot(_ctx.$slots, "default", {
+                modalContext: __props.modalContext,
+                config: __props.config
+              })
+            ], 10, _hoisted_4)
+          ], 2)
+        ], 34)
+      ], 32)) : createCommentVNode("", true);
+    };
   }
-}, Mo = {
+};
+const _hoisted_1 = ["data-inertiaui-modal-id", "data-inertiaui-modal-index", "aria-hidden"];
+const _hoisted_2 = {
+  key: 0,
+  class: "im-backdrop fixed inset-0 z-30 bg-black/75"
+};
+const _sfc_main$2 = {
+  __name: "Modal",
+  emits: ["after-leave", "blur", "close", "focus", "success"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+    const modal = ref(null);
+    const rendered = ref(false);
+    const emits = __emit;
+    __expose({
+      afterLeave: () => modal.value?.afterLeave(),
+      close: () => modal.value?.close(),
+      emit: (...args) => modal.value?.emit(...args),
+      getChildModal: () => modal.value?.getChildModal(),
+      getParentModal: () => modal.value?.getParentModal(),
+      reload: (...args) => modal.value?.reload(...args),
+      setOpen: (...args) => modal.value?.setOpen(...args),
+      get config() {
+        return modal.value?.config;
+      },
+      get id() {
+        return modal.value?.id;
+      },
+      get index() {
+        return modal.value?.index;
+      },
+      get isOpen() {
+        return modal.value?.isOpen;
+      },
+      get modalContext() {
+        return modal.value?.modalContext;
+      },
+      get onTopOfStack() {
+        return modal.value?.onTopOfStack;
+      },
+      get shouldRender() {
+        return modal.value?.shouldRender;
+      }
+    });
+    let cleanupScrollLock = null;
+    let cleanupAriaHidden = null;
+    onMounted(() => {
+      if (modal.value?.isOpen && !cleanupScrollLock) {
+        cleanupScrollLock = lockScroll();
+        cleanupAriaHidden = markAriaHidden(getConfig("appElement"));
+      }
+    });
+    onUnmounted(() => {
+      cleanupScrollLock?.();
+      cleanupAriaHidden?.();
+    });
+    function onSuccessEvent() {
+      emits("success");
+      if (!cleanupScrollLock) {
+        cleanupScrollLock = lockScroll();
+        cleanupAriaHidden = markAriaHidden(getConfig("appElement"));
+      }
+    }
+    function onCloseEvent() {
+      emits("close");
+      cleanupScrollLock?.();
+      cleanupAriaHidden?.();
+      cleanupScrollLock = null;
+      cleanupAriaHidden = null;
+    }
+    const useNativeDialog = computed(() => getConfig("useNativeDialog"));
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(_sfc_main$6, {
+        ref_key: "modal",
+        ref: modal,
+        onSuccess: onSuccessEvent,
+        onClose: onCloseEvent,
+        onFocus: _cache[2] || (_cache[2] = ($event) => emits("focus")),
+        onBlur: _cache[3] || (_cache[3] = ($event) => emits("blur"))
+      }, {
+        default: withCtx(({
+          afterLeave,
+          close,
+          config,
+          emit,
+          getChildModal,
+          getParentModal,
+          id,
+          index,
+          isOpen,
+          modalContext,
+          onTopOfStack,
+          reload,
+          setOpen,
+          shouldRender,
+          ...props
+        }) => [
+          (openBlock(), createBlock(Teleport, { to: "body" }, [
+            createElementVNode("div", {
+              "data-inertiaui-modal-id": id,
+              "data-inertiaui-modal-index": index,
+              class: "im-dialog relative z-20",
+              "aria-hidden": !onTopOfStack
+            }, [
+              index === 0 && !useNativeDialog.value ? (openBlock(), createBlock(Transition, {
+                key: 0,
+                appear: !rendered.value,
+                "enter-active-class": "transition transform ease-in-out duration-300",
+                "enter-from-class": "opacity-0",
+                "enter-to-class": "opacity-100",
+                "leave-active-class": "transition transform ease-in-out duration-300",
+                "leave-from-class": "opacity-100",
+                "leave-to-class": "opacity-0",
+                onAfterAppear: _cache[0] || (_cache[0] = ($event) => rendered.value = true)
+              }, {
+                default: withCtx(() => [
+                  isOpen ? (openBlock(), createElementBlock("div", _hoisted_2)) : createCommentVNode("", true)
+                ]),
+                _: 2
+              }, 1032, ["appear"])) : createCommentVNode("", true),
+              (openBlock(), createBlock(resolveDynamicComponent(config?.slideover ? _sfc_main$3 : _sfc_main$4), {
+                "modal-context": modalContext,
+                config,
+                "use-native-dialog": useNativeDialog.value,
+                "is-first-modal": index === 0,
+                onAfterLeave: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("after-leave"))
+              }, {
+                default: withCtx(() => [
+                  renderSlot(_ctx.$slots, "default", mergeProps(props, {
+                    id,
+                    afterLeave,
+                    close,
+                    config,
+                    emit,
+                    getChildModal,
+                    getParentModal,
+                    index,
+                    isOpen,
+                    modalContext,
+                    onTopOfStack,
+                    reload,
+                    setOpen,
+                    shouldRender
+                  }))
+                ]),
+                _: 2
+              }, 1064, ["modal-context", "config", "use-native-dialog", "is-first-modal"]))
+            ], 8, _hoisted_1)
+          ]))
+        ]),
+        _: 3
+      }, 512);
+    };
+  }
+};
+const _sfc_main$1 = {
   __name: "ModalLink",
   props: {
     href: {
       type: String,
-      required: !0
+      required: true
     },
     method: {
       type: String,
@@ -2269,7 +1582,7 @@ const ft = {
       default: () => ({})
     },
     as: {
-      type: String,
+      type: [String, Object],
       default: "a"
     },
     headers: {
@@ -2284,189 +1597,312 @@ const ft = {
       type: Boolean,
       default: null
     },
+    // Prefetch options (#146)
+    prefetch: {
+      type: [Boolean, String, Array],
+      default: false
+    },
+    cacheFor: {
+      type: Number,
+      default: 3e4
+    },
     // Passthrough to Modal.vue
     closeButton: {
       type: Boolean,
-      required: !1,
+      required: false,
       default: null
     },
     closeExplicitly: {
       type: Boolean,
-      required: !1,
+      required: false,
+      default: null
+    },
+    closeOnClickOutside: {
+      type: Boolean,
+      required: false,
       default: null
     },
     maxWidth: {
       type: String,
-      required: !1,
+      required: false,
       default: null
     },
     paddingClasses: {
       type: [Boolean, String],
-      required: !1,
+      required: false,
       default: null
     },
     panelClasses: {
       type: [Boolean, String],
-      required: !1,
+      required: false,
       default: null
     },
     position: {
       type: String,
-      required: !1,
+      required: false,
       default: null
     },
     slideover: {
       type: Boolean,
-      required: !1,
+      required: false,
       default: null
     }
   },
-  emits: ["after-leave", "blur", "close", "error", "focus", "start", "success"],
-  setup(t, { emit: e }) {
-    const n = t, o = x(!1), r = ie(), a = x(null);
-    Se("modalContext", a);
-    const s = e, l = x(!1), d = A(() => n.navigate ?? Be("navigate"));
-    P(
-      () => {
-        var y;
-        return (y = a.value) == null ? void 0 : y.onTopOfStack;
-      },
-      (y) => {
-        a.value && (y && l.value ? s("focus") : y || s("blur"), l.value = !y);
+  emits: ["after-leave", "blur", "close", "error", "focus", "start", "success", "prefetching", "prefetched"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const loading = ref(false);
+    const modalStack = useModalStack();
+    const modalContext = ref(null);
+    provide("modalContext", modalContext);
+    const emit = __emit;
+    const isBlurred = ref(false);
+    const shouldNavigate = computed(() => {
+      return props.navigate ?? getConfig("navigate");
+    });
+    const hoverTimeout = ref(null);
+    const prefetchModes = computed(() => {
+      if (props.prefetch === true) {
+        return ["hover"];
+      }
+      if (props.prefetch === false) {
+        return [];
+      }
+      if (Array.isArray(props.prefetch)) {
+        return props.prefetch;
+      }
+      return [props.prefetch];
+    });
+    function doPrefetch() {
+      prefetch(props.href, {
+        method: props.method,
+        data: props.data,
+        headers: props.headers,
+        queryStringArrayFormat: props.queryStringArrayFormat,
+        cacheFor: props.cacheFor,
+        onPrefetching: () => emit("prefetching"),
+        onPrefetched: () => emit("prefetched")
+      });
+    }
+    function onMouseenter() {
+      if (!prefetchModes.value.includes("hover")) return;
+      hoverTimeout.value = setTimeout(() => {
+        doPrefetch();
+      }, 75);
+    }
+    function onMouseleave() {
+      if (hoverTimeout.value) {
+        clearTimeout(hoverTimeout.value);
+        hoverTimeout.value = null;
+      }
+    }
+    function onMousedown(event) {
+      if (!prefetchModes.value.includes("click")) return;
+      if (event.button !== 0) return;
+      doPrefetch();
+    }
+    onMounted(() => {
+      if (prefetchModes.value.includes("mount")) {
+        doPrefetch();
+      }
+    });
+    watch(
+      () => modalContext.value?.onTopOfStack,
+      (onTopOfStack) => {
+        if (modalContext.value) {
+          if (onTopOfStack && isBlurred.value) {
+            emit("focus");
+          } else if (!onTopOfStack) {
+            emit("blur");
+          }
+          isBlurred.value = !onTopOfStack;
+        }
       }
     );
-    const f = x(null);
-    me(() => {
-      var y;
-      (y = f.value) == null || y.call(f);
+    const unsubscribeEventListeners = ref(null);
+    onBeforeUnmount(() => {
+      unsubscribeEventListeners.value?.();
+      if (hoverTimeout.value) {
+        clearTimeout(hoverTimeout.value);
+      }
     });
-    const u = Ke();
-    function c() {
-      f.value = a.value.registerEventListenersFromAttrs(u);
+    const $attrs = useAttrs();
+    function registerEventListeners() {
+      unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs);
     }
-    P(a, (y, b) => {
-      y && !b && (c(), s("success"));
+    watch(modalContext, (value, oldValue) => {
+      if (value && !oldValue) {
+        registerEventListeners();
+        emit("success");
+      }
     });
-    function v() {
-      s("close");
+    function onClose() {
+      emit("close");
     }
-    function i() {
-      a.value = null, s("after-leave");
+    function onAfterLeave() {
+      modalContext.value = null;
+      emit("after-leave");
     }
-    function p() {
-      o.value || (n.href.startsWith("#") || (o.value = !0, s("start")), r.visit(
-        n.href,
-        n.method,
-        n.data,
-        n.headers,
-        $t(Ge(n, Ut)),
-        v,
-        i,
-        n.queryStringArrayFormat,
-        d.value
-      ).then((y) => {
-        a.value = y;
-      }).catch((y) => s("error", y)).finally(() => o.value = !1));
+    function handle() {
+      if (loading.value) {
+        return;
+      }
+      if (!props.href.startsWith("#")) {
+        loading.value = true;
+        emit("start");
+      }
+      modalStack.visit(
+        props.href,
+        props.method,
+        props.data,
+        props.headers,
+        rejectNullValues(only(props, modalPropNames)),
+        onClose,
+        onAfterLeave,
+        props.queryStringArrayFormat,
+        shouldNavigate.value
+      ).then((context) => {
+        modalContext.value = context;
+      }).catch((error) => {
+        console.error(error);
+        emit("error", error);
+      }).finally(() => loading.value = false);
     }
-    return (y, b) => (w(), _(Pe(t.as), k(m(u), {
-      href: t.href,
-      onClick: St(p, ["prevent"])
-    }), {
-      default: C(() => [
-        E(y.$slots, "default", { loading: o.value })
-      ]),
-      _: 3
-    }, 16, ["href"]));
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(resolveDynamicComponent(__props.as), mergeProps(unref($attrs), {
+        href: __props.href,
+        onClick: withModifiers(handle, ["prevent"]),
+        onMouseenter,
+        onMouseleave,
+        onMousedown
+      }), {
+        default: withCtx(() => [
+          renderSlot(_ctx.$slots, "default", { loading: loading.value })
+        ]),
+        _: 3
+      }, 16, ["href"]);
+    };
   }
-}, Io = {
+};
+const _sfc_main = {
   __name: "WhenVisible",
   props: {
     data: [String, Array],
     params: Object,
     buffer: { type: Number, default: 0 },
     as: { type: String, default: "div" },
-    always: { type: Boolean, default: !1 }
+    always: { type: Boolean, default: false }
   },
-  setup(t) {
-    const e = t, n = le("modalContext");
-    if (!n)
+  setup(__props) {
+    const props = __props;
+    const modalContext = inject("modalContext");
+    if (!modalContext) {
       throw new Error("Deferred component must be used inside a Modal component");
-    const o = x(!1), r = x(!1), a = x(null);
-    let s = null;
-    const l = () => {
-      if (e.data)
-        return { only: Array.isArray(e.data) ? e.data : [e.data] };
-      if (!e.params)
+    }
+    const loaded = ref(false);
+    const fetching = ref(false);
+    const rootElement = ref(null);
+    let observer = null;
+    const getReloadParams = () => {
+      if (props.data) {
+        return { only: Array.isArray(props.data) ? props.data : [props.data] };
+      }
+      if (!props.params) {
         throw new Error("You must provide either a `data` or `params` prop.");
-      return e.params;
+      }
+      return props.params;
     };
-    return te(() => {
-      a.value && (s = new IntersectionObserver(
-        (f) => {
-          if (!f[0].isIntersecting || (e.always || s.disconnect(), r.value))
+    const observeElement = () => {
+      if (!rootElement.value) {
+        return;
+      }
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (!entries[0].isIntersecting) {
             return;
-          r.value = !0;
-          const u = l();
-          n.value.reload({
-            ...u,
+          }
+          if (!props.always) {
+            observer.disconnect();
+          }
+          if (fetching.value) {
+            return;
+          }
+          fetching.value = true;
+          const reloadParams = getReloadParams();
+          modalContext.value.reload({
+            ...reloadParams,
             onStart: () => {
-              var c;
-              r.value = !0, (c = u.onStart) == null || c.call(u);
+              fetching.value = true;
+              reloadParams.onStart?.();
             },
             onFinish: () => {
-              var c;
-              o.value = !0, r.value = !1, (c = u.onFinish) == null || c.call(u);
+              loaded.value = true;
+              fetching.value = false;
+              reloadParams.onFinish?.();
             }
           });
         },
-        { rootMargin: `${e.buffer}px` }
-      ), s.observe(a.value));
-    }), U(() => s == null ? void 0 : s.disconnect()), (f, u) => (w(), _(Pe(e.as), {
-      ref_key: "rootElement",
-      ref: a
-    }, {
-      default: C(() => [
-        o.value ? E(f.$slots, "default", { key: 0 }) : E(f.$slots, "fallback", { key: 1 })
-      ]),
-      _: 3
-    }, 512));
+        { rootMargin: `${props.buffer}px` }
+      );
+      observer.observe(rootElement.value);
+    };
+    onMounted(observeElement);
+    onUnmounted(() => observer?.disconnect());
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(resolveDynamicComponent(props.as), {
+        ref_key: "rootElement",
+        ref: rootElement
+      }, {
+        default: withCtx(() => [
+          loaded.value ? renderSlot(_ctx.$slots, "default", { key: 0 }) : renderSlot(_ctx.$slots, "fallback", { key: 1 })
+        ]),
+        _: 3
+      }, 512);
+    };
   }
 };
-function Po(t, e = {}) {
-  return ie().visit(
-    t,
-    e.method ?? "get",
-    e.data ?? {},
-    e.headers ?? {},
-    e.config ?? {},
-    e.onClose,
-    e.onAfterLeave,
-    e.queryStringArrayFormat ?? "brackets",
-    e.navigate ?? Be("navigate"),
-    e.onStart,
-    e.onSuccess,
-    e.onError
-  ).then((n) => {
-    const o = e.listeners ?? {};
-    return Object.keys(o).forEach((r) => {
-      const a = r.replace(/([A-Z])/g, "-$1").toLowerCase();
-      n.on(a, o[r]);
-    }), n;
+function visitModal(url, options = {}) {
+  return useModalStack().visit(
+    url,
+    options.method ?? "get",
+    options.data ?? {},
+    options.headers ?? {},
+    options.config ?? {},
+    options.onClose,
+    options.onAfterLeave,
+    options.queryStringArrayFormat ?? "brackets",
+    options.navigate ?? getConfig("navigate"),
+    options.onStart,
+    options.onSuccess,
+    options.onError,
+    options.props ?? null
+  ).then((modal) => {
+    const listeners = options.listeners ?? {};
+    Object.keys(listeners).forEach((event) => {
+      const eventName = kebabCase(event);
+      modal.on(eventName, listeners[event]);
+    });
+    return modal;
   });
 }
 export {
-  Ao as Deferred,
-  Wt as HeadlessModal,
-  So as Modal,
-  Mo as ModalLink,
-  Lt as ModalRoot,
-  Io as WhenVisible,
-  Be as getConfig,
-  Eo as initFromPageProps,
-  Oo as putConfig,
-  _o as renderApp,
-  Co as resetConfig,
-  Do as useModal,
-  ie as useModalStack,
-  Po as visitModal
+  _sfc_main$7 as Deferred,
+  _sfc_main$6 as HeadlessModal,
+  _sfc_main$2 as Modal,
+  Modal as ModalInstance,
+  _sfc_main$1 as ModalLink,
+  _sfc_main$8 as ModalRoot,
+  _sfc_main as WhenVisible,
+  vanilla as dialogUtils,
+  getConfig,
+  initFromPageProps,
+  modalPropNames,
+  prefetch,
+  putConfig,
+  renderApp,
+  resetConfig,
+  useModal,
+  useModalStack,
+  visitModal
 };
+//# sourceMappingURL=inertiaui-modal.js.map

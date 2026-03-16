@@ -20,8 +20,6 @@ class Modal implements Responsable
 
     const HEADER_BASE_URL = 'X-InertiaUI-Modal-Base-Url';
 
-    const HEADER_USE_ROUTER = 'X-InertiaUI-Modal-Use-Router';
-
     /**
      * @var string The base URL for the modal.
      */
@@ -95,6 +93,22 @@ class Modal implements Responsable
     }
 
     /**
+     * Get the component name for the modal.
+     */
+    public function getComponent(): string
+    {
+        return $this->component;
+    }
+
+    /**
+     * Get the props for the modal.
+     */
+    public function getProps(): array
+    {
+        return $this->props;
+    }
+
+    /**
      * Resolve the base URL for the modal.
      *
      * Used to render the 'background' page as well as where to redirect after closing the modal.
@@ -137,8 +151,9 @@ class Modal implements Responsable
 
         $baseUrl = $this->resolveBaseUrl($request);
 
-        if (in_array($request->header(self::HEADER_USE_ROUTER), [0, '0'], true) || blank($baseUrl)) {
-            // Also used for reloading modal props...
+        // XHR requests (has X-InertiaUI-Modal header) get simple modal response.
+        // Direct URL visits (no header) use dual-request pattern to render base page.
+        if ($request->hasHeader(self::HEADER_MODAL) || blank($baseUrl)) {
             return $this->extractMeta($modal->toResponse($request));
         }
 

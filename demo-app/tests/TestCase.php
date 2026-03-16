@@ -4,12 +4,10 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Carbon;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use ModalTestCase;
     use RefreshDatabase;
 
     protected function setUp(): void
@@ -17,12 +15,20 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         $this->withoutVite();
-        Carbon::setTestNow('2024-06-01 12:00:00');
     }
+}
 
-    protected function tearDown(): void
-    {
-        Carbon::setTestNow();
-        parent::tearDown();
-    }
+/**
+ * Test case for browser tests.
+ *
+ * Browser tests run against a real HTTP server that doesn't share database transactions.
+ * The seeding migration ensures data is available for browser tests.
+ * Do NOT use RefreshDatabase as transactions are not visible to the HTTP server.
+ *
+ * Note: Unlike regular tests, browser tests need Vite assets to be built
+ * since Vue/React needs to actually run in the browser.
+ */
+abstract class BrowserTestCase extends BaseTestCase
+{
+    use CreatesApplication;
 }

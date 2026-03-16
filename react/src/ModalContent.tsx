@@ -1,0 +1,311 @@
+import { useState, useEffect, useRef, useCallback, useMemo, ReactNode, SyntheticEvent, MouseEvent } from 'react'
+import CloseButton from './CloseButton'
+import clsx from 'clsx'
+import { createFocusTrap, onEscapeKey, animate, cancelAnimations } from '@inertiaui/vanilla'
+import { getMaxWidthClass } from './constants'
+import type { Modal } from './types'
+
+interface ModalContentConfig {
+    maxWidth: string
+    paddingClasses: string
+    panelClasses: string
+    position: string
+    closeButton: boolean
+    closeExplicitly?: boolean
+    closeOnClickOutside?: boolean
+}
+
+interface ModalContentProps {
+    modalContext: Modal
+    config: ModalContentConfig
+    useNativeDialog: boolean
+    isFirstModal: boolean
+    onAfterLeave?: () => void
+    children: ReactNode | ((props: { modalContext: Modal; config: ModalContentConfig }) => ReactNode)
+}
+
+const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }: ModalContentProps) => {
+    const [isRendered, setIsRendered] = useState(false)
+    const [isVisible, setIsVisible] = useState(false)  // For backdrop sync
+    const [entered, setEntered] = useState(false)      // After animation completes
+    const wrapperRef = useRef<HTMLDivElement>(null)
+    const dialogRef = useRef<HTMLDialogElement>(null)
+    const nativeWrapperRef = useRef<HTMLDivElement>(null)
+    const cleanupFocusTrapRef = useRef<(() => void) | null>(null)
+    const cleanupEscapeKeyRef = useRef<(() => void) | null>(null)
+
+    const maxWidthClass = useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth])
+
+    // ============ Animation handlers using Web Animations API ============
+
+    const animateIn = useCallback(async (element: HTMLElement | null) => {
+        if (!element) return
+
+        setIsVisible(true) // Trigger backdrop immediately
+
+        await animate(element, [
+            { transform: 'translate3d(0, 1rem, 0) scale(0.95)', opacity: 0 },
+            { transform: 'translate3d(0, 0, 0) scale(1)', opacity: 1 },
+        ])
+
+        setEntered(true)
+    }, [])
+
+    const animateOut = useCallback(
+        async (element: HTMLElement | null) => {
+            if (!element) return
+
+            setIsVisible(false) // Trigger backdrop fade out immediately
+
+            await animate(element, [
+                { transform: 'translate3d(0, 0, 0) scale(1)', opacity: 1 },
+                { transform: 'translate3d(0, 1rem, 0) scale(0.95)', opacity: 0 },
+            ])
+
+            setIsRendered(false)
+            if (useNativeDialog && dialogRef.current) {
+                dialogRef.current.close()
+            }
+            onAfterLeave?.()
+            modalContext.afterLeave()
+        },
+        [useNativeDialog, onAfterLeave, modalContext],
+    )
+
+    // ============ Non-native dialog handlers ============
+
+    const setupFocusTrap = useCallback(() => {
+        if (useNativeDialog) return
+        if (!wrapperRef.current || !modalContext.onTopOfStack) return
+        if (cleanupFocusTrapRef.current) return
+
+        cleanupFocusTrapRef.current = createFocusTrap(wrapperRef.current, {
+            initialFocus: true,
+            returnFocus: false,
+        })
+    }, [modalContext.onTopOfStack, useNativeDialog])
+
+    const cleanupFocusTrap = useCallback(() => {
+        if (cleanupFocusTrapRef.current) {
+            cleanupFocusTrapRef.current()
+            cleanupFocusTrapRef.current = null
+        }
+    }, [])
+
+    const setupEscapeKey = useCallback(() => {
+        if (useNativeDialog) return
+        if (cleanupEscapeKeyRef.current) return
+        if (config?.closeExplicitly) return
+
+        cleanupEscapeKeyRef.current = onEscapeKey(() => {
+            if (modalContext.onTopOfStack) {
+                modalContext.close()
+            }
+        })
+    }, [config?.closeExplicitly, modalContext, useNativeDialog])
+
+    const cleanupEscapeKey = useCallback(() => {
+        if (cleanupEscapeKeyRef.current) {
+            cleanupEscapeKeyRef.current()
+            cleanupEscapeKeyRef.current = null
+        }
+    }, [])
+
+    const handleClickOutside = useCallback(
+        (event: MouseEvent) => {
+            if (useNativeDialog) return
+            if (!modalContext.onTopOfStack) return
+            if (config?.closeExplicitly) return
+            if (config?.closeOnClickOutside === false) return
+            if (!wrapperRef.current) return
+
+            if (!wrapperRef.current.contains(event.target as Node)) {
+                modalContext.close()
+            }
+        },
+        [modalContext, config?.closeExplicitly, config?.closeOnClickOutside, useNativeDialog],
+    )
+
+    // ============ Native dialog handlers ============
+
+    const handleCancel = useCallback(
+        (event: SyntheticEvent) => {
+            event.preventDefault()
+            if (modalContext.onTopOfStack && !config?.closeExplicitly) {
+                modalContext.close()
+            }
+        },
+        [modalContext, config?.closeExplicitly],
+    )
+
+    const handleDialogClick = useCallback(
+        (event: MouseEvent) => {
+            if (event.target === dialogRef.current) {
+                if (modalContext.onTopOfStack && !config?.closeExplicitly && config?.closeOnClickOutside !== false) {
+                    modalContext.close()
+                }
+            }
+        },
+        [modalContext, config?.closeExplicitly, config?.closeOnClickOutside],
+    )
+
+    // ============ Lifecycle ============
+
+    // Track previous isOpen state for detecting close
+    const prevIsOpenRef = useRef(modalContext.isOpen)
+
+    // Initial mount and open state changes
+    useEffect(() => {
+        if (useNativeDialog) {
+            if (modalContext.isOpen && !dialogRef.current?.open) {
+                dialogRef.current?.showModal()
+                animateIn(nativeWrapperRef.current)
+            } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+                setEntered(false)
+                animateOut(nativeWrapperRef.current)
+            }
+        } else {
+            if (modalContext.isOpen && !isRendered) {
+                setIsRendered(true)
+            } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+                setEntered(false)
+                animateOut(wrapperRef.current)
+            }
+        }
+        prevIsOpenRef.current = modalContext.isOpen
+    }, [modalContext.isOpen, useNativeDialog, animateIn, animateOut, isRendered])
+
+    // Trigger animation after render (non-native)
+    useEffect(() => {
+        if (!useNativeDialog && isRendered && !entered && modalContext.isOpen) {
+            animateIn(wrapperRef.current).then(() => {
+                setupFocusTrap()
+            })
+        }
+    }, [isRendered, useNativeDialog, entered, modalContext.isOpen, animateIn, setupFocusTrap])
+
+    // Setup escape key (non-native)
+    useEffect(() => {
+        if (!useNativeDialog) {
+            setupEscapeKey()
+        }
+        return () => {
+            cleanupEscapeKey()
+        }
+    }, [useNativeDialog, setupEscapeKey, cleanupEscapeKey])
+
+    // Handle becoming top of stack / losing top of stack (non-native only)
+    useEffect(() => {
+        if (useNativeDialog) return
+
+        if (modalContext.onTopOfStack) {
+            setupEscapeKey()
+            if (entered) {
+                setupFocusTrap()
+            }
+        } else {
+            cleanupFocusTrap()
+            cleanupEscapeKey()
+        }
+    }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog])
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            const wrapper = useNativeDialog ? nativeWrapperRef.current : wrapperRef.current
+            if (wrapper) {
+                cancelAnimations(wrapper)
+            }
+            if (useNativeDialog) {
+                if (dialogRef.current?.open) {
+                    dialogRef.current.close()
+                }
+            } else {
+                cleanupFocusTrap()
+                cleanupEscapeKey()
+            }
+        }
+    }, [useNativeDialog, cleanupFocusTrap, cleanupEscapeKey])
+
+    // ============ Render ============
+
+    const renderContent = () => (
+        <div
+            className={`im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`}
+            data-inertiaui-modal-entered={entered}
+        >
+            {config.closeButton && (
+                <div className="absolute right-0 top-0 pr-3 pt-3">
+                    <CloseButton onClick={modalContext.close} />
+                </div>
+            )}
+            {typeof children === 'function' ? children({ modalContext, config }) : children}
+        </div>
+    )
+
+    // Native dialog mode
+    if (useNativeDialog) {
+        return (
+            <dialog
+                ref={dialogRef}
+                className={clsx(
+                    'im-modal-dialog m-0 overflow-visible bg-transparent p-0',
+                    'size-full max-h-none max-w-none',
+                    'backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300',
+                    isVisible ? 'backdrop:opacity-100' : 'backdrop:opacity-0',
+                    !isFirstModal && 'backdrop:bg-transparent',
+                )}
+                onCancel={handleCancel}
+                onClick={handleDialogClick}
+            >
+                <div className="im-modal-container fixed inset-0 overflow-y-auto p-4">
+                    <div
+                        className={clsx('im-modal-positioner flex min-h-full justify-center', {
+                            'items-start': config.position === 'top',
+                            'items-center': config.position === 'center',
+                            'items-end': config.position === 'bottom',
+                        })}
+                    >
+                        <div
+                            ref={nativeWrapperRef}
+                            className={clsx('im-modal-wrapper w-full transition-[filter] duration-300', modalContext.onTopOfStack ? '' : 'blur-xs', maxWidthClass)}
+                        >
+                            {renderContent()}
+                        </div>
+                    </div>
+                </div>
+            </dialog>
+        )
+    }
+
+    // Non-native dialog mode
+    if (!isRendered) return null
+
+    return (
+        <div
+            className="im-modal-container fixed inset-0 z-40 overflow-y-auto p-4"
+            onMouseDown={handleClickOutside}
+        >
+            <div
+                className={clsx('im-modal-positioner flex min-h-full justify-center', {
+                    'items-start': config.position === 'top',
+                    'items-center': config.position === 'center',
+                    'items-end': config.position === 'bottom',
+                })}
+                onMouseDown={handleClickOutside}
+            >
+                <div
+                    ref={wrapperRef}
+                    role="dialog"
+                    aria-modal="true"
+                    className={clsx('im-modal-wrapper w-full transition-[filter] duration-300', modalContext.onTopOfStack ? '' : 'blur-xs', maxWidthClass)}
+                >
+                    <span className="sr-only">Dialog</span>
+                    {renderContent()}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default ModalContent

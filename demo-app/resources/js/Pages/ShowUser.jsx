@@ -13,16 +13,16 @@ export default function UserProfile({ user, deferred }) {
             {
                 InertiaReact.Deferred ?
                     <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
-                        <p dusk="deferred">
+                        <p data-testid="deferred">
                             {deferred}
                         </p>
-                    </InertiaReact.Deferred> : <p dusk="deferred"> No Deferred Component</p>
+                    </InertiaReact.Deferred> : <p data-testid="deferred"> No Deferred Component</p>
             }
 
             <ModalLink
                 navigate
                 as="button"
-                dusk={`edit-user-${user.id}`}
+                data-testid={`edit-user-${user.id}`}
                 href={`/users/${user.id}/edit`}
                 className="mt-4 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md"
             >

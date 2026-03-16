@@ -29,17 +29,17 @@ export default function CreateRole({ headerValue, name }) {
                     <div>
                         <h2 className="text-lg font-medium text-gray-900">Create Role</h2>
                         {greeting && (
-                            <p dusk="greeting" className="text-sm text-gray-500">
+                            <p data-testid="greeting" className="text-sm text-gray-500">
                                 {greeting}
                             </p>
                         )}
                         {headerValue && (
-                            <p dusk="headerValue" className="text-sm text-gray-500">
+                            <p data-testid="headerValue" className="text-sm text-gray-500">
                                 {headerValue}
                             </p>
                         )}
                         {name && (
-                            <p dusk="name" className="text-sm text-gray-500">
+                            <p data-testid="name" className="text-sm text-gray-500">
                                 {name}
                             </p>
                         )}
@@ -63,7 +63,7 @@ export default function CreateRole({ headerValue, name }) {
                                     type="text"
                                     name="name"
                                     autoComplete="off"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 />
                                 {errors.name && (
                                     <p className="mt-2 text-sm text-red-600">{errors.name}</p>

@@ -1,9 +1,15 @@
 <script setup>
-import { DialogClose } from 'reka-ui'
+import useModal from './useModal'
+
+const modal = useModal()
 </script>
 
 <template>
-    <DialogClose class="im-close-button text-gray-400 hover:text-gray-500">
+    <button
+        type="button"
+        class="im-close-button text-gray-400 hover:text-gray-500"
+        @click="modal.close()"
+    >
         <span class="sr-only">Close</span>
         <svg
             class="size-6"
@@ -20,5 +26,5 @@ import { DialogClose } from 'reka-ui'
                 d="M6 18L18 6M6 6l12 12"
             ></path>
         </svg>
-    </DialogClose>
+    </button>
 </template>

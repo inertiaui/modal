@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 import vue from '@vitejs/plugin-vue';
+import tailwindcss from '@tailwindcss/vite';
 
 import fs from 'fs';
 import dotenv from 'dotenv';
@@ -10,8 +11,12 @@ const reactStack = env.APP_STACK !== 'vue';
 const packagesAreInstalled = fs.existsSync('node_modules/@inertiaui/modal-react') && fs.existsSync('node_modules/@inertiaui/modal-vue');
 
 export default defineConfig({
-    resolve: packagesAreInstalled ? {} : {
-        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios'],
+    build: {
+        minify: false,
+    },
+
+    resolve: {
+        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios', 'vue', 'react', 'react-dom'],
         alias: {
             '@inertiaui/modal-react': '/../react',
             '@inertiaui/modal-vue': '/../vue'
@@ -31,5 +36,6 @@ export default defineConfig({
                 },
             },
         }),
+        tailwindcss(),
     ],
 });

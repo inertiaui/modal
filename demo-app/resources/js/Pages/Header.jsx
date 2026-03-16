@@ -8,7 +8,7 @@ export default function Header() {
                 <h2 className="text-lg font-medium text-gray-900">Header</h2>
             </div>
             <ModalLink
-                dusk="modal-link"
+                data-testid="modal-link"
                 href="/roles/create"
                 headers={{ 'X-Test-Header': 'Test Header Value' }}
             >
