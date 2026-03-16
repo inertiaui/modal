@@ -33,7 +33,7 @@ You may find the documentation at [https://inertiaui.com/inertia-modal/docs](htt
 Inertia Modal has the following requirements:
 
 - PHP 8.2+
-- Laravel 11.11+ or Laravel 12+
+- Laravel 11.11+, Laravel 12+, or Laravel 13+
 - Inertia Laravel 2.0+
 - Tailwind CSS 4+
 - **React**: React 19+ with `@inertiajs/react` 2.3.15+

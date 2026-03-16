@@ -5,7 +5,7 @@ Inertia Modal has the following requirements:
 ## Backend
 
 - PHP 8.2+
-- Laravel 11.11+ or Laravel 12+
+- Laravel 11.11+, Laravel 12+, or Laravel 13+
 - Inertia Laravel 2.0+
 
 ## Frontend
