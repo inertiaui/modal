@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use InertiaUI\Modal\Support;
 
-$deferred = fn (string $data) => Support::isInertiaV2()
+$deferred = fn (string $data) => ! Support::isInertiaV1()
     ? Inertia::defer(fn () => request()->header('X-InertiaUI-Modal-Base-Url')
         ? 'Deferred data with Base URL header: '.$data
         : 'Deferred data without Base URL header: '.$data
@@ -37,17 +37,17 @@ Route::get('/modal-events', function (User $user) {
 
 // Modal Props
 Route::get('/modal-props-ignore-first-load', function () {
-    $inertiaV2 = Support::isInertiaV2();
+    $supportsDefer = ! Support::isInertiaV1();
 
-    $defer = fn (int $delay, string $data, string $group) => $inertiaV2
+    $defer = fn (int $delay, string $data, string $group) => $supportsDefer
         ? Inertia::defer(function () use ($delay, $data) {
             usleep($delay * 1000);
 
             return $data;
         }, $group) : $data;
 
-    $optional = fn (int $delay, string $data) => $inertiaV2
-        ? Inertia::lazy(function () use ($delay, $data) {
+    $optional = fn (int $delay, string $data) => $supportsDefer
+        ? Inertia::optional(function () use ($delay, $data) {
             usleep($delay * 1000);
 
             return $data;
@@ -57,7 +57,7 @@ Route::get('/modal-props-ignore-first-load', function () {
         'deferA' => $defer(250, 'Deferred data A- '.Str::random(), 'group-a'),
         'deferB' => $defer(500, 'Deferred data B- '.Str::random(), 'group-b'),
         'optional' => $optional(500, 'Optional data - '.Str::random()),
-        'lazy' => Inertia::lazy(function () {
+        'lazy' => (Support::isInertiaV1() ? Inertia::lazy(...) : Inertia::optional(...))(function () {
             usleep(500 * 1000);
 
             return 'Lazy data - '.Str::random();

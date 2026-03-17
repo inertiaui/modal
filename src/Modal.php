@@ -171,7 +171,15 @@ class Modal implements Responsable
         $data = $response->getData(true);
         $data['meta'] = [];
 
-        foreach (['mergeProps', 'deferredProps', 'cache'] as $key) {
+        // Inertia v2 keys: mergeProps, deferredProps, cache
+        // Inertia v3 keys: mergeProps, prependProps, deepMergeProps, matchPropsOn, deferredProps, scrollProps, onceProps, sharedProps
+        $metaKeys = [
+            'mergeProps', 'deferredProps', 'cache',
+            'prependProps', 'deepMergeProps', 'matchPropsOn',
+            'scrollProps', 'onceProps', 'sharedProps',
+        ];
+
+        foreach ($metaKeys as $key) {
             if (! array_key_exists($key, $data)) {
                 continue;
             }

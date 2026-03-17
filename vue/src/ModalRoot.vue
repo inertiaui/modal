@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeMount, onMounted, onUnmounted, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
+import * as InertiaVue from '@inertiajs/vue3'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
 import { default as Axios } from 'axios'
@@ -35,6 +36,8 @@ onUnmounted(
                 }
 
                 if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
+                    modalStack.setBaseUrl(null)
+                    initialModalStillOpened = false
                     router.visit(modalOnBase.baseUrl, {
                         preserveScroll: true,
                         preserveState: true,
@@ -45,17 +48,32 @@ onUnmounted(
     }),
 )
 
-const axiosRequestInterceptor = (config) => {
+const requestInterceptor = (config) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
-    config.headers['X-InertiaUI-Modal-Base-Url'] = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
+    const baseUrlHeader = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
+
+    if (config.headers && baseUrlHeader) {
+        config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlHeader
+    }
 
     return config
 }
 
-onBeforeMount(() => Axios.interceptors.request.use(axiosRequestInterceptor))
+const http = InertiaVue.http && typeof InertiaVue.http.onRequest === 'function' ? InertiaVue.http : null
+let removeHttpInterceptor = null
+
+onBeforeMount(() => {
+    if (http) {
+        removeHttpInterceptor = http.onRequest(requestInterceptor)
+    }
+    Axios.interceptors.request.use(requestInterceptor)
+})
 onMounted(() => (initialModalStillOpened = !!$page.props._inertiaui_modal))
-onUnmounted(() => Axios.interceptors.request.eject(axiosRequestInterceptor))
+onUnmounted(() => {
+    removeHttpInterceptor?.()
+    Axios.interceptors.request.eject(requestInterceptor)
+})
 
 watch(
     () => $page.props?._inertiaui_modal,

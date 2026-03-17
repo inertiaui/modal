@@ -576,6 +576,8 @@ export const ModalRoot = ({ children }) => {
                             return
                         }
                         if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
+                            baseUrl = null
+                            initialModalStillOpened = false
                             router.visit(modalOnBase.baseUrl, {
                                 preserveScroll: true,
                                 preserveState: true,
@@ -587,17 +589,26 @@ export const ModalRoot = ({ children }) => {
         [],
     )
 
-    const axiosRequestInterceptor = (config) => {
+    const requestInterceptor = (config) => {
         // A Modal is opened on top of a base route, so we need to pass this base route
         // so it can redirect back with the back() helper method...
-        config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrl ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
+        const baseUrlHeader = baseUrl ?? (initialModalStillOpened ? $page.props._inertiaui_modal?.baseUrl : null)
+
+        if (config.headers && baseUrlHeader) {
+            config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlHeader
+        }
 
         return config
     }
 
     useEffect(() => {
-        Axios.interceptors.request.use(axiosRequestInterceptor)
-        return () => Axios.interceptors.request.eject(axiosRequestInterceptor)
+        const http = InertiaReact.http && typeof InertiaReact.http.onRequest === 'function' ? InertiaReact.http : null
+        const removeHttpInterceptor = http ? http.onRequest(requestInterceptor) : null
+        Axios.interceptors.request.use(requestInterceptor)
+        return () => {
+            removeHttpInterceptor?.()
+            Axios.interceptors.request.eject(requestInterceptor)
+        }
     }, [])
 
     const previousModalRef = useRef()
