@@ -83,7 +83,7 @@ class ModalConfig implements Arrayable
      */
     public function maxWidth(?string $maxWidth): self
     {
-        if (! in_array($maxWidth, ['sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl'])) {
+        if (! in_array($maxWidth, ['sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl'], true)) {
             throw new InvalidArgumentException('Invalid max width provided. Please use a value between sm and 7xl.');
         }
 

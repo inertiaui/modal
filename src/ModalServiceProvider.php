@@ -72,7 +72,7 @@ class ModalServiceProvider extends ServiceProvider
             ];
         });
 
-        $this->app->singleton('inertiaui_modal_redirector', function ($app): \InertiaUI\Modal\Redirector {
+        $this->app->singleton('inertiaui_modal_redirector', function (array $app): \InertiaUI\Modal\Redirector {
             $redirector = new Redirector($app['url']);
 
             // If the session is set on the application instance, we'll inject it into
