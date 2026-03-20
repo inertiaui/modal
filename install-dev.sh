@@ -10,6 +10,11 @@ cd ../vue
 rm -rf node_modules
 npm install
 
+# Prepare Svelte Library for development
+cd ../svelte
+rm -rf node_modules
+npm install
+
 # Prepare demo app for development
 cd ../demo-app
 rm -rf node_modules

@@ -1,14 +1,27 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\AuthServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
 return [
 
     /**
-     * The stack that should be used by the application. Can be 'vue' or 'react'.
+     * The stack that should be used by the application. Can be 'vue', 'react' or 'svelte'.
      */
-    'stack' => env('APP_STACK', 'vue') === 'vue' ? 'vue' : 'react',
+    'stack' => (function () {
+        switch (env('APP_STACK', 'vue')) {
+            case 'vue':
+                return 'vue';
+            case 'svelte':
+                return 'svelte';
+            default:
+                return 'react';
+        }
+    })(),
 
     /*
     |--------------------------------------------------------------------------
@@ -168,11 +181,11 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
+        AppServiceProvider::class,
+        AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        EventServiceProvider::class,
+        RouteServiceProvider::class,
     ])->toArray(),
 
     /*

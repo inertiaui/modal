@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InertiaUI\Modal;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector as BaseRedirector;
 
 class Redirector extends BaseRedirector
@@ -18,7 +19,7 @@ class Redirector extends BaseRedirector
      * @param  int  $status
      * @param  array  $headers
      * @param  bool  $fallback
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function back($status = 302, $headers = [], $fallback = false)
     {
