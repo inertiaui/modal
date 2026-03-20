@@ -11,7 +11,6 @@
     let { el, App, pageProps } = $props()
 
     let isNavigating = $state(false)
-    let previousModalOnBase = $state(null)
     let initialModalStillOpened = $state(false)
     let previousModal
 
@@ -22,13 +21,12 @@
         const modalOnBase = $event.detail.page.props._inertiaui_modal
 
         if (!modalOnBase) {
-            previousModalOnBase && modalStack.closeAll()
+            modalStack.closeAll()
             modalStack.setBaseUrl(null)
             initialModalStillOpened = false
             return
         }
 
-        previousModalOnBase = modalOnBase
         modalStack.setBaseUrl(modalOnBase.baseUrl)
 
         modalStack
