@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InertiaUI\Modal;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -63,7 +64,7 @@ class ModalServiceProvider extends ServiceProvider
             ];
         });
 
-        $this->app->singleton('inertiaui_modal_redirector', function (array $app): Redirector {
+        $this->app->singleton('inertiaui_modal_redirector', function (Application $app): Redirector {
             $redirector = new Redirector($app['url']);
 
             // If the session is set on the application instance, we'll inject it into
