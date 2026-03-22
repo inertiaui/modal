@@ -1,21 +1,1854 @@
-(function(C,o){typeof exports=="object"&&typeof module<"u"?o(exports,require("react"),require("react/jsx-runtime"),require("axios"),require("@inertiajs/react"),require("@inertiajs/core"),require("react-dom")):typeof define=="function"&&define.amd?define(["exports","react","react/jsx-runtime","axios","@inertiajs/react","@inertiajs/core","react-dom"],o):(C=typeof globalThis<"u"?globalThis:C||self,o(C.InertiaUIModal={},C.React,C.jsxRuntime,C.Axios,C.InertiaReact,C.core,C.ReactDOM))})(this,(function(C,o,O,Fe,ne,Nr,Ir){"use strict";var no=Object.defineProperty;var lo=(C,o,O)=>o in C?no(C,o,{enumerable:!0,configurable:!0,writable:!0,value:O}):C[o]=O;var B=(C,o,O)=>lo(C,typeof o!="symbol"?o+"":o,O);function Tt(e){const t=Object.create(null,{[Symbol.toStringTag]:{value:"Module"}});if(e){for(const r in e)if(r!=="default"){const n=Object.getOwnPropertyDescriptor(e,r);Object.defineProperty(t,r,n.get?n:{enumerable:!0,get:()=>e[r]})}}return t.default=e,Object.freeze(t)}const ve=Tt(o),Pt=Tt(ne),ge={type:"modal",navigate:!1,modal:{closeButton:!0,closeExplicitly:!1,maxWidth:"2xl",paddingClasses:"p-4 sm:p-6",panelClasses:"bg-white rounded",position:"center"},slideover:{closeButton:!0,closeExplicitly:!1,maxWidth:"md",paddingClasses:"p-4 sm:p-6",panelClasses:"bg-white min-h-screen",position:"right"}};class jr{constructor(){this.config={},this.reset()}reset(){this.config=JSON.parse(JSON.stringify(ge))}put(t,r){if(typeof t=="object"){this.config={type:t.type??ge.type,navigate:t.navigate??ge.navigate,modal:{...ge.modal,...t.modal??{}},slideover:{...ge.slideover,...t.slideover??{}}};return}const n=t.split(".");let l=this.config;for(let i=0;i<n.length-1;i++)l=l[n[i]]=l[n[i]]||{};l[n[n.length-1]]=r}get(t){if(typeof t>"u")return this.config;const r=t.split(".");let n=this.config;for(const l of r){if(n[l]===void 0)return null;n=n[l]}return n}}const Ae=new jr,_r=()=>Ae.reset(),Dr=(e,t)=>Ae.put(e,t),Ne=e=>Ae.get(e),de=(e,t)=>Ae.get(e?`slideover.${t}`:`modal.${t}`);function Wr(e,t){const r=typeof window<"u"?window.location.origin:"http://localhost";return e=typeof e=="string"?new URL(e,r):e,t=typeof t=="string"?new URL(t,r):t,`${e.origin}${e.pathname}`==`${t.origin}${t.pathname}`}function tt(e="inertiaui_modal_"){return typeof crypto<"u"&&typeof crypto.randomUUID=="function"?`${e}${crypto.randomUUID()}`:`${e}${Date.now().toString(36)}_${Math.random().toString(36).substr(2,9)}`}function ce(e){return typeof e=="string"?e.toLowerCase():e}function Ur(e,t,r=!1){return r&&(t=t.map(ce)),Array.isArray(e)?e.filter(n=>!t.includes(r?ce(n):n)):Object.keys(e).reduce((n,l)=>(t.includes(r?ce(l):l)||(n[l]=e[l]),n),{})}function Hr(e,t,r=!1){return r&&(t=t.map(ce)),Array.isArray(e)?e.filter(n=>t.includes(r?ce(n):n)):Object.keys(e).reduce((n,l)=>(t.includes(r?ce(l):l)&&(n[l]=e[l]),n),{})}function Vr(e){return Array.isArray(e)?e.filter(t=>t!==null):Object.keys(e).reduce((t,r)=>(r in e&&e[r]!==null&&(t[r]=e[r]),t),{})}function we(e){return e?(e=e.replace(/_/g,"-"),e=e.replace(/-+/g,"-"),/[A-Z]/.test(e)?(e=e.replace(/\s+/g,"").replace(/_/g,"").replace(/(?:^|\s|-)+([A-Za-z])/g,(t,r)=>r.toUpperCase()),e=e.replace(/(.)(?=[A-Z])/g,"$1-"),e.toLowerCase()):e):""}function Br(e){if(typeof window<"u")return e.toLowerCase()in window;if(typeof document<"u"){const n=document.createElement("div");return e.toLowerCase()in n}const t=e.toLowerCase();return[/^on(click|dblclick|mousedown|mouseup|mouseover|mouseout|mousemove|mouseenter|mouseleave)$/,/^on(keydown|keyup|keypress)$/,/^on(focus|blur|change|input|submit|reset)$/,/^on(load|unload|error|resize|scroll)$/,/^on(touchstart|touchend|touchmove|touchcancel)$/,/^on(pointerdown|pointerup|pointermove|pointerenter|pointerleave|pointercancel)$/,/^on(drag|dragstart|dragend|dragenter|dragleave|dragover|drop)$/,/^on(animationstart|animationend|animationiteration)$/,/^on(transitionstart|transitionend|transitionrun|transitioncancel)$/].some(n=>n.test(t))}const Ie=o.createContext(null);Ie.displayName="ModalStackContext";let kt=null,Lt=null,fe=null,je={},rt=[],pe={};const Ft=({children:e})=>{const[t,r]=o.useState([]),[n,l]=o.useState({}),i=v=>{r(c=>{const f=v([...c]),g=b=>{var m;return f.length<2?!0:((m=f.map(x=>({id:x.id,shouldRender:x.shouldRender})).reverse().find(x=>x.shouldRender))==null?void 0:m.id)===b};return f.forEach((b,m)=>{f[m].onTopOfStack=g(b.id),f[m].getParentModal=()=>m<1?null:f.slice(0,m).reverse().find(x=>x.isOpen),f[m].getChildModal=()=>m===f.length-1?null:f.slice(m+1).find(x=>x.isOpen)}),f})};o.useEffect(()=>{rt=t},[t]);class u{constructor(c,f,g,b,m){B(this,"show",()=>{i(c=>c.map(f=>(f.id===this.id&&!f.isOpen&&(f.isOpen=!0,f.shouldRender=!0),f)))});B(this,"setOpen",c=>{c?this.show():this.close()});B(this,"close",()=>{i(c=>{let f=!1;const g=c.map(b=>{var m;return b.id===this.id&&b.isOpen&&(Object.keys(b.listeners).forEach(x=>{b.off(x)}),b.isOpen=!1,(m=b.onCloseCallback)==null||m.call(b),f=!0),b});return f?g:c})});B(this,"afterLeave",()=>{this.isOpen||i(c=>{const f=c.map(g=>{var b;return g.id===this.id&&!g.isOpen&&(g.shouldRender=!1,(b=g.afterLeaveCallback)==null||b.call(g),g.afterLeaveCallback=null),g});return this.index===0?[]:f})});B(this,"on",(c,f)=>{c=we(c),this.listeners[c]=this.listeners[c]??[],this.listeners[c].push(f)});B(this,"off",(c,f)=>{var g;c=we(c),f?this.listeners[c]=((g=this.listeners[c])==null?void 0:g.filter(b=>b!==f))??[]:delete this.listeners[c]});B(this,"emit",(c,...f)=>{var g;(g=this.listeners[we(c)])==null||g.forEach(b=>b(...f))});B(this,"registerEventListenersFromProps",c=>{const f=[];return Object.keys(c).filter(g=>g.startsWith("on")).forEach(g=>{const b=we(g).replace(/^on-/,"");this.on(b,c[g]),f.push(()=>this.off(b,c[g]))}),()=>f.forEach(g=>g())});B(this,"reload",(c={})=>{var m,x;let f=Object.keys(this.response.props);if(c.only&&(f=c.only),c.except&&(f=Ur(f,c.except)),!((m=this.response)!=null&&m.url))return;const g=(c.method??"get").toLowerCase(),b=c.data??{};(x=c.onStart)==null||x.call(c),Fe({url:this.response.url,method:g,data:g==="get"?{}:b,params:g==="get"?b:{},headers:{...c.headers??{},Accept:"text/html, application/xhtml+xml","X-Inertia":!0,"X-Inertia-Partial-Component":this.response.component,"X-Inertia-Version":this.response.version,"X-Inertia-Partial-Data":f.join(","),"X-InertiaUI-Modal":tt(),"X-InertiaUI-Modal-Use-Router":0,"X-InertiaUI-Modal-Base-Url":fe}}).then(S=>{var F;this.updateProps(S.data.props),(F=c.onSuccess)==null||F.call(c,S)}).catch(S=>{var F;(F=c.onError)==null||F.call(c,S)}).finally(()=>{var S;(S=c.onFinish)==null||S.call(c)})});B(this,"updateProps",c=>{Object.assign(this.props,c),i(f=>f)});if(this.id=f.id??tt(),this.isOpen=!1,this.shouldRender=!1,this.listeners={},this.component=c,this.props=f.props,this.response=f,this.config=g??{},this.onCloseCallback=b,this.afterLeaveCallback=m,pe[this.id]){this.config={...this.config,...pe[this.id].config??{}};const x=pe[this.id].onClose,S=pe[this.id].onAfterLeave;x&&(this.onCloseCallback=b?()=>{b(),x()}:x),S&&(this.afterLeaveCallback=m?()=>{m(),S()}:S),delete pe[this.id]}this.index=-1,this.getParentModal=()=>null,this.getChildModal=()=>null,this.onTopOfStack=!0}static generateId(){return typeof crypto<"u"&&typeof crypto.randomUUID=="function"?`inertiaui_modal_${crypto.randomUUID()}`:`inertiaui_modal_${Date.now().toString(36)}_${Math.random().toString(36).substr(2,9)}`}}const a=(v,c={},f=null,g=null)=>Lt(v.component).then(b=>d(b,v,c,f,g)),s=v=>{var f,g;const c=(g=(f=v.response)==null?void 0:f.meta)==null?void 0:g.deferredProps;c&&Object.keys(c).forEach(b=>{v.reload({only:c[b]})})},d=(v,c,f,g,b)=>{const m=new u(v,c,f,g,b);return m.index=t.length,i(x=>[...x,m]),s(m),m.show(),m};function h(v,c,f,g){if(!n[v])throw new Error(`The local modal "${v}" has not been registered.`);const b=d(null,{},c,f,g);return b.name=v,n[v].callback(b),b}const E=(v,c={})=>w(v,c.method??"get",c.data??{},c.headers??{},c.config??{},c.onClose,c.onAfterLeave,c.queryStringArrayFormat??"brackets",c.navigate??Ne("navigate"),c.onStart,c.onSuccess,c.onError).then(f=>{const g=c.listeners??{};return Object.keys(g).forEach(b=>{const m=we(b);f.on(m,g[b])}),f}),w=(v,c,f={},g={},b={},m=null,x=null,S="brackets",F=!1,_=null,L=null,A=null)=>{const H=tt();return new Promise((N,P)=>{if(v.startsWith("#")){N(h(v.substring(1),b,m,x));return}const[D,he]=Nr.mergeDataIntoQueryString(c,v||"",f,S);let ae=F&&t.length===0;if(t.length===0&&(fe=typeof window<"u"?window.location.href:""),g={...g,Accept:"text/html, application/xhtml+xml","X-Requested-With":"XMLHttpRequest","X-Inertia":!0,"X-Inertia-Version":kt,"X-InertiaUI-Modal":H,"X-InertiaUI-Modal-Use-Router":ae?1:0,"X-InertiaUI-Modal-Base-Url":fe},ae)return je={},pe[H]={config:b,onClose:m,onAfterLeave:x},ne.router.visit(D,{method:c,data:he,headers:g,preserveScroll:!0,preserveState:!0,onError(...k){A==null||A(...k),P(...k)},onStart(...k){_==null||_(...k)},onSuccess(...k){L==null||L(...k)},onBefore:()=>{je[H]=N}});_==null||_();const J=k=>{try{Pt.progress&&k(Pt.progress)}catch{}};J(k=>k.start()),Fe({url:D,method:c,data:he,headers:g}).then(k=>{L==null||L(k),N(a(k.data,b,m,x))}).catch((...k)=>{A==null||A(...k),P(...k)}).finally(()=>{J(k=>k.finish())})})},$={stack:t,localModals:n,push:d,pushFromResponseData:a,length:()=>rt.length,closeAll:()=>{rt.reverse().forEach(v=>v.close())},reset:()=>i(()=>[]),visit:w,visitModal:E,registerLocalModal:(v,c)=>{l(f=>({...f,[v]:{name:v,callback:c}}))},removeLocalModal:v=>{l(c=>{const f={...c};return delete f[v],f})},onModalOnBase:v=>{const c=je[v.id];c&&(c(v),delete je[v.id])}};return O.jsx(Ie.Provider,{value:$,children:e})},be=()=>{const e=o.useContext(Ie);if(e===null)throw new Error("useModalStack must be used within a ModalStackProvider");return e},At=["closeButton","closeExplicitly","maxWidth","paddingClasses","panelClasses","position","slideover"],Nt=e=>{e.initialPage&&(kt=e.initialPage.version),e.resolveComponent&&(Lt=e.resolveComponent)},qr=(e,t)=>{Nt(t);const r=({Component:n,props:l,key:i})=>{const u=()=>{const a=o.createElement(n,{key:i,...l});return typeof n.layout=="function"?n.layout(a):Array.isArray(n.layout)?n.layout.concat(a).reverse().reduce((d,h)=>o.createElement(h,l,d)):a};return O.jsxs(O.Fragment,{children:[u(),O.jsx(It,{})]})};return O.jsx(Ft,{children:O.jsx(e,{...t,children:r})})},It=({children:e})=>{var a,s;const t=o.useContext(Ie),r=ne.usePage();let n=!1,l=!!((a=r.props)!=null&&a._inertiaui_modal);o.useEffect(()=>ne.router.on("start",()=>n=!0),[]),o.useEffect(()=>ne.router.on("finish",()=>n=!1),[]),o.useEffect(()=>ne.router.on("navigate",function(d){const h=d.detail.page.props._inertiaui_modal;if(!h){t.closeAll(),fe=null,l=!1;return}fe=h.baseUrl,t.pushFromResponseData(h,{},()=>{if(!h.baseUrl){console.error("No base url in modal response data so cannot navigate back");return}!n&&typeof window<"u"&&window.location.href!==h.baseUrl&&ne.router.visit(h.baseUrl,{preserveScroll:!0,preserveState:!0})}).then(t.onModalOnBase)}),[]);const i=d=>{var h;return d.headers["X-InertiaUI-Modal-Base-Url"]=fe??(l?(h=r.props._inertiaui_modal)==null?void 0:h.baseUrl:null),d};o.useEffect(()=>(Fe.interceptors.request.use(i),()=>Fe.interceptors.request.eject(i)),[]);const u=o.useRef();return o.useEffect(()=>{var E,w;const d=(E=r.props)==null?void 0:E._inertiaui_modal,h=u.current;u.current=d,d&&h&&d.component===h.component&&Wr(d.url,h.url)&&((w=t.stack[0])==null||w.updateProps(d.props??{}))},[(s=r.props)==null?void 0:s._inertiaui_modal]),O.jsxs(O.Fragment,{children:[e,t.stack.length>0&&O.jsx(jt,{index:0})]})},nt=o.createContext(null);nt.displayName="ModalIndexContext";const lt=()=>{const e=o.useContext(nt);if(e===void 0)throw new Error("useModalIndex must be used within a ModalIndexProvider");return e},jt=({index:e})=>{const{stack:t}=be(),r=o.useMemo(()=>t[e],[t,e]);return(r==null?void 0:r.component)&&O.jsx(nt.Provider,{value:e,children:O.jsx(r.component,{...r.props,onModalEvent:(...n)=>r.emit(...n)})})};function ot(){return be().stack[lt()]??null}const _t=({children:e,data:t,fallback:r})=>{if(!t)throw new Error("`<Deferred>` requires a `data` prop to be a string or array of strings");const[n,l]=o.useState(!1),i=Array.isArray(t)?t:[t],u=ot().props;return o.useEffect(()=>{l(i.every(a=>u[a]!==void 0))},[u,i]),n?e:r};_t.displayName="InertiaModalDeferred";const it=o.forwardRef(({name:e,children:t,onFocus:r=null,onBlur:n=null,onClose:l=null,onSuccess:i=null,...u},a)=>{const s=lt(),{stack:d,registerLocalModal:h,removeLocalModal:E}=be(),[w,y]=o.useState(null),p=o.useMemo(()=>e?w:d[s],[e,w,s,d]),$=o.useMemo(()=>{var m;return(m=d.find(x=>x.shouldRender&&x.index>(p==null?void 0:p.index)))==null?void 0:m.index},[s,d]),v=o.useMemo(()=>(p==null?void 0:p.config.slideover)??u.slideover??Ne("type")==="slideover",[u.slideover]),c=o.useMemo(()=>({slideover:v,closeButton:u.closeButton??de(v,"closeButton"),closeExplicitly:u.closeExplicitly??de(v,"closeExplicitly"),maxWidth:u.maxWidth??de(v,"maxWidth"),paddingClasses:u.paddingClasses??de(v,"paddingClasses"),panelClasses:u.panelClasses??de(v,"panelClasses"),position:u.position??de(v,"position"),...p==null?void 0:p.config}),[u,p==null?void 0:p.config]);o.useEffect(()=>{if(e){let m=null;return h(e,x=>{m=x.registerEventListenersFromProps(u),y(x)}),()=>{m==null||m(),m=null,E(e)}}return p.registerEventListenersFromProps(u)},[e]);const f=o.useRef(p);o.useEffect(()=>{f.current=p},[p]),o.useEffect(()=>{p!==null&&(p.isOpen?i==null||i():l==null||l())},[p==null?void 0:p.isOpen]);const[g,b]=o.useState(!1);return o.useEffect(()=>{g&&p!==null&&p.isOpen&&(p.onTopOfStack?r==null||r():n==null||n()),b(!0)},[p==null?void 0:p.onTopOfStack]),o.useImperativeHandle(a,()=>({afterLeave:()=>{var m;return(m=f.current)==null?void 0:m.afterLeave()},close:()=>{var m;return(m=f.current)==null?void 0:m.close()},emit:(...m)=>{var x;return(x=f.current)==null?void 0:x.emit(...m)},getChildModal:()=>{var m;return(m=f.current)==null?void 0:m.getChildModal()},getParentModal:()=>{var m;return(m=f.current)==null?void 0:m.getParentModal()},reload:(...m)=>{var x;return(x=f.current)==null?void 0:x.reload(...m)},setOpen:()=>{var m;return(m=f.current)==null?void 0:m.setOpen()},get id(){var m;return(m=f.current)==null?void 0:m.id},get index(){var m;return(m=f.current)==null?void 0:m.index},get isOpen(){var m;return(m=f.current)==null?void 0:m.isOpen},get config(){var m;return(m=f.current)==null?void 0:m.config},get modalContext(){return f.current},get onTopOfStack(){var m;return(m=f.current)==null?void 0:m.onTopOfStack},get shouldRender(){var m;return(m=f.current)==null?void 0:m.shouldRender}}),[p]),(p==null?void 0:p.shouldRender)&&O.jsxs(O.Fragment,{children:[typeof t=="function"?t({afterLeave:p.afterLeave,close:p.close,config:c,emit:p.emit,getChildModal:p.getChildModal,getParentModal:p.getParentModal,id:p.id,index:p.index,isOpen:p.isOpen,modalContext:p,onTopOfStack:p.onTopOfStack,reload:p.reload,setOpen:p.setOpen,shouldRender:p.shouldRender}):t,$&&O.jsx(jt,{index:$})]})});it.displayName="HeadlessModal";function Dt(e){var t,r,n="";if(typeof e=="string"||typeof e=="number")n+=e;else if(typeof e=="object")if(Array.isArray(e)){var l=e.length;for(t=0;t<l;t++)e[t]&&(r=Dt(e[t]))&&(n&&(n+=" "),n+=r)}else for(r in e)e[r]&&(n&&(n+=" "),n+=r);return n}function _e(){for(var e,t,r=0,n="",l=arguments.length;r<l;r++)(e=arguments[r])&&(t=Dt(e))&&(n&&(n+=" "),n+=t);return n}var Xr=Object.defineProperty,zr=(e,t,r)=>t in e?Xr(e,t,{enumerable:!0,configurable:!0,writable:!0,value:r}):e[t]=r,st=(e,t,r)=>(zr(e,typeof t!="symbol"?t+"":t,r),r);let Gr=class{constructor(){st(this,"current",this.detect()),st(this,"handoffState","pending"),st(this,"currentId",0)}set(t){this.current!==t&&(this.handoffState="pending",this.currentId=0,this.current=t)}reset(){this.set(this.detect())}nextId(){return++this.currentId}get isServer(){return this.current==="server"}get isClient(){return this.current==="client"}detect(){return typeof window>"u"||typeof document>"u"?"server":"client"}handoff(){this.handoffState==="pending"&&(this.handoffState="complete")}get isHandoffComplete(){return this.handoffState==="complete"}},q=new Gr;function ye(e){var t;return q.isServer?null:e==null?document:(t=e==null?void 0:e.ownerDocument)!=null?t:document}function ut(e){var t,r;return q.isServer?null:e==null?document:(r=(t=e==null?void 0:e.getRootNode)==null?void 0:t.call(e))!=null?r:document}function Wt(e){var t,r;return(r=(t=ut(e))==null?void 0:t.activeElement)!=null?r:null}function Kr(e){return Wt(e)===e}function De(e){typeof queueMicrotask=="function"?queueMicrotask(e):Promise.resolve().then(e).catch(t=>setTimeout(()=>{throw t}))}function G(){let e=[],t={addEventListener(r,n,l,i){return r.addEventListener(n,l,i),t.add(()=>r.removeEventListener(n,l,i))},requestAnimationFrame(...r){let n=requestAnimationFrame(...r);return t.add(()=>cancelAnimationFrame(n))},nextFrame(...r){return t.requestAnimationFrame(()=>t.requestAnimationFrame(...r))},setTimeout(...r){let n=setTimeout(...r);return t.add(()=>clearTimeout(n))},microTask(...r){let n={current:!0};return De(()=>{n.current&&r[0]()}),t.add(()=>{n.current=!1})},style(r,n,l){let i=r.style.getPropertyValue(n);return Object.assign(r.style,{[n]:l}),this.add(()=>{Object.assign(r.style,{[n]:i})})},group(r){let n=G();return r(n),this.add(()=>n.dispose())},add(r){return e.includes(r)||e.push(r),()=>{let n=e.indexOf(r);if(n>=0)for(let l of e.splice(n,1))l()}},dispose(){for(let r of e.splice(0))r()}};return t}function We(){let[e]=o.useState(G);return o.useEffect(()=>()=>e.dispose(),[e]),e}let I=(e,t)=>{q.isServer?o.useEffect(e,t):o.useLayoutEffect(e,t)};function le(e){let t=o.useRef(e);return I(()=>{t.current=e},[e]),t}let T=function(e){let t=le(e);return o.useCallback((...r)=>t.current(...r),[t])};function Ee(e){return o.useMemo(()=>e,Object.values(e))}let Yr=o.createContext(void 0);function Zr(){return o.useContext(Yr)}function at(...e){return Array.from(new Set(e.flatMap(t=>typeof t=="string"?t.split(" "):[]))).filter(Boolean).join(" ")}function K(e,t,...r){if(e in t){let l=t[e];return typeof l=="function"?l(...r):l}let n=new Error(`Tried to handle "${e}" but there is no handler defined. Only defined handlers are: ${Object.keys(t).map(l=>`"${l}"`).join(", ")}.`);throw Error.captureStackTrace&&Error.captureStackTrace(n,K),n}var Ue=(e=>(e[e.None=0]="None",e[e.RenderStrategy=1]="RenderStrategy",e[e.Static=2]="Static",e))(Ue||{}),Q=(e=>(e[e.Unmount=0]="Unmount",e[e.Hidden=1]="Hidden",e))(Q||{});function W(){let e=Qr();return o.useCallback(t=>Jr({mergeRefs:e,...t}),[e])}function Jr({ourProps:e,theirProps:t,slot:r,defaultTag:n,features:l,visible:i=!0,name:u,mergeRefs:a}){a=a??Rr;let s=Ut(t,e);if(i)return He(s,r,n,u,a);let d=l??0;if(d&2){let{static:h=!1,...E}=s;if(h)return He(E,r,n,u,a)}if(d&1){let{unmount:h=!0,...E}=s;return K(h?0:1,{0(){return null},1(){return He({...E,hidden:!0,style:{display:"none"}},r,n,u,a)}})}return He(s,r,n,u,a)}function He(e,t={},r,n,l){let{as:i=r,children:u,refName:a="ref",...s}=dt(e,["unmount","static"]),d=e.ref!==void 0?{[a]:e.ref}:{},h=typeof u=="function"?u(t):u;"className"in s&&s.className&&typeof s.className=="function"&&(s.className=s.className(t)),s["aria-labelledby"]&&s["aria-labelledby"]===s.id&&(s["aria-labelledby"]=void 0);let E={};if(t){let w=!1,y=[];for(let[p,$]of Object.entries(t))typeof $=="boolean"&&(w=!0),$===!0&&y.push(p.replace(/([A-Z])/g,v=>`-${v.toLowerCase()}`));if(w){E["data-headlessui-state"]=y.join(" ");for(let p of y)E[`data-${p}`]=""}}if(xe(i)&&(Object.keys(oe(s)).length>0||Object.keys(oe(E)).length>0))if(!o.isValidElement(h)||Array.isArray(h)&&h.length>1||tn(h)){if(Object.keys(oe(s)).length>0)throw new Error(['Passing props on "Fragment"!',"",`The current component <${n} /> is rendering a "Fragment".`,"However we need to passthrough the following props:",Object.keys(oe(s)).concat(Object.keys(oe(E))).map(w=>`  - ${w}`).join(`
-`),"","You can apply a few solutions:",['Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',"Render a single element as the child so that we can forward the props onto that element."].map(w=>`  - ${w}`).join(`
-`)].join(`
-`))}else{let w=h.props,y=w==null?void 0:w.className,p=typeof y=="function"?(...c)=>at(y(...c),s.className):at(y,s.className),$=p?{className:p}:{},v=Ut(h.props,oe(dt(s,["ref"])));for(let c in E)c in v&&delete E[c];return o.cloneElement(h,Object.assign({},v,E,d,{ref:l(en(h),d.ref)},$))}return o.createElement(i,Object.assign({},dt(s,["ref"]),!xe(i)&&d,!xe(i)&&E),h)}function Qr(){let e=o.useRef([]),t=o.useCallback(r=>{for(let n of e.current)n!=null&&(typeof n=="function"?n(r):n.current=r)},[]);return(...r)=>{if(!r.every(n=>n==null))return e.current=r,t}}function Rr(...e){return e.every(t=>t==null)?void 0:t=>{for(let r of e)r!=null&&(typeof r=="function"?r(t):r.current=t)}}function Ut(...e){if(e.length===0)return{};if(e.length===1)return e[0];let t={},r={};for(let n of e)for(let l in n)l.startsWith("on")&&typeof n[l]=="function"?(r[l]!=null||(r[l]=[]),r[l].push(n[l])):t[l]=n[l];if(t.disabled||t["aria-disabled"])for(let n in r)/^(on(?:Click|Pointer|Mouse|Key)(?:Down|Up|Press)?)$/.test(n)&&(r[n]=[l=>{var i;return(i=l==null?void 0:l.preventDefault)==null?void 0:i.call(l)}]);for(let n in r)Object.assign(t,{[n](l,...i){let u=r[n];for(let a of u){if((l instanceof Event||(l==null?void 0:l.nativeEvent)instanceof Event)&&l.defaultPrevented)return;a(l,...i)}}});return t}function j(e){var t;return Object.assign(o.forwardRef(e),{displayName:(t=e.displayName)!=null?t:e.name})}function oe(e){let t=Object.assign({},e);for(let r in t)t[r]===void 0&&delete t[r];return t}function dt(e,t=[]){let r=Object.assign({},e);for(let n of t)n in r&&delete r[n];return r}function en(e){return o.version.split(".")[0]>="19"?e.props.ref:e.ref}function xe(e){return e===o.Fragment||e===Symbol.for("react.fragment")}function tn(e){return xe(e.type)}let rn="span";var Ve=(e=>(e[e.None=1]="None",e[e.Focusable=2]="Focusable",e[e.Hidden=4]="Hidden",e))(Ve||{});function nn(e,t){var r;let{features:n=1,...l}=e,i={ref:t,"aria-hidden":(n&2)===2?!0:(r=l["aria-hidden"])!=null?r:void 0,hidden:(n&4)===4?!0:void 0,style:{position:"fixed",top:1,left:1,width:1,height:0,padding:0,margin:-1,overflow:"hidden",clip:"rect(0, 0, 0, 0)",whiteSpace:"nowrap",borderWidth:"0",...(n&4)===4&&(n&2)!==2&&{display:"none"}}};return W()({ourProps:i,theirProps:l,slot:{},defaultTag:rn,name:"Hidden"})}let ct=j(nn);function ln(e){return typeof e!="object"||e===null?!1:"nodeType"in e}function R(e){return ln(e)&&"tagName"in e}function ie(e){return R(e)&&"accessKey"in e}function ee(e){return R(e)&&"tabIndex"in e}function on(e){return R(e)&&"style"in e}function sn(e){return ie(e)&&e.nodeName==="IFRAME"}function un(e){return ie(e)&&e.nodeName==="INPUT"}let Ht=Symbol();function an(e,t=!0){return Object.assign(e,{[Ht]:t})}function X(...e){let t=o.useRef(e);o.useEffect(()=>{t.current=e},[e]);let r=T(n=>{for(let l of t.current)l!=null&&(typeof l=="function"?l(n):l.current=n)});return e.every(n=>n==null||(n==null?void 0:n[Ht]))?void 0:r}let ft=o.createContext(null);ft.displayName="DescriptionContext";function Vt(){let e=o.useContext(ft);if(e===null){let t=new Error("You used a <Description /> component, but it is not inside a relevant parent.");throw Error.captureStackTrace&&Error.captureStackTrace(t,Vt),t}return e}function dn(){let[e,t]=o.useState([]);return[e.length>0?e.join(" "):void 0,o.useMemo(()=>function(r){let n=T(i=>(t(u=>[...u,i]),()=>t(u=>{let a=u.slice(),s=a.indexOf(i);return s!==-1&&a.splice(s,1),a}))),l=o.useMemo(()=>({register:n,slot:r.slot,name:r.name,props:r.props,value:r.value}),[n,r.slot,r.name,r.props,r.value]);return o.createElement(ft.Provider,{value:l},r.children)},[t])]}let cn="p";function fn(e,t){let r=o.useId(),n=Zr(),{id:l=`headlessui-description-${r}`,...i}=e,u=Vt(),a=X(t);I(()=>u.register(l),[l,u.register]);let s=Ee({...u.slot,disabled:n||!1}),d={ref:a,...u.props,id:l};return W()({ourProps:d,theirProps:i,slot:s,defaultTag:cn,name:u.name||"Description"})}let pn=j(fn),mn=Object.assign(pn,{});var Bt=(e=>(e.Space=" ",e.Enter="Enter",e.Escape="Escape",e.Backspace="Backspace",e.Delete="Delete",e.ArrowLeft="ArrowLeft",e.ArrowUp="ArrowUp",e.ArrowRight="ArrowRight",e.ArrowDown="ArrowDown",e.Home="Home",e.End="End",e.PageUp="PageUp",e.PageDown="PageDown",e.Tab="Tab",e))(Bt||{});let hn=o.createContext(()=>{});function vn({value:e,children:t}){return o.createElement(hn.Provider,{value:e},t)}let qt=class extends Map{constructor(t){super(),this.factory=t}get(t){let r=super.get(t);return r===void 0&&(r=this.factory(t),this.set(t,r)),r}};var gn=Object.defineProperty,wn=(e,t,r)=>t in e?gn(e,t,{enumerable:!0,configurable:!0,writable:!0,value:r}):e[t]=r,bn=(e,t,r)=>(wn(e,t+"",r),r),Xt=(e,t,r)=>{if(!t.has(e))throw TypeError("Cannot "+r)},U=(e,t,r)=>(Xt(e,t,"read from private field"),r?r.call(e):t.get(e)),pt=(e,t,r)=>{if(t.has(e))throw TypeError("Cannot add the same private member more than once");t instanceof WeakSet?t.add(e):t.set(e,r)},zt=(e,t,r,n)=>(Xt(e,t,"write to private field"),t.set(e,r),r),z,$e,Oe;let yn=class{constructor(t){pt(this,z,{}),pt(this,$e,new qt(()=>new Set)),pt(this,Oe,new Set),bn(this,"disposables",G()),zt(this,z,t),q.isServer&&this.disposables.microTask(()=>{this.dispose()})}dispose(){this.disposables.dispose()}get state(){return U(this,z)}subscribe(t,r){if(q.isServer)return()=>{};let n={selector:t,callback:r,current:t(U(this,z))};return U(this,Oe).add(n),this.disposables.add(()=>{U(this,Oe).delete(n)})}on(t,r){return q.isServer?()=>{}:(U(this,$e).get(t).add(r),this.disposables.add(()=>{U(this,$e).get(t).delete(r)}))}send(t){let r=this.reduce(U(this,z),t);if(r!==U(this,z)){zt(this,z,r);for(let n of U(this,Oe)){let l=n.selector(U(this,z));Gt(n.current,l)||(n.current=l,n.callback(l))}for(let n of U(this,$e).get(t.type))n(U(this,z),t)}}};z=new WeakMap,$e=new WeakMap,Oe=new WeakMap;function Gt(e,t){return Object.is(e,t)?!0:typeof e!="object"||e===null||typeof t!="object"||t===null?!1:Array.isArray(e)&&Array.isArray(t)?e.length!==t.length?!1:mt(e[Symbol.iterator](),t[Symbol.iterator]()):e instanceof Map&&t instanceof Map||e instanceof Set&&t instanceof Set?e.size!==t.size?!1:mt(e.entries(),t.entries()):Kt(e)&&Kt(t)?mt(Object.entries(e)[Symbol.iterator](),Object.entries(t)[Symbol.iterator]()):!1}function mt(e,t){do{let r=e.next(),n=t.next();if(r.done&&n.done)return!0;if(r.done||n.done||!Object.is(r.value,n.value))return!1}while(!0)}function Kt(e){if(Object.prototype.toString.call(e)!=="[object Object]")return!1;let t=Object.getPrototypeOf(e);return t===null||Object.getPrototypeOf(t)===null}var En=Object.defineProperty,xn=(e,t,r)=>t in e?En(e,t,{enumerable:!0,configurable:!0,writable:!0,value:r}):e[t]=r,Yt=(e,t,r)=>(xn(e,typeof t!="symbol"?t+"":t,r),r),$n=(e=>(e[e.Push=0]="Push",e[e.Pop=1]="Pop",e))($n||{});let On={0(e,t){let r=t.id,n=e.stack,l=e.stack.indexOf(r);if(l!==-1){let i=e.stack.slice();return i.splice(l,1),i.push(r),n=i,{...e,stack:n}}return{...e,stack:[...e.stack,r]}},1(e,t){let r=t.id,n=e.stack.indexOf(r);if(n===-1)return e;let l=e.stack.slice();return l.splice(n,1),{...e,stack:l}}},Sn=class Ar extends yn{constructor(){super(...arguments),Yt(this,"actions",{push:t=>this.send({type:0,id:t}),pop:t=>this.send({type:1,id:t})}),Yt(this,"selectors",{isTop:(t,r)=>t.stack[t.stack.length-1]===r,inStack:(t,r)=>t.stack.includes(r)})}static new(){return new Ar({stack:[]})}reduce(t,r){return K(r.type,On,t,r)}};const Zt=new qt(()=>Sn.new());var Be={exports:{}},ht={};/**
- * @license React
- * use-sync-external-store-with-selector.production.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */var Jt;function Cn(){if(Jt)return ht;Jt=1;var e=o;function t(s,d){return s===d&&(s!==0||1/s===1/d)||s!==s&&d!==d}var r=typeof Object.is=="function"?Object.is:t,n=e.useSyncExternalStore,l=e.useRef,i=e.useEffect,u=e.useMemo,a=e.useDebugValue;return ht.useSyncExternalStoreWithSelector=function(s,d,h,E,w){var y=l(null);if(y.current===null){var p={hasValue:!1,value:null};y.current=p}else p=y.current;y=u(function(){function v(m){if(!c){if(c=!0,f=m,m=E(m),w!==void 0&&p.hasValue){var x=p.value;if(w(x,m))return g=x}return g=m}if(x=g,r(f,m))return x;var S=E(m);return w!==void 0&&w(x,S)?(f=m,x):(f=m,g=S)}var c=!1,f,g,b=h===void 0?null:h;return[function(){return v(d())},b===null?void 0:function(){return v(b())}]},[d,h,E,w]);var $=n(s,y[0],y[1]);return i(function(){p.hasValue=!0,p.value=$},[$]),a($),$},ht}var vt={};/**
- * @license React
- * use-sync-external-store-with-selector.development.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */var Qt;function Mn(){return Qt||(Qt=1,process.env.NODE_ENV!=="production"&&(function(){function e(s,d){return s===d&&(s!==0||1/s===1/d)||s!==s&&d!==d}typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<"u"&&typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart=="function"&&__REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());var t=o,r=typeof Object.is=="function"?Object.is:e,n=t.useSyncExternalStore,l=t.useRef,i=t.useEffect,u=t.useMemo,a=t.useDebugValue;vt.useSyncExternalStoreWithSelector=function(s,d,h,E,w){var y=l(null);if(y.current===null){var p={hasValue:!1,value:null};y.current=p}else p=y.current;y=u(function(){function v(m){if(!c){if(c=!0,f=m,m=E(m),w!==void 0&&p.hasValue){var x=p.value;if(w(x,m))return g=x}return g=m}if(x=g,r(f,m))return x;var S=E(m);return w!==void 0&&w(x,S)?(f=m,x):(f=m,g=S)}var c=!1,f,g,b=h===void 0?null:h;return[function(){return v(d())},b===null?void 0:function(){return v(b())}]},[d,h,E,w]);var $=n(s,y[0],y[1]);return i(function(){p.hasValue=!0,p.value=$},[$]),a($),$},typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<"u"&&typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop=="function"&&__REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error())})()),vt}var Rt;function Tn(){return Rt||(Rt=1,process.env.NODE_ENV==="production"?Be.exports=Cn():Be.exports=Mn()),Be.exports}var Pn=Tn();function er(e,t,r=Gt){return Pn.useSyncExternalStoreWithSelector(T(n=>e.subscribe(kn,n)),T(()=>e.state),T(()=>e.state),T(t),r)}function kn(e){return e}function Se(e,t){let r=o.useId(),n=Zt.get(t),[l,i]=er(n,o.useCallback(u=>[n.selectors.isTop(u,r),n.selectors.inStack(u,r)],[n,r]));return I(()=>{if(e)return n.actions.push(r),()=>n.actions.pop(r)},[n,e,r]),e?i?l:!0:!1}let gt=new Map,Ce=new Map;function tr(e){var t;let r=(t=Ce.get(e))!=null?t:0;return Ce.set(e,r+1),r!==0?()=>rr(e):(gt.set(e,{"aria-hidden":e.getAttribute("aria-hidden"),inert:e.inert}),e.setAttribute("aria-hidden","true"),e.inert=!0,()=>rr(e))}function rr(e){var t;let r=(t=Ce.get(e))!=null?t:1;if(r===1?Ce.delete(e):Ce.set(e,r-1),r!==1)return;let n=gt.get(e);n&&(n["aria-hidden"]===null?e.removeAttribute("aria-hidden"):e.setAttribute("aria-hidden",n["aria-hidden"]),e.inert=n.inert,gt.delete(e))}function Ln(e,{allowed:t,disallowed:r}={}){let n=Se(e,"inert-others");I(()=>{var l,i;if(!n)return;let u=G();for(let s of(l=r==null?void 0:r())!=null?l:[])s&&u.add(tr(s));let a=(i=t==null?void 0:t())!=null?i:[];for(let s of a){if(!s)continue;let d=ye(s);if(!d)continue;let h=s.parentElement;for(;h&&h!==d.body;){for(let E of h.children)a.some(w=>E.contains(w))||u.add(tr(E));h=h.parentElement}}return u.dispose},[n,t,r])}function Fn(e,t,r){let n=le(l=>{let i=l.getBoundingClientRect();i.x===0&&i.y===0&&i.width===0&&i.height===0&&r()});o.useEffect(()=>{if(!e)return;let l=t===null?null:ie(t)?t:t.current;if(!l)return;let i=G();if(typeof ResizeObserver<"u"){let u=new ResizeObserver(()=>n.current(l));u.observe(l),i.add(()=>u.disconnect())}if(typeof IntersectionObserver<"u"){let u=new IntersectionObserver(()=>n.current(l));u.observe(l),i.add(()=>u.disconnect())}return()=>i.dispose()},[t,n,e])}let qe=["[contentEditable=true]","[tabindex]","a[href]","area[href]","button:not([disabled])","iframe","input:not([disabled])","select:not([disabled])","details>summary","textarea:not([disabled])"].map(e=>`${e}:not([tabindex='-1'])`).join(","),An=["[data-autofocus]"].map(e=>`${e}:not([tabindex='-1'])`).join(",");var Y=(e=>(e[e.First=1]="First",e[e.Previous=2]="Previous",e[e.Next=4]="Next",e[e.Last=8]="Last",e[e.WrapAround=16]="WrapAround",e[e.NoScroll=32]="NoScroll",e[e.AutoFocus=64]="AutoFocus",e))(Y||{}),wt=(e=>(e[e.Error=0]="Error",e[e.Overflow=1]="Overflow",e[e.Success=2]="Success",e[e.Underflow=3]="Underflow",e))(wt||{}),Nn=(e=>(e[e.Previous=-1]="Previous",e[e.Next=1]="Next",e))(Nn||{});function In(e=document.body){return e==null?[]:Array.from(e.querySelectorAll(qe)).sort((t,r)=>Math.sign((t.tabIndex||Number.MAX_SAFE_INTEGER)-(r.tabIndex||Number.MAX_SAFE_INTEGER)))}function jn(e=document.body){return e==null?[]:Array.from(e.querySelectorAll(An)).sort((t,r)=>Math.sign((t.tabIndex||Number.MAX_SAFE_INTEGER)-(r.tabIndex||Number.MAX_SAFE_INTEGER)))}var nr=(e=>(e[e.Strict=0]="Strict",e[e.Loose=1]="Loose",e))(nr||{});function _n(e,t=0){var r;return e===((r=ye(e))==null?void 0:r.body)?!1:K(t,{0(){return e.matches(qe)},1(){let n=e;for(;n!==null;){if(n.matches(qe))return!0;n=n.parentElement}return!1}})}var Dn=(e=>(e[e.Keyboard=0]="Keyboard",e[e.Mouse=1]="Mouse",e))(Dn||{});typeof window<"u"&&typeof document<"u"&&(document.addEventListener("keydown",e=>{e.metaKey||e.altKey||e.ctrlKey||(document.documentElement.dataset.headlessuiFocusVisible="")},!0),document.addEventListener("click",e=>{e.detail===1?delete document.documentElement.dataset.headlessuiFocusVisible:e.detail===0&&(document.documentElement.dataset.headlessuiFocusVisible="")},!0));function Z(e){e==null||e.focus({preventScroll:!0})}let Wn=["textarea","input"].join(",");function Un(e){var t,r;return(r=(t=e==null?void 0:e.matches)==null?void 0:t.call(e,Wn))!=null?r:!1}function Hn(e,t=r=>r){return e.slice().sort((r,n)=>{let l=t(r),i=t(n);if(l===null||i===null)return 0;let u=l.compareDocumentPosition(i);return u&Node.DOCUMENT_POSITION_FOLLOWING?-1:u&Node.DOCUMENT_POSITION_PRECEDING?1:0})}function Me(e,t,{sorted:r=!0,relativeTo:n=null,skipElements:l=[]}={}){let i=Array.isArray(e)?e.length>0?ut(e[0]):document:ut(e),u=Array.isArray(e)?r?Hn(e):e:t&64?jn(e):In(e);l.length>0&&u.length>1&&(u=u.filter(y=>!l.some(p=>p!=null&&"current"in p?(p==null?void 0:p.current)===y:p===y))),n=n??(i==null?void 0:i.activeElement);let a=(()=>{if(t&5)return 1;if(t&10)return-1;throw new Error("Missing Focus.First, Focus.Previous, Focus.Next or Focus.Last")})(),s=(()=>{if(t&1)return 0;if(t&2)return Math.max(0,u.indexOf(n))-1;if(t&4)return Math.max(0,u.indexOf(n))+1;if(t&8)return u.length-1;throw new Error("Missing Focus.First, Focus.Previous, Focus.Next or Focus.Last")})(),d=t&32?{preventScroll:!0}:{},h=0,E=u.length,w;do{if(h>=E||h+E<=0)return 0;let y=s+h;if(t&16)y=(y+E)%E;else{if(y<0)return 3;if(y>=E)return 1}w=u[y],w==null||w.focus(d),h+=a}while(w!==Wt(w));return t&6&&Un(w)&&w.select(),2}function lr(){return/iPhone/gi.test(window.navigator.platform)||/Mac/gi.test(window.navigator.platform)&&window.navigator.maxTouchPoints>0}function Vn(){return/Android/gi.test(window.navigator.userAgent)}function or(){return lr()||Vn()}function Xe(e,t,r,n){let l=le(r);o.useEffect(()=>{if(!e)return;function i(u){l.current(u)}return document.addEventListener(t,i,n),()=>document.removeEventListener(t,i,n)},[e,t,n])}function ir(e,t,r,n){let l=le(r);o.useEffect(()=>{if(!e)return;function i(u){l.current(u)}return window.addEventListener(t,i,n),()=>window.removeEventListener(t,i,n)},[e,t,n])}const sr=30;function Bn(e,t,r){let n=le(r),l=o.useCallback(function(a,s){if(a.defaultPrevented)return;let d=s(a);if(d===null||!d.getRootNode().contains(d)||!d.isConnected)return;let h=(function E(w){return typeof w=="function"?E(w()):Array.isArray(w)||w instanceof Set?w:[w]})(t);for(let E of h)if(E!==null&&(E.contains(d)||a.composed&&a.composedPath().includes(E)))return;return!_n(d,nr.Loose)&&d.tabIndex!==-1&&a.preventDefault(),n.current(a,d)},[n,t]),i=o.useRef(null);Xe(e,"pointerdown",a=>{var s,d;or()||(i.current=((d=(s=a.composedPath)==null?void 0:s.call(a))==null?void 0:d[0])||a.target)},!0),Xe(e,"pointerup",a=>{if(or()||!i.current)return;let s=i.current;return i.current=null,l(a,()=>s)},!0);let u=o.useRef({x:0,y:0});Xe(e,"touchstart",a=>{u.current.x=a.touches[0].clientX,u.current.y=a.touches[0].clientY},!0),Xe(e,"touchend",a=>{let s={x:a.changedTouches[0].clientX,y:a.changedTouches[0].clientY};if(!(Math.abs(s.x-u.current.x)>=sr||Math.abs(s.y-u.current.y)>=sr))return l(a,()=>ee(a.target)?a.target:null)},!0),ir(e,"blur",a=>l(a,()=>sn(window.document.activeElement)?window.document.activeElement:null),!0)}function bt(...e){return o.useMemo(()=>ye(...e),[...e])}function ur(e,t,r,n){let l=le(r);o.useEffect(()=>{e=e??window;function i(u){l.current(u)}return e.addEventListener(t,i,n),()=>e.removeEventListener(t,i,n)},[e,t,n])}function qn(e){return o.useSyncExternalStore(e.subscribe,e.getSnapshot,e.getSnapshot)}function Xn(e,t){let r=e(),n=new Set;return{getSnapshot(){return r},subscribe(l){return n.add(l),()=>n.delete(l)},dispatch(l,...i){let u=t[l].call(r,...i);u&&(r=u,n.forEach(a=>a()))}}}function zn(){let e;return{before({doc:t}){var r;let n=t.documentElement,l=(r=t.defaultView)!=null?r:window;e=Math.max(0,l.innerWidth-n.clientWidth)},after({doc:t,d:r}){let n=t.documentElement,l=Math.max(0,n.clientWidth-n.offsetWidth),i=Math.max(0,e-l);r.style(n,"paddingRight",`${i}px`)}}}function Gn(){return lr()?{before({doc:e,d:t,meta:r}){function n(l){for(let i of r().containers)for(let u of i())if(u.contains(l))return!0;return!1}t.microTask(()=>{var l;if(window.getComputedStyle(e.documentElement).scrollBehavior!=="auto"){let a=G();a.style(e.documentElement,"scrollBehavior","auto"),t.add(()=>t.microTask(()=>a.dispose()))}let i=(l=window.scrollY)!=null?l:window.pageYOffset,u=null;t.addEventListener(e,"click",a=>{if(ee(a.target))try{let s=a.target.closest("a");if(!s)return;let{hash:d}=new URL(s.href),h=e.querySelector(d);ee(h)&&!n(h)&&(u=h)}catch{}},!0),t.group(a=>{t.addEventListener(e,"touchstart",s=>{if(a.dispose(),ee(s.target)&&on(s.target))if(n(s.target)){let d=s.target;for(;d.parentElement&&n(d.parentElement);)d=d.parentElement;a.style(d,"overscrollBehavior","contain")}else a.style(s.target,"touchAction","none")})}),t.addEventListener(e,"touchmove",a=>{if(ee(a.target)){if(un(a.target))return;if(n(a.target)){let s=a.target;for(;s.parentElement&&s.dataset.headlessuiPortal!==""&&!(s.scrollHeight>s.clientHeight||s.scrollWidth>s.clientWidth);)s=s.parentElement;s.dataset.headlessuiPortal===""&&a.preventDefault()}else a.preventDefault()}},{passive:!1}),t.add(()=>{var a;let s=(a=window.scrollY)!=null?a:window.pageYOffset;i!==s&&window.scrollTo(0,i),u&&u.isConnected&&(u.scrollIntoView({block:"nearest"}),u=null)})})}}:{}}function Kn(){return{before({doc:e,d:t}){t.style(e.documentElement,"overflow","hidden")}}}function ar(e){let t={};for(let r of e)Object.assign(t,r(t));return t}let se=Xn(()=>new Map,{PUSH(e,t){var r;let n=(r=this.get(e))!=null?r:{doc:e,count:0,d:G(),meta:new Set,computedMeta:{}};return n.count++,n.meta.add(t),n.computedMeta=ar(n.meta),this.set(e,n),this},POP(e,t){let r=this.get(e);return r&&(r.count--,r.meta.delete(t),r.computedMeta=ar(r.meta)),this},SCROLL_PREVENT(e){let t={doc:e.doc,d:e.d,meta(){return e.computedMeta}},r=[Gn(),zn(),Kn()];r.forEach(({before:n})=>n==null?void 0:n(t)),r.forEach(({after:n})=>n==null?void 0:n(t))},SCROLL_ALLOW({d:e}){e.dispose()},TEARDOWN({doc:e}){this.delete(e)}});se.subscribe(()=>{let e=se.getSnapshot(),t=new Map;for(let[r]of e)t.set(r,r.documentElement.style.overflow);for(let r of e.values()){let n=t.get(r.doc)==="hidden",l=r.count!==0;(l&&!n||!l&&n)&&se.dispatch(r.count>0?"SCROLL_PREVENT":"SCROLL_ALLOW",r),r.count===0&&se.dispatch("TEARDOWN",r)}});function Yn(e,t,r=()=>({containers:[]})){let n=qn(se),l=t?n.get(t):void 0,i=l?l.count>0:!1;return I(()=>{if(!(!t||!e))return se.dispatch("PUSH",t,r),()=>se.dispatch("POP",t,r)},[e,t]),i}function Zn(e,t,r=()=>[document.body]){let n=Se(e,"scroll-lock");Yn(n,t,l=>{var i;return{containers:[...(i=l.containers)!=null?i:[],r]}})}function Jn(e=0){let[t,r]=o.useState(e),n=o.useCallback(s=>r(s),[]),l=o.useCallback(s=>r(d=>d|s),[]),i=o.useCallback(s=>(t&s)===s,[t]),u=o.useCallback(s=>r(d=>d&~s),[]),a=o.useCallback(s=>r(d=>d^s),[]);return{flags:t,setFlag:n,addFlag:l,hasFlag:i,removeFlag:u,toggleFlag:a}}var dr,cr;typeof process<"u"&&typeof globalThis<"u"&&typeof Element<"u"&&((dr=process==null?void 0:process.env)==null?void 0:dr.NODE_ENV)==="test"&&typeof((cr=Element==null?void 0:Element.prototype)==null?void 0:cr.getAnimations)>"u"&&(Element.prototype.getAnimations=function(){return console.warn(["Headless UI has polyfilled `Element.prototype.getAnimations` for your tests.","Please install a proper polyfill e.g. `jsdom-testing-mocks`, to silence these warnings.","","Example usage:","```js","import { mockAnimationsApi } from 'jsdom-testing-mocks'","mockAnimationsApi()","```"].join(`
-`)),[]});var Qn=(e=>(e[e.None=0]="None",e[e.Closed=1]="Closed",e[e.Enter=2]="Enter",e[e.Leave=4]="Leave",e))(Qn||{});function Rn(e){let t={};for(let r in e)e[r]===!0&&(t[`data-${r}`]="");return t}function el(e,t,r,n){let[l,i]=o.useState(r),{hasFlag:u,addFlag:a,removeFlag:s}=Jn(e&&l?3:0),d=o.useRef(!1),h=o.useRef(!1),E=We();return I(()=>{var w;if(e){if(r&&i(!0),!t){r&&a(3);return}return(w=n==null?void 0:n.start)==null||w.call(n,r),tl(t,{inFlight:d,prepare(){h.current?h.current=!1:h.current=d.current,d.current=!0,!h.current&&(r?(a(3),s(4)):(a(4),s(2)))},run(){h.current?r?(s(3),a(4)):(s(4),a(3)):r?s(1):a(1)},done(){var y;h.current&&ll(t)||(d.current=!1,s(7),r||i(!1),(y=n==null?void 0:n.end)==null||y.call(n,r))}})}},[e,r,t,E]),e?[l,{closed:u(1),enter:u(2),leave:u(4),transition:u(2)||u(4)}]:[r,{closed:void 0,enter:void 0,leave:void 0,transition:void 0}]}function tl(e,{prepare:t,run:r,done:n,inFlight:l}){let i=G();return nl(e,{prepare:t,inFlight:l}),i.nextFrame(()=>{r(),i.requestAnimationFrame(()=>{i.add(rl(e,n))})}),i.dispose}function rl(e,t){var r,n;let l=G();if(!e)return l.dispose;let i=!1;l.add(()=>{i=!0});let u=(n=(r=e.getAnimations)==null?void 0:r.call(e).filter(a=>a instanceof CSSTransition))!=null?n:[];return u.length===0?(t(),l.dispose):(Promise.allSettled(u.map(a=>a.finished)).then(()=>{i||t()}),l.dispose)}function nl(e,{inFlight:t,prepare:r}){if(t!=null&&t.current){r();return}let n=e.style.transition;e.style.transition="none",r(),e.offsetHeight,e.style.transition=n}function ll(e){var t,r;return((r=(t=e.getAnimations)==null?void 0:t.call(e))!=null?r:[]).some(n=>n instanceof CSSTransition&&n.playState!=="finished")}function yt(e,t){let r=o.useRef([]),n=T(e);o.useEffect(()=>{let l=[...r.current];for(let[i,u]of t.entries())if(r.current[i]!==u){let a=n(t,l);return r.current=t,a}},[n,...t])}let ze=o.createContext(null);ze.displayName="OpenClosedContext";var V=(e=>(e[e.Open=1]="Open",e[e.Closed=2]="Closed",e[e.Closing=4]="Closing",e[e.Opening=8]="Opening",e))(V||{});function Ge(){return o.useContext(ze)}function ol({value:e,children:t}){return o.createElement(ze.Provider,{value:e},t)}function il({children:e}){return o.createElement(ze.Provider,{value:null},e)}function sl(e){function t(){document.readyState!=="loading"&&(e(),document.removeEventListener("DOMContentLoaded",t))}typeof window<"u"&&typeof document<"u"&&(document.addEventListener("DOMContentLoaded",t),t())}let te=[];sl(()=>{function e(t){if(!ee(t.target)||t.target===document.body||te[0]===t.target)return;let r=t.target;r=r.closest(qe),te.unshift(r??t.target),te=te.filter(n=>n!=null&&n.isConnected),te.splice(10)}window.addEventListener("click",e,{capture:!0}),window.addEventListener("mousedown",e,{capture:!0}),window.addEventListener("focus",e,{capture:!0}),document.body.addEventListener("click",e,{capture:!0}),document.body.addEventListener("mousedown",e,{capture:!0}),document.body.addEventListener("focus",e,{capture:!0})});function fr(e){let t=T(e),r=o.useRef(!1);o.useEffect(()=>(r.current=!1,()=>{r.current=!0,De(()=>{r.current&&t()})}),[t])}let pr=o.createContext(!1);function ul(){return o.useContext(pr)}function mr(e){return o.createElement(pr.Provider,{value:e.force},e.children)}function al(e){let t=ul(),r=o.useContext(vr),[n,l]=o.useState(()=>{var i;if(!t&&r!==null)return(i=r.current)!=null?i:null;if(q.isServer)return null;let u=e==null?void 0:e.getElementById("headlessui-portal-root");if(u)return u;if(e===null)return null;let a=e.createElement("div");return a.setAttribute("id","headlessui-portal-root"),e.body.appendChild(a)});return o.useEffect(()=>{n!==null&&(e!=null&&e.body.contains(n)||e==null||e.body.appendChild(n))},[n,e]),o.useEffect(()=>{t||r!==null&&l(r.current)},[r,l,t]),n}let hr=o.Fragment,dl=j(function(e,t){let{ownerDocument:r=null,...n}=e,l=o.useRef(null),i=X(an(w=>{l.current=w}),t),u=bt(l.current),a=r??u,s=al(a),d=o.useContext(Et),h=We(),E=W();return fr(()=>{var w;s&&s.childNodes.length<=0&&((w=s.parentElement)==null||w.removeChild(s))}),s?Ir.createPortal(o.createElement("div",{"data-headlessui-portal":"",ref:w=>{h.dispose(),d&&w&&h.add(d.register(w))}},E({ourProps:{ref:i},theirProps:n,slot:{},defaultTag:hr,name:"Portal"})),s):null});function cl(e,t){let r=X(t),{enabled:n=!0,ownerDocument:l,...i}=e,u=W();return n?o.createElement(dl,{...i,ownerDocument:l,ref:r}):u({ourProps:{ref:r},theirProps:i,slot:{},defaultTag:hr,name:"Portal"})}let fl=o.Fragment,vr=o.createContext(null);function pl(e,t){let{target:r,...n}=e,l={ref:X(t)},i=W();return o.createElement(vr.Provider,{value:r},i({ourProps:l,theirProps:n,defaultTag:fl,name:"Popover.Group"}))}let Et=o.createContext(null);function ml(){let e=o.useContext(Et),t=o.useRef([]),r=T(i=>(t.current.push(i),e&&e.register(i),()=>n(i))),n=T(i=>{let u=t.current.indexOf(i);u!==-1&&t.current.splice(u,1),e&&e.unregister(i)}),l=o.useMemo(()=>({register:r,unregister:n,portals:t}),[r,n,t]);return[t,o.useMemo(()=>function({children:i}){return o.createElement(Et.Provider,{value:l},i)},[l])]}let hl=j(cl),gr=j(pl),vl=Object.assign(hl,{Group:gr});function gl(e,t=typeof document<"u"?document.defaultView:null,r){let n=Se(e,"escape");ur(t,"keydown",l=>{n&&(l.defaultPrevented||l.key===Bt.Escape&&r(l))})}function wl(){var e;let[t]=o.useState(()=>typeof window<"u"&&typeof window.matchMedia=="function"?window.matchMedia("(pointer: coarse)"):null),[r,n]=o.useState((e=t==null?void 0:t.matches)!=null?e:!1);return I(()=>{if(!t)return;function l(i){n(i.matches)}return t.addEventListener("change",l),()=>t.removeEventListener("change",l)},[t]),r}function bl({defaultContainers:e=[],portals:t,mainTreeNode:r}={}){let n=T(()=>{var l,i;let u=ye(r),a=[];for(let s of e)s!==null&&(R(s)?a.push(s):"current"in s&&R(s.current)&&a.push(s.current));if(t!=null&&t.current)for(let s of t.current)a.push(s);for(let s of(l=u==null?void 0:u.querySelectorAll("html > *, body > *"))!=null?l:[])s!==document.body&&s!==document.head&&R(s)&&s.id!=="headlessui-portal-root"&&(r&&(s.contains(r)||s.contains((i=r==null?void 0:r.getRootNode())==null?void 0:i.host))||a.some(d=>s.contains(d))||a.push(s));return a});return{resolveContainers:n,contains:T(l=>n().some(i=>i.contains(l)))}}let wr=o.createContext(null);function br({children:e,node:t}){let[r,n]=o.useState(null),l=yr(t??r);return o.createElement(wr.Provider,{value:l},e,l===null&&o.createElement(ct,{features:Ve.Hidden,ref:i=>{var u,a;if(i){for(let s of(a=(u=ye(i))==null?void 0:u.querySelectorAll("html > *, body > *"))!=null?a:[])if(s!==document.body&&s!==document.head&&R(s)&&s!=null&&s.contains(i)){n(s);break}}}}))}function yr(e=null){var t;return(t=o.useContext(wr))!=null?t:e}function yl(){let e=typeof document>"u";return"useSyncExternalStore"in ve?(t=>t.useSyncExternalStore)(ve)(()=>()=>{},()=>!1,()=>!e):!1}function Ke(){let e=yl(),[t,r]=ve.useState(q.isHandoffComplete);return t&&q.isHandoffComplete===!1&&r(!1),ve.useEffect(()=>{t!==!0&&r(!0)},[t]),ve.useEffect(()=>q.handoff(),[]),e?!1:t}function xt(){let e=o.useRef(!1);return I(()=>(e.current=!0,()=>{e.current=!1}),[]),e}var Te=(e=>(e[e.Forwards=0]="Forwards",e[e.Backwards=1]="Backwards",e))(Te||{});function El(){let e=o.useRef(0);return ir(!0,"keydown",t=>{t.key==="Tab"&&(e.current=t.shiftKey?1:0)},!0),e}function Er(e){if(!e)return new Set;if(typeof e=="function")return new Set(e());let t=new Set;for(let r of e.current)R(r.current)&&t.add(r.current);return t}let xl="div";var ue=(e=>(e[e.None=0]="None",e[e.InitialFocus=1]="InitialFocus",e[e.TabLock=2]="TabLock",e[e.FocusLock=4]="FocusLock",e[e.RestoreFocus=8]="RestoreFocus",e[e.AutoFocus=16]="AutoFocus",e))(ue||{});function $l(e,t){let r=o.useRef(null),n=X(r,t),{initialFocus:l,initialFocusFallback:i,containers:u,features:a=15,...s}=e;Ke()||(a=0);let d=bt(r.current);Ml(a,{ownerDocument:d});let h=Tl(a,{ownerDocument:d,container:r,initialFocus:l,initialFocusFallback:i});Pl(a,{ownerDocument:d,container:r,containers:u,previousActiveElement:h});let E=El(),w=T(f=>{if(!ie(r.current))return;let g=r.current;(b=>b())(()=>{K(E.current,{[Te.Forwards]:()=>{Me(g,Y.First,{skipElements:[f.relatedTarget,i]})},[Te.Backwards]:()=>{Me(g,Y.Last,{skipElements:[f.relatedTarget,i]})}})})}),y=Se(!!(a&2),"focus-trap#tab-lock"),p=We(),$=o.useRef(!1),v={ref:n,onKeyDown(f){f.key=="Tab"&&($.current=!0,p.requestAnimationFrame(()=>{$.current=!1}))},onBlur(f){if(!(a&4))return;let g=Er(u);ie(r.current)&&g.add(r.current);let b=f.relatedTarget;ee(b)&&b.dataset.headlessuiFocusGuard!=="true"&&(xr(g,b)||($.current?Me(r.current,K(E.current,{[Te.Forwards]:()=>Y.Next,[Te.Backwards]:()=>Y.Previous})|Y.WrapAround,{relativeTo:f.target}):ee(f.target)&&Z(f.target)))}},c=W();return o.createElement(o.Fragment,null,y&&o.createElement(ct,{as:"button",type:"button","data-headlessui-focus-guard":!0,onFocus:w,features:Ve.Focusable}),c({ourProps:v,theirProps:s,defaultTag:xl,name:"FocusTrap"}),y&&o.createElement(ct,{as:"button",type:"button","data-headlessui-focus-guard":!0,onFocus:w,features:Ve.Focusable}))}let Ol=j($l),Sl=Object.assign(Ol,{features:ue});function Cl(e=!0){let t=o.useRef(te.slice());return yt(([r],[n])=>{n===!0&&r===!1&&De(()=>{t.current.splice(0)}),n===!1&&r===!0&&(t.current=te.slice())},[e,te,t]),T(()=>{var r;return(r=t.current.find(n=>n!=null&&n.isConnected))!=null?r:null})}function Ml(e,{ownerDocument:t}){let r=!!(e&8),n=Cl(r);yt(()=>{r||Kr(t==null?void 0:t.body)&&Z(n())},[r]),fr(()=>{r&&Z(n())})}function Tl(e,{ownerDocument:t,container:r,initialFocus:n,initialFocusFallback:l}){let i=o.useRef(null),u=Se(!!(e&1),"focus-trap#initial-focus"),a=xt();return yt(()=>{if(e===0)return;if(!u){l!=null&&l.current&&Z(l.current);return}let s=r.current;s&&De(()=>{if(!a.current)return;let d=t==null?void 0:t.activeElement;if(n!=null&&n.current){if((n==null?void 0:n.current)===d){i.current=d;return}}else if(s.contains(d)){i.current=d;return}if(n!=null&&n.current)Z(n.current);else{if(e&16){if(Me(s,Y.First|Y.AutoFocus)!==wt.Error)return}else if(Me(s,Y.First)!==wt.Error)return;if(l!=null&&l.current&&(Z(l.current),(t==null?void 0:t.activeElement)===l.current))return;console.warn("There are no focusable elements inside the <FocusTrap />")}i.current=t==null?void 0:t.activeElement})},[l,u,e]),i}function Pl(e,{ownerDocument:t,container:r,containers:n,previousActiveElement:l}){let i=xt(),u=!!(e&4);ur(t==null?void 0:t.defaultView,"focus",a=>{if(!u||!i.current)return;let s=Er(n);ie(r.current)&&s.add(r.current);let d=l.current;if(!d)return;let h=a.target;ie(h)?xr(s,h)?(l.current=h,Z(h)):(a.preventDefault(),a.stopPropagation(),Z(d)):Z(l.current)},!0)}function xr(e,t){for(let r of e)if(r.contains(t))return!0;return!1}function $r(e){var t;return!!(e.enter||e.enterFrom||e.enterTo||e.leave||e.leaveFrom||e.leaveTo)||!xe((t=e.as)!=null?t:Sr)||o.Children.count(e.children)===1}let Ye=o.createContext(null);Ye.displayName="TransitionContext";var kl=(e=>(e.Visible="visible",e.Hidden="hidden",e))(kl||{});function Ll(){let e=o.useContext(Ye);if(e===null)throw new Error("A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />.");return e}function Fl(){let e=o.useContext(Ze);if(e===null)throw new Error("A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />.");return e}let Ze=o.createContext(null);Ze.displayName="NestingContext";function Je(e){return"children"in e?Je(e.children):e.current.filter(({el:t})=>t.current!==null).filter(({state:t})=>t==="visible").length>0}function Or(e,t){let r=le(e),n=o.useRef([]),l=xt(),i=We(),u=T((y,p=Q.Hidden)=>{let $=n.current.findIndex(({el:v})=>v===y);$!==-1&&(K(p,{[Q.Unmount](){n.current.splice($,1)},[Q.Hidden](){n.current[$].state="hidden"}}),i.microTask(()=>{var v;!Je(n)&&l.current&&((v=r.current)==null||v.call(r))}))}),a=T(y=>{let p=n.current.find(({el:$})=>$===y);return p?p.state!=="visible"&&(p.state="visible"):n.current.push({el:y,state:"visible"}),()=>u(y,Q.Unmount)}),s=o.useRef([]),d=o.useRef(Promise.resolve()),h=o.useRef({enter:[],leave:[]}),E=T((y,p,$)=>{s.current.splice(0),t&&(t.chains.current[p]=t.chains.current[p].filter(([v])=>v!==y)),t==null||t.chains.current[p].push([y,new Promise(v=>{s.current.push(v)})]),t==null||t.chains.current[p].push([y,new Promise(v=>{Promise.all(h.current[p].map(([c,f])=>f)).then(()=>v())})]),p==="enter"?d.current=d.current.then(()=>t==null?void 0:t.wait.current).then(()=>$(p)):$(p)}),w=T((y,p,$)=>{Promise.all(h.current[p].splice(0).map(([v,c])=>c)).then(()=>{var v;(v=s.current.shift())==null||v()}).then(()=>$(p))});return o.useMemo(()=>({children:n,register:a,unregister:u,onStart:E,onStop:w,wait:d,chains:h}),[a,u,n,E,w,h,d])}let Sr=o.Fragment,Cr=Ue.RenderStrategy;function Al(e,t){var r,n;let{transition:l=!0,beforeEnter:i,afterEnter:u,beforeLeave:a,afterLeave:s,enter:d,enterFrom:h,enterTo:E,entered:w,leave:y,leaveFrom:p,leaveTo:$,...v}=e,[c,f]=o.useState(null),g=o.useRef(null),b=$r(e),m=X(...b?[g,t,f]:t===null?[]:[t]),x=(r=v.unmount)==null||r?Q.Unmount:Q.Hidden,{show:S,appear:F,initial:_}=Ll(),[L,A]=o.useState(S?"visible":"hidden"),H=Fl(),{register:N,unregister:P}=H;I(()=>N(g),[N,g]),I(()=>{if(x===Q.Hidden&&g.current){if(S&&L!=="visible"){A("visible");return}return K(L,{hidden:()=>P(g),visible:()=>N(g)})}},[L,g,N,P,S,x]);let D=Ke();I(()=>{if(b&&D&&L==="visible"&&g.current===null)throw new Error("Did you forget to passthrough the `ref` to the actual DOM node?")},[g,L,D,b]);let he=_&&!F,ae=F&&S&&_,J=o.useRef(!1),k=Or(()=>{J.current||(A("hidden"),P(g))},H),Pe=T(Mt=>{J.current=!0;let et=Mt?"enter":"leave";k.onStart(g,et,Le=>{Le==="enter"?i==null||i():Le==="leave"&&(a==null||a())})}),re=T(Mt=>{let et=Mt?"enter":"leave";J.current=!1,k.onStop(g,et,Le=>{Le==="enter"?u==null||u():Le==="leave"&&(s==null||s())}),et==="leave"&&!Je(k)&&(A("hidden"),P(g))});o.useEffect(()=>{b&&l||(Pe(S),re(S))},[S,b,l]);let Ct=!(!l||!b||!D||he),[,M]=el(Ct,c,S,{start:Pe,end:re}),Re=oe({ref:m,className:((n=at(v.className,ae&&d,ae&&h,M.enter&&d,M.enter&&M.closed&&h,M.enter&&!M.closed&&E,M.leave&&y,M.leave&&!M.closed&&p,M.leave&&M.closed&&$,!M.transition&&S&&w))==null?void 0:n.trim())||void 0,...Rn(M)}),ke=0;L==="visible"&&(ke|=V.Open),L==="hidden"&&(ke|=V.Closed),S&&L==="hidden"&&(ke|=V.Opening),!S&&L==="visible"&&(ke|=V.Closing);let ro=W();return o.createElement(Ze.Provider,{value:k},o.createElement(ol,{value:ke},ro({ourProps:Re,theirProps:v,defaultTag:Sr,features:Cr,visible:L==="visible",name:"Transition.Child"})))}function Nl(e,t){let{show:r,appear:n=!1,unmount:l=!0,...i}=e,u=o.useRef(null),a=$r(e),s=X(...a?[u,t]:t===null?[]:[t]);Ke();let d=Ge();if(r===void 0&&d!==null&&(r=(d&V.Open)===V.Open),r===void 0)throw new Error("A <Transition /> is used but it is missing a `show={true | false}` prop.");let[h,E]=o.useState(r?"visible":"hidden"),w=Or(()=>{r||E("hidden")}),[y,p]=o.useState(!0),$=o.useRef([r]);I(()=>{y!==!1&&$.current[$.current.length-1]!==r&&($.current.push(r),p(!1))},[$,r]);let v=o.useMemo(()=>({show:r,appear:n,initial:y}),[r,n,y]);I(()=>{r?E("visible"):!Je(w)&&u.current!==null&&E("hidden")},[r,w]);let c={unmount:l},f=T(()=>{var m;y&&p(!1),(m=e.beforeEnter)==null||m.call(e)}),g=T(()=>{var m;y&&p(!1),(m=e.beforeLeave)==null||m.call(e)}),b=W();return o.createElement(Ze.Provider,{value:w},o.createElement(Ye.Provider,{value:v},b({ourProps:{...c,as:o.Fragment,children:o.createElement(Mr,{ref:s,...c,...i,beforeEnter:f,beforeLeave:g})},theirProps:{},defaultTag:o.Fragment,features:Cr,visible:h==="visible",name:"Transition"})))}function Il(e,t){let r=o.useContext(Ye)!==null,n=Ge()!==null;return o.createElement(o.Fragment,null,!r&&n?o.createElement($t,{ref:t,...e}):o.createElement(Mr,{ref:t,...e}))}let $t=j(Nl),Mr=j(Al),me=j(Il),Tr=Object.assign($t,{Child:me,Root:$t});var jl=(e=>(e[e.Open=0]="Open",e[e.Closed=1]="Closed",e))(jl||{}),_l=(e=>(e[e.SetTitleId=0]="SetTitleId",e))(_l||{});let Dl={0(e,t){return e.titleId===t.id?e:{...e,titleId:t.id}}},Ot=o.createContext(null);Ot.displayName="DialogContext";function Qe(e){let t=o.useContext(Ot);if(t===null){let r=new Error(`<${e} /> is missing a parent <Dialog /> component.`);throw Error.captureStackTrace&&Error.captureStackTrace(r,Qe),r}return t}function Wl(e,t){return K(t.type,Dl,e,t)}let Pr=j(function(e,t){let r=o.useId(),{id:n=`headlessui-dialog-${r}`,open:l,onClose:i,initialFocus:u,role:a="dialog",autoFocus:s=!0,__demoMode:d=!1,unmount:h=!1,...E}=e,w=o.useRef(!1);a=(function(){return a==="dialog"||a==="alertdialog"?a:(w.current||(w.current=!0,console.warn(`Invalid role [${a}] passed to <Dialog />. Only \`dialog\` and and \`alertdialog\` are supported. Using \`dialog\` instead.`)),"dialog")})();let y=Ge();l===void 0&&y!==null&&(l=(y&V.Open)===V.Open);let p=o.useRef(null),$=X(p,t),v=bt(p.current),c=l?0:1,[f,g]=o.useReducer(Wl,{titleId:null,descriptionId:null,panelRef:o.createRef()}),b=T(()=>i(!1)),m=T(M=>g({type:0,id:M})),x=Ke()?c===0:!1,[S,F]=ml(),_={get current(){var M;return(M=f.panelRef.current)!=null?M:p.current}},L=yr(),{resolveContainers:A}=bl({mainTreeNode:L,portals:S,defaultContainers:[_]}),H=y!==null?(y&V.Closing)===V.Closing:!1;Ln(d||H?!1:x,{allowed:T(()=>{var M,Re;return[(Re=(M=p.current)==null?void 0:M.closest("[data-headlessui-portal]"))!=null?Re:null]}),disallowed:T(()=>{var M;return[(M=L==null?void 0:L.closest("body > *:not(#headlessui-portal-root)"))!=null?M:null]})});let N=Zt.get(null);I(()=>{if(x)return N.actions.push(n),()=>N.actions.pop(n)},[N,n,x]);let P=er(N,o.useCallback(M=>N.selectors.isTop(M,n),[N,n]));Bn(P,A,M=>{M.preventDefault(),b()}),gl(P,v==null?void 0:v.defaultView,M=>{M.preventDefault(),M.stopPropagation(),document.activeElement&&"blur"in document.activeElement&&typeof document.activeElement.blur=="function"&&document.activeElement.blur(),b()}),Zn(d||H?!1:x,v,A),Fn(x,p,b);let[D,he]=dn(),ae=o.useMemo(()=>[{dialogState:c,close:b,setTitleId:m,unmount:h},f],[c,b,m,h,f]),J=Ee({open:c===0}),k={ref:$,id:n,role:a,tabIndex:-1,"aria-modal":d?void 0:c===0?!0:void 0,"aria-labelledby":f.titleId,"aria-describedby":D,unmount:h},Pe=!wl(),re=ue.None;x&&!d&&(re|=ue.RestoreFocus,re|=ue.TabLock,s&&(re|=ue.AutoFocus),Pe&&(re|=ue.InitialFocus));let Ct=W();return o.createElement(il,null,o.createElement(mr,{force:!0},o.createElement(vl,null,o.createElement(Ot.Provider,{value:ae},o.createElement(gr,{target:p},o.createElement(mr,{force:!1},o.createElement(he,{slot:J},o.createElement(F,null,o.createElement(Sl,{initialFocus:u,initialFocusFallback:p,containers:A,features:re},o.createElement(vn,{value:b},Ct({ourProps:k,theirProps:E,slot:J,defaultTag:Ul,features:Hl,visible:c===0,name:"Dialog"})))))))))))}),Ul="div",Hl=Ue.RenderStrategy|Ue.Static;function Vl(e,t){let{transition:r=!1,open:n,...l}=e,i=Ge(),u=e.hasOwnProperty("open")||i!==null,a=e.hasOwnProperty("onClose");if(!u&&!a)throw new Error("You have to provide an `open` and an `onClose` prop to the `Dialog` component.");if(!u)throw new Error("You provided an `onClose` prop to the `Dialog`, but forgot an `open` prop.");if(!a)throw new Error("You provided an `open` prop to the `Dialog`, but forgot an `onClose` prop.");if(!i&&typeof e.open!="boolean")throw new Error(`You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${e.open}`);if(typeof e.onClose!="function")throw new Error(`You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${e.onClose}`);return(n!==void 0||r)&&!l.static?o.createElement(br,null,o.createElement(Tr,{show:n,transition:r,unmount:l.unmount},o.createElement(Pr,{ref:t,...l}))):o.createElement(br,null,o.createElement(Pr,{ref:t,open:n,...l}))}let Bl="div";function ql(e,t){let r=o.useId(),{id:n=`headlessui-dialog-panel-${r}`,transition:l=!1,...i}=e,[{dialogState:u,unmount:a},s]=Qe("Dialog.Panel"),d=X(t,s.panelRef),h=Ee({open:u===0}),E=T(v=>{v.stopPropagation()}),w={ref:d,id:n,onClick:E},y=l?me:o.Fragment,p=l?{unmount:a}:{},$=W();return o.createElement(y,{...p},$({ourProps:w,theirProps:i,slot:h,defaultTag:Bl,name:"Dialog.Panel"}))}let Xl="div";function zl(e,t){let{transition:r=!1,...n}=e,[{dialogState:l,unmount:i}]=Qe("Dialog.Backdrop"),u=Ee({open:l===0}),a={ref:t,"aria-hidden":!0},s=r?me:o.Fragment,d=r?{unmount:i}:{},h=W();return o.createElement(s,{...d},h({ourProps:a,theirProps:n,slot:u,defaultTag:Xl,name:"Dialog.Backdrop"}))}let Gl="h2";function Kl(e,t){let r=o.useId(),{id:n=`headlessui-dialog-title-${r}`,...l}=e,[{dialogState:i,setTitleId:u}]=Qe("Dialog.Title"),a=X(t);o.useEffect(()=>(u(n),()=>u(null)),[n,u]);let s=Ee({open:i===0}),d={ref:a,id:n};return W()({ourProps:d,theirProps:l,slot:s,defaultTag:Gl,name:"Dialog.Title"})}let Yl=j(Vl),St=j(ql);j(zl);let Zl=j(Kl),Jl=Object.assign(Yl,{Panel:St,Title:Zl,Description:mn});function kr({onClick:e}){return O.jsxs("button",{type:"button",className:"im-close-button text-gray-400 hover:text-gray-500",onClick:e,children:[O.jsx("span",{className:"sr-only",children:"Close"}),O.jsx("svg",{className:"size-6",xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:"2",stroke:"currentColor","aria-hidden":"true",children:O.jsx("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M6 18L18 6M6 6l12 12"})})]})}const Ql=({modalContext:e,config:t,children:r})=>{const[n,l]=o.useState(!1);return O.jsx("div",{className:"im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",children:O.jsx("div",{className:_e("im-modal-positioner flex min-h-full justify-center",{"items-start":t.position==="top","items-center":t.position==="center","items-end":t.position==="bottom"}),children:O.jsx(me,{as:"div",enterFrom:"opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",enterTo:"opacity-100 translate-y-0 sm:scale-100",leaveFrom:"opacity-100 translate-y-0 sm:scale-100",leaveTo:"opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",afterEnter:()=>l(!0),afterLeave:e.afterLeave,className:_e("im-modal-wrapper w-full transition duration-300 ease-in-out",e.onTopOfStack?"":"blur-sm",{"sm:max-w-sm":t.maxWidth==="sm","sm:max-w-md":t.maxWidth==="md","sm:max-w-md md:max-w-lg":t.maxWidth==="lg","sm:max-w-md md:max-w-xl":t.maxWidth==="xl","sm:max-w-md md:max-w-xl lg:max-w-2xl":t.maxWidth==="2xl","sm:max-w-md md:max-w-xl lg:max-w-3xl":t.maxWidth==="3xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl":t.maxWidth==="4xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl":t.maxWidth==="5xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl":t.maxWidth==="6xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl":t.maxWidth==="7xl"}),children:O.jsxs(St,{className:`im-modal-content relative ${t.paddingClasses} ${t.panelClasses}`,"data-inertiaui-modal-entered":n,children:[t.closeButton&&O.jsx("div",{className:"absolute right-0 top-0 pr-3 pt-3",children:O.jsx(kr,{onClick:e.close})}),typeof r=="function"?r({modalContext:e,config:t}):r]})})})})},Rl=({modalContext:e,config:t,children:r})=>{const[n,l]=o.useState(!1);return O.jsx("div",{className:"im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",children:O.jsx("div",{className:_e("im-slideover-positioner flex min-h-full items-center",{"justify-start rtl:justify-end":(t==null?void 0:t.position)==="left","justify-end rtl:justify-start":(t==null?void 0:t.position)==="right"}),children:O.jsx(me,{as:"div",enterFrom:`opacity-0 ${t.position==="left"?"-translate-x-full":"translate-x-full"}`,enterTo:"opacity-100 translate-x-0",leaveFrom:"opacity-100 translate-x-0",leaveTo:`opacity-0 ${t.position==="left"?"-translate-x-full":"translate-x-full"}`,afterEnter:()=>l(!0),afterLeave:e.afterLeave,className:_e("im-slideover-wrapper w-full transition duration-300 ease-in-out",e.onTopOfStack?"":"blur-sm",{"sm:max-w-sm":t.maxWidth==="sm","sm:max-w-md":t.maxWidth==="md","sm:max-w-md md:max-w-lg":t.maxWidth==="lg","sm:max-w-md md:max-w-xl":t.maxWidth==="xl","sm:max-w-md md:max-w-xl lg:max-w-2xl":t.maxWidth==="2xl","sm:max-w-md md:max-w-xl lg:max-w-3xl":t.maxWidth==="3xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl":t.maxWidth==="4xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl":t.maxWidth==="5xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl":t.maxWidth==="6xl","sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl":t.maxWidth==="7xl"}),children:O.jsxs(St,{className:`im-slideover-content relative ${t.paddingClasses} ${t.panelClasses}`,"data-inertiaui-modal-entered":n,children:[t.closeButton&&O.jsx("div",{className:"absolute right-0 top-0 pr-3 pt-3",children:O.jsx(kr,{onClick:e.close})}),typeof r=="function"?r({modalContext:e,config:t}):r]})})})})},Lr=o.forwardRef(({name:e,children:t,onFocus:r=null,onBlur:n=null,onClose:l=null,onSuccess:i=null,onAfterLeave:u=null,...a},s)=>{const d=E=>typeof t=="function"?t(E):t,h=o.useRef(null);return o.useImperativeHandle(s,()=>h.current,[h]),O.jsx(it,{ref:h,name:e,onFocus:r,onBlur:n,onClose:l,onSuccess:i,...a,children:({afterLeave:E,close:w,config:y,emit:p,getChildModal:$,getParentModal:v,id:c,index:f,isOpen:g,modalContext:b,onTopOfStack:m,reload:x,setOpen:S,shouldRender:F})=>O.jsx(Tr,{appear:!0,show:g??!1,afterLeave:u,children:O.jsxs(Jl,{as:"div",className:"im-dialog relative z-20",onClose:()=>y.closeExplicitly?null:w(),"data-inertiaui-modal-id":c,"data-inertiaui-modal-index":f,children:[f===0?O.jsx(me,{enter:"transition transform ease-in-out duration-300",enterFrom:"opacity-0",enterTo:"opacity-100",leave:"transition transform ease-in-out duration-300",leaveFrom:"opacity-100",leaveTo:"opacity-0",children:m?O.jsx("div",{className:"im-backdrop fixed inset-0 z-30 bg-black/75","aria-hidden":"true"}):O.jsx("div",{})}):null,f>0&&m?O.jsx("div",{className:"im-backdrop fixed inset-0 z-30 bg-black/75"}):null,y.slideover?O.jsx(Rl,{modalContext:b,config:y,children:d({afterLeave:E,close:w,config:y,emit:p,getChildModal:$,getParentModal:v,id:c,index:f,isOpen:g,modalContext:b,onTopOfStack:m,reload:x,setOpen:S,shouldRender:F})}):O.jsx(Ql,{modalContext:b,config:y,children:d({afterLeave:E,close:w,config:y,emit:p,getChildModal:$,getParentModal:v,id:c,index:f,isOpen:g,modalContext:b,onTopOfStack:m,reload:x,setOpen:S,shouldRender:F})})]})})})});Lr.displayName="Modal";const eo=({href:e,method:t="get",data:r={},as:n="a",headers:l={},queryStringArrayFormat:i="brackets",onAfterLeave:u=null,onBlur:a=null,onClose:s=null,onError:d=null,onFocus:h=null,onStart:E=null,onSuccess:w=null,navigate:y=null,children:p,...$})=>{const[v,c]=o.useState(!1),[f,g]=o.useState(null),{stack:b,visit:m}=be(),x=o.useMemo(()=>y??Ne("navigate"),[y]),S={},F={};Object.keys($).forEach(P=>{At.includes(P)||(P.startsWith("on")&&typeof $[P]=="function"?Br(P)?S[P]=$[P]:F[P]=$[P]:S[P]=$[P])});const[_,L]=o.useState(!1);o.useEffect(()=>{f&&(f.onTopOfStack&&_?h==null||h():!f.onTopOfStack&&!_&&(a==null||a()),L(!f.onTopOfStack))},[b]);const A=o.useCallback(()=>{s==null||s()},[s]),H=o.useCallback(()=>{g(null),u==null||u()},[u]),N=o.useCallback(P=>{P==null||P.preventDefault(),!v&&(e.startsWith("#")||(c(!0),E==null||E()),m(e,t,r,l,Vr(Hr($,At)),()=>A(b.length),H,i,x).then(D=>{g(D),D.registerEventListenersFromProps(F),w==null||w()}).catch(D=>{console.error(D),d==null||d(D)}).finally(()=>c(!1)))},[e,t,r,l,i,$,A,H]);return O.jsx(n,{...S,href:e,onClick:N,children:typeof p=="function"?p({loading:v}):p})},Fr=({children:e,data:t,params:r,buffer:n,as:l,always:i,fallback:u})=>{i=i??!1,l=l??"div",u=u??null;const[a,s]=o.useState(!1),d=o.useRef(!1),h=o.useRef(!1),E=o.useRef(null),w=ot(),y=o.useCallback(()=>{if(t)return{only:Array.isArray(t)?t:[t]};if(!r)throw new Error("You must provide either a `data` or `params` prop.");return r},[r,t]);return o.useEffect(()=>{if(!E.current)return;const p=new IntersectionObserver($=>{if(!$[0].isIntersecting||(!i&&d.current&&p.disconnect(),h.current))return;d.current=!0,h.current=!0;const v=y();w.reload({...v,onStart:c=>{var f;h.current=!0,(f=v.onStart)==null||f.call(v,c)},onFinish:c=>{var f;s(!0),h.current=!1,(f=v.onFinish)==null||f.call(v,c),i||p.disconnect()}})},{rootMargin:`${n||0}px`});return p.observe(E.current),()=>{p.disconnect()}},[E,y,n]),i||!a?o.createElement(l,{props:null,ref:E},a?e:u):a?e:null};Fr.displayName="InertiaWhenVisible";const to=e=>t=>(t.default.layout=r=>o.createElement(e,{},r),t);C.Deferred=_t,C.HeadlessModal=it,C.Modal=Lr,C.ModalLink=eo,C.ModalRoot=It,C.ModalStackProvider=Ft,C.WhenVisible=Fr,C.getConfig=Ne,C.initFromPageProps=Nt,C.putConfig=Dr,C.renderApp=qr,C.resetConfig=_r,C.setPageLayout=to,C.useModal=ot,C.useModalIndex=lt,C.useModalStack=be,Object.defineProperty(C,Symbol.toStringTag,{value:"Module"})}));
+(function(global, factory) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react"), require("react/jsx-runtime"), require("axios"), require("@inertiaui/vanilla"), require("@inertiajs/react"), require("@inertiajs/core"), require("react-dom")) : typeof define === "function" && define.amd ? define(["exports", "react", "react/jsx-runtime", "axios", "@inertiaui/vanilla", "@inertiajs/react", "@inertiajs/core", "react-dom"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.React, global.ReactJSXRuntime, global.axios, global.InertiaUIVanilla, global.InertiaReact, global.InertiaCore, global.ReactDOM));
+})(this, (function(exports2, React, jsxRuntime, Axios, vanilla, react, core, reactDom) {
+  "use strict";
+  function _interopNamespaceDefault(e) {
+    const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
+    if (e) {
+      for (const k in e) {
+        if (k !== "default") {
+          const d = Object.getOwnPropertyDescriptor(e, k);
+          Object.defineProperty(n, k, d.get ? d : {
+            enumerable: true,
+            get: () => e[k]
+          });
+        }
+      }
+    }
+    n.default = e;
+    return Object.freeze(n);
+  }
+  const vanilla__namespace = /* @__PURE__ */ _interopNamespaceDefault(vanilla);
+  const defaultConfig = {
+    type: "modal",
+    navigate: false,
+    useNativeDialog: true,
+    appElement: "#app",
+    modal: {
+      closeButton: true,
+      closeExplicitly: false,
+      closeOnClickOutside: true,
+      maxWidth: "2xl",
+      paddingClasses: "p-4 sm:p-6",
+      panelClasses: "bg-white rounded",
+      position: "center"
+    },
+    slideover: {
+      closeButton: true,
+      closeExplicitly: false,
+      closeOnClickOutside: true,
+      maxWidth: "md",
+      paddingClasses: "p-4 sm:p-6",
+      panelClasses: "bg-white min-h-screen",
+      position: "right"
+    }
+  };
+  class Config {
+    constructor() {
+      this.config = {};
+      this.reset();
+    }
+    reset() {
+      this.config = JSON.parse(JSON.stringify(defaultConfig));
+    }
+    put(key, value) {
+      if (typeof key === "object") {
+        this.config = {
+          type: key.type ?? defaultConfig.type,
+          navigate: key.navigate ?? defaultConfig.navigate,
+          useNativeDialog: key.useNativeDialog ?? defaultConfig.useNativeDialog,
+          appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
+          modal: { ...defaultConfig.modal, ...key.modal ?? {} },
+          slideover: { ...defaultConfig.slideover, ...key.slideover ?? {} }
+        };
+        return;
+      }
+      const keys = key.split(".");
+      let current = this.config;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]] = current[keys[i]] || {};
+      }
+      current[keys[keys.length - 1]] = value;
+    }
+    get(key) {
+      if (typeof key === "undefined") {
+        return this.config;
+      }
+      const keys = key.split(".");
+      let current = this.config;
+      for (const k of keys) {
+        if (current === null || current === void 0 || typeof current !== "object") {
+          return null;
+        }
+        current = current[k];
+      }
+      return current === void 0 ? null : current;
+    }
+  }
+  const configInstance = new Config();
+  const resetConfig = () => configInstance.reset();
+  const putConfig = (key, value) => configInstance.put(key, value);
+  const getConfig = (key) => configInstance.get(key);
+  const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+  function generateId(prefix = "inertiaui_") {
+    return vanilla.generateId(prefix);
+  }
+  const ModalStackContext = React.createContext(null);
+  ModalStackContext.displayName = "ModalStackContext";
+  let pageVersion = null;
+  let resolveComponent = null;
+  let baseUrl = null;
+  let closingToBaseUrlTarget = null;
+  const prefetchCache = /* @__PURE__ */ new Map();
+  const prefetchInFlight = /* @__PURE__ */ new Map();
+  function getPrefetchCacheKey(url, method, data) {
+    return `${method}:${url}:${JSON.stringify(data)}`;
+  }
+  function getCachedResponse(url, method, data) {
+    const key = getPrefetchCacheKey(url, method, data);
+    const cached = prefetchCache.get(key);
+    if (!cached) {
+      return null;
+    }
+    if (Date.now() > cached.expiresAt) {
+      prefetchCache.delete(key);
+      return null;
+    }
+    return cached.response;
+  }
+  function setCachedResponse(url, method, data, response, cacheFor) {
+    const key = getPrefetchCacheKey(url, method, data);
+    prefetchCache.set(key, {
+      response,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + cacheFor
+    });
+  }
+  function prefetch(href, options = {}) {
+    if (href.startsWith("#")) {
+      return Promise.resolve();
+    }
+    const method = (options.method ?? "get").toLowerCase();
+    const data = options.data ?? {};
+    const headers = options.headers ?? {};
+    const queryStringArrayFormat = options.queryStringArrayFormat ?? "brackets";
+    const cacheFor = options.cacheFor ?? 3e4;
+    const [url, mergedData] = core.mergeDataIntoQueryString(method, href || "", data, queryStringArrayFormat);
+    const cached = getCachedResponse(url, method, mergedData);
+    if (cached) {
+      return Promise.resolve();
+    }
+    const cacheKey = getPrefetchCacheKey(url, method, mergedData);
+    const inFlight = prefetchInFlight.get(cacheKey);
+    if (inFlight) {
+      return inFlight.then(() => {
+      });
+    }
+    options.onPrefetching?.();
+    const requestHeaders = {
+      ...headers,
+      Accept: "text/html, application/xhtml+xml",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-Inertia": "true",
+      "X-Inertia-Version": pageVersion ?? "",
+      "X-InertiaUI-Modal": generateId(),
+      "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
+    };
+    const request = Axios({
+      url,
+      method,
+      data: mergedData,
+      headers: requestHeaders
+    }).then((response) => {
+      setCachedResponse(url, method, mergedData, response, cacheFor);
+      options.onPrefetched?.();
+      return response;
+    }).finally(() => {
+      prefetchInFlight.delete(cacheKey);
+    });
+    prefetchInFlight.set(cacheKey, request);
+    return request.then(() => {
+    });
+  }
+  const ModalStackProvider = ({ children }) => {
+    const stackRef = React.useRef([]);
+    const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
+    const [localModals, setLocalModals] = React.useState({});
+    const updateStack = (withStack) => {
+      const newStack = withStack([...stackRef.current]);
+      const isOnTopOfStack = (modalId) => {
+        if (newStack.length < 2) {
+          return true;
+        }
+        return newStack.map((modal) => ({ id: modal.id, shouldRender: modal.shouldRender })).reverse().find((modal) => modal.shouldRender)?.id === modalId;
+      };
+      newStack.forEach((modal, index) => {
+        newStack[index].onTopOfStack = isOnTopOfStack(modal.id);
+        newStack[index].getParentModal = () => {
+          if (index < 1) {
+            return null;
+          }
+          return stackRef.current.slice(0, index).reverse().find((m) => m.isOpen) ?? null;
+        };
+        newStack[index].getChildModal = () => {
+          if (index === stackRef.current.length - 1) {
+            return null;
+          }
+          return stackRef.current.slice(index + 1).find((m) => m.isOpen) ?? null;
+        };
+      });
+      stackRef.current = newStack;
+      forceUpdate();
+    };
+    class ModalClass {
+      constructor(component, response, config, onClose, afterLeave) {
+        this.show = () => {
+          updateStack(
+            (prevStack) => prevStack.map((modal) => {
+              if (modal.id === this.id && !modal.isOpen) {
+                modal.isOpen = true;
+                modal.shouldRender = true;
+              }
+              return modal;
+            })
+          );
+        };
+        this.setOpen = (open) => {
+          if (open) {
+            this.show();
+          } else {
+            this.close();
+          }
+        };
+        this.close = () => {
+          updateStack((currentStack) => {
+            let modalClosed = false;
+            const newStack = currentStack.map((modal) => {
+              if (modal.id === this.id && modal.isOpen) {
+                Object.keys(modal.listeners).forEach((event) => {
+                  modal.off(event);
+                });
+                modal.isOpen = false;
+                modal.onCloseCallback?.();
+                modalClosed = true;
+              }
+              return modal;
+            });
+            return modalClosed ? newStack : currentStack;
+          });
+        };
+        this.afterLeave = () => {
+          if (this.isOpen) {
+            return;
+          }
+          updateStack((prevStack) => {
+            const updatedStack = prevStack.map((modal) => {
+              if (modal.id === this.id && !modal.isOpen) {
+                modal.shouldRender = false;
+                modal.afterLeaveCallback?.();
+                modal.afterLeaveCallback = null;
+              }
+              return modal;
+            });
+            if (this.index === 0) {
+              const savedBaseUrl = baseUrl;
+              baseUrl = null;
+              closingToBaseUrlTarget = savedBaseUrl;
+              if (savedBaseUrl && typeof window !== "undefined") {
+                react.router.push({
+                  url: savedBaseUrl,
+                  preserveScroll: true,
+                  preserveState: true,
+                  // Clear _inertiaui_modal prop to prevent modal from reopening
+                  props: (currentProps) => {
+                    const { _inertiaui_modal, ...rest } = currentProps;
+                    return { ...rest, _inertiaui_modal: void 0 };
+                  }
+                });
+              }
+              return [];
+            }
+            return updatedStack;
+          });
+        };
+        this.on = (event, callback) => {
+          event = vanilla.kebabCase(event);
+          this.listeners[event] = this.listeners[event] ?? [];
+          this.listeners[event].push(callback);
+        };
+        this.off = (event, callback) => {
+          event = vanilla.kebabCase(event);
+          if (callback) {
+            this.listeners[event] = this.listeners[event]?.filter((cb) => cb !== callback) ?? [];
+          } else {
+            delete this.listeners[event];
+          }
+        };
+        this.emit = (event, ...args) => {
+          this.listeners[vanilla.kebabCase(event)]?.forEach((callback) => callback(...args));
+        };
+        this.registerEventListenersFromProps = (props) => {
+          const unsubscribers = [];
+          Object.keys(props).filter((key) => key.startsWith("on")).forEach((key) => {
+            const eventName = vanilla.kebabCase(key).replace(/^on-/, "");
+            const callback = props[key];
+            this.on(eventName, callback);
+            unsubscribers.push(() => this.off(eventName, callback));
+          });
+          return () => unsubscribers.forEach((unsub) => unsub());
+        };
+        this.reload = (options = {}) => {
+          let keys = Object.keys(this.response.props);
+          if (options.only) {
+            keys = options.only;
+          }
+          if (options.except) {
+            keys = vanilla.except(keys, options.except);
+          }
+          if (!this.response?.url) {
+            return;
+          }
+          const method = (options.method ?? "get").toLowerCase();
+          const data = options.data ?? {};
+          options.onStart?.();
+          Axios({
+            url: this.response.url,
+            method,
+            data: method === "get" ? {} : data,
+            params: method === "get" ? data : {},
+            headers: {
+              ...options.headers ?? {},
+              Accept: "text/html, application/xhtml+xml",
+              "X-Inertia": "true",
+              "X-Inertia-Partial-Component": this.response.component,
+              "X-Inertia-Version": this.response.version ?? "",
+              "X-Inertia-Partial-Data": keys.join(","),
+              "X-InertiaUI-Modal": generateId(),
+              "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
+            }
+          }).then((response2) => {
+            this.updateProps(response2.data.props);
+            options.onSuccess?.(response2);
+          }).catch((error) => {
+            options.onError?.(error);
+          }).finally(() => {
+            options.onFinish?.();
+          });
+        };
+        this.updateProps = (props) => {
+          Object.assign(this.props, props);
+          updateStack((prevStack) => prevStack);
+        };
+        this.id = response.id ?? generateId();
+        this.isOpen = false;
+        this.shouldRender = false;
+        this.listeners = {};
+        this.component = component;
+        this.props = response.props ?? {};
+        this.response = response;
+        this.config = config ?? {};
+        this.onCloseCallback = onClose ?? null;
+        this.afterLeaveCallback = afterLeave ?? null;
+        this.index = -1;
+        this.getParentModal = () => null;
+        this.getChildModal = () => null;
+        this.onTopOfStack = true;
+      }
+    }
+    const isValidModalResponse = (data) => {
+      return typeof data === "object" && data !== null && "component" in data && typeof data.component === "string";
+    };
+    const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null) => {
+      if (!resolveComponent) {
+        return Promise.reject(new Error("resolveComponent not set"));
+      }
+      if (!isValidModalResponse(responseData)) {
+        return Promise.reject(
+          new Error(
+            "Invalid modal response. This usually happens when the server returns a redirect (e.g., due to session expiration). Check if the user is still authenticated."
+          )
+        );
+      }
+      return resolveComponent(responseData.component).then(
+        (component) => push(component, responseData, config, onClose, onAfterLeave)
+      );
+    };
+    const loadDeferredProps = (modal) => {
+      const deferred = modal.response?.meta?.deferredProps;
+      if (!deferred) {
+        return;
+      }
+      Object.keys(deferred).forEach((key) => {
+        modal.reload({ only: deferred[key] });
+      });
+    };
+    const push = (component, response, config, onClose, afterLeave) => {
+      const newModal = new ModalClass(component, response, config, onClose, afterLeave);
+      newModal.index = stackRef.current.length;
+      updateStack((prevStack) => [...prevStack, newModal]);
+      loadDeferredProps(newModal);
+      newModal.show();
+      return newModal;
+    };
+    function pushLocalModal(name, config, onClose, afterLeave, props) {
+      if (!localModals[name]) {
+        throw new Error(`The local modal "${name}" has not been registered.`);
+      }
+      const responseData = { props: props ?? {} };
+      const modal = push(null, responseData, config, onClose, afterLeave);
+      modal.name = name;
+      localModals[name].callback(modal);
+      return modal;
+    }
+    const visitModal = (url, options = {}) => visit(
+      url,
+      options.method ?? "get",
+      options.data ?? {},
+      options.headers ?? {},
+      options.config ?? {},
+      options.onClose ?? null,
+      options.onAfterLeave ?? null,
+      options.queryStringArrayFormat ?? "brackets",
+      options.navigate ?? getConfig("navigate"),
+      options.onStart ?? null,
+      options.onSuccess ?? null,
+      options.onError ?? null,
+      options.props ?? null
+    ).then((modal) => {
+      const listeners = options.listeners ?? {};
+      Object.keys(listeners).forEach((event) => {
+        const eventName = vanilla.kebabCase(event);
+        modal.on(eventName, listeners[event]);
+      });
+      return modal;
+    });
+    const updateBrowserUrl = (url, useBrowserHistory, modalData) => {
+      if (!url || !useBrowserHistory || typeof window === "undefined") {
+        return;
+      }
+      react.router.push({
+        url,
+        preserveScroll: true,
+        preserveState: true,
+        // Store modal data in page props for history navigation
+        props: modalData ? (currentProps) => ({
+          ...currentProps,
+          _inertiaui_modal: {
+            ...modalData,
+            baseUrl
+          }
+        }) : void 0
+      });
+    };
+    const visit = (href, method, payload = {}, headers = {}, config = {}, onClose = null, onAfterLeave = null, queryStringArrayFormat = "brackets", useBrowserHistory = false, onStart = null, onSuccess = null, onError = null, props = null) => {
+      const modalId = generateId();
+      return new Promise((resolve, reject) => {
+        if (href.startsWith("#")) {
+          resolve(pushLocalModal(href.substring(1), config, onClose, onAfterLeave, props));
+          return;
+        }
+        const [url, data] = core.mergeDataIntoQueryString(method, href || "", payload, queryStringArrayFormat);
+        const cachedResponse = getCachedResponse(url, method, data);
+        if (cachedResponse) {
+          onSuccess?.(cachedResponse);
+          pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave).then((modal) => {
+            updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data);
+            resolve(modal);
+          }).catch(reject);
+          return;
+        }
+        if (stackRef.current.length === 0) {
+          baseUrl = typeof window !== "undefined" ? window.location.href : "";
+        }
+        const requestHeaders = {
+          ...headers,
+          Accept: "text/html, application/xhtml+xml",
+          "X-Requested-With": "XMLHttpRequest",
+          "X-Inertia": "true",
+          "X-Inertia-Version": pageVersion ?? "",
+          "X-InertiaUI-Modal": modalId,
+          "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
+        };
+        onStart?.();
+        react.progress?.start();
+        Axios({
+          url,
+          method,
+          data,
+          headers: requestHeaders
+        }).then((response) => {
+          onSuccess?.(response);
+          pushFromResponseData(response.data, config, onClose, onAfterLeave).then((modal) => {
+            updateBrowserUrl(response.data.url, useBrowserHistory, response.data);
+            resolve(modal);
+          }).catch(reject);
+        }).catch((...args) => {
+          onError?.(...args);
+          reject(args[0]);
+        }).finally(() => {
+          react.progress?.finish();
+        });
+      });
+    };
+    const registerLocalModal = (name, callback) => {
+      setLocalModals((prevLocalModals) => ({
+        ...prevLocalModals,
+        [name]: { name, callback }
+      }));
+    };
+    const removeLocalModal = (name) => {
+      setLocalModals((prevLocalModals) => {
+        const newLocalModals = { ...prevLocalModals };
+        delete newLocalModals[name];
+        return newLocalModals;
+      });
+    };
+    const value = {
+      get stack() {
+        return stackRef.current;
+      },
+      localModals,
+      push,
+      pushFromResponseData,
+      length: () => stackRef.current.length,
+      closeAll: (force = false) => {
+        if (force) {
+          updateStack(() => []);
+        } else {
+          [...stackRef.current].reverse().forEach((modal) => modal.close());
+        }
+      },
+      reset: () => updateStack(() => []),
+      visit,
+      visitModal,
+      registerLocalModal,
+      removeLocalModal
+    };
+    return /* @__PURE__ */ jsxRuntime.jsx(ModalStackContext.Provider, { value, children });
+  };
+  const useModalStack = () => {
+    const context = React.useContext(ModalStackContext);
+    if (context === null) {
+      throw new Error("useModalStack must be used within a ModalStackProvider");
+    }
+    return context;
+  };
+  const modalPropNames = ["closeButton", "closeExplicitly", "closeOnClickOutside", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"];
+  const initFromPageProps = (pageProps) => {
+    if (pageProps.initialPage) {
+      pageVersion = pageProps.initialPage.version ?? null;
+    }
+    if (pageProps.resolveComponent) {
+      resolveComponent = pageProps.resolveComponent;
+    }
+  };
+  const renderApp = (App, pageProps) => {
+    initFromPageProps(pageProps);
+    const renderInertiaApp = ({ Component, props, key }) => {
+      const renderComponent = () => {
+        const child = React.createElement(Component, { key, ...props });
+        if (typeof Component.layout === "function") {
+          return Component.layout(child);
+        }
+        if (Array.isArray(Component.layout)) {
+          return Component.layout.slice().reverse().reduce(
+            (acc, Layout) => React.createElement(Layout, props, acc),
+            child
+          );
+        }
+        return child;
+      };
+      return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+        renderComponent(),
+        /* @__PURE__ */ jsxRuntime.jsx(ModalRoot, {})
+      ] });
+    };
+    return /* @__PURE__ */ jsxRuntime.jsx(ModalStackProvider, { children: /* @__PURE__ */ jsxRuntime.jsx(App, { ...pageProps, children: renderInertiaApp }) });
+  };
+  const ModalRoot = ({ children }) => {
+    const context = React.useContext(ModalStackContext);
+    const $page = react.usePage();
+    const pendingModalKeysRef = React.useRef(/* @__PURE__ */ new Set());
+    const getModalKey = (modalData) => modalData.id || `${modalData.component}:${modalData.url}`;
+    const isNavigatingRef = React.useRef(false);
+    const initialModalStillOpenedRef = React.useRef(!!$page.props?._inertiaui_modal);
+    React.useEffect(() => react.router.on("start", () => isNavigatingRef.current = true), []);
+    React.useEffect(() => react.router.on("finish", () => isNavigatingRef.current = false), []);
+    React.useEffect(
+      () => react.router.on("navigate", function($event) {
+        const modalOnBase = $event.detail.page.props._inertiaui_modal;
+        const pageUrl = $event.detail.page.url;
+        if (closingToBaseUrlTarget) {
+          const targetPath = new URL(closingToBaseUrlTarget, "http://x").pathname;
+          const pagePath = new URL(pageUrl, "http://x").pathname;
+          if (targetPath === pagePath) {
+            closingToBaseUrlTarget = null;
+            context?.closeAll(true);
+            baseUrl = null;
+            initialModalStillOpenedRef.current = false;
+            return;
+          }
+          closingToBaseUrlTarget = null;
+        }
+        if (!modalOnBase) {
+          context?.closeAll(true);
+          baseUrl = null;
+          initialModalStillOpenedRef.current = false;
+          return;
+        }
+        if (!vanilla.sameUrlPath(pageUrl, modalOnBase.url)) {
+          context?.closeAll(true);
+          baseUrl = null;
+          initialModalStillOpenedRef.current = false;
+          return;
+        }
+        const modalKey = getModalKey(modalOnBase);
+        if (pendingModalKeysRef.current.has(modalKey)) {
+          return;
+        }
+        if (modalOnBase.id && context?.stack.some((m) => m.id === modalOnBase.id)) {
+          return;
+        }
+        if (context?.stack.some((m) => m.response?.component === modalOnBase.component && vanilla.sameUrlPath(m.response?.url, modalOnBase.url))) {
+          return;
+        }
+        baseUrl = modalOnBase.baseUrl;
+        pendingModalKeysRef.current.add(modalKey);
+        context?.pushFromResponseData(modalOnBase, {}, () => {
+          if (!modalOnBase.baseUrl) {
+            console.error("No base url in modal response data so cannot navigate back");
+            return;
+          }
+          if (!isNavigatingRef.current && typeof window !== "undefined" && window.location.href !== modalOnBase.baseUrl) {
+            react.router.visit(modalOnBase.baseUrl, {
+              preserveScroll: true,
+              preserveState: true
+            });
+          }
+        }).finally(() => {
+          pendingModalKeysRef.current.delete(modalKey);
+        });
+      }),
+      []
+    );
+    const axiosRequestInterceptor = (config) => {
+      const baseUrlValue = baseUrl ?? (initialModalStillOpenedRef.current ? $page.props._inertiaui_modal?.baseUrl : null);
+      if (baseUrlValue) {
+        config.headers["X-InertiaUI-Modal-Base-Url"] = baseUrlValue;
+      }
+      return config;
+    };
+    React.useEffect(() => {
+      const interceptorId = Axios.interceptors.request.use(axiosRequestInterceptor);
+      return () => Axios.interceptors.request.eject(interceptorId);
+    }, []);
+    const previousModalRef = React.useRef(void 0);
+    React.useEffect(() => {
+      const newModal = $page.props?._inertiaui_modal;
+      const previousModal = previousModalRef.current;
+      previousModalRef.current = newModal;
+      if (!newModal) {
+        return;
+      }
+      if (previousModal && newModal.component === previousModal.component && vanilla.sameUrlPath(newModal.url, previousModal.url)) {
+        context?.stack[0]?.updateProps(newModal.props ?? {});
+        return;
+      }
+      if (!previousModal && context && context.stack.length > 0) {
+        const existingModal = context.stack.find(
+          (m) => m.response?.component === newModal.component && vanilla.sameUrlPath(m.response?.url, newModal.url)
+        );
+        if (existingModal) {
+          existingModal.updateProps(newModal.props ?? {});
+        }
+      }
+    }, [$page.props?._inertiaui_modal]);
+    return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+      children,
+      context && context.stack.length > 0 && /* @__PURE__ */ jsxRuntime.jsx(ModalRenderer, { index: 0 })
+    ] });
+  };
+  const ModalIndexContext = React.createContext(null);
+  ModalIndexContext.displayName = "ModalIndexContext";
+  const useModalIndex = () => {
+    return React.useContext(ModalIndexContext);
+  };
+  const ModalRenderer = ({ index }) => {
+    const { stack } = useModalStack();
+    const modalContext = React.useMemo(() => {
+      return stack[index];
+    }, [stack, index]);
+    if (!modalContext?.component) {
+      return null;
+    }
+    return /* @__PURE__ */ jsxRuntime.jsx(ModalIndexContext.Provider, { value: index, children: React.createElement(modalContext.component, {
+      ...modalContext.props,
+      onModalEvent: (...args) => modalContext.emit("modal-event", ...args)
+    }) });
+  };
+  function useModal() {
+    return useModalStack().stack[useModalIndex()] ?? null;
+  }
+  const Deferred = ({ children, data, fallback }) => {
+    if (!data) {
+      throw new Error("`<Deferred>` requires a `data` prop to be a string or array of strings");
+    }
+    const [loaded, setLoaded] = React.useState(false);
+    const keys = Array.isArray(data) ? data : [data];
+    const modal = useModal();
+    const modalProps = modal?.props ?? {};
+    React.useEffect(() => {
+      setLoaded(keys.every((key) => modalProps[key] !== void 0));
+    }, [modalProps, keys]);
+    return loaded ? children : fallback;
+  };
+  Deferred.displayName = "InertiaModalDeferred";
+  const HeadlessModal = React.forwardRef(
+    (allProps, ref) => {
+      const { name, children, onFocus, onBlur, onClose, onSuccess, ...props } = allProps;
+      const modalIndex = useModalIndex();
+      const { stack, registerLocalModal, removeLocalModal } = useModalStack();
+      const [localModalContext, setLocalModalContext] = React.useState(null);
+      const modalContext = React.useMemo(
+        () => name ? localModalContext : stack[modalIndex],
+        [name, localModalContext, modalIndex, stack]
+      );
+      const nextIndex = React.useMemo(() => {
+        return stack.find((m) => m.shouldRender && m.index > (modalContext?.index ?? -1))?.index;
+      }, [modalIndex, stack]);
+      const configSlideover = React.useMemo(
+        () => modalContext?.config.slideover ?? props.slideover ?? getConfig("type") === "slideover",
+        [props.slideover, modalContext?.config.slideover]
+      );
+      const config = React.useMemo(
+        () => ({
+          slideover: configSlideover,
+          closeButton: props.closeButton ?? getConfigByType(configSlideover, "closeButton"),
+          closeExplicitly: props.closeExplicitly ?? getConfigByType(configSlideover, "closeExplicitly"),
+          closeOnClickOutside: props.closeOnClickOutside ?? getConfigByType(configSlideover, "closeOnClickOutside"),
+          maxWidth: props.maxWidth ?? getConfigByType(configSlideover, "maxWidth"),
+          paddingClasses: props.paddingClasses ?? getConfigByType(configSlideover, "paddingClasses"),
+          panelClasses: props.panelClasses ?? getConfigByType(configSlideover, "panelClasses"),
+          position: props.position ?? getConfigByType(configSlideover, "position"),
+          ...modalContext?.config
+        }),
+        [props, modalContext?.config, configSlideover]
+      );
+      React.useEffect(() => {
+        if (name) {
+          let removeListeners = null;
+          registerLocalModal(name, (localContext) => {
+            removeListeners = localContext.registerEventListenersFromProps(props);
+            setLocalModalContext(localContext);
+          });
+          return () => {
+            removeListeners?.();
+            removeListeners = null;
+            removeLocalModal(name);
+          };
+        }
+        return modalContext?.registerEventListenersFromProps(props);
+      }, [name]);
+      const modalContextRef = React.useRef(modalContext);
+      React.useEffect(() => {
+        modalContextRef.current = modalContext;
+      }, [modalContext]);
+      const previousIsOpenRef = React.useRef(void 0);
+      React.useEffect(() => {
+        if (modalContext !== null) {
+          if (modalContext.isOpen) {
+            onSuccess?.();
+          } else if (previousIsOpenRef.current === true) {
+            onClose?.();
+          }
+          previousIsOpenRef.current = modalContext.isOpen;
+        }
+      }, [modalContext?.isOpen]);
+      const [rendered, setRendered] = React.useState(false);
+      React.useEffect(() => {
+        if (rendered && modalContext !== null && modalContext.isOpen) {
+          if (modalContext.onTopOfStack) {
+            onFocus?.();
+          } else {
+            onBlur?.();
+          }
+        }
+        setRendered(true);
+      }, [modalContext?.onTopOfStack]);
+      React.useImperativeHandle(
+        ref,
+        () => ({
+          afterLeave: () => modalContextRef.current?.afterLeave(),
+          close: () => modalContextRef.current?.close(),
+          emit: (...args) => modalContextRef.current?.emit(...args),
+          getChildModal: () => modalContextRef.current?.getChildModal(),
+          getParentModal: () => modalContextRef.current?.getParentModal(),
+          reload: (options) => modalContextRef.current?.reload(options),
+          setOpen: (open) => modalContextRef.current?.setOpen(open),
+          get id() {
+            return modalContextRef.current?.id;
+          },
+          get index() {
+            return modalContextRef.current?.index;
+          },
+          get isOpen() {
+            return modalContextRef.current?.isOpen;
+          },
+          get config() {
+            return modalContextRef.current?.config;
+          },
+          get modalContext() {
+            return modalContextRef.current;
+          },
+          get onTopOfStack() {
+            return modalContextRef.current?.onTopOfStack;
+          },
+          get shouldRender() {
+            return modalContextRef.current?.shouldRender;
+          }
+        }),
+        [modalContext]
+      );
+      if (!modalContext?.shouldRender) {
+        return null;
+      }
+      return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+        typeof children === "function" ? children({
+          // Spread props first so they can be overridden by built-in props
+          ...modalContext.props,
+          afterLeave: modalContext.afterLeave,
+          close: modalContext.close,
+          config,
+          emit: modalContext.emit,
+          getChildModal: modalContext.getChildModal,
+          getParentModal: modalContext.getParentModal,
+          id: modalContext.id,
+          index: modalContext.index,
+          isOpen: modalContext.isOpen,
+          modalContext,
+          onTopOfStack: modalContext.onTopOfStack,
+          reload: modalContext.reload,
+          setOpen: modalContext.setOpen,
+          shouldRender: modalContext.shouldRender
+        }) : children,
+        nextIndex !== void 0 && /* @__PURE__ */ jsxRuntime.jsx(ModalRenderer, { index: nextIndex })
+      ] });
+    }
+  );
+  HeadlessModal.displayName = "HeadlessModal";
+  function CloseButton({ onClick }) {
+    return /* @__PURE__ */ jsxRuntime.jsxs(
+      "button",
+      {
+        type: "button",
+        className: "im-close-button text-gray-400 hover:text-gray-500",
+        onClick,
+        children: [
+          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "sr-only", children: "Close" }),
+          /* @__PURE__ */ jsxRuntime.jsx(
+            "svg",
+            {
+              className: "size-6",
+              xmlns: "http://www.w3.org/2000/svg",
+              fill: "none",
+              viewBox: "0 0 24 24",
+              strokeWidth: "2",
+              stroke: "currentColor",
+              "aria-hidden": "true",
+              children: /* @__PURE__ */ jsxRuntime.jsx(
+                "path",
+                {
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round",
+                  d: "M6 18L18 6M6 6l12 12"
+                }
+              )
+            }
+          )
+        ]
+      }
+    );
+  }
+  function r(e) {
+    var t, f, n = "";
+    if ("string" == typeof e || "number" == typeof e) n += e;
+    else if ("object" == typeof e) if (Array.isArray(e)) {
+      var o = e.length;
+      for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+    } else for (f in e) e[f] && (n && (n += " "), n += f);
+    return n;
+  }
+  function clsx() {
+    for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
+    return n;
+  }
+  const maxWidthClasses = {
+    sm: "sm:max-w-sm",
+    md: "sm:max-w-md",
+    lg: "sm:max-w-md md:max-w-lg",
+    xl: "sm:max-w-md md:max-w-xl",
+    "2xl": "sm:max-w-md md:max-w-xl lg:max-w-2xl",
+    "3xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl",
+    "4xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-4xl",
+    "5xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl",
+    "6xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl",
+    "7xl": "sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl"
+  };
+  const defaultMaxWidth = "2xl";
+  function getMaxWidthClass(maxWidth) {
+    return maxWidthClasses[maxWidth] || maxWidthClasses[defaultMaxWidth];
+  }
+  const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }) => {
+    const [isRendered, setIsRendered] = React.useState(false);
+    const [isVisible, setIsVisible] = React.useState(false);
+    const [entered, setEntered] = React.useState(false);
+    const wrapperRef = React.useRef(null);
+    const dialogRef = React.useRef(null);
+    const nativeWrapperRef = React.useRef(null);
+    const cleanupFocusTrapRef = React.useRef(null);
+    const cleanupEscapeKeyRef = React.useRef(null);
+    const maxWidthClass = React.useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth]);
+    const animateIn = React.useCallback(async (element) => {
+      if (!element) return;
+      setIsVisible(true);
+      await vanilla.animate(element, [
+        { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 },
+        { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 }
+      ]);
+      setEntered(true);
+    }, []);
+    const animateOut = React.useCallback(
+      async (element) => {
+        if (!element) return;
+        setIsVisible(false);
+        await vanilla.animate(element, [
+          { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
+          { transform: "translate3d(0, 1rem, 0) scale(0.95)", opacity: 0 }
+        ]);
+        setIsRendered(false);
+        if (useNativeDialog && dialogRef.current) {
+          dialogRef.current.close();
+        }
+        onAfterLeave?.();
+        modalContext.afterLeave();
+      },
+      [useNativeDialog, onAfterLeave, modalContext]
+    );
+    const setupFocusTrap = React.useCallback(() => {
+      if (useNativeDialog) return;
+      if (!wrapperRef.current || !modalContext.onTopOfStack) return;
+      if (cleanupFocusTrapRef.current) return;
+      cleanupFocusTrapRef.current = vanilla.createFocusTrap(wrapperRef.current, {
+        initialFocus: true,
+        returnFocus: false
+      });
+    }, [modalContext.onTopOfStack, useNativeDialog]);
+    const cleanupFocusTrap = React.useCallback(() => {
+      if (cleanupFocusTrapRef.current) {
+        cleanupFocusTrapRef.current();
+        cleanupFocusTrapRef.current = null;
+      }
+    }, []);
+    const setupEscapeKey = React.useCallback(() => {
+      if (useNativeDialog) return;
+      if (cleanupEscapeKeyRef.current) return;
+      if (config?.closeExplicitly) return;
+      cleanupEscapeKeyRef.current = vanilla.onEscapeKey(() => {
+        if (modalContext.onTopOfStack) {
+          modalContext.close();
+        }
+      });
+    }, [config?.closeExplicitly, modalContext, useNativeDialog]);
+    const cleanupEscapeKey = React.useCallback(() => {
+      if (cleanupEscapeKeyRef.current) {
+        cleanupEscapeKeyRef.current();
+        cleanupEscapeKeyRef.current = null;
+      }
+    }, []);
+    const handleClickOutside = React.useCallback(
+      (event) => {
+        if (useNativeDialog) return;
+        if (!modalContext.onTopOfStack) return;
+        if (config?.closeExplicitly) return;
+        if (config?.closeOnClickOutside === false) return;
+        if (!wrapperRef.current) return;
+        if (!wrapperRef.current.contains(event.target)) {
+          modalContext.close();
+        }
+      },
+      [modalContext, config?.closeExplicitly, config?.closeOnClickOutside, useNativeDialog]
+    );
+    const handleCancel = React.useCallback(
+      (event) => {
+        event.preventDefault();
+        if (modalContext.onTopOfStack && !config?.closeExplicitly) {
+          modalContext.close();
+        }
+      },
+      [modalContext, config?.closeExplicitly]
+    );
+    const handleDialogClick = React.useCallback(
+      (event) => {
+        if (event.target === dialogRef.current) {
+          if (modalContext.onTopOfStack && !config?.closeExplicitly && config?.closeOnClickOutside !== false) {
+            modalContext.close();
+          }
+        }
+      },
+      [modalContext, config?.closeExplicitly, config?.closeOnClickOutside]
+    );
+    const prevIsOpenRef = React.useRef(modalContext.isOpen);
+    React.useEffect(() => {
+      if (useNativeDialog) {
+        if (modalContext.isOpen && !dialogRef.current?.open) {
+          dialogRef.current?.showModal();
+          animateIn(nativeWrapperRef.current);
+        } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+          setEntered(false);
+          animateOut(nativeWrapperRef.current);
+        }
+      } else {
+        if (modalContext.isOpen && !isRendered) {
+          setIsRendered(true);
+        } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+          setEntered(false);
+          animateOut(wrapperRef.current);
+        }
+      }
+      prevIsOpenRef.current = modalContext.isOpen;
+    }, [modalContext.isOpen, useNativeDialog, animateIn, animateOut, isRendered]);
+    React.useEffect(() => {
+      if (!useNativeDialog && isRendered && !entered && modalContext.isOpen) {
+        animateIn(wrapperRef.current).then(() => {
+          setupFocusTrap();
+        });
+      }
+    }, [isRendered, useNativeDialog, entered, modalContext.isOpen, animateIn, setupFocusTrap]);
+    React.useEffect(() => {
+      if (!useNativeDialog) {
+        setupEscapeKey();
+      }
+      return () => {
+        cleanupEscapeKey();
+      };
+    }, [useNativeDialog, setupEscapeKey, cleanupEscapeKey]);
+    React.useEffect(() => {
+      if (useNativeDialog) return;
+      if (modalContext.onTopOfStack) {
+        setupEscapeKey();
+        if (entered) {
+          setupFocusTrap();
+        }
+      } else {
+        cleanupFocusTrap();
+        cleanupEscapeKey();
+      }
+    }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog]);
+    React.useEffect(() => {
+      return () => {
+        const wrapper = useNativeDialog ? nativeWrapperRef.current : wrapperRef.current;
+        if (wrapper) {
+          vanilla.cancelAnimations(wrapper);
+        }
+        if (useNativeDialog) {
+          if (dialogRef.current?.open) {
+            dialogRef.current.close();
+          }
+        } else {
+          cleanupFocusTrap();
+          cleanupEscapeKey();
+        }
+      };
+    }, [useNativeDialog, cleanupFocusTrap, cleanupEscapeKey]);
+    const renderContent = () => /* @__PURE__ */ jsxRuntime.jsxs(
+      "div",
+      {
+        className: `im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`,
+        "data-inertiaui-modal-entered": entered,
+        children: [
+          config.closeButton && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntime.jsx(CloseButton, { onClick: modalContext.close }) }),
+          typeof children === "function" ? children({ modalContext, config }) : children
+        ]
+      }
+    );
+    if (useNativeDialog) {
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        "dialog",
+        {
+          ref: dialogRef,
+          className: clsx(
+            "im-modal-dialog m-0 overflow-visible bg-transparent p-0",
+            "size-full max-h-none max-w-none",
+            "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
+            isVisible ? "backdrop:opacity-100" : "backdrop:opacity-0",
+            !isFirstModal && "backdrop:bg-transparent"
+          ),
+          onCancel: handleCancel,
+          onClick: handleDialogClick,
+          children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "im-modal-container fixed inset-0 overflow-y-auto p-4", children: /* @__PURE__ */ jsxRuntime.jsx(
+            "div",
+            {
+              className: clsx("im-modal-positioner flex min-h-full justify-center", {
+                "items-start": config.position === "top",
+                "items-center": config.position === "center",
+                "items-end": config.position === "bottom"
+              }),
+              children: /* @__PURE__ */ jsxRuntime.jsx(
+                "div",
+                {
+                  ref: nativeWrapperRef,
+                  className: clsx("im-modal-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
+                  children: renderContent()
+                }
+              )
+            }
+          ) })
+        }
+      );
+    }
+    if (!isRendered) return null;
+    return /* @__PURE__ */ jsxRuntime.jsx(
+      "div",
+      {
+        className: "im-modal-container fixed inset-0 z-40 overflow-y-auto p-4",
+        onMouseDown: handleClickOutside,
+        children: /* @__PURE__ */ jsxRuntime.jsx(
+          "div",
+          {
+            className: clsx("im-modal-positioner flex min-h-full justify-center", {
+              "items-start": config.position === "top",
+              "items-center": config.position === "center",
+              "items-end": config.position === "bottom"
+            }),
+            onMouseDown: handleClickOutside,
+            children: /* @__PURE__ */ jsxRuntime.jsxs(
+              "div",
+              {
+                ref: wrapperRef,
+                role: "dialog",
+                "aria-modal": "true",
+                className: clsx("im-modal-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx("span", { className: "sr-only", children: "Dialog" }),
+                  renderContent()
+                ]
+              }
+            )
+          }
+        )
+      }
+    );
+  };
+  const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }) => {
+    const [isRendered, setIsRendered] = React.useState(false);
+    const [isVisible, setIsVisible] = React.useState(false);
+    const [entered, setEntered] = React.useState(false);
+    const wrapperRef = React.useRef(null);
+    const dialogRef = React.useRef(null);
+    const nativeWrapperRef = React.useRef(null);
+    const cleanupFocusTrapRef = React.useRef(null);
+    const cleanupEscapeKeyRef = React.useRef(null);
+    const isLeft = config.position === "left";
+    const maxWidthClass = React.useMemo(() => getMaxWidthClass(config.maxWidth), [config.maxWidth]);
+    const getTranslateX = React.useCallback(() => isLeft ? "-100%" : "100%", [isLeft]);
+    const animateIn = React.useCallback(
+      async (element) => {
+        if (!element) return;
+        setIsVisible(true);
+        const translateX = getTranslateX();
+        await vanilla.animate(element, [
+          { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
+          { transform: "translate3d(0, 0, 0)", opacity: 1 }
+        ]);
+        setEntered(true);
+      },
+      [getTranslateX]
+    );
+    const animateOut = React.useCallback(
+      async (element) => {
+        if (!element) return;
+        setIsVisible(false);
+        const translateX = getTranslateX();
+        await vanilla.animate(element, [
+          { transform: "translate3d(0, 0, 0)", opacity: 1 },
+          { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
+        ]);
+        setIsRendered(false);
+        if (useNativeDialog && dialogRef.current) {
+          dialogRef.current.close();
+        }
+        onAfterLeave?.();
+        modalContext.afterLeave();
+      },
+      [getTranslateX, useNativeDialog, onAfterLeave, modalContext]
+    );
+    const setupFocusTrap = React.useCallback(() => {
+      if (useNativeDialog) return;
+      if (!wrapperRef.current || !modalContext.onTopOfStack) return;
+      if (cleanupFocusTrapRef.current) return;
+      cleanupFocusTrapRef.current = vanilla.createFocusTrap(wrapperRef.current, {
+        initialFocus: true,
+        returnFocus: false
+      });
+    }, [modalContext.onTopOfStack, useNativeDialog]);
+    const cleanupFocusTrap = React.useCallback(() => {
+      if (cleanupFocusTrapRef.current) {
+        cleanupFocusTrapRef.current();
+        cleanupFocusTrapRef.current = null;
+      }
+    }, []);
+    const setupEscapeKey = React.useCallback(() => {
+      if (useNativeDialog) return;
+      if (cleanupEscapeKeyRef.current) return;
+      if (config?.closeExplicitly) return;
+      cleanupEscapeKeyRef.current = vanilla.onEscapeKey(() => {
+        if (modalContext.onTopOfStack) {
+          modalContext.close();
+        }
+      });
+    }, [config?.closeExplicitly, modalContext, useNativeDialog]);
+    const cleanupEscapeKey = React.useCallback(() => {
+      if (cleanupEscapeKeyRef.current) {
+        cleanupEscapeKeyRef.current();
+        cleanupEscapeKeyRef.current = null;
+      }
+    }, []);
+    const handleClickOutside = React.useCallback(
+      (event) => {
+        if (useNativeDialog) return;
+        if (!modalContext.onTopOfStack) return;
+        if (config?.closeExplicitly) return;
+        if (config?.closeOnClickOutside === false) return;
+        if (!wrapperRef.current) return;
+        if (!wrapperRef.current.contains(event.target)) {
+          modalContext.close();
+        }
+      },
+      [modalContext, config?.closeExplicitly, config?.closeOnClickOutside, useNativeDialog]
+    );
+    const handleCancel = React.useCallback(
+      (event) => {
+        event.preventDefault();
+        if (modalContext.onTopOfStack && !config?.closeExplicitly) {
+          modalContext.close();
+        }
+      },
+      [modalContext, config?.closeExplicitly]
+    );
+    const handleDialogClick = React.useCallback(
+      (event) => {
+        if (event.target === dialogRef.current) {
+          if (modalContext.onTopOfStack && !config?.closeExplicitly && config?.closeOnClickOutside !== false) {
+            modalContext.close();
+          }
+        }
+      },
+      [modalContext, config?.closeExplicitly, config?.closeOnClickOutside]
+    );
+    const prevIsOpenRef = React.useRef(modalContext.isOpen);
+    React.useEffect(() => {
+      if (useNativeDialog) {
+        if (modalContext.isOpen && !dialogRef.current?.open) {
+          dialogRef.current?.showModal();
+          animateIn(nativeWrapperRef.current);
+        } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+          setEntered(false);
+          animateOut(nativeWrapperRef.current);
+        }
+      } else {
+        if (modalContext.isOpen && !isRendered) {
+          setIsRendered(true);
+        } else if (!modalContext.isOpen && prevIsOpenRef.current) {
+          setEntered(false);
+          animateOut(wrapperRef.current);
+        }
+      }
+      prevIsOpenRef.current = modalContext.isOpen;
+    }, [modalContext.isOpen, useNativeDialog, animateIn, animateOut, isRendered]);
+    React.useEffect(() => {
+      if (!useNativeDialog && isRendered && !entered && modalContext.isOpen) {
+        animateIn(wrapperRef.current).then(() => {
+          setupFocusTrap();
+        });
+      }
+    }, [isRendered, useNativeDialog, entered, modalContext.isOpen, animateIn, setupFocusTrap]);
+    React.useEffect(() => {
+      if (!useNativeDialog) {
+        setupEscapeKey();
+      }
+      return () => {
+        cleanupEscapeKey();
+      };
+    }, [useNativeDialog, setupEscapeKey, cleanupEscapeKey]);
+    React.useEffect(() => {
+      if (useNativeDialog) return;
+      if (modalContext.onTopOfStack) {
+        setupEscapeKey();
+        if (entered) {
+          setupFocusTrap();
+        }
+      } else {
+        cleanupFocusTrap();
+        cleanupEscapeKey();
+      }
+    }, [modalContext.onTopOfStack, entered, setupEscapeKey, setupFocusTrap, cleanupFocusTrap, cleanupEscapeKey, useNativeDialog]);
+    React.useEffect(() => {
+      return () => {
+        const wrapper = useNativeDialog ? nativeWrapperRef.current : wrapperRef.current;
+        if (wrapper) {
+          vanilla.cancelAnimations(wrapper);
+        }
+        if (useNativeDialog) {
+          if (dialogRef.current?.open) {
+            dialogRef.current.close();
+          }
+        } else {
+          cleanupFocusTrap();
+          cleanupEscapeKey();
+        }
+      };
+    }, [useNativeDialog, cleanupFocusTrap, cleanupEscapeKey]);
+    const renderContent = () => /* @__PURE__ */ jsxRuntime.jsxs(
+      "div",
+      {
+        className: `im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`,
+        "data-inertiaui-modal-entered": entered,
+        children: [
+          config.closeButton && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "absolute right-0 top-0 pr-3 pt-3", children: /* @__PURE__ */ jsxRuntime.jsx(CloseButton, { onClick: modalContext.close }) }),
+          typeof children === "function" ? children({ modalContext, config }) : children
+        ]
+      }
+    );
+    if (useNativeDialog) {
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        "dialog",
+        {
+          ref: dialogRef,
+          className: clsx(
+            "im-slideover-dialog m-0 overflow-visible bg-transparent p-0",
+            "size-full max-h-none max-w-none",
+            "backdrop:bg-black/75 backdrop:transition-opacity backdrop:duration-300",
+            isVisible ? "backdrop:opacity-100" : "backdrop:opacity-0",
+            !isFirstModal && "backdrop:bg-transparent"
+          ),
+          onCancel: handleCancel,
+          onClick: handleDialogClick,
+          children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden", children: /* @__PURE__ */ jsxRuntime.jsx(
+            "div",
+            {
+              className: clsx("im-slideover-positioner flex min-h-full items-center", {
+                "justify-start rtl:justify-end": config?.position === "left",
+                "justify-end rtl:justify-start": config?.position === "right"
+              }),
+              children: /* @__PURE__ */ jsxRuntime.jsx(
+                "div",
+                {
+                  ref: nativeWrapperRef,
+                  className: clsx("im-slideover-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
+                  children: renderContent()
+                }
+              )
+            }
+          ) })
+        }
+      );
+    }
+    if (!isRendered) return null;
+    return /* @__PURE__ */ jsxRuntime.jsx(
+      "div",
+      {
+        className: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
+        onMouseDown: handleClickOutside,
+        children: /* @__PURE__ */ jsxRuntime.jsx(
+          "div",
+          {
+            className: clsx("im-slideover-positioner flex min-h-full items-center", {
+              "justify-start rtl:justify-end": config?.position === "left",
+              "justify-end rtl:justify-start": config?.position === "right"
+            }),
+            onMouseDown: handleClickOutside,
+            children: /* @__PURE__ */ jsxRuntime.jsxs(
+              "div",
+              {
+                ref: wrapperRef,
+                role: "dialog",
+                "aria-modal": "true",
+                className: clsx("im-slideover-wrapper w-full transition-[filter] duration-300", modalContext.onTopOfStack ? "" : "blur-xs", maxWidthClass),
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx("span", { className: "sr-only", children: "Dialog" }),
+                  renderContent()
+                ]
+              }
+            )
+          }
+        )
+      }
+    );
+  };
+  const Modal = React.forwardRef(
+    (allProps, ref) => {
+      const { name, children, onFocus, onBlur, onClose, onSuccess, onAfterLeave, ...props } = allProps;
+      const renderChildren = (contentProps) => {
+        if (typeof children === "function") {
+          return children(contentProps);
+        }
+        return children;
+      };
+      const headlessModalRef = React.useRef(null);
+      const cleanupScrollLockRef = React.useRef(null);
+      const cleanupAriaHiddenRef = React.useRef(null);
+      const [rendered, setRendered] = React.useState(false);
+      const useNativeDialog = React.useMemo(() => getConfig("useNativeDialog"), []);
+      React.useImperativeHandle(ref, () => headlessModalRef.current, [headlessModalRef]);
+      React.useEffect(() => {
+        return () => {
+          cleanupScrollLockRef.current?.();
+          cleanupAriaHiddenRef.current?.();
+        };
+      }, []);
+      const handleSuccess = React.useCallback(() => {
+        onSuccess?.();
+        if (!cleanupScrollLockRef.current) {
+          cleanupScrollLockRef.current = vanilla.lockScroll();
+          cleanupAriaHiddenRef.current = vanilla.markAriaHidden(getConfig("appElement"));
+        }
+      }, [onSuccess]);
+      const handleClose = React.useCallback(() => {
+        onClose?.();
+        cleanupScrollLockRef.current?.();
+        cleanupAriaHiddenRef.current?.();
+        cleanupScrollLockRef.current = null;
+        cleanupAriaHiddenRef.current = null;
+      }, [onClose]);
+      const handleAfterLeave = React.useCallback(() => {
+        onAfterLeave?.();
+      }, [onAfterLeave]);
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        HeadlessModal,
+        {
+          ref: headlessModalRef,
+          name,
+          onFocus: onFocus ?? void 0,
+          onBlur: onBlur ?? void 0,
+          onClose: handleClose,
+          onSuccess: handleSuccess,
+          ...props,
+          children: ({
+            afterLeave,
+            close,
+            config,
+            emit,
+            getChildModal,
+            getParentModal,
+            id,
+            index,
+            isOpen,
+            modalContext,
+            onTopOfStack,
+            reload,
+            setOpen,
+            shouldRender,
+            ...extraProps
+          }) => /* @__PURE__ */ jsxRuntime.jsx(ModalPortal, { children: /* @__PURE__ */ jsxRuntime.jsxs(
+            "div",
+            {
+              className: "im-dialog relative z-20",
+              "data-inertiaui-modal-id": id,
+              "data-inertiaui-modal-index": index,
+              "aria-hidden": !onTopOfStack,
+              children: [
+                index === 0 && !useNativeDialog && /* @__PURE__ */ jsxRuntime.jsx(
+                  BackdropTransition,
+                  {
+                    show: isOpen,
+                    appear: !rendered,
+                    onAfterAppear: () => setRendered(true)
+                  }
+                ),
+                config.slideover ? /* @__PURE__ */ jsxRuntime.jsx(
+                  SlideoverContent,
+                  {
+                    modalContext,
+                    config,
+                    useNativeDialog,
+                    isFirstModal: index === 0,
+                    onAfterLeave: handleAfterLeave,
+                    children: renderChildren({
+                      ...extraProps,
+                      afterLeave,
+                      close,
+                      config,
+                      emit,
+                      getChildModal,
+                      getParentModal,
+                      id,
+                      index,
+                      isOpen,
+                      modalContext,
+                      onTopOfStack,
+                      reload,
+                      setOpen,
+                      shouldRender
+                    })
+                  }
+                ) : /* @__PURE__ */ jsxRuntime.jsx(
+                  ModalContent,
+                  {
+                    modalContext,
+                    config,
+                    useNativeDialog,
+                    isFirstModal: index === 0,
+                    onAfterLeave: handleAfterLeave,
+                    children: renderChildren({
+                      ...extraProps,
+                      afterLeave,
+                      close,
+                      config,
+                      emit,
+                      getChildModal,
+                      getParentModal,
+                      id,
+                      index,
+                      isOpen,
+                      modalContext,
+                      onTopOfStack,
+                      reload,
+                      setOpen,
+                      shouldRender
+                    })
+                  }
+                )
+              ]
+            }
+          ) })
+        }
+      );
+    }
+  );
+  function ModalPortal({ children }) {
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => {
+      setMounted(true);
+    }, []);
+    if (!mounted) return null;
+    return reactDom.createPortal(children, document.body);
+  }
+  function BackdropTransition({ show, appear, onAfterAppear }) {
+    const [state, setState] = React.useState(() => {
+      if (appear && show) return "entering";
+      return show ? "entered" : "exited";
+    });
+    const initialRender = React.useRef(true);
+    const backdropRef = React.useRef(null);
+    React.useEffect(() => {
+      if (initialRender.current) {
+        initialRender.current = false;
+        if (appear && show) {
+          requestAnimationFrame(() => {
+            setState("entered");
+            const backdrop = backdropRef.current;
+            if (backdrop) {
+              const onTransitionEnd = (e) => {
+                if (e.target !== backdrop) return;
+                backdrop.removeEventListener("transitionend", onTransitionEnd);
+                onAfterAppear?.();
+              };
+              backdrop.addEventListener("transitionend", onTransitionEnd);
+            }
+          });
+        }
+        return;
+      }
+      if (show) {
+        setState("entering");
+        requestAnimationFrame(() => {
+          setState("entered");
+        });
+      } else {
+        setState("leaving");
+        const backdrop = backdropRef.current;
+        if (backdrop) {
+          const onTransitionEnd = (e) => {
+            if (e.target !== backdrop) return;
+            backdrop.removeEventListener("transitionend", onTransitionEnd);
+            setState("exited");
+          };
+          backdrop.addEventListener("transitionend", onTransitionEnd);
+        }
+      }
+    }, [show, appear, onAfterAppear]);
+    if (state === "exited") return null;
+    const isVisible = state === "entered";
+    return /* @__PURE__ */ jsxRuntime.jsx(
+      "div",
+      {
+        ref: backdropRef,
+        className: `im-backdrop fixed inset-0 z-30 bg-black/75 transition-opacity duration-300 ease-in-out ${isVisible ? "opacity-100" : "opacity-0"}`,
+        "aria-hidden": "true"
+      }
+    );
+  }
+  Modal.displayName = "Modal";
+  const ModalLink = ({
+    href,
+    method = "get",
+    data = {},
+    as: Component = "a",
+    headers = {},
+    queryStringArrayFormat = "brackets",
+    onAfterLeave,
+    onBlur,
+    onClose,
+    onError,
+    onFocus,
+    onStart,
+    onSuccess,
+    onPrefetching,
+    onPrefetched,
+    navigate,
+    prefetch: prefetch$1 = false,
+    cacheFor = 3e4,
+    children,
+    ...props
+  }) => {
+    const [loading, setLoading] = React.useState(false);
+    const [modalContext, setModalContext] = React.useState(null);
+    const { stack, visit } = useModalStack();
+    const hoverTimeout = React.useRef(null);
+    const shouldNavigate = React.useMemo(() => {
+      return navigate ?? getConfig("navigate");
+    }, [navigate]);
+    const prefetchModes = React.useMemo(() => {
+      if (prefetch$1 === true) {
+        return ["hover"];
+      }
+      if (prefetch$1 === false) {
+        return [];
+      }
+      if (Array.isArray(prefetch$1)) {
+        return prefetch$1;
+      }
+      return [prefetch$1];
+    }, [prefetch$1]);
+    const doPrefetch = React.useCallback(() => {
+      prefetch(href, {
+        method,
+        data,
+        headers,
+        queryStringArrayFormat,
+        cacheFor,
+        onPrefetching: onPrefetching ?? void 0,
+        onPrefetched: onPrefetched ?? void 0
+      });
+    }, [href, method, data, headers, queryStringArrayFormat, cacheFor, onPrefetching, onPrefetched]);
+    const handleMouseEnter = React.useCallback(() => {
+      if (!prefetchModes.includes("hover")) return;
+      hoverTimeout.current = setTimeout(() => {
+        doPrefetch();
+      }, 75);
+    }, [prefetchModes, doPrefetch]);
+    const handleMouseLeave = React.useCallback(() => {
+      if (hoverTimeout.current) {
+        clearTimeout(hoverTimeout.current);
+        hoverTimeout.current = null;
+      }
+    }, []);
+    const handleMouseDown = React.useCallback(
+      (event) => {
+        if (!prefetchModes.includes("click")) return;
+        if (event.button !== 0) return;
+        doPrefetch();
+      },
+      [prefetchModes, doPrefetch]
+    );
+    React.useEffect(() => {
+      if (prefetchModes.includes("mount")) {
+        doPrefetch();
+      }
+    }, []);
+    React.useEffect(() => {
+      return () => {
+        if (hoverTimeout.current) {
+          clearTimeout(hoverTimeout.current);
+        }
+      };
+    }, []);
+    const standardProps = {};
+    const customEvents = {};
+    Object.keys(props).forEach((key) => {
+      if (modalPropNames.includes(key)) {
+        return;
+      }
+      if (key.startsWith("on") && typeof props[key] === "function") {
+        if (vanilla.isStandardDomEvent(key)) {
+          standardProps[key] = props[key];
+        } else {
+          customEvents[key] = props[key];
+        }
+      } else {
+        standardProps[key] = props[key];
+      }
+    });
+    const [isBlurred, setIsBlurred] = React.useState(false);
+    React.useEffect(() => {
+      if (!modalContext) {
+        return;
+      }
+      if (modalContext.onTopOfStack && isBlurred) {
+        onFocus?.();
+      } else if (!modalContext.onTopOfStack && !isBlurred) {
+        onBlur?.();
+      }
+      setIsBlurred(!modalContext.onTopOfStack);
+    }, [stack]);
+    const onCloseCallback = React.useCallback(() => {
+      onClose?.();
+    }, [onClose]);
+    const onAfterLeaveCallback = React.useCallback(() => {
+      setModalContext(null);
+      onAfterLeave?.();
+    }, [onAfterLeave]);
+    const handle = React.useCallback(
+      (e) => {
+        e?.preventDefault();
+        if (loading) return;
+        if (!href.startsWith("#")) {
+          setLoading(true);
+          onStart?.();
+        }
+        visit(
+          href,
+          method,
+          data,
+          headers,
+          vanilla.rejectNullValues(vanilla.only(props, modalPropNames)),
+          () => onCloseCallback(),
+          onAfterLeaveCallback,
+          queryStringArrayFormat,
+          shouldNavigate
+        ).then((newModalContext) => {
+          setModalContext(newModalContext);
+          newModalContext.registerEventListenersFromProps(customEvents);
+          onSuccess?.();
+        }).catch((error) => {
+          console.error(error);
+          onError?.(error);
+        }).finally(() => setLoading(false));
+      },
+      [href, method, data, headers, queryStringArrayFormat, props, onCloseCallback, onAfterLeaveCallback]
+    );
+    return /* @__PURE__ */ jsxRuntime.jsx(
+      Component,
+      {
+        ...standardProps,
+        href,
+        onClick: handle,
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+        onMouseDown: handleMouseDown,
+        children: typeof children === "function" ? children({ loading }) : children
+      }
+    );
+  };
+  const WhenVisible = ({ children, data, params, buffer, as, always, fallback }) => {
+    always = always ?? false;
+    as = as ?? "div";
+    fallback = fallback ?? null;
+    const [loaded, setLoaded] = React.useState(false);
+    const hasFetched = React.useRef(false);
+    const fetching = React.useRef(false);
+    const ref = React.useRef(null);
+    const modal = useModal();
+    const getReloadParams = React.useCallback(() => {
+      if (data) {
+        return {
+          only: Array.isArray(data) ? data : [data]
+        };
+      }
+      if (!params) {
+        throw new Error("You must provide either a `data` or `params` prop.");
+      }
+      return params;
+    }, [params, data]);
+    React.useEffect(() => {
+      if (!ref.current) {
+        return;
+      }
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (!entries[0].isIntersecting) {
+            return;
+          }
+          if (!always && hasFetched.current) {
+            observer.disconnect();
+          }
+          if (fetching.current) {
+            return;
+          }
+          hasFetched.current = true;
+          fetching.current = true;
+          const reloadParams = getReloadParams();
+          modal?.reload({
+            ...reloadParams,
+            onStart: () => {
+              fetching.current = true;
+              reloadParams.onStart?.();
+            },
+            onFinish: () => {
+              setLoaded(true);
+              fetching.current = false;
+              reloadParams.onFinish?.();
+              if (!always) {
+                observer.disconnect();
+              }
+            }
+          });
+        },
+        {
+          rootMargin: `${buffer || 0}px`
+        }
+      );
+      observer.observe(ref.current);
+      return () => {
+        observer.disconnect();
+      };
+    }, [ref, getReloadParams, buffer]);
+    if (always || !loaded) {
+      return React.createElement(
+        as,
+        {
+          props: null,
+          ref
+        },
+        loaded ? children : fallback
+      );
+    }
+    return loaded ? children : null;
+  };
+  WhenVisible.displayName = "InertiaWhenVisible";
+  const setPageLayout = (layout) => (module2) => {
+    module2.default.layout = (page) => React.createElement(layout, { children: page });
+    return module2;
+  };
+  exports2.dialogUtils = vanilla__namespace;
+  exports2.Deferred = Deferred;
+  exports2.HeadlessModal = HeadlessModal;
+  exports2.Modal = Modal;
+  exports2.ModalLink = ModalLink;
+  exports2.ModalRoot = ModalRoot;
+  exports2.ModalStackProvider = ModalStackProvider;
+  exports2.WhenVisible = WhenVisible;
+  exports2.getConfig = getConfig;
+  exports2.initFromPageProps = initFromPageProps;
+  exports2.modalPropNames = modalPropNames;
+  exports2.prefetch = prefetch;
+  exports2.putConfig = putConfig;
+  exports2.renderApp = renderApp;
+  exports2.resetConfig = resetConfig;
+  exports2.setPageLayout = setPageLayout;
+  exports2.useModal = useModal;
+  exports2.useModalIndex = useModalIndex;
+  exports2.useModalStack = useModalStack;
+  Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
+}));
+//# sourceMappingURL=inertiaui-modal.umd.cjs.map

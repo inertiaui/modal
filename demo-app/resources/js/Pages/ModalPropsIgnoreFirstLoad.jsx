@@ -10,12 +10,12 @@ export default function ModalPropsIgnoreFirstLoad({ deferA, deferB, lazy, option
                 <>
                     <Deferred
                         data={['deferA', 'deferB']}
-                        fallback={<p dusk="defer">Loading defer...</p>}
+                        fallback={<p data-testid="defer">Loading defer...</p>}
                     >
-                        <p dusk="defer" className="text-green-500">
+                        <p data-testid="defer" className="text-green-500">
                             {deferA}
                         </p>
-                        <p dusk="defer-b" className="text-green-500">
+                        <p data-testid="defer-b" className="text-green-500">
                             {deferB}
                         </p>
                     </Deferred>
@@ -28,7 +28,7 @@ export default function ModalPropsIgnoreFirstLoad({ deferA, deferB, lazy, option
                         >
                             Load lazy
                         </button>
-                        <p dusk="lazy" className={lazy ? "text-green-500" : ""}>
+                        <p data-testid="lazy" className={lazy ? "text-green-500" : ""}>
                             {lazy ?? "No lazy data loaded"}
                         </p>
                     </div>
@@ -45,9 +45,9 @@ export default function ModalPropsIgnoreFirstLoad({ deferA, deferB, lazy, option
                             <WhenVisible
                                 data="optional"
                                 always={true}
-                                fallback={<p dusk="optional">Loading optional...</p>}
+                                fallback={<p data-testid="optional">Loading optional...</p>}
                             >
-                                <p dusk="optional" className="text-green-500">
+                                <p data-testid="optional" className="text-green-500">
                                     {optional}
                                 </p>
                             </WhenVisible>

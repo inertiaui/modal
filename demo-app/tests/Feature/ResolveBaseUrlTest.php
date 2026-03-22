@@ -220,8 +220,9 @@ class ResolveBaseUrlTest extends TestCase
         $user = UserFactory::new()->create();
         $modalUrl = route('users.edit', $user);
 
+        // Direct URL visit (no X-InertiaUI-Modal header) triggers dual-request
+        // The referer matches the modal URL, so it should fall back to the configured base URL
         $this->getJson($modalUrl, [
-            Modal::HEADER_USE_ROUTER => '1',
             'referer' => $modalUrl,
         ])
             ->assertOk()

@@ -10,7 +10,7 @@ import { ModalLink } from '@inertiaui/modal-vue'
         </div>
 
         <ModalLink
-            dusk="modal-link"
+            data-testid="modal-link"
             href="/roles/create"
             :headers="{ 'X-Test-Header': 'Test Header Value' }"
         >

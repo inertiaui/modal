@@ -1,9 +1,16 @@
-import { onMounted, nextTick, watch } from 'vue'
+import { h, onMounted, nextTick, watch } from 'vue'
 import { inBrowser, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
+import VersionBanner from './VersionBanner.vue'
 
 export default {
     extends: DefaultTheme,
+
+    Layout() {
+        return h(DefaultTheme.Layout, null, {
+            'doc-before': () => h(VersionBanner),
+        })
+    },
 
     setup() {
         if (inBrowser) {

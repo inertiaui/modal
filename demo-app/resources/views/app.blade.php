@@ -10,13 +10,20 @@
         @routes
 
         @if(config('app.stack') === 'react')
-            @viteReactRefresh
             @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @else
             @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @endif
 
         @inertiaHead
+
+        @if(app()->environment('testing'))
+            <style>
+                *[class*="duration-"] {
+                    transition-duration: 0ms !important;
+                }
+            </style>
+        @endif
     </head>
 
     <body class="font-sans antialiased dark:bg-gray-950 dark:text-white bg-gray-100">

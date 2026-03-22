@@ -8,6 +8,6 @@ defineProps({
 
 <template>
     <Modal>
-        <p dusk="message">{{ message }}</p>
+        <p data-testid="message">{{ message }}</p>
     </Modal>
 </template>
