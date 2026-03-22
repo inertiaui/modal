@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace InertiaUI\Modal;
 
+use Illuminate\Http\RedirectResponse;
+
 if (! function_exists('back_from_modal')) {
     /**
      * Create a new redirect response to the previous location or a modal base URL.
@@ -11,7 +13,7 @@ if (! function_exists('back_from_modal')) {
      * @param  int  $status
      * @param  array  $headers
      * @param  bool  $fallback
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     function back_from_modal($status = 302, $headers = [], $fallback = false)
     {

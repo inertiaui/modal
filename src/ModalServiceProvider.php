@@ -27,7 +27,7 @@ class ModalServiceProvider extends ServiceProvider
 
         // Add a 'modal' macro to ResponseFactory for convenient modal creation
         // like Inertia::modal('Component', ['prop' => 'value'])
-        ResponseFactory::macro('modal', fn ($component, $props = []): \InertiaUI\Modal\Modal => new Modal($component, $props));
+        ResponseFactory::macro('modal', fn ($component, $props = []): Modal => new Modal($component, $props));
 
         // Register a callback to reset the BladeRouteGenerator state before
         // rendering the Base Route/URL with the Modal component.
@@ -63,7 +63,7 @@ class ModalServiceProvider extends ServiceProvider
             ];
         });
 
-        $this->app->singleton('inertiaui_modal_redirector', function ($app): \InertiaUI\Modal\Redirector {
+        $this->app->singleton('inertiaui_modal_redirector', function (array $app): Redirector {
             $redirector = new Redirector($app['url']);
 
             // If the session is set on the application instance, we'll inject it into

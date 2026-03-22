@@ -22,6 +22,5 @@ if [ ! -f .env ]; then
 fi
 
 php artisan key:generate
-php artisan dusk:chrome-driver --detect
 touch database/database.sqlite
 php artisan migrate:fresh --seed

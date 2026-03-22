@@ -10,7 +10,6 @@
     },
     "require-dev": {
         "larastan/larastan": "^2.9||^3.9",
-        "laravel/dusk": "^8.3",
         "laravel/pint": "^1.14",
         "orchestra/testbench": "^9.1||^10.0||^11.0",
         "rector/rector": "^1.0.3||^2.3"
@@ -56,7 +55,7 @@
         ],
         "update-react": "cd react && npm upgrade",
         "update-vue": "cd vue && npm upgrade",
-        "update-demo-app": "cd demo-app && composer update && npm upgrade && php artisan dusk:chrome-driver --detect",
+        "update-demo-app": "cd demo-app && composer update && npm upgrade",
         "update-all": [
             "composer update",
             "@update-react",
