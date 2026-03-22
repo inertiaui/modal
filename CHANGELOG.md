@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 2.0.1 - 2026-03-22
+
+### What's Changed
+
+* Bump actions/upload-artifact from 6 to 7 by @dependabot[bot] in https://github.com/inertiaui/modal/pull/190
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/2.0.0...2.0.1
+
 ## 2.0.0 - 2026-03-22
 
 ### What's Changed
