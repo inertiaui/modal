@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: pest-artifacts-${{ matrix.laravel }}-${{ matrix.stack }}-${{ matrix.app_mounting }}-${{ matrix.native_dialog }}
           path: |
