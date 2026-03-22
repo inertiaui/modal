@@ -4,9 +4,46 @@ const v0Sidebar = [
   {
     text: 'Getting Started',
     items: [
+      { text: 'Introduction', link: '/v0/introduction' },
+      { text: 'Requirements', link: '/v0/requirements' },
+      { text: 'Installation', link: '/v0/installation' },
+    ]
+  },
+  {
+    text: 'Usage',
+    items: [
+      { text: 'Basic Usage', link: '/v0/basic-usage' },
+      { text: 'Configuration', link: '/v0/configuration' },
+      { text: 'Modal Props', link: '/v0/modal-props' },
+      { text: 'Base Route / URL', link: '/v0/base-route-url' },
+      { text: 'Close Modal', link: '/v0/close-modal' },
+      { text: 'Event Bus', link: '/v0/event-bus' },
+      { text: 'Nested / Stacked Modals', link: '/v0/nested-stacked-modals' },
+      { text: 'Reload Props', link: '/v0/reload-props' },
+      { text: 'Lazy Props', link: '/v0/lazy-props' },
+      { text: 'Deferred Props', link: '/v0/deferred-props' },
+      { text: 'Load When Visible', link: '/v0/load-when-visible' },
+      { text: 'Local Modals', link: '/v0/local-modals' },
+      { text: 'Styling', link: '/v0/styling' },
+    ]
+  },
+  {
+    text: 'Advanced',
+    items: [
+      { text: 'Custom App Mounting', link: '/v0/custom-app-mounting' },
+      { text: 'Headless Mode', link: '/v0/headless-mode' },
+    ]
+  }
+]
+
+const v2Sidebar = [
+  {
+    text: 'Getting Started',
+    items: [
       { text: 'Introduction', link: '/introduction' },
       { text: 'Requirements', link: '/requirements' },
       { text: 'Installation', link: '/installation' },
+      { text: 'Upgrade Guide', link: '/upgrade-guide' },
     ]
   },
   {
@@ -36,46 +73,9 @@ const v0Sidebar = [
   }
 ]
 
-const v2Sidebar = [
-  {
-    text: 'Getting Started',
-    items: [
-      { text: 'Introduction', link: '/v2/introduction' },
-      { text: 'Requirements', link: '/v2/requirements' },
-      { text: 'Installation', link: '/v2/installation' },
-      { text: 'Upgrade Guide', link: '/v2/upgrade-guide' },
-    ]
-  },
-  {
-    text: 'Usage',
-    items: [
-      { text: 'Basic Usage', link: '/v2/basic-usage' },
-      { text: 'Configuration', link: '/v2/configuration' },
-      { text: 'Modal Props', link: '/v2/modal-props' },
-      { text: 'Base Route / URL', link: '/v2/base-route-url' },
-      { text: 'Close Modal', link: '/v2/close-modal' },
-      { text: 'Event Bus', link: '/v2/event-bus' },
-      { text: 'Nested / Stacked Modals', link: '/v2/nested-stacked-modals' },
-      { text: 'Reload Props', link: '/v2/reload-props' },
-      { text: 'Lazy Props', link: '/v2/lazy-props' },
-      { text: 'Deferred Props', link: '/v2/deferred-props' },
-      { text: 'Load When Visible', link: '/v2/load-when-visible' },
-      { text: 'Local Modals', link: '/v2/local-modals' },
-      { text: 'Styling', link: '/v2/styling' },
-    ]
-  },
-  {
-    text: 'Advanced',
-    items: [
-      { text: 'Custom App Mounting', link: '/v2/custom-app-mounting' },
-      { text: 'Headless Mode', link: '/v2/headless-mode' },
-    ]
-  }
-]
-
-// Build rewrites: v0/foo.md -> foo.md (v0 is default/stable)
-const v0Files = [
-  'introduction', 'requirements', 'installation',
+// Build rewrites: v2/foo.md -> foo.md (v2 is default/stable)
+const v2Files = [
+  'introduction', 'requirements', 'installation', 'upgrade-guide',
   'basic-usage', 'configuration', 'modal-props', 'base-route-url',
   'close-modal', 'event-bus', 'nested-stacked-modals', 'reload-props',
   'lazy-props', 'deferred-props', 'load-when-visible', 'local-modals',
@@ -83,8 +83,8 @@ const v0Files = [
 ]
 
 const rewrites = {}
-for (const file of v0Files) {
-  rewrites[`v0/${file}.md`] = `${file}.md`
+for (const file of v2Files) {
+  rewrites[`v2/${file}.md`] = `${file}.md`
 }
 
 // https://vitepress.dev/reference/site-config
@@ -109,10 +109,10 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       {
-        text: 'v0 (Stable)',
+        text: 'v2 (Stable)',
         items: [
-          { text: 'v0 (Stable)', link: '/introduction' },
-          { text: 'v2 (Beta)', link: '/v2/introduction' },
+          { text: 'v2 (Stable)', link: '/introduction' },
+          { text: 'v0 (Legacy)', link: '/v0/introduction' },
         ]
       },
       { text: 'Demo', link: 'https://www.youtube.com/watch?v=KAKOosmWV14' },
@@ -122,8 +122,8 @@ export default defineConfig({
     search: { provider: 'local' },
 
     sidebar: {
-      '/v2/': v2Sidebar,
-      '/': v0Sidebar,
+      '/v0/': v0Sidebar,
+      '/': v2Sidebar,
     },
 
     logoLink: process.env.NODE_ENV === 'production' ? '/inertia-modal/docs/introduction' : '/introduction',

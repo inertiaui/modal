@@ -14,28 +14,24 @@ const cleanPath = computed(() => {
   return route.path
 })
 
-const isV2 = computed(() => cleanPath.value.startsWith('/v2/') || cleanPath.value === '/v2')
-const isV0 = computed(() => !isV2.value && cleanPath.value !== '/')
+const isV0 = computed(() => cleanPath.value.startsWith('/v0/') || cleanPath.value === '/v0')
+const isV2 = computed(() => !isV0.value && cleanPath.value !== '/')
 
 const equivalentV2Path = computed(() => {
   if (!isV0.value) return null
-  return withBase('/v2' + cleanPath.value)
+  return withBase(cleanPath.value.replace(/^\/v0/, '') || '/introduction')
 })
 
 const equivalentV0Path = computed(() => {
   if (!isV2.value) return null
-  return withBase(cleanPath.value.replace(/^\/v2/, '') || '/introduction')
+  return withBase('/v0' + cleanPath.value)
 })
 </script>
 
 <template>
-  <div v-if="isV2" class="version-banner beta">
-    <strong>v2 (Beta)</strong> &mdash; You are viewing the v2 beta documentation.
-    <a v-if="equivalentV0Path" :href="equivalentV0Path">Switch to v0 (Stable) &rarr;</a>
-  </div>
-  <div v-else-if="isV0" class="version-banner stable">
-    Looking for the v2 beta docs?
-    <a v-if="equivalentV2Path" :href="equivalentV2Path">Switch to v2 (Beta) &rarr;</a>
+  <div v-if="isV0" class="version-banner beta">
+    <strong>v0 (Legacy)</strong> &mdash; You are viewing the legacy documentation.
+    <a v-if="equivalentV2Path" :href="equivalentV2Path">Switch to v2 (Stable) &rarr;</a>
   </div>
 </template>
 

@@ -92,7 +92,7 @@ export default function MyPage({ permissions, roles }) {
 
 ## Example with Nested / Stacked Modal
 
-The `reload` function is great to combine with [nested modals](/nested-stacked-modals). For example, you can reload the parent modal when the child modal is closed:
+The `reload` function is great to combine with [nested modals](/v0/nested-stacked-modals). For example, you can reload the parent modal when the child modal is closed:
 
 ::: code-group
 
