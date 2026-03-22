@@ -2,6 +2,25 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 2.0.0 - 2026-03-22
+
+### What's Changed
+
+* Fix umd path in package.json by @pascalbaljet in https://github.com/inertiaui/modal/pull/174
+* Bump dependencies by @pascalbaljet in https://github.com/inertiaui/modal/pull/175
+* Fix request loop caused by resolved Base URL by @pascalbaljet in https://github.com/inertiaui/modal/pull/176
+* Bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/inertiaui/modal/pull/185
+* Bump actions/cache from 4 to 5 by @dependabot[bot] in https://github.com/inertiaui/modal/pull/181
+* Bump actions/upload-artifact from 5 to 6 by @dependabot[bot] in https://github.com/inertiaui/modal/pull/182
+* Laravel 13.x Compatibility by @laravel-shift in https://github.com/inertiaui/modal/pull/192
+* v2 by @pascalbaljet in https://github.com/inertiaui/modal/pull/188
+
+### New Contributors
+
+* @laravel-shift made their first contribution in https://github.com/inertiaui/modal/pull/192
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/v1.0.0-beta.5...2.0.0
+
 ## 0.21.1 - 2025-06-17
 
 ### What's Changed
