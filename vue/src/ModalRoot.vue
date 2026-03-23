@@ -9,7 +9,7 @@ const modalStack = useModalStack()
 const $page = usePage()
 
 let isNavigating = false
-let initialModalStillOpened = false
+let initialModalStillOpened = !!$page.props?._inertiaui_modal
 const pendingModalKeys = new Set()
 
 // Generate a unique key for deduplication (handles case when modal has no id)
@@ -97,8 +97,9 @@ const requestInterceptor = (config) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
     // Only send the header when we have an actual base URL value
-    // Check modalStack first, then fall back to page props if a modal is still open from initial load
-    const baseUrlValue = modalStack.getBaseUrl() ?? $page.props?._inertiaui_modal?.baseUrl ?? null
+    // Check modalStack first, then fall back to page props only during initial load
+    // (before the modal has been processed by the navigate handler)
+    const baseUrlValue = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props?._inertiaui_modal?.baseUrl : null) ?? null
     if (baseUrlValue) {
         config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
     }
