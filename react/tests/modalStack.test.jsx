@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { ModalStackProvider, useModalStack, modalPropNames, initFromPageProps } from '../src/ModalRoot'
-import axios from 'axios'
 import { router } from '@inertiajs/react'
 import { usePage } from '@inertiajs/react'
 import { generateIdUsing } from '../src/helpers'
+
+const mockRequest = vi.fn()
 
 vi.mock('@inertiajs/react', () => ({
     router: {
@@ -16,9 +17,13 @@ vi.mock('@inertiajs/react', () => ({
         start: vi.fn(),
         finish: vi.fn(),
     },
+    http: {
+        getClient: () => ({
+            request: mockRequest,
+        }),
+        onRequest: vi.fn(() => vi.fn()),
+    },
 }))
-
-vi.mock('axios')
 
 const wrapper = ({ children }) => <ModalStackProvider>{children}</ModalStackProvider>
 
@@ -207,18 +212,18 @@ describe('modalStack', () => {
                 modal = result.current.push({}, response, {})
             })
 
-            vi.mocked(axios).mockResolvedValue({
-                data: { props: { test: 'updated', another: 'updated prop' } },
+            mockRequest.mockResolvedValue({
+                data: JSON.stringify({ props: { test: 'updated', another: 'updated prop' } }),
             })
 
             await act(async () => {
                 modal.reload()
             })
 
-            expect(axios).toHaveBeenCalledWith({
+            expect(mockRequest).toHaveBeenCalledWith({
                 method: 'get',
                 url: '/test',
-                data: {},
+                data: undefined,
                 params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
@@ -252,18 +257,18 @@ describe('modalStack', () => {
                 modal = result.current.push({}, response, {})
             })
 
-            vi.mocked(axios).mockResolvedValue({
-                data: { props: { test: 'updated' } },
+            mockRequest.mockResolvedValue({
+                data: JSON.stringify({ props: { test: 'updated' } }),
             })
 
             await act(async () => {
                 modal.reload({ only: ['test'] })
             })
 
-            expect(axios).toHaveBeenCalledWith({
+            expect(mockRequest).toHaveBeenCalledWith({
                 method: 'get',
                 url: '/test',
-                data: {},
+                data: undefined,
                 params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
@@ -297,18 +302,18 @@ describe('modalStack', () => {
                 modal = result.current.push({}, response, {})
             })
 
-            vi.mocked(axios).mockResolvedValue({
-                data: { props: { test: 'updated', third: 'updated value' } },
+            mockRequest.mockResolvedValue({
+                data: JSON.stringify({ props: { test: 'updated', third: 'updated value' } }),
             })
 
             await act(async () => {
                 modal.reload({ except: ['another'] })
             })
 
-            expect(axios).toHaveBeenCalledWith({
+            expect(mockRequest).toHaveBeenCalledWith({
                 method: 'get',
                 url: '/test',
-                data: {},
+                data: undefined,
                 params: {},
                 headers: {
                     Accept: 'text/html, application/xhtml+xml',
@@ -326,7 +331,7 @@ describe('modalStack', () => {
             expect(result.current.stack[0].props.third).toBe('updated value')
         })
 
-        it('should make an Axios request and push a new modal', async () => {
+        it('should make an HTTP request and push a new modal', async () => {
             generateIdUsing(() => 'inertiaui_modal_uuid')
 
             const mockComponent = { name: 'TestComponent' }
@@ -351,15 +356,15 @@ describe('modalStack', () => {
             const onAfterLeave = vi.fn()
 
             const mockResponse = {
-                data: {
+                data: JSON.stringify({
                     component: 'TestComponent',
                     props: { testProp: 'value' },
                     url: '/test-url',
                     version: '1',
-                },
+                }),
             }
 
-            vi.mocked(axios).mockResolvedValue(mockResponse)
+            mockRequest.mockResolvedValue(mockResponse)
 
             let modal
             await act(async () => {
@@ -367,7 +372,7 @@ describe('modalStack', () => {
             })
 
             // For GET requests, data is merged into URL query params, body is empty
-            expect(axios).toHaveBeenCalledWith({
+            expect(mockRequest).toHaveBeenCalledWith({
                 url: '/test-url?key=value',
                 method: 'get',
                 data: {},
@@ -384,7 +389,7 @@ describe('modalStack', () => {
 
             expect(modal).toBeDefined()
             expect(modal.component).toBe(mockComponent)
-            expect(modal.response).toEqual(mockResponse.data)
+            expect(modal.response).toEqual(JSON.parse(mockResponse.data))
             expect(modal.config).toEqual(config)
             expect(result.current.stack).toHaveLength(1)
         })
@@ -396,7 +401,7 @@ describe('modalStack', () => {
             const method = 'get'
 
             const mockError = new Error('Network Error')
-            vi.mocked(axios).mockRejectedValue(mockError)
+            mockRequest.mockRejectedValue(mockError)
 
             await expect(
                 act(async () => {
