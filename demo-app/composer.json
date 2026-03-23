@@ -8,7 +8,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^3.0@beta",
         "inertiaui/modal": "*",
-        "laravel/framework": "^11.11|^12.0|^13.0",
+        "laravel/framework": "^12.0|^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
         "tightenco/ziggy": "^2.0"
@@ -17,7 +17,7 @@
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^7.0|^8.0",
+        "nunomaduro/collision": "^8.0",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0"
