@@ -1,8 +1,7 @@
 import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
 import { generateId, except, kebabCase } from './helpers'
-import { router, usePage, progress } from '@inertiajs/vue3'
-import { mergeDataIntoQueryString, type RequestPayload } from '@inertiajs/core'
-import { default as Axios, type AxiosResponse } from 'axios'
+import { router, usePage, progress, http } from '@inertiajs/vue3'
+import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse } from '@inertiajs/core'
 import ModalRoot from './ModalRoot.vue'
 
 // Type definitions
@@ -29,7 +28,7 @@ export interface ReloadOptions {
     data?: Record<string, unknown>
     headers?: Record<string, string>
     onStart?: () => void
-    onSuccess?: (response: AxiosResponse) => void
+    onSuccess?: (response: HttpResponse) => void
     onError?: (error: unknown) => void
     onFinish?: () => void
 }
@@ -44,7 +43,7 @@ export interface VisitOptions {
     queryStringArrayFormat?: 'brackets' | 'indices'
     navigate?: boolean
     onStart?: () => void
-    onSuccess?: (response?: AxiosResponse) => void
+    onSuccess?: (response?: HttpResponse) => void
     onError?: (...args: unknown[]) => void
     listeners?: Record<string, (...args: unknown[]) => void>
     // Props to pass to local modals (#152)
@@ -79,19 +78,19 @@ let closingToBaseUrlTarget: string | null = null
 
 // Prefetch cache (#146)
 interface PrefetchCacheEntry {
-    response: AxiosResponse
+    response: HttpResponse
     timestamp: number
     expiresAt: number
 }
 
 const prefetchCache = new Map<string, PrefetchCacheEntry>()
-const prefetchInFlight = new Map<string, Promise<AxiosResponse>>()
+const prefetchInFlight = new Map<string, Promise<HttpResponse>>()
 
 function getPrefetchCacheKey(url: string, method: string, data: RequestPayload): string {
     return `${method}:${url}:${JSON.stringify(data)}`
 }
 
-function getCachedResponse(url: string, method: string, data: RequestPayload): AxiosResponse | null {
+function getCachedResponse(url: string, method: string, data: RequestPayload): HttpResponse | null {
     const key = getPrefetchCacheKey(url, method, data)
     const cached = prefetchCache.get(key)
 
@@ -107,7 +106,7 @@ function getCachedResponse(url: string, method: string, data: RequestPayload): A
     return cached.response
 }
 
-function setCachedResponse(url: string, method: string, data: RequestPayload, response: AxiosResponse, cacheFor: number): void {
+function setCachedResponse(url: string, method: string, data: RequestPayload, response: HttpResponse, cacheFor: number): void {
     const key = getPrefetchCacheKey(url, method, data)
     prefetchCache.set(key, {
         response,
@@ -154,7 +153,9 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
         'X-InertiaUI-Modal-Base-Url': baseUrl.value ?? '',
     }
 
-    const request = Axios({ url, method, data: mergedData, headers: requestHeaders })
+    const request = http
+        .getClient()
+        .request({ url, method: method as 'get' | 'post' | 'put' | 'patch' | 'delete', data: mergedData, headers: requestHeaders })
         .then((response) => {
             setCachedResponse(url, method, mergedData, response, cacheFor)
             options.onPrefetched?.()
@@ -405,24 +406,26 @@ export class Modal {
 
         options.onStart?.()
 
-        Axios({
-            url: this.response.url,
-            method,
-            data: method === 'get' ? {} : data,
-            params: method === 'get' ? data : {},
-            headers: {
-                ...(options.headers ?? {}),
-                Accept: 'text/html, application/xhtml+xml',
-                'X-Inertia': 'true',
-                'X-Inertia-Partial-Component': this.response.component,
-                'X-Inertia-Version': this.response.version ?? '',
-                'X-Inertia-Partial-Data': keys.join(','),
-                'X-InertiaUI-Modal': generateId(),
-                'X-InertiaUI-Modal-Base-Url': baseUrl.value ?? '',
-            },
-        })
+        http.getClient()
+            .request({
+                url: this.response.url,
+                method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+                data: method === 'get' ? undefined : data,
+                params: method === 'get' ? data : undefined,
+                headers: {
+                    ...(options.headers ?? {}),
+                    Accept: 'text/html, application/xhtml+xml',
+                    'X-Inertia': 'true',
+                    'X-Inertia-Partial-Component': this.response.component,
+                    'X-Inertia-Version': this.response.version ?? '',
+                    'X-Inertia-Partial-Data': keys.join(','),
+                    'X-InertiaUI-Modal': generateId(),
+                    'X-InertiaUI-Modal-Base-Url': baseUrl.value ?? '',
+                },
+            })
             .then((response) => {
-                this.updateProps(response.data.props)
+                const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+                this.updateProps(responseData.props)
                 options.onSuccess?.(response)
             })
             .catch((error) => {
@@ -527,7 +530,7 @@ function visit(
     queryStringArrayFormat: 'brackets' | 'indices' = 'brackets',
     useBrowserHistory: boolean = false,
     onStart: (() => void) | null = null,
-    onSuccess: ((response?: AxiosResponse) => void) | null = null,
+    onSuccess: ((response?: HttpResponse) => void) | null = null,
     onError: ((...args: unknown[]) => void) | null = null,
     props: Record<string, unknown> | null = null,
 ): Promise<Modal> {
@@ -544,10 +547,11 @@ function visit(
         // Check for cached prefetch response (#146)
         const cachedResponse = getCachedResponse(url, method, data)
         if (cachedResponse) {
+            const cachedData = typeof cachedResponse.data === 'string' ? JSON.parse(cachedResponse.data) : cachedResponse.data
             onSuccess?.(cachedResponse)
-            pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave)
+            pushFromResponseData(cachedData, config, onClose, onAfterLeave)
                 .then((modal) => {
-                    updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data)
+                    updateBrowserUrl(cachedData.url, useBrowserHistory, cachedData)
                     resolve(modal)
                 })
                 .catch(reject)
@@ -572,12 +576,14 @@ function visit(
 
         progress?.start()
 
-        Axios({ url, method, data, headers: requestHeaders })
+        http.getClient()
+            .request({ url, method: method as 'get' | 'post' | 'put' | 'patch' | 'delete', data, headers: requestHeaders })
             .then((response) => {
+                const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
                 onSuccess?.(response)
-                pushFromResponseData(response.data, config, onClose, onAfterLeave)
+                pushFromResponseData(responseData, config, onClose, onAfterLeave)
                     .then((modal) => {
-                        updateBrowserUrl(response.data.url, useBrowserHistory, response.data)
+                        updateBrowserUrl(responseData.url, useBrowserHistory, responseData)
                         resolve(modal)
                     })
                     .catch(reject)

@@ -1,6 +1,5 @@
-import type { AxiosResponse } from 'axios'
 import type { ComponentType, ReactNode } from 'react'
-import type { RequestPayload } from '@inertiajs/core'
+import type { RequestPayload, HttpResponse } from '@inertiajs/core'
 
 export interface ModalResponseData {
     id?: string
@@ -25,7 +24,7 @@ export interface ReloadOptions {
     data?: Record<string, unknown>
     headers?: Record<string, string>
     onStart?: () => void
-    onSuccess?: (response: AxiosResponse) => void
+    onSuccess?: (response: HttpResponse) => void
     onError?: (error: unknown) => void
     onFinish?: () => void
 }
@@ -40,7 +39,7 @@ export interface VisitOptions {
     queryStringArrayFormat?: 'brackets' | 'indices'
     navigate?: boolean
     onStart?: () => void
-    onSuccess?: (response?: AxiosResponse) => void
+    onSuccess?: (response?: HttpResponse) => void
     onError?: (...args: unknown[]) => void
     listeners?: Record<string, (...args: unknown[]) => void>
     // Props to pass to local modals (#152)
@@ -126,7 +125,7 @@ export interface ModalStackContextValue {
         queryStringArrayFormat?: 'brackets' | 'indices',
         useBrowserHistory?: boolean,
         onStart?: (() => void) | null,
-        onSuccess?: ((response?: AxiosResponse) => void) | null,
+        onSuccess?: ((response?: HttpResponse) => void) | null,
         onError?: ((...args: unknown[]) => void) | null,
     ) => Promise<Modal>
     visitModal: (url: string, options?: VisitOptions) => Promise<Modal>

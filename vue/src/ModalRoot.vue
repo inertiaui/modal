@@ -1,9 +1,8 @@
 <script setup>
 import { onMounted, onUnmounted, watch } from 'vue'
-import { router, usePage } from '@inertiajs/vue3'
+import { router, usePage, http } from '@inertiajs/vue3'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
-import { default as Axios } from 'axios'
 import { sameUrlPath } from './helpers'
 
 const modalStack = useModalStack()
@@ -94,7 +93,7 @@ onUnmounted(
     }),
 )
 
-const axiosRequestInterceptor = (config) => {
+const requestInterceptor = (config) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
     // Only send the header when we have an actual base URL value
@@ -107,9 +106,9 @@ const axiosRequestInterceptor = (config) => {
     return config
 }
 
-let axiosInterceptorId = null
-onMounted(() => (axiosInterceptorId = Axios.interceptors.request.use(axiosRequestInterceptor)))
-onUnmounted(() => axiosInterceptorId !== null && Axios.interceptors.request.eject(axiosInterceptorId))
+let removeInterceptor = null
+onMounted(() => (removeInterceptor = http.onRequest(requestInterceptor)))
+onUnmounted(() => removeInterceptor?.())
 
 watch(
     () => $page.props?._inertiaui_modal,

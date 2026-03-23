@@ -1,8 +1,7 @@
 import { createElement, useEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
-import { default as Axios, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { except, kebabCase, generateId, sameUrlPath } from './helpers'
-import { router, usePage, progress } from '@inertiajs/react'
-import { mergeDataIntoQueryString, type RequestPayload } from '@inertiajs/core'
+import { router, usePage, progress, http } from '@inertiajs/react'
+import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type HttpRequestConfig } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
 import ModalRenderer from './ModalRenderer'
 import { getConfig } from './config'
@@ -34,19 +33,19 @@ let closingToBaseUrlTarget: string | null = null
 
 // Prefetch cache (#146)
 interface PrefetchCacheEntry {
-    response: AxiosResponse
+    response: HttpResponse
     timestamp: number
     expiresAt: number
 }
 
 const prefetchCache = new Map<string, PrefetchCacheEntry>()
-const prefetchInFlight = new Map<string, Promise<AxiosResponse>>()
+const prefetchInFlight = new Map<string, Promise<HttpResponse>>()
 
 function getPrefetchCacheKey(url: string, method: string, data: RequestPayload): string {
     return `${method}:${url}:${JSON.stringify(data)}`
 }
 
-function getCachedResponse(url: string, method: string, data: RequestPayload): AxiosResponse | null {
+function getCachedResponse(url: string, method: string, data: RequestPayload): HttpResponse | null {
     const key = getPrefetchCacheKey(url, method, data)
     const cached = prefetchCache.get(key)
 
@@ -62,7 +61,7 @@ function getCachedResponse(url: string, method: string, data: RequestPayload): A
     return cached.response
 }
 
-function setCachedResponse(url: string, method: string, data: RequestPayload, response: AxiosResponse, cacheFor: number): void {
+function setCachedResponse(url: string, method: string, data: RequestPayload, response: HttpResponse, cacheFor: number): void {
     const key = getPrefetchCacheKey(url, method, data)
     prefetchCache.set(key, {
         response,
@@ -109,12 +108,14 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
         'X-InertiaUI-Modal-Base-Url': baseUrl ?? '',
     }
 
-    const request = Axios({
-        url,
-        method,
-        data: mergedData,
-        headers: requestHeaders,
-    })
+    const request = http
+        .getClient()
+        .request({
+            url,
+            method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+            data: mergedData,
+            headers: requestHeaders,
+        })
         .then((response) => {
             setCachedResponse(url, method, mergedData, response, cacheFor)
             options.onPrefetched?.()
@@ -370,24 +371,26 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
 
             options.onStart?.()
 
-            Axios({
-                url: this.response.url,
-                method,
-                data: method === 'get' ? {} : data,
-                params: method === 'get' ? data : {},
-                headers: {
-                    ...(options.headers ?? {}),
-                    Accept: 'text/html, application/xhtml+xml',
-                    'X-Inertia': 'true',
-                    'X-Inertia-Partial-Component': this.response.component,
-                    'X-Inertia-Version': this.response.version ?? '',
-                    'X-Inertia-Partial-Data': keys.join(','),
-                    'X-InertiaUI-Modal': generateId(),
-                    'X-InertiaUI-Modal-Base-Url': baseUrl ?? '',
-                },
-            })
+            http.getClient()
+                .request({
+                    url: this.response.url,
+                    method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+                    data: method === 'get' ? undefined : data,
+                    params: method === 'get' ? data : undefined,
+                    headers: {
+                        ...(options.headers ?? {}),
+                        Accept: 'text/html, application/xhtml+xml',
+                        'X-Inertia': 'true',
+                        'X-Inertia-Partial-Component': this.response.component,
+                        'X-Inertia-Version': this.response.version ?? '',
+                        'X-Inertia-Partial-Data': keys.join(','),
+                        'X-InertiaUI-Modal': generateId(),
+                        'X-InertiaUI-Modal-Base-Url': baseUrl ?? '',
+                    },
+                })
                 .then((response) => {
-                    this.updateProps(response.data.props)
+                    const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+                    this.updateProps(responseData.props)
 
                     options.onSuccess?.(response)
                 })
@@ -546,7 +549,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
         queryStringArrayFormat: 'brackets' | 'indices' = 'brackets',
         useBrowserHistory = false,
         onStart: (() => void) | null = null,
-        onSuccess: ((response?: AxiosResponse) => void) | null = null,
+        onSuccess: ((response?: HttpResponse) => void) | null = null,
         onError: ((...args: unknown[]) => void) | null = null,
         props: Record<string, unknown> | null = null,
     ): Promise<Modal> => {
@@ -563,10 +566,11 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
             // Check for cached prefetch response (#146)
             const cachedResponse = getCachedResponse(url, method, data)
             if (cachedResponse) {
+                const cachedData = typeof cachedResponse.data === 'string' ? JSON.parse(cachedResponse.data) : cachedResponse.data
                 onSuccess?.(cachedResponse)
-                pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave)
+                pushFromResponseData(cachedData, config, onClose, onAfterLeave)
                     .then((modal) => {
-                        updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data)
+                        updateBrowserUrl(cachedData.url, useBrowserHistory, cachedData)
                         resolve(modal)
                     })
                     .catch(reject)
@@ -591,17 +595,19 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
 
             progress?.start()
 
-            Axios({
-                url,
-                method,
-                data,
-                headers: requestHeaders,
-            })
+            http.getClient()
+                .request({
+                    url,
+                    method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+                    data,
+                    headers: requestHeaders,
+                })
                 .then((response) => {
+                    const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
                     onSuccess?.(response)
-                    pushFromResponseData(response.data, config, onClose, onAfterLeave)
+                    pushFromResponseData(responseData, config, onClose, onAfterLeave)
                         .then((modal) => {
-                            updateBrowserUrl(response.data.url, useBrowserHistory, response.data)
+                            updateBrowserUrl(responseData.url, useBrowserHistory, responseData)
                             resolve(modal)
                         })
                         .catch(reject)
@@ -823,12 +829,13 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
         [],
     )
 
-    const axiosRequestInterceptor = (config: InternalAxiosRequestConfig) => {
+    const requestInterceptor = (config: HttpRequestConfig) => {
         // A Modal is opened on top of a base route, so we need to pass this base route
         // so it can redirect back with the back() helper method...
         // Only send the header when we have an actual base URL value
         const baseUrlValue = baseUrl ?? (initialModalStillOpenedRef.current ? $page.props._inertiaui_modal?.baseUrl : null)
         if (baseUrlValue) {
+            config.headers = config.headers ?? {}
             config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
         }
 
@@ -836,8 +843,8 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
     }
 
     useEffect(() => {
-        const interceptorId = Axios.interceptors.request.use(axiosRequestInterceptor)
-        return () => Axios.interceptors.request.eject(interceptorId)
+        const removeInterceptor = http.onRequest(requestInterceptor)
+        return () => removeInterceptor()
     }, [])
 
     const previousModalRef = useRef<(ModalResponseData & { baseUrl: string }) | undefined>(undefined)

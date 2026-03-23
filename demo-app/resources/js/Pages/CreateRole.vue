@@ -1,6 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
-import { default as Axios } from 'axios'
+import { useForm, http } from '@inertiajs/vue3'
 import { Modal, ModalLink } from '@inertiaui/modal-vue'
 import { ref } from 'vue'
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue'
@@ -15,7 +14,7 @@ const modalRef = ref(null)
 const greetingRef = ref('')
 
 function submit() {
-    Axios.post('/roles', form.data()).then(() => {
+    http.getClient().request({ method: 'post', url: '/roles', data: form.data(), headers: { 'Accept': 'application/json' } }).then(() => {
         modalRef.value.close()
     })
 }

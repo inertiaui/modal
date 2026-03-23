@@ -16,7 +16,7 @@ export default defineConfig({
     },
 
     resolve: {
-        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios', 'vue', 'react', 'react-dom'],
+        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'vue', 'react', 'react-dom'],
         alias: {
             '@inertiaui/modal-react': '/../react',
             '@inertiaui/modal-vue': '/../vue'
