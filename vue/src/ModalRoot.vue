@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, watch } from 'vue'
+import { onUnmounted, watch } from 'vue'
 import { router, usePage, http } from '@inertiajs/vue3'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
@@ -80,6 +80,11 @@ onUnmounted(
                     return
                 }
 
+                // Clear baseUrl before navigating so the interceptor doesn't add
+                // the modal header to the base page request (deferred props should
+                // load without the modal context after closing)
+                modalStack.setBaseUrl(null)
+                initialModalStillOpened = false
                 if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                     router.visit(modalOnBase.baseUrl, {
                         preserveScroll: true,
@@ -100,16 +105,20 @@ const requestInterceptor = (config) => {
     // Check modalStack first, then fall back to page props only during initial load
     // (before the modal has been processed by the navigate handler)
     const baseUrlValue = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props?._inertiaui_modal?.baseUrl : null) ?? null
+    console.log('__INTERCEPTOR__', { url: config.url, baseUrlValue, getBaseUrl: modalStack.getBaseUrl(), initialModalStillOpened, pageBaseUrl: $page.props?._inertiaui_modal?.baseUrl })
     if (baseUrlValue) {
+        config.headers = config.headers ?? {}
         config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
     }
 
     return config
 }
 
-let removeInterceptor = null
-onMounted(() => (removeInterceptor = http.onRequest(requestInterceptor)))
-onUnmounted(() => removeInterceptor?.())
+// Register interceptor during setup (not onMounted) so it's available before
+// Inertia 3's deferred props loading, which fires during the page.set() promise
+// chain before onMounted hooks execute.
+const removeInterceptor = http.onRequest(requestInterceptor)
+onUnmounted(() => removeInterceptor())
 
 watch(
     () => $page.props?._inertiaui_modal,

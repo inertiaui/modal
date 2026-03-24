@@ -136,6 +136,7 @@ export interface ModalStackContextValue {
 export interface PageProps {
     initialPage?: {
         version?: string
+        props?: Record<string, unknown>
     }
     resolveComponent?: ComponentResolver
 }
