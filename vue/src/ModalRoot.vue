@@ -9,7 +9,6 @@ const modalStack = useModalStack()
 const $page = usePage()
 
 let isNavigating = false
-let initialModalStillOpened = !!$page.props?._inertiaui_modal
 const pendingModalKeys = new Set()
 
 // Generate a unique key for deduplication (handles case when modal has no id)
@@ -30,7 +29,7 @@ onUnmounted(
             modalStack.clearClosingToBaseUrl()
             modalStack.closeAll(true)
             modalStack.setBaseUrl(null)
-            initialModalStillOpened = false
+
             return
         }
 
@@ -38,7 +37,7 @@ onUnmounted(
             // No modal data - close any open modals (force close without transition)
             modalStack.closeAll(true)
             modalStack.setBaseUrl(null)
-            initialModalStillOpened = false
+
             return
         }
 
@@ -47,7 +46,7 @@ onUnmounted(
         if (!sameUrlPath(pageUrl, modalOnBase.url)) {
             modalStack.closeAll(true)
             modalStack.setBaseUrl(null)
-            initialModalStillOpened = false
+
             return
         }
 
@@ -84,7 +83,7 @@ onUnmounted(
                 // the modal header to the base page request (deferred props should
                 // load without the modal context after closing)
                 modalStack.setBaseUrl(null)
-                initialModalStillOpened = false
+
                 if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                     router.visit(modalOnBase.baseUrl, {
                         preserveScroll: true,
@@ -101,11 +100,11 @@ onUnmounted(
 const requestInterceptor = (config) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
-    // Only send the header when we have an actual base URL value
-    // Check modalStack first, then fall back to page props only during initial load
-    // (before the modal has been processed by the navigate handler)
-    const baseUrlValue = modalStack.getBaseUrl() ?? (initialModalStillOpened ? $page.props?._inertiaui_modal?.baseUrl : null) ?? null
-    console.log('__INTERCEPTOR__', { url: config.url, baseUrlValue, getBaseUrl: modalStack.getBaseUrl(), initialModalStillOpened, pageBaseUrl: $page.props?._inertiaui_modal?.baseUrl })
+    // Only send the header when we have an actual base URL value.
+    // Check modalStack first (set by navigate handler), then fall back to page props
+    // (available reactively before the navigate handler fires, needed for deferred props
+    // which Inertia 3 loads before the navigate event).
+    const baseUrlValue = modalStack.getBaseUrl() ?? $page.props?._inertiaui_modal?.baseUrl ?? null
     if (baseUrlValue) {
         config.headers = config.headers ?? {}
         config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
