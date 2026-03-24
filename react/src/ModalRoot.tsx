@@ -1,4 +1,4 @@
-import { createElement, useEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
+import { createElement, useEffect, useLayoutEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
 import { except, kebabCase, generateId, sameUrlPath } from './helpers'
 import { router, usePage, progress, http } from '@inertiajs/react'
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type HttpRequestConfig } from '@inertiajs/core'
@@ -26,14 +26,10 @@ ModalStackContext.displayName = 'ModalStackContext'
 let pageVersion: string | null = null
 let resolveComponent: ComponentResolver | null = null
 let baseUrl: string | null = null
-let initialModalBaseUrl: string | null = null
 
 // Track the URL we're closing to (prevents navigate handler from re-setting baseUrl)
 // Only suppresses if navigate event URL matches this URL
 let closingToBaseUrlTarget: string | null = null
-
-// Whether the request interceptor has been registered
-let interceptorRegistered = false
 
 // Prefetch cache (#146)
 interface PrefetchCacheEntry {
@@ -682,30 +678,10 @@ export const modalPropNames = ['closeButton', 'closeExplicitly', 'closeOnClickOu
 export const initFromPageProps = (pageProps: PageProps) => {
     if (pageProps.initialPage) {
         pageVersion = pageProps.initialPage.version ?? null
-        // Set initial modal base URL for the request interceptor.
-        // This is needed because Inertia 3 loads deferred props before React's useEffect fires.
-        const modalData = pageProps.initialPage.props?._inertiaui_modal as
-            | (ModalResponseData & { baseUrl?: string })
-            | undefined
-        initialModalBaseUrl = modalData?.baseUrl ?? null
     }
 
     if (pageProps.resolveComponent) {
         resolveComponent = pageProps.resolveComponent
-    }
-
-    // Register the request interceptor early (before React renders) so it's available
-    // when Inertia 3 loads deferred props during page.set(), which fires before useEffect.
-    if (!interceptorRegistered) {
-        interceptorRegistered = true
-        http.onRequest((config: HttpRequestConfig) => {
-            const baseUrlValue = baseUrl ?? initialModalBaseUrl
-            if (baseUrlValue) {
-                config.headers = config.headers ?? {}
-                config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
-            }
-            return config
-        })
     }
 }
 
@@ -769,6 +745,22 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
 
     const isNavigatingRef = useRef(false)
 
+    // Use a ref so the interceptor always reads the latest page props
+    const pageRef = useRef($page)
+    pageRef.current = $page
+
+    // Register interceptor in useLayoutEffect (fires during commit, before microtasks).
+    // Inertia 3 loads deferred props during page.set() microtasks which fire after commit
+    // but before useEffect — useLayoutEffect ensures the interceptor is registered in time.
+    useLayoutEffect(() => http.onRequest((config: HttpRequestConfig) => {
+        const baseUrlValue = baseUrl ?? pageRef.current.props._inertiaui_modal?.baseUrl ?? null
+        if (baseUrlValue) {
+            config.headers = config.headers ?? {}
+            config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
+        }
+        return config
+    }), [])
+
     useEffect(() => router.on('start', () => (isNavigatingRef.current = true)), [])
     useEffect(() => router.on('finish', () => (isNavigatingRef.current = false)), [])
     useEffect(
@@ -788,7 +780,7 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                         closingToBaseUrlTarget = null
                         context?.closeAll(true)
                         baseUrl = null
-                        initialModalBaseUrl = null
+
 
                         return
                     }
@@ -799,7 +791,6 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                     // No modal data - close any open modals (force close without transition)
                     context?.closeAll(true)
                     baseUrl = null
-                    initialModalBaseUrl = null
                     return
                 }
 
@@ -807,7 +798,6 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                 if (!sameUrlPath(pageUrl, modalOnBase.url)) {
                     context?.closeAll(true)
                     baseUrl = null
-                    initialModalBaseUrl = null
                     return
                 }
 
@@ -830,7 +820,6 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                 // Only set baseUrl when we're actually opening a new modal
                 // (after deduplication checks pass)
                 baseUrl = modalOnBase.baseUrl
-                initialModalBaseUrl = null
 
                 pendingModalKeysRef.current.add(modalKey)
 
@@ -844,7 +833,7 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                         // the modal header to the base page request (deferred props should
                         // load without the modal context after closing)
                         baseUrl = null
-                        initialModalBaseUrl = null
+
                         if (!isNavigatingRef.current && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                             router.visit(modalOnBase.baseUrl, {
                                 preserveScroll: true,
