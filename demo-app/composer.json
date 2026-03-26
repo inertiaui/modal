@@ -6,7 +6,7 @@
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
-        "inertiajs/inertia-laravel": "^3.0@beta",
+        "inertiajs/inertia-laravel": "^3.0",
         "inertiaui/modal": "*",
         "laravel/framework": "^12.0|^13.0",
         "laravel/sanctum": "^4.0",

@@ -6,7 +6,7 @@
     "require": {
         "php": "^8.2",
         "illuminate/contracts": "^12.0||^13.0",
-        "inertiajs/inertia-laravel": "^3.0@beta"
+        "inertiajs/inertia-laravel": "^3.0"
     },
     "require-dev": {
         "larastan/larastan": "^3.9",

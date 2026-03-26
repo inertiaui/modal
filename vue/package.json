@@ -34,7 +34,7 @@
         "test": "vitest"
     },
     "devDependencies": {
-        "@inertiajs/vue3": "^3.0.0-beta",
+        "@inertiajs/vue3": "^3.0.0",
         "@inertiaui/vanilla": "^0.2.0",
         "@typescript-eslint/eslint-plugin": "^8.31.0",
         "@typescript-eslint/parser": "^8.31.0",
@@ -60,7 +60,7 @@
         "@inertiaui/vanilla": "^0.2.0"
     },
     "peerDependencies": {
-        "@inertiajs/vue3": "^3.0.0-beta",
+        "@inertiajs/vue3": "^3.0.0",
         "vue": "^3.4.x"
     }
 }
