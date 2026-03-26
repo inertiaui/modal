@@ -26,7 +26,7 @@
         "test": "vitest"
     },
     "devDependencies": {
-        "@inertiajs/vue3": "^1.3.0||^2.1.11||^3.0.0-beta",
+        "@inertiajs/vue3": "^1.3.0||^2.1.11||^3.0.0",
         "@vitejs/plugin-vue": "^5.2.0",
         "@vitest/coverage-v8": "^4.0.0",
         "@vitest/ui": "^4.0.0",
