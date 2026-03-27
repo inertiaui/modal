@@ -129,7 +129,7 @@ export default function EditUser({ user, roles, randomKey }) {
                         </div>
 
                         <div className="flex justify-end">
-                            <Link replace href={route('users.edit', { user, navigate: 1, randomKey })}>
+                            <Link replace href={`/users/${user.id}/edit?navigate=1&randomKey=${randomKey}`}>
                                 Edit again!
                             </Link>
                             <button

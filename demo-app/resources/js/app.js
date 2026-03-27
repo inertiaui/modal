@@ -2,7 +2,6 @@ import './bootstrap'
 import '../css/app.css'
 
 import { createInertiaApp } from '@inertiajs/vue3'
-import { ZiggyVue } from '../../vendor/tightenco/ziggy'
 import { putConfig, withInertiaModal } from '@inertiaui/modal-vue'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
@@ -19,7 +18,6 @@ createInertiaApp({
     },
     withApp(app) {
         withInertiaModal(app)
-        app.use(ZiggyVue)
     },
 })
 

@@ -10,8 +10,7 @@
         "inertiaui/modal": "*",
         "laravel/framework": "^12.0|^13.0",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.8",
-        "tightenco/ziggy": "^2.0"
+        "laravel/tinker": "^2.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
