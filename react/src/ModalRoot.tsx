@@ -23,9 +23,8 @@ import type {
 const ModalStackContext = createContext<ModalStackContextValue | null>(null)
 ModalStackContext.displayName = 'ModalStackContext'
 
-let pageVersion: string | null = null
-let resolveComponent: ComponentResolver | null = null
 let baseUrl: string | null = null
+let currentPageVersion: string | null = null
 
 // Track the URL we're closing to (prevents navigate handler from re-setting baseUrl)
 // Only suppresses if navigate event URL matches this URL
@@ -103,7 +102,7 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
         Accept: 'text/html, application/xhtml+xml',
         'X-Requested-With': 'XMLHttpRequest',
         'X-Inertia': 'true',
-        'X-Inertia-Version': pageVersion ?? '',
+        'X-Inertia-Version': currentPageVersion ?? '',
         'X-InertiaUI-Modal': generateId(),
         'X-InertiaUI-Modal-Base-Url': baseUrl ?? '',
     }
@@ -423,10 +422,6 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
         onClose: (() => void) | null = null,
         onAfterLeave: (() => void) | null = null,
     ): Promise<Modal> => {
-        if (!resolveComponent) {
-            return Promise.reject(new Error('resolveComponent not set'))
-        }
-
         if (!isValidModalResponse(responseData)) {
             return Promise.reject(
                 new Error(
@@ -436,8 +431,8 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
             )
         }
 
-        return resolveComponent(responseData.component).then((component) =>
-            push(component, responseData, config, onClose, onAfterLeave),
+        return router.resolveComponent(responseData.component).then((component) =>
+            push(component as ComponentType, responseData, config, onClose, onAfterLeave),
         )
     }
 
@@ -586,7 +581,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-Inertia': 'true',
-                'X-Inertia-Version': pageVersion ?? '',
+                'X-Inertia-Version': currentPageVersion ?? '',
                 'X-InertiaUI-Modal': modalId,
                 'X-InertiaUI-Modal-Base-Url': baseUrl ?? '',
             }
@@ -677,11 +672,7 @@ export const modalPropNames = ['closeButton', 'closeExplicitly', 'closeOnClickOu
 
 export const initFromPageProps = (pageProps: PageProps) => {
     if (pageProps.initialPage) {
-        pageVersion = pageProps.initialPage.version ?? null
-    }
-
-    if (pageProps.resolveComponent) {
-        resolveComponent = pageProps.resolveComponent
+        currentPageVersion = pageProps.initialPage.version ?? null
     }
 }
 
@@ -739,6 +730,9 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
     const context = useContext(ModalStackContext)
     const $page = usePage<InertiaUIModalPageProps>()
     const pendingModalKeysRef = useRef(new Set<string>())
+
+    // Keep module-level pageVersion in sync for use by prefetch/visit functions
+    currentPageVersion = $page.version ?? null
 
     // Generate a unique key for deduplication (handles case when modal has no id)
     const getModalKey = (modalData: ModalResponseData) => modalData.id || `${modalData.component}:${modalData.url}`
@@ -886,3 +880,4 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
         </>
     )
 }
+

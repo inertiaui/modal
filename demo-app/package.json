@@ -25,6 +25,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@inertiajs/vite": "^3.0.0",
         "@inertiaui/modal-react": "file:../react",
         "@inertiaui/modal-vue": "file:../vue"
     }

@@ -66,8 +66,6 @@ export interface PrefetchOptions {
 type EventCallback = (...args: unknown[]) => void
 type ComponentResolver = (name: string) => Promise<Component>
 
-let resolveComponent: ComponentResolver | null = null
-
 const baseUrl = ref<string | null>(null)
 const stack = ref<Modal[]>([])
 const localModals = ref<Record<string, { name: string; callback: (modal: Modal) => void }>>({})
@@ -170,14 +168,12 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
     return request.then(() => {})
 }
 
-const setComponentResolver = (resolver: ComponentResolver): void => {
-    resolveComponent = resolver
+const setComponentResolver = (_resolver: ComponentResolver): void => {
+    // No-op: Inertia 3 uses router.resolveComponent() directly
 }
 
-export const initFromPageProps = (pageProps: { resolveComponent?: ComponentResolver }): void => {
-    if (pageProps.resolveComponent) {
-        resolveComponent = pageProps.resolveComponent
-    }
+export const initFromPageProps = (_pageProps: { resolveComponent?: ComponentResolver }): void => {
+    // No-op: Inertia 3 uses router.resolveComponent() directly
 }
 
 export class Modal {
@@ -501,10 +497,6 @@ function pushFromResponseData(
     onClose: (() => void) | null = null,
     onAfterLeave: (() => void) | null = null,
 ): Promise<Modal> {
-    if (!resolveComponent) {
-        return Promise.reject(new Error('Component resolver not set'))
-    }
-
     if (!isValidModalResponse(responseData)) {
         return Promise.reject(
             new Error(
@@ -514,8 +506,8 @@ function pushFromResponseData(
         )
     }
 
-    return resolveComponent(responseData.component).then((component) =>
-        push(markRaw(component), responseData, config, onClose, onAfterLeave),
+    return router.resolveComponent(responseData.component).then((component) =>
+        push(markRaw(component as Component), responseData, config, onClose, onAfterLeave),
     )
 }
 
@@ -630,10 +622,6 @@ function push(
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'closeOnClickOutside', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
 export const renderApp = (App: Component, props: { resolveComponent?: ComponentResolver }): (() => ReturnType<typeof h>) => {
-    if (props.resolveComponent) {
-        resolveComponent = props.resolveComponent
-    }
-
     return () => h(ModalRoot, () => h(App, props))
 }
 

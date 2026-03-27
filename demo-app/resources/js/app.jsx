@@ -1,10 +1,8 @@
 import './bootstrap';
 import '../css/app.css';
 
-import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { putConfig, renderApp } from '@inertiaui/modal-react'
+import { putConfig, ModalStackProvider, ModalRoot } from '@inertiaui/modal-react'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -13,19 +11,24 @@ if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
     putConfig({ useNativeDialog: import.meta.env.VITE_USE_NATIVE_DIALOG === 'true' })
 }
 
+function ModalLayout({ children }) {
+    return (
+        <>
+            {children}
+            <ModalRoot />
+        </>
+    )
+}
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
-    setup({ el, App, props }) {
-        const root = createRoot(el);
-
-        root.render(
-            renderApp(App, props)
-        );
-    },
     progress: {
         color: '#4B5563',
     },
+    withApp(app) {
+        return <ModalStackProvider>{app}</ModalStackProvider>
+    },
+    layout: () => ModalLayout,
 });
 
 if (window.location.pathname === '/props-from-config') {
