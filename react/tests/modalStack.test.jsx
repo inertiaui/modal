@@ -336,13 +336,11 @@ describe('modalStack', () => {
 
             const mockComponent = { name: 'TestComponent' }
 
-            // Set up the component resolver before rendering the hook
-            initFromPageProps({
-                initialPage: { version: '1.0' },
-                resolveComponent: (name) => {
-                    expect(name).toBe('TestComponent')
-                    return Promise.resolve(mockComponent)
-                },
+            // Set up the component resolver via router mock
+            const { router } = await import('@inertiajs/react')
+            router.resolveComponent.mockImplementation((name) => {
+                expect(name).toBe('TestComponent')
+                return Promise.resolve(mockComponent)
             })
 
             const { result } = renderHook(() => useModalStack(), { wrapper })
@@ -381,7 +379,7 @@ describe('modalStack', () => {
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-Inertia': 'true',
-                    'X-Inertia-Version': '1.0',
+                    'X-Inertia-Version': expect.any(String),
                     'X-InertiaUI-Modal': 'inertiaui_modal_uuid',
                     'X-InertiaUI-Modal-Base-Url': expect.any(String),
                 },

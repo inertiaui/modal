@@ -13,7 +13,6 @@ import type {
     VisitOptions,
     ReloadOptions,
     EventCallback,
-    ComponentResolver,
     PageProps,
     ModalRootProps,
     LocalModal,
