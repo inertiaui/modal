@@ -1,5 +1,5 @@
 import { getConfig, putConfig, resetConfig } from './config'
-import { useModalStack, initFromPageProps, renderApp, Modal as ModalClass, modalPropNames, prefetch } from './modalStack'
+import { useModalStack, initFromPageProps, renderApp, withInertiaModal, Modal as ModalClass, modalPropNames, prefetch } from './modalStack'
 import type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, PrefetchOption, PrefetchOptions } from './modalStack'
 import useModal from './useModal'
 import Deferred from './Deferred.vue'
@@ -56,6 +56,7 @@ export {
     // Modal stack functions
     initFromPageProps,
     renderApp,
+    withInertiaModal,
     useModal,
     useModalStack,
     visitModal,

@@ -625,6 +625,13 @@ export const renderApp = (App: Component, props: { resolveComponent?: ComponentR
     return () => h(ModalRoot, () => h(App, props))
 }
 
+export const withInertiaModal = (app: { _component: { render?: () => ReturnType<typeof h> } }): void => {
+    const originalRender = app._component.render
+    if (originalRender) {
+        app._component.render = () => h(ModalRoot, () => originalRender())
+    }
+}
+
 export interface ModalStack {
     setComponentResolver: (resolver: ComponentResolver) => void
     getBaseUrl: () => string | null

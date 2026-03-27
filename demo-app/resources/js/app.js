@@ -3,8 +3,7 @@ import '../css/app.css'
 
 import { createInertiaApp } from '@inertiajs/vue3'
 import { ZiggyVue } from '../../vendor/tightenco/ziggy'
-import { putConfig, ModalRoot } from '@inertiaui/modal-vue'
-import { h } from 'vue'
+import { putConfig, withInertiaModal } from '@inertiaui/modal-vue'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
@@ -19,12 +18,7 @@ createInertiaApp({
         color: '#4B5563',
     },
     withApp(app) {
-        const rootComponent = app._component
-        app._component = {
-            render() {
-                return h(ModalRoot, () => h(rootComponent))
-            },
-        }
+        withInertiaModal(app)
         app.use(ZiggyVue)
     },
 })
