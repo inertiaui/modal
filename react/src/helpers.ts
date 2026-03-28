@@ -1,10 +1,7 @@
 // Re-export helper utilities from vanilla
 export { sameUrlPath, except, only, rejectNullValues, kebabCase, isStandardDomEvent } from '@inertiaui/vanilla'
+export { parseResponseData } from '../../common/helpers'
 import { generateId as vanillaGenerateId } from '@inertiaui/vanilla'
-
-export function parseResponseData(data: unknown): unknown {
-    return typeof data === 'string' ? JSON.parse(data) : data
-}
 
 // Wrap generateId with custom callback support for testing
 let generateIdUsingCallback: (() => string) | null = null

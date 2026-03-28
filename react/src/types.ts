@@ -1,6 +1,8 @@
 import type { ComponentType, ReactNode } from 'react'
 import type { RequestPayload, HttpResponse } from '@inertiajs/core'
 
+import type { ModalTypeConfig } from './config'
+
 export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
 export interface ModalResponseData {
@@ -15,9 +17,7 @@ export interface ModalResponseData {
     baseUrl?: string
 }
 
-export interface ModalConfig {
-    [key: string]: unknown
-}
+export type ModalConfig = Partial<ModalTypeConfig & { slideover: boolean }>
 
 export interface ReloadOptions {
     only?: string[]
@@ -52,7 +52,7 @@ export interface VisitOptions {
 export type PrefetchOption = boolean | 'hover' | 'click' | 'mount' | Array<'hover' | 'click' | 'mount'>
 
 export interface PrefetchOptions {
-    method?: string
+    method?: HttpMethod
     data?: RequestPayload
     headers?: Record<string, string>
     queryStringArrayFormat?: 'brackets' | 'indices'

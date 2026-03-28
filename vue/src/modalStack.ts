@@ -1,5 +1,7 @@
 import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
 import { generateId, except, kebabCase, parseResponseData } from './helpers'
+import { ResponseCache } from '../../common/cache'
+import type { ModalTypeConfig } from './config'
 import { router, usePage, progress, http } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse } from '@inertiajs/core'
 import ModalRoot from './ModalRoot.vue'
@@ -17,9 +19,7 @@ export interface ModalResponseData {
     baseUrl?: string
 }
 
-export interface ModalConfig {
-    [key: string]: unknown
-}
+export type ModalConfig = Partial<ModalTypeConfig & { slideover: boolean }>
 
 export interface ReloadOptions {
     only?: string[]
@@ -54,7 +54,7 @@ export interface VisitOptions {
 export type PrefetchOption = boolean | 'hover' | 'click' | 'mount' | Array<'hover' | 'click' | 'mount'>
 
 export interface PrefetchOptions {
-    method?: string
+    method?: HttpMethod
     data?: RequestPayload
     headers?: Record<string, string>
     queryStringArrayFormat?: 'brackets' | 'indices'
@@ -76,41 +76,7 @@ const localModals = ref<Record<string, { name: string; callback: (modal: Modal) 
 let closingToBaseUrlTarget: string | null = null
 
 // Prefetch cache (#146)
-interface PrefetchCacheEntry {
-    response: HttpResponse
-    expiresAt: number
-}
-
-const prefetchCache = new Map<string, PrefetchCacheEntry>()
-const prefetchInFlight = new Map<string, Promise<HttpResponse>>()
-
-function getPrefetchCacheKey(url: string, method: string, data: RequestPayload): string {
-    return `${method}:${url}:${JSON.stringify(data)}`
-}
-
-function getCachedResponse(url: string, method: string, data: RequestPayload): HttpResponse | null {
-    const key = getPrefetchCacheKey(url, method, data)
-    const cached = prefetchCache.get(key)
-
-    if (!cached) {
-        return null
-    }
-
-    if (Date.now() > cached.expiresAt) {
-        prefetchCache.delete(key)
-        return null
-    }
-
-    return cached.response
-}
-
-function setCachedResponse(url: string, method: string, data: RequestPayload, response: HttpResponse, cacheFor: number): void {
-    const key = getPrefetchCacheKey(url, method, data)
-    prefetchCache.set(key, {
-        response,
-        expiresAt: Date.now() + cacheFor,
-    })
-}
+const prefetchCache = new ResponseCache<HttpResponse>()
 
 export function prefetch(href: string, options: PrefetchOptions = {}): Promise<void> {
     if (href.startsWith('#')) {
@@ -125,15 +91,15 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
 
     const [url, mergedData] = mergeDataIntoQueryString(method, href || '', data, queryStringArrayFormat)
 
+    const cacheKey = ResponseCache.key(method, url, mergedData)
+
     // Check if already cached
-    const cached = getCachedResponse(url, method, mergedData)
-    if (cached) {
+    if (prefetchCache.get(cacheKey)) {
         return Promise.resolve()
     }
 
     // Check if already in flight
-    const cacheKey = getPrefetchCacheKey(url, method, mergedData)
-    const inFlight = prefetchInFlight.get(cacheKey)
+    const inFlight = prefetchCache.getInFlight(cacheKey)
     if (inFlight) {
         return inFlight.then(() => {})
     }
@@ -152,17 +118,17 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
 
     const request = http
         .getClient()
-        .request({ url, method: method, data: mergedData, headers: requestHeaders })
+        .request({ url, method, data: mergedData, headers: requestHeaders })
         .then((response) => {
-            setCachedResponse(url, method, mergedData, response, cacheFor)
+            prefetchCache.set(cacheKey, response, cacheFor)
             options.onPrefetched?.()
             return response
         })
         .finally(() => {
-            prefetchInFlight.delete(cacheKey)
+            prefetchCache.deleteInFlight(cacheKey)
         })
 
-    prefetchInFlight.set(cacheKey, request)
+    prefetchCache.setInFlight(cacheKey, request)
 
     return request.then(() => {})
 }
@@ -401,7 +367,7 @@ export class Modal {
         http.getClient()
             .request({
                 url: this.response.url,
-                method: method,
+                method,
                 data: method === 'get' ? undefined : data,
                 params: method === 'get' ? data : undefined,
                 headers: {
@@ -532,7 +498,7 @@ function visit(
         const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
         // Check for cached prefetch response (#146)
-        const cachedResponse = getCachedResponse(url, method, data)
+        const cachedResponse = prefetchCache.get(ResponseCache.key(method, url, data))
         if (cachedResponse) {
             const cachedData = parseResponseData(cachedResponse.data) as ModalResponseData
             onSuccess?.(cachedResponse)
@@ -564,7 +530,7 @@ function visit(
         progress?.start()
 
         http.getClient()
-            .request({ url, method: method, data, headers: requestHeaders })
+            .request({ url, method, data, headers: requestHeaders })
             .then((response) => {
                 const responseData = parseResponseData(response.data) as ModalResponseData
                 onSuccess?.(response)
