@@ -1,6 +1,16 @@
 # Requirements
 
-Inertia Modal has the following requirements:
+Inertia Modal's major version is aligned with Inertia.js:
+
+| Inertia Modal | Inertia.js | Laravel | Status |
+|---------------|------------|---------|--------|
+| **3.x** | **v3** | 12+ | **Current** |
+| 2.x | v2 | 11.11+ | Supported ([docs](/v2/introduction)) |
+| 0.x | v1 | — | Unsupported |
+
+::: warning Version Matching
+Inertia Modal 3.x **only** works with Inertia.js v3. If you're using Inertia.js v2, use [Inertia Modal 2.x](/v2/introduction) instead.
+:::
 
 ## Backend
 
@@ -13,8 +23,6 @@ Inertia Modal has the following requirements:
 - Tailwind CSS 4+ (or use [headless mode](/headless-mode) with Tailwind CSS 3)
 - **React**: React 19+ with `@inertiajs/react` 3.0+
 - **Vue**: Vue 3.4+ with `@inertiajs/vue3` 3.0+
-
-The package is designed and tested to work with Laravel and Inertia.js v3. If you're using Inertia.js v2, please use [Inertia Modal v2](/v2/introduction) instead.
 
 ## TypeScript Support
 

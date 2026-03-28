@@ -1,6 +1,6 @@
 # Custom App Mounting
 
-If you need more refined control over the mounting process, contrary to the regular [Inertia.js installation](/installation#inertia-js-configuration), you may ignore the `renderApp` helper method and perform the mounting manually.
+If you need more refined control over the mounting process, contrary to the regular [Inertia.js installation](/installation#inertia-js-configuration), you may ignore the `withInertiaModal` / `withApp` helper and perform the mounting manually.
 
 ## React
 
@@ -48,15 +48,14 @@ createInertiaApp({
 });
 ```
 
-Next, you need to call the `initFromPageProps` method with the `props` object. Lastly, you need to wrap the `App` component within the `ModalStackProvider` component:
+Next, you need to wrap the `App` component within the `ModalStackProvider` component:
 
 ```jsx [React]
-import { ModalStackProvider, initFromPageProps } from '@inertiaui/modal-react' // [!code ++]
+import { ModalStackProvider } from '@inertiaui/modal-react' // [!code ++]
 
 createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
-        initFromPageProps(props) // [!code ++]
 
         root.render(
             <ModalStackProvider> // [!code ++]
@@ -69,15 +68,13 @@ createInertiaApp({
 
 ## Vue
 
-In Vue, it is a little bit simpler because you only need to make changes to the main `app.js` file. In this file, you need to call the `initFromPageProps` method with the `props` object. Then, you need to wrap the `App` component within the `ModalRoot` component:
+In Vue, it is a little bit simpler because you only need to make changes to the main `app.js` file. You need to wrap the `App` component within the `ModalRoot` component:
 
 ```js [Vue]
-import { ModalRoot, initFromPageProps } from '@inertiaui/modal-vue' // [!code ++]
+import { ModalRoot } from '@inertiaui/modal-vue' // [!code ++]
 
 createInertiaApp({
     setup({ el, App, props, plugin }) {
-        initFromPageProps(props) // [!code ++]
-
         return
             createApp({ render: () => h(App, props) }) // [!code --]
             createApp({ render: () => h(ModalRoot, () => h(App, props)) }) // [!code ++]

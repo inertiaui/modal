@@ -58,37 +58,38 @@ npm install @inertiaui/modal-react@^3.0.0
 
 ## Inertia.js Configuration
 
-Inertia Modal requires a *root*-component to be mounted in your app. You can do this in the main `app.js` file where you initialize your Inertia app using the `createInertiaApp` function. You only need to change the render function to include the `renderApp` method and pass the `App` component and `props` object to it.
+Inertia Modal requires a *root*-component to be mounted in your app. You can do this in the main `app.js` file where you initialize your Inertia app using the `createInertiaApp` function.
 
 ::: code-group
 
 ```js [Vue]
-import { renderApp } from '@inertiaui/modal-vue' // [!code ++]
+import { withInertiaModal } from '@inertiaui/modal-vue' // [!code ++]
 
 createInertiaApp({
-    setup({ el, App, props, plugin }) {
-        return
-            createApp({ render: () => h(App, props) }) // [!code --]
-            createApp({ render: renderApp(App, props) }) // [!code ++]
-            .use(plugin)
-            .mount(el)
-    }
+    withApp(app) { // [!code ++]
+        withInertiaModal(app) // [!code ++]
+    }, // [!code ++]
 })
 ```
 
 ```jsx [React]
-import { renderApp } from '@inertiaui/modal-react' // [!code ++]
+import { ModalStackProvider, ModalRoot } from '@inertiaui/modal-react' // [!code ++]
+
+function ModalLayout({ children }) { // [!code ++]
+    return ( // [!code ++]
+        <> // [!code ++]
+            {children} // [!code ++]
+            <ModalRoot /> // [!code ++]
+        </> // [!code ++]
+    ) // [!code ++]
+} // [!code ++]
 
 createInertiaApp({
-    setup({ el, App, props }) {
-        const root = createRoot(el);
-
-        root.render(
-            <App {...props} /> // [!code --]
-            renderApp(App, props) // [!code ++]
-        );
-    }
-});
+    withApp(app) { // [!code ++]
+        return <ModalStackProvider>{app}</ModalStackProvider> // [!code ++]
+    }, // [!code ++]
+    layout: () => ModalLayout, // [!code ++]
+})
 ```
 
 :::

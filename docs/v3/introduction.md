@@ -2,6 +2,10 @@
 
 Inertia Modal is part of [Inertia UI](https://inertiaui.com), a suite of packages designed for Laravel, Inertia.js, and Tailwind CSS. With Inertia Modal, you can easily open any route in a Modal or Slideover without having to change anything about your existing routes or controllers.
 
+::: tip Version Compatibility
+You are reading the docs for **Inertia Modal 3.x**, which requires **Inertia.js v3**. If you're using Inertia.js v2, use [Inertia Modal 2.x](/v2/introduction) instead. See [Requirements](/requirements) for details.
+:::
+
 Here's a summary of the features:
 
 - Supports React and Vue

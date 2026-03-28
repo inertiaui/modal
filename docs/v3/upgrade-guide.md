@@ -4,7 +4,15 @@ This guide covers upgrading from Inertia Modal 2.x to version 3.x.
 
 ## Why a New Major Version?
 
-Inertia Modal's major version is aligned with the Inertia.js version it supports. Version 2.x supports Inertia.js v2, and version 3.x supports Inertia.js v3. A separate major version is needed because Inertia 3 replaced Axios with native fetch, which required changes to how Inertia Modal intercepts and handles modal responses.
+Inertia Modal's major version is aligned with the Inertia.js version it supports:
+
+| Inertia Modal | Inertia.js | Status |
+|---------------|------------|--------|
+| **3.x** | **v3** | **Current** |
+| 2.x | v2 | Supported |
+| 0.x | v1 | Unsupported |
+
+A separate major version is needed because Inertia 3 replaced Axios with native fetch, which required changes to how Inertia Modal intercepts and handles modal responses.
 
 ## Installation
 

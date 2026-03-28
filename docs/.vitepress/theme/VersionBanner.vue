@@ -30,13 +30,13 @@ const equivalentV3Path = computed(() => {
 
 <template>
   <div v-if="isV0" class="version-banner beta">
-    <strong>v0 (Legacy)</strong> &mdash; You are viewing the legacy documentation.
+    <strong>v0 (Unsupported)</strong> &mdash; This version is no longer supported.
     <a v-if="equivalentV3Path" :href="equivalentV3Path">Switch to v3 (Inertia 3) &rarr;</a>
   </div>
 
   <div v-if="isV2" class="version-banner stable">
-    <strong>v2 (Inertia 2)</strong> &mdash; You are viewing the documentation for Inertia.js v2.
-    <a v-if="equivalentV3Path" :href="equivalentV3Path">Switch to v3 (Inertia 3) &rarr;</a>
+    <strong>v2 (Inertia 2 only)</strong> &mdash; This version only works with Inertia.js v2. For Inertia.js v3, use Inertia Modal 3.x.
+    <a v-if="equivalentV3Path" :href="equivalentV3Path">Switch to v3 docs &rarr;</a>
   </div>
 </template>
 
