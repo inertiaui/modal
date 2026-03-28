@@ -1,6 +1,8 @@
 import type { ComponentType, ReactNode } from 'react'
 import type { RequestPayload, HttpResponse } from '@inertiajs/core'
 
+export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+
 export interface ModalResponseData {
     id?: string
     component: string
@@ -20,7 +22,7 @@ export interface ModalConfig {
 export interface ReloadOptions {
     only?: string[]
     except?: string[]
-    method?: string
+    method?: HttpMethod
     data?: Record<string, unknown>
     headers?: Record<string, string>
     onStart?: () => void
@@ -30,7 +32,7 @@ export interface ReloadOptions {
 }
 
 export interface VisitOptions {
-    method?: string
+    method?: HttpMethod
     data?: RequestPayload
     headers?: Record<string, string>
     config?: ModalConfig
@@ -116,7 +118,7 @@ export interface ModalStackContextValue {
     reset: () => void
     visit: (
         href: string,
-        method: string,
+        method: HttpMethod,
         payload?: RequestPayload,
         headers?: Record<string, string>,
         config?: ModalConfig,
@@ -137,7 +139,6 @@ export interface PageProps {
     initialPage?: {
         version?: string
     }
-    resolveComponent?: ComponentResolver
 }
 
 export interface ModalRootProps {

@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
-import { generateId, except, kebabCase } from './helpers'
+import { generateId, except, kebabCase, parseResponseData } from './helpers'
 import { router, usePage, progress, http } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse } from '@inertiajs/core'
 import ModalRoot from './ModalRoot.vue'
@@ -24,7 +24,7 @@ export interface ModalConfig {
 export interface ReloadOptions {
     only?: string[]
     except?: string[]
-    method?: string
+    method?: HttpMethod
     data?: Record<string, unknown>
     headers?: Record<string, string>
     onStart?: () => void
@@ -34,7 +34,7 @@ export interface ReloadOptions {
 }
 
 export interface VisitOptions {
-    method?: string
+    method?: HttpMethod
     data?: RequestPayload
     headers?: Record<string, string>
     config?: ModalConfig
@@ -63,6 +63,7 @@ export interface PrefetchOptions {
     onPrefetched?: () => void
 }
 
+export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 type EventCallback = (...args: unknown[]) => void
 type ComponentResolver = (name: string) => Promise<Component>
 
@@ -77,7 +78,6 @@ let closingToBaseUrlTarget: string | null = null
 // Prefetch cache (#146)
 interface PrefetchCacheEntry {
     response: HttpResponse
-    timestamp: number
     expiresAt: number
 }
 
@@ -108,7 +108,6 @@ function setCachedResponse(url: string, method: string, data: RequestPayload, re
     const key = getPrefetchCacheKey(url, method, data)
     prefetchCache.set(key, {
         response,
-        timestamp: Date.now(),
         expiresAt: Date.now() + cacheFor,
     })
 }
@@ -118,13 +117,13 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
         return Promise.resolve()
     }
 
-    const method = (options.method ?? 'get').toLowerCase()
+    const method = options.method ?? 'get'
     const data = options.data ?? ({} as RequestPayload)
     const headers = options.headers ?? {}
     const queryStringArrayFormat = options.queryStringArrayFormat ?? 'brackets'
     const cacheFor = options.cacheFor ?? 30000
 
-    const [url, mergedData] = mergeDataIntoQueryString(method as 'get' | 'post' | 'put' | 'patch' | 'delete', href || '', data, queryStringArrayFormat)
+    const [url, mergedData] = mergeDataIntoQueryString(method, href || '', data, queryStringArrayFormat)
 
     // Check if already cached
     const cached = getCachedResponse(url, method, mergedData)
@@ -153,7 +152,7 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
 
     const request = http
         .getClient()
-        .request({ url, method: method as 'get' | 'post' | 'put' | 'patch' | 'delete', data: mergedData, headers: requestHeaders })
+        .request({ url, method: method, data: mergedData, headers: requestHeaders })
         .then((response) => {
             setCachedResponse(url, method, mergedData, response, cacheFor)
             options.onPrefetched?.()
@@ -168,13 +167,10 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
     return request.then(() => {})
 }
 
-const setComponentResolver = (_resolver: ComponentResolver): void => {
-    // No-op: Inertia 3 uses router.resolveComponent() directly
-}
-
-export const initFromPageProps = (_pageProps: { resolveComponent?: ComponentResolver }): void => {
-    // No-op: Inertia 3 uses router.resolveComponent() directly
-}
+// No-ops: Inertia 3 uses router.resolveComponent() directly.
+// Kept for backward compatibility with v2 setup code.
+const setComponentResolver = (_resolver: ComponentResolver): void => {}
+export const initFromPageProps = (_pageProps: { resolveComponent?: ComponentResolver }): void => {}
 
 export class Modal {
     id: string
@@ -397,7 +393,7 @@ export class Modal {
             return
         }
 
-        const method = (options.method ?? 'get').toLowerCase()
+        const method = options.method ?? 'get'
         const data = options.data ?? {}
 
         options.onStart?.()
@@ -405,7 +401,7 @@ export class Modal {
         http.getClient()
             .request({
                 url: this.response.url,
-                method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+                method: method,
                 data: method === 'get' ? undefined : data,
                 params: method === 'get' ? data : undefined,
                 headers: {
@@ -420,8 +416,7 @@ export class Modal {
                 },
             })
             .then((response) => {
-                const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
-                this.updateProps(responseData.props)
+                this.updateProps((parseResponseData(response.data) as ModalResponseData).props)
                 options.onSuccess?.(response)
             })
             .catch((error) => {
@@ -513,7 +508,7 @@ function pushFromResponseData(
 
 function visit(
     href: string,
-    method: string,
+    method: HttpMethod,
     payload: RequestPayload = {},
     headers: Record<string, string> = {},
     config: ModalConfig = {},
@@ -534,12 +529,12 @@ function visit(
             return
         }
 
-        const [url, data] = mergeDataIntoQueryString(method as 'get' | 'post' | 'put' | 'patch' | 'delete', href || '', payload, queryStringArrayFormat)
+        const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
         // Check for cached prefetch response (#146)
         const cachedResponse = getCachedResponse(url, method, data)
         if (cachedResponse) {
-            const cachedData = typeof cachedResponse.data === 'string' ? JSON.parse(cachedResponse.data) : cachedResponse.data
+            const cachedData = parseResponseData(cachedResponse.data) as ModalResponseData
             onSuccess?.(cachedResponse)
             pushFromResponseData(cachedData, config, onClose, onAfterLeave)
                 .then((modal) => {
@@ -569,9 +564,9 @@ function visit(
         progress?.start()
 
         http.getClient()
-            .request({ url, method: method as 'get' | 'post' | 'put' | 'patch' | 'delete', data, headers: requestHeaders })
+            .request({ url, method: method, data, headers: requestHeaders })
             .then((response) => {
-                const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+                const responseData = parseResponseData(response.data) as ModalResponseData
                 onSuccess?.(response)
                 pushFromResponseData(responseData, config, onClose, onAfterLeave)
                     .then((modal) => {

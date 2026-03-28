@@ -2,6 +2,10 @@
 import { generateId as vanillaGenerateId } from '@inertiaui/vanilla'
 export { except, only, rejectNullValues, kebabCase, isStandardDomEvent, sameUrlPath } from '@inertiaui/vanilla'
 
+export function parseResponseData(data: unknown): unknown {
+    return typeof data === 'string' ? JSON.parse(data) : data
+}
+
 // Modal-specific helpers
 
 let generateIdUsingCallback: (() => string) | null = null

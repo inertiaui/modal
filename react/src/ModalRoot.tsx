@@ -1,5 +1,5 @@
 import { createElement, useEffect, useLayoutEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
-import { except, kebabCase, generateId, sameUrlPath } from './helpers'
+import { except, kebabCase, generateId, sameUrlPath, parseResponseData } from './helpers'
 import { router, usePage, progress, http } from '@inertiajs/react'
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type HttpRequestConfig } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
@@ -13,6 +13,7 @@ import type {
     VisitOptions,
     ReloadOptions,
     EventCallback,
+    HttpMethod,
     PageProps,
     ModalRootProps,
     LocalModal,
@@ -32,7 +33,6 @@ let closingToBaseUrlTarget: string | null = null
 // Prefetch cache (#146)
 interface PrefetchCacheEntry {
     response: HttpResponse
-    timestamp: number
     expiresAt: number
 }
 
@@ -63,7 +63,6 @@ function setCachedResponse(url: string, method: string, data: RequestPayload, re
     const key = getPrefetchCacheKey(url, method, data)
     prefetchCache.set(key, {
         response,
-        timestamp: Date.now(),
         expiresAt: Date.now() + cacheFor,
     })
 }
@@ -73,13 +72,13 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
         return Promise.resolve()
     }
 
-    const method = (options.method ?? 'get').toLowerCase()
+    const method = options.method ?? 'get'
     const data = options.data ?? ({} as RequestPayload)
     const headers = options.headers ?? {}
     const queryStringArrayFormat = options.queryStringArrayFormat ?? 'brackets'
     const cacheFor = options.cacheFor ?? 30000
 
-    const [url, mergedData] = mergeDataIntoQueryString(method as 'get' | 'post' | 'put' | 'patch' | 'delete', href || '', data, queryStringArrayFormat)
+    const [url, mergedData] = mergeDataIntoQueryString(method, href || '', data, queryStringArrayFormat)
 
     // Check if already cached
     const cached = getCachedResponse(url, method, mergedData)
@@ -110,7 +109,7 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
         .getClient()
         .request({
             url,
-            method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+            method: method,
             data: mergedData,
             headers: requestHeaders,
         })
@@ -364,7 +363,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
                 return
             }
 
-            const method = (options.method ?? 'get').toLowerCase()
+            const method = options.method ?? 'get'
             const data = options.data ?? {}
 
             options.onStart?.()
@@ -372,7 +371,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
             http.getClient()
                 .request({
                     url: this.response.url,
-                    method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+                    method: method,
                     data: method === 'get' ? undefined : data,
                     params: method === 'get' ? data : undefined,
                     headers: {
@@ -387,8 +386,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
                     },
                 })
                 .then((response) => {
-                    const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
-                    this.updateProps(responseData.props)
+                    this.updateProps((parseResponseData(response.data) as ModalResponseData).props)
 
                     options.onSuccess?.(response)
                 })
@@ -534,7 +532,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
 
     const visit = (
         href: string,
-        method: string,
+        method: HttpMethod,
         payload: RequestPayload = {},
         headers: Record<string, string> = {},
         config: ModalConfig = {},
@@ -555,14 +553,14 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
                 return
             }
 
-            const [url, data] = mergeDataIntoQueryString(method as 'get' | 'post' | 'put' | 'patch' | 'delete', href || '', payload, queryStringArrayFormat)
+            const [url, data] = mergeDataIntoQueryString(method, href || '', payload, queryStringArrayFormat)
 
             // Check for cached prefetch response (#146)
             const cachedResponse = getCachedResponse(url, method, data)
             if (cachedResponse) {
-                const cachedData = typeof cachedResponse.data === 'string' ? JSON.parse(cachedResponse.data) : cachedResponse.data
+                const cachedData = parseResponseData(cachedResponse.data)
                 onSuccess?.(cachedResponse)
-                pushFromResponseData(cachedData, config, onClose, onAfterLeave)
+                pushFromResponseData(cachedData as ModalResponseData, config, onClose, onAfterLeave)
                     .then((modal) => {
                         updateBrowserUrl(cachedData.url, useBrowserHistory, cachedData)
                         resolve(modal)
@@ -592,12 +590,12 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
             http.getClient()
                 .request({
                     url,
-                    method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
+                    method: method,
                     data,
                     headers: requestHeaders,
                 })
                 .then((response) => {
-                    const responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+                    const responseData = parseResponseData(response.data) as ModalResponseData
                     onSuccess?.(response)
                     pushFromResponseData(responseData, config, onClose, onAfterLeave)
                         .then((modal) => {
@@ -773,8 +771,6 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
                         closingToBaseUrlTarget = null
                         context?.closeAll(true)
                         baseUrl = null
-
-
                         return
                     }
                     closingToBaseUrlTarget = null
