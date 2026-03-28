@@ -1,6 +1,6 @@
 import { getConfig, putConfig, resetConfig } from './config'
 import { useModalStack, initFromPageProps, renderApp, withInertiaModal, Modal as ModalClass, modalPropNames, prefetch } from './modalStack'
-import type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, PrefetchOption, PrefetchOptions } from './modalStack'
+import type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, HttpMethod, PrefetchOption, PrefetchOptions } from './modalStack'
 import useModal from './useModal'
 import Deferred from './Deferred.vue'
 import HeadlessModal from './HeadlessModal.vue'
@@ -70,6 +70,6 @@ export {
 }
 
 // Export types
-export type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, PrefetchOption, PrefetchOptions }
+export type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, HttpMethod, PrefetchOption, PrefetchOptions }
 export type { ModalTypeConfig } from './config'
 export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla'

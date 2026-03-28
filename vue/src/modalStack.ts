@@ -3,7 +3,7 @@ import { generateId, except, kebabCase, parseResponseData } from './helpers'
 import { ResponseCache } from '../../common/cache'
 import type { ModalTypeConfig } from './config'
 import { router, usePage, progress, http } from '@inertiajs/vue3'
-import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse } from '@inertiajs/core'
+import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type Method } from '@inertiajs/core'
 import ModalRoot from './ModalRoot.vue'
 
 // Type definitions
@@ -63,7 +63,7 @@ export interface PrefetchOptions {
     onPrefetched?: () => void
 }
 
-export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+export type HttpMethod = Method
 type EventCallback = (...args: unknown[]) => void
 type ComponentResolver = (name: string) => Promise<Component>
 

@@ -1,9 +1,9 @@
 import type { ComponentType, ReactNode } from 'react'
-import type { RequestPayload, HttpResponse } from '@inertiajs/core'
+import type { RequestPayload, HttpResponse, Method } from '@inertiajs/core'
 
 import type { ModalTypeConfig } from './config'
 
-export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+export type HttpMethod = Method
 
 export interface ModalResponseData {
     id?: string

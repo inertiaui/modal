@@ -695,10 +695,9 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
     const $page = usePage<InertiaUIModalPageProps>()
     const pendingModalKeysRef = useRef(new Set<string>())
 
-    // Keep module-level pageVersion in sync for use by prefetch/visit functions
-    useEffect(() => {
-        currentPageVersion = $page.version ?? null
-    }, [$page.version])
+    // Keep module-level pageVersion in sync for use by prefetch/visit functions.
+    // Set during render (not useEffect) because prefetch() needs it synchronously on mount.
+    currentPageVersion = $page.version ?? null
 
     // Generate a unique key for deduplication (handles case when modal has no id)
     const getModalKey = (modalData: ModalResponseData) => modalData.id || `${modalData.component}:${modalData.url}`
