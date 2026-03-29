@@ -8,7 +8,7 @@ import { default as Modal } from './Modal';
 import { default as ModalLink } from './ModalLink';
 import { default as WhenVisible } from './WhenVisible';
 import * as dialogUtils from '@inertiaui/vanilla';
-export type { Modal as ModalInstance, ModalConfig, ModalResponseData, ModalStackContextValue, VisitOptions, ReloadOptions, EventCallback, ComponentResolver, PageProps, ModalRootProps, ModalRendererProps, LocalModal, PrefetchOption, PrefetchOptions, } from './types';
+export type { Modal as ModalInstance, ModalConfig, ModalResponseData, ModalStackContextValue, VisitOptions, ReloadOptions, EventCallback, ComponentResolver, HttpMethod, PageProps, ModalRootProps, ModalRendererProps, LocalModal, PrefetchOption, PrefetchOptions, } from './types';
 export type { ModalTypeConfig } from './config';
 export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla';
 declare const setPageLayout: <T extends {

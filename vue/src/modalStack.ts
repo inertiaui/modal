@@ -1,6 +1,6 @@
 import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
 import { generateId, except, kebabCase, parseResponseData } from './helpers'
-import { ResponseCache } from '../../common/cache'
+import { ResponseCache } from './cache'
 import type { ModalTypeConfig } from './config'
 import { router, usePage, progress, http } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type Method } from '@inertiajs/core'

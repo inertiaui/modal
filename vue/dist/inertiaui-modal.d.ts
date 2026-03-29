@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { CleanupFunction } from '@inertiaui/vanilla';
 import { Component } from 'vue';
 import { ComputedRef } from 'vue';
@@ -8,6 +7,8 @@ import { EscapeKeyOptions } from '@inertiaui/vanilla';
 import { FocusTrapOptions } from '@inertiaui/vanilla';
 import { h } from 'vue';
 import { default as HeadlessModal } from './HeadlessModal.vue';
+import { HttpResponse } from '@inertiajs/core';
+import { Method } from '@inertiajs/core';
 import { default as Modal } from './Modal.vue';
 import { default as ModalLink } from './ModalLink.vue';
 import { default as ModalRoot } from './ModalRoot.vue';
@@ -33,15 +34,17 @@ export declare const getConfig: (key?: string) => unknown;
 
 export { HeadlessModal }
 
-export declare const initFromPageProps: (pageProps: {
+export declare type HttpMethod = Method;
+
+export declare const initFromPageProps: (_pageProps: {
     resolveComponent?: ComponentResolver;
 }) => void;
 
 export { Modal }
 
-export declare interface ModalConfig {
-    [key: string]: unknown;
-}
+export declare type ModalConfig = Partial<ModalTypeConfig & {
+    slideover: boolean;
+}>;
 
 declare interface ModalConfig_2 {
     type: 'modal' | 'slideover';
@@ -131,7 +134,7 @@ export declare function prefetch(href: string, options?: PrefetchOptions): Promi
 export declare type PrefetchOption = boolean | 'hover' | 'click' | 'mount' | Array<'hover' | 'click' | 'mount'>;
 
 export declare interface PrefetchOptions {
-    method?: string;
+    method?: HttpMethod;
     data?: RequestPayload;
     headers?: Record<string, string>;
     queryStringArrayFormat?: 'brackets' | 'indices';
@@ -151,11 +154,11 @@ declare function registerLocalModal(name: string, callback: (modal: ModalInstanc
 export declare interface ReloadOptions {
     only?: string[];
     except?: string[];
-    method?: string;
+    method?: HttpMethod;
     data?: Record<string, unknown>;
     headers?: Record<string, string>;
     onStart?: () => void;
-    onSuccess?: (response: AxiosResponse) => void;
+    onSuccess?: (response: HttpResponse) => void;
     onError?: (error: unknown) => void;
     onFinish?: () => void;
 }
@@ -170,12 +173,12 @@ export declare function useModal(): ModalInstance | null;
 
 export declare function useModalStack(): ModalStack;
 
-declare function visit(href: string, method: string, payload?: RequestPayload, headers?: Record<string, string>, config?: ModalConfig, onClose?: (() => void) | null, onAfterLeave?: (() => void) | null, queryStringArrayFormat?: 'brackets' | 'indices', useBrowserHistory?: boolean, onStart?: (() => void) | null, onSuccess?: ((response?: AxiosResponse) => void) | null, onError?: ((...args: unknown[]) => void) | null, props?: Record<string, unknown> | null): Promise<ModalInstance>;
+declare function visit(href: string, method: HttpMethod, payload?: RequestPayload, headers?: Record<string, string>, config?: ModalConfig, onClose?: (() => void) | null, onAfterLeave?: (() => void) | null, queryStringArrayFormat?: 'brackets' | 'indices', useBrowserHistory?: boolean, onStart?: (() => void) | null, onSuccess?: ((response?: HttpResponse) => void) | null, onError?: ((...args: unknown[]) => void) | null, props?: Record<string, unknown> | null): Promise<ModalInstance>;
 
 export declare function visitModal(url: string, options?: VisitOptions): Promise<ModalInstance>;
 
 export declare interface VisitOptions {
-    method?: string;
+    method?: HttpMethod;
     data?: RequestPayload;
     headers?: Record<string, string>;
     config?: ModalConfig;
@@ -184,12 +187,18 @@ export declare interface VisitOptions {
     queryStringArrayFormat?: 'brackets' | 'indices';
     navigate?: boolean;
     onStart?: () => void;
-    onSuccess?: (response?: AxiosResponse) => void;
+    onSuccess?: (response?: HttpResponse) => void;
     onError?: (...args: unknown[]) => void;
     listeners?: Record<string, (...args: unknown[]) => void>;
     props?: Record<string, unknown>;
 }
 
 export { WhenVisible }
+
+export declare const withInertiaModal: (app: {
+    _component: {
+        render?: () => ReturnType<typeof h>;
+    };
+}) => void;
 
 export { }

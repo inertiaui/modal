@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useRef, useEffect, useReducer, useState, createElement, useMemo, forwardRef, useImperativeHandle, useCallback } from "react";
+import React, { createContext, useContext, useRef, useLayoutEffect, useEffect, useReducer, useState, createElement, useMemo, forwardRef, useImperativeHandle, useCallback } from "react";
 import { jsxs, Fragment, jsx } from "react/jsx-runtime";
-import Axios from "axios";
 import { generateId as generateId$1, sameUrlPath, kebabCase, except, animate, createFocusTrap, onEscapeKey, cancelAnimations, lockScroll, markAriaHidden, isStandardDomEvent, rejectNullValues, only } from "@inertiaui/vanilla";
 import * as vanilla from "@inertiaui/vanilla";
-import { usePage, router, progress } from "@inertiajs/react";
+import { usePage, http, router, progress } from "@inertiajs/react";
 import { mergeDataIntoQueryString } from "@inertiajs/core";
 import { createPortal } from "react-dom";
 const defaultConfig = {
@@ -77,56 +76,81 @@ const resetConfig = () => configInstance.reset();
 const putConfig = (key, value) => configInstance.put(key, value);
 const getConfig = (key) => configInstance.get(key);
 const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+function parseResponseData(data) {
+  return typeof data === "string" ? JSON.parse(data) : data;
+}
 function generateId(prefix = "inertiaui_") {
   return generateId$1(prefix);
 }
+class ResponseCache {
+  constructor() {
+    this.cache = /* @__PURE__ */ new Map();
+    this.timers = /* @__PURE__ */ new Map();
+    this.inFlight = /* @__PURE__ */ new Map();
+  }
+  static key(method, url, data) {
+    return `${method}:${url}:${JSON.stringify(data)}`;
+  }
+  get(key) {
+    const cached = this.cache.get(key);
+    if (!cached) {
+      return null;
+    }
+    if (Date.now() > cached.expiresAt) {
+      this.delete(key);
+      return null;
+    }
+    return cached.response;
+  }
+  set(key, response, cacheFor) {
+    this.delete(key);
+    this.cache.set(key, {
+      response,
+      expiresAt: Date.now() + cacheFor
+    });
+    if (cacheFor > 0) {
+      this.timers.set(key, setTimeout(() => this.delete(key), cacheFor));
+    }
+  }
+  delete(key) {
+    this.cache.delete(key);
+    const timer = this.timers.get(key);
+    if (timer) {
+      clearTimeout(timer);
+      this.timers.delete(key);
+    }
+  }
+  getInFlight(key) {
+    return this.inFlight.get(key);
+  }
+  setInFlight(key, promise) {
+    this.inFlight.set(key, promise);
+  }
+  deleteInFlight(key) {
+    this.inFlight.delete(key);
+  }
+}
 const ModalStackContext = createContext(null);
 ModalStackContext.displayName = "ModalStackContext";
-let pageVersion = null;
-let resolveComponent = null;
 let baseUrl = null;
+let currentPageVersion = null;
 let closingToBaseUrlTarget = null;
-const prefetchCache = /* @__PURE__ */ new Map();
-const prefetchInFlight = /* @__PURE__ */ new Map();
-function getPrefetchCacheKey(url, method, data) {
-  return `${method}:${url}:${JSON.stringify(data)}`;
-}
-function getCachedResponse(url, method, data) {
-  const key = getPrefetchCacheKey(url, method, data);
-  const cached = prefetchCache.get(key);
-  if (!cached) {
-    return null;
-  }
-  if (Date.now() > cached.expiresAt) {
-    prefetchCache.delete(key);
-    return null;
-  }
-  return cached.response;
-}
-function setCachedResponse(url, method, data, response, cacheFor) {
-  const key = getPrefetchCacheKey(url, method, data);
-  prefetchCache.set(key, {
-    response,
-    timestamp: Date.now(),
-    expiresAt: Date.now() + cacheFor
-  });
-}
+const prefetchCache = new ResponseCache();
 function prefetch(href, options = {}) {
   if (href.startsWith("#")) {
     return Promise.resolve();
   }
-  const method = (options.method ?? "get").toLowerCase();
+  const method = options.method ?? "get";
   const data = options.data ?? {};
   const headers = options.headers ?? {};
   const queryStringArrayFormat = options.queryStringArrayFormat ?? "brackets";
   const cacheFor = options.cacheFor ?? 3e4;
   const [url, mergedData] = mergeDataIntoQueryString(method, href || "", data, queryStringArrayFormat);
-  const cached = getCachedResponse(url, method, mergedData);
-  if (cached) {
+  const cacheKey = ResponseCache.key(method, url, mergedData);
+  if (prefetchCache.get(cacheKey)) {
     return Promise.resolve();
   }
-  const cacheKey = getPrefetchCacheKey(url, method, mergedData);
-  const inFlight = prefetchInFlight.get(cacheKey);
+  const inFlight = prefetchCache.getInFlight(cacheKey);
   if (inFlight) {
     return inFlight.then(() => {
     });
@@ -137,23 +161,23 @@ function prefetch(href, options = {}) {
     Accept: "text/html, application/xhtml+xml",
     "X-Requested-With": "XMLHttpRequest",
     "X-Inertia": "true",
-    "X-Inertia-Version": pageVersion ?? "",
+    "X-Inertia-Version": currentPageVersion ?? "",
     "X-InertiaUI-Modal": generateId(),
     "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
   };
-  const request = Axios({
+  const request = http.getClient().request({
     url,
     method,
     data: mergedData,
     headers: requestHeaders
   }).then((response) => {
-    setCachedResponse(url, method, mergedData, response, cacheFor);
+    prefetchCache.set(cacheKey, response, cacheFor);
     options.onPrefetched?.();
     return response;
   }).finally(() => {
-    prefetchInFlight.delete(cacheKey);
+    prefetchCache.deleteInFlight(cacheKey);
   });
-  prefetchInFlight.set(cacheKey, request);
+  prefetchCache.setInFlight(cacheKey, request);
   return request.then(() => {
   });
 }
@@ -295,14 +319,14 @@ const ModalStackProvider = ({ children }) => {
         if (!this.response?.url) {
           return;
         }
-        const method = (options.method ?? "get").toLowerCase();
+        const method = options.method ?? "get";
         const data = options.data ?? {};
         options.onStart?.();
-        Axios({
+        http.getClient().request({
           url: this.response.url,
           method,
-          data: method === "get" ? {} : data,
-          params: method === "get" ? data : {},
+          data: method === "get" ? void 0 : data,
+          params: method === "get" ? data : void 0,
           headers: {
             ...options.headers ?? {},
             Accept: "text/html, application/xhtml+xml",
@@ -314,7 +338,7 @@ const ModalStackProvider = ({ children }) => {
             "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
           }
         }).then((response2) => {
-          this.updateProps(response2.data.props);
+          this.updateProps(parseResponseData(response2.data).props);
           options.onSuccess?.(response2);
         }).catch((error) => {
           options.onError?.(error);
@@ -346,9 +370,6 @@ const ModalStackProvider = ({ children }) => {
     return typeof data === "object" && data !== null && "component" in data && typeof data.component === "string";
   };
   const pushFromResponseData = (responseData, config = {}, onClose = null, onAfterLeave = null) => {
-    if (!resolveComponent) {
-      return Promise.reject(new Error("resolveComponent not set"));
-    }
     if (!isValidModalResponse(responseData)) {
       return Promise.reject(
         new Error(
@@ -356,7 +377,7 @@ const ModalStackProvider = ({ children }) => {
         )
       );
     }
-    return resolveComponent(responseData.component).then(
+    return router.resolveComponent(responseData.component).then(
       (component) => push(component, responseData, config, onClose, onAfterLeave)
     );
   };
@@ -435,11 +456,12 @@ const ModalStackProvider = ({ children }) => {
         return;
       }
       const [url, data] = mergeDataIntoQueryString(method, href || "", payload, queryStringArrayFormat);
-      const cachedResponse = getCachedResponse(url, method, data);
+      const cachedResponse = prefetchCache.get(ResponseCache.key(method, url, data));
       if (cachedResponse) {
+        const cachedData = parseResponseData(cachedResponse.data);
         onSuccess?.(cachedResponse);
-        pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave).then((modal) => {
-          updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data);
+        pushFromResponseData(cachedData, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(cachedData.url, useBrowserHistory, cachedData);
           resolve(modal);
         }).catch(reject);
         return;
@@ -452,21 +474,22 @@ const ModalStackProvider = ({ children }) => {
         Accept: "text/html, application/xhtml+xml",
         "X-Requested-With": "XMLHttpRequest",
         "X-Inertia": "true",
-        "X-Inertia-Version": pageVersion ?? "",
+        "X-Inertia-Version": currentPageVersion ?? "",
         "X-InertiaUI-Modal": modalId,
         "X-InertiaUI-Modal-Base-Url": baseUrl ?? ""
       };
       onStart?.();
       progress?.start();
-      Axios({
+      http.getClient().request({
         url,
         method,
         data,
         headers: requestHeaders
       }).then((response) => {
+        const responseData = parseResponseData(response.data);
         onSuccess?.(response);
-        pushFromResponseData(response.data, config, onClose, onAfterLeave).then((modal) => {
-          updateBrowserUrl(response.data.url, useBrowserHistory, response.data);
+        pushFromResponseData(responseData, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(responseData.url, useBrowserHistory, responseData);
           resolve(modal);
         }).catch(reject);
       }).catch((...args) => {
@@ -523,10 +546,7 @@ const useModalStack = () => {
 const modalPropNames = ["closeButton", "closeExplicitly", "closeOnClickOutside", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"];
 const initFromPageProps = (pageProps) => {
   if (pageProps.initialPage) {
-    pageVersion = pageProps.initialPage.version ?? null;
-  }
-  if (pageProps.resolveComponent) {
-    resolveComponent = pageProps.resolveComponent;
+    currentPageVersion = pageProps.initialPage.version ?? null;
   }
 };
 const renderApp = (App, pageProps) => {
@@ -556,9 +576,19 @@ const ModalRoot = ({ children }) => {
   const context = useContext(ModalStackContext);
   const $page = usePage();
   const pendingModalKeysRef = useRef(/* @__PURE__ */ new Set());
+  currentPageVersion = $page.version ?? null;
   const getModalKey = (modalData) => modalData.id || `${modalData.component}:${modalData.url}`;
   const isNavigatingRef = useRef(false);
-  const initialModalStillOpenedRef = useRef(!!$page.props?._inertiaui_modal);
+  const pageRef = useRef($page);
+  pageRef.current = $page;
+  useLayoutEffect(() => http.onRequest((config) => {
+    const baseUrlValue = baseUrl ?? pageRef.current.props._inertiaui_modal?.baseUrl ?? null;
+    if (baseUrlValue) {
+      config.headers = config.headers ?? {};
+      config.headers["X-InertiaUI-Modal-Base-Url"] = baseUrlValue;
+    }
+    return config;
+  }), []);
   useEffect(() => router.on("start", () => isNavigatingRef.current = true), []);
   useEffect(() => router.on("finish", () => isNavigatingRef.current = false), []);
   useEffect(
@@ -572,7 +602,6 @@ const ModalRoot = ({ children }) => {
           closingToBaseUrlTarget = null;
           context?.closeAll(true);
           baseUrl = null;
-          initialModalStillOpenedRef.current = false;
           return;
         }
         closingToBaseUrlTarget = null;
@@ -580,13 +609,11 @@ const ModalRoot = ({ children }) => {
       if (!modalOnBase) {
         context?.closeAll(true);
         baseUrl = null;
-        initialModalStillOpenedRef.current = false;
         return;
       }
       if (!sameUrlPath(pageUrl, modalOnBase.url)) {
         context?.closeAll(true);
         baseUrl = null;
-        initialModalStillOpenedRef.current = false;
         return;
       }
       const modalKey = getModalKey(modalOnBase);
@@ -606,6 +633,7 @@ const ModalRoot = ({ children }) => {
           console.error("No base url in modal response data so cannot navigate back");
           return;
         }
+        baseUrl = null;
         if (!isNavigatingRef.current && typeof window !== "undefined" && window.location.href !== modalOnBase.baseUrl) {
           router.visit(modalOnBase.baseUrl, {
             preserveScroll: true,
@@ -618,17 +646,6 @@ const ModalRoot = ({ children }) => {
     }),
     []
   );
-  const axiosRequestInterceptor = (config) => {
-    const baseUrlValue = baseUrl ?? (initialModalStillOpenedRef.current ? $page.props._inertiaui_modal?.baseUrl : null);
-    if (baseUrlValue) {
-      config.headers["X-InertiaUI-Modal-Base-Url"] = baseUrlValue;
-    }
-    return config;
-  };
-  useEffect(() => {
-    const interceptorId = Axios.interceptors.request.use(axiosRequestInterceptor);
-    return () => Axios.interceptors.request.eject(interceptorId);
-  }, []);
   const previousModalRef = useRef(void 0);
   useEffect(() => {
     const newModal = $page.props?._inertiaui_modal;

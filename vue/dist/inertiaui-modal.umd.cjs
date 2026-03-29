@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue"), require("@inertiaui/vanilla"), require("@inertiajs/vue3"), require("@inertiajs/core"), require("axios")) : typeof define === "function" && define.amd ? define(["exports", "vue", "@inertiaui/vanilla", "@inertiajs/vue3", "@inertiajs/core", "axios"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.Vue, global.InertiaUIVanilla, global.InertiaVue3, global.InertiaCore, global.axios));
-})(this, (function(exports2, vue, vanilla, vue3, core, Axios) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue"), require("@inertiaui/vanilla"), require("@inertiajs/vue3"), require("@inertiajs/core")) : typeof define === "function" && define.amd ? define(["exports", "vue", "@inertiaui/vanilla", "@inertiajs/vue3", "@inertiajs/core"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.Vue, global.InertiaUIVanilla, global.InertiaVue3, global.InertiaCore));
+})(this, (function(exports2, vue, vanilla, vue3, core) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -90,8 +90,59 @@
   const putConfig = (key, value) => configInstance.put(key, value);
   const getConfig = (key) => configInstance.get(key);
   const getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+  function parseResponseData(data) {
+    return typeof data === "string" ? JSON.parse(data) : data;
+  }
   function generateId(prefix = "inertiaui_modal_") {
     return vanilla.generateId(prefix);
+  }
+  class ResponseCache {
+    constructor() {
+      this.cache = /* @__PURE__ */ new Map();
+      this.timers = /* @__PURE__ */ new Map();
+      this.inFlight = /* @__PURE__ */ new Map();
+    }
+    static key(method, url, data) {
+      return `${method}:${url}:${JSON.stringify(data)}`;
+    }
+    get(key) {
+      const cached = this.cache.get(key);
+      if (!cached) {
+        return null;
+      }
+      if (Date.now() > cached.expiresAt) {
+        this.delete(key);
+        return null;
+      }
+      return cached.response;
+    }
+    set(key, response, cacheFor) {
+      this.delete(key);
+      this.cache.set(key, {
+        response,
+        expiresAt: Date.now() + cacheFor
+      });
+      if (cacheFor > 0) {
+        this.timers.set(key, setTimeout(() => this.delete(key), cacheFor));
+      }
+    }
+    delete(key) {
+      this.cache.delete(key);
+      const timer = this.timers.get(key);
+      if (timer) {
+        clearTimeout(timer);
+        this.timers.delete(key);
+      }
+    }
+    getInFlight(key) {
+      return this.inFlight.get(key);
+    }
+    setInFlight(key, promise) {
+      this.inFlight.set(key, promise);
+    }
+    deleteInFlight(key) {
+      this.inFlight.delete(key);
+    }
   }
   const _sfc_main$9 = {
     __name: "ModalRenderer",
@@ -162,6 +213,7 @@
               console.error("No base url in modal response data so cannot navigate back");
               return;
             }
+            modalStack.setBaseUrl(null);
             if (!isNavigating && typeof window !== "undefined" && window.location.href !== modalOnBase.baseUrl) {
               vue3.router.visit(modalOnBase.baseUrl, {
                 preserveScroll: true,
@@ -173,16 +225,16 @@
           });
         })
       );
-      const axiosRequestInterceptor = (config) => {
+      const requestInterceptor = (config) => {
         const baseUrlValue = modalStack.getBaseUrl() ?? $page.props?._inertiaui_modal?.baseUrl ?? null;
         if (baseUrlValue) {
+          config.headers = config.headers ?? {};
           config.headers["X-InertiaUI-Modal-Base-Url"] = baseUrlValue;
         }
         return config;
       };
-      let axiosInterceptorId = null;
-      vue.onMounted(() => axiosInterceptorId = Axios.interceptors.request.use(axiosRequestInterceptor));
-      vue.onUnmounted(() => axiosInterceptorId !== null && Axios.interceptors.request.eject(axiosInterceptorId));
+      const removeInterceptor = vue3.http.onRequest(requestInterceptor);
+      vue.onUnmounted(() => removeInterceptor());
       vue.watch(
         () => $page.props?._inertiaui_modal,
         (newModal, previousModal) => {
@@ -214,52 +266,26 @@
       };
     }
   };
-  let resolveComponent = null;
   const baseUrl = vue.ref(null);
   const stack = vue.ref([]);
   const localModals = vue.ref({});
   let closingToBaseUrlTarget = null;
-  const prefetchCache = /* @__PURE__ */ new Map();
-  const prefetchInFlight = /* @__PURE__ */ new Map();
-  function getPrefetchCacheKey(url, method, data) {
-    return `${method}:${url}:${JSON.stringify(data)}`;
-  }
-  function getCachedResponse(url, method, data) {
-    const key = getPrefetchCacheKey(url, method, data);
-    const cached = prefetchCache.get(key);
-    if (!cached) {
-      return null;
-    }
-    if (Date.now() > cached.expiresAt) {
-      prefetchCache.delete(key);
-      return null;
-    }
-    return cached.response;
-  }
-  function setCachedResponse(url, method, data, response, cacheFor) {
-    const key = getPrefetchCacheKey(url, method, data);
-    prefetchCache.set(key, {
-      response,
-      timestamp: Date.now(),
-      expiresAt: Date.now() + cacheFor
-    });
-  }
+  const prefetchCache = new ResponseCache();
   function prefetch(href, options = {}) {
     if (href.startsWith("#")) {
       return Promise.resolve();
     }
-    const method = (options.method ?? "get").toLowerCase();
+    const method = options.method ?? "get";
     const data = options.data ?? {};
     const headers = options.headers ?? {};
     const queryStringArrayFormat = options.queryStringArrayFormat ?? "brackets";
     const cacheFor = options.cacheFor ?? 3e4;
     const [url, mergedData] = core.mergeDataIntoQueryString(method, href || "", data, queryStringArrayFormat);
-    const cached = getCachedResponse(url, method, mergedData);
-    if (cached) {
+    const cacheKey = ResponseCache.key(method, url, mergedData);
+    if (prefetchCache.get(cacheKey)) {
       return Promise.resolve();
     }
-    const cacheKey = getPrefetchCacheKey(url, method, mergedData);
-    const inFlight = prefetchInFlight.get(cacheKey);
+    const inFlight = prefetchCache.getInFlight(cacheKey);
     if (inFlight) {
       return inFlight.then(() => {
       });
@@ -274,24 +300,20 @@
       "X-InertiaUI-Modal": generateId(),
       "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
     };
-    const request = Axios({ url, method, data: mergedData, headers: requestHeaders }).then((response) => {
-      setCachedResponse(url, method, mergedData, response, cacheFor);
+    const request = vue3.http.getClient().request({ url, method, data: mergedData, headers: requestHeaders }).then((response) => {
+      prefetchCache.set(cacheKey, response, cacheFor);
       options.onPrefetched?.();
       return response;
     }).finally(() => {
-      prefetchInFlight.delete(cacheKey);
+      prefetchCache.deleteInFlight(cacheKey);
     });
-    prefetchInFlight.set(cacheKey, request);
+    prefetchCache.setInFlight(cacheKey, request);
     return request.then(() => {
     });
   }
-  const setComponentResolver = (resolver) => {
-    resolveComponent = resolver;
+  const setComponentResolver = (_resolver) => {
   };
-  const initFromPageProps = (pageProps) => {
-    if (pageProps.resolveComponent) {
-      resolveComponent = pageProps.resolveComponent;
-    }
+  const initFromPageProps = (_pageProps) => {
   };
   class Modal {
     constructor(component, response, config, onClose, afterLeave) {
@@ -417,14 +439,14 @@
         if (!this.response?.url) {
           return;
         }
-        const method = (options.method ?? "get").toLowerCase();
+        const method = options.method ?? "get";
         const data = options.data ?? {};
         options.onStart?.();
-        Axios({
+        vue3.http.getClient().request({
           url: this.response.url,
           method,
-          data: method === "get" ? {} : data,
-          params: method === "get" ? data : {},
+          data: method === "get" ? void 0 : data,
+          params: method === "get" ? data : void 0,
           headers: {
             ...options.headers ?? {},
             Accept: "text/html, application/xhtml+xml",
@@ -436,7 +458,7 @@
             "X-InertiaUI-Modal-Base-Url": baseUrl.value ?? ""
           }
         }).then((response2) => {
-          this.updateProps(response2.data.props);
+          this.updateProps(parseResponseData(response2.data).props);
           options.onSuccess?.(response2);
         }).catch((error) => {
           options.onError?.(error);
@@ -503,9 +525,6 @@
     });
   }
   function pushFromResponseData(responseData, config = {}, onClose = null, onAfterLeave = null) {
-    if (!resolveComponent) {
-      return Promise.reject(new Error("Component resolver not set"));
-    }
     if (!isValidModalResponse(responseData)) {
       return Promise.reject(
         new Error(
@@ -513,7 +532,7 @@
         )
       );
     }
-    return resolveComponent(responseData.component).then(
+    return vue3.router.resolveComponent(responseData.component).then(
       (component) => push(vue.markRaw(component), responseData, config, onClose, onAfterLeave)
     );
   }
@@ -525,11 +544,12 @@
         return;
       }
       const [url, data] = core.mergeDataIntoQueryString(method, href || "", payload, queryStringArrayFormat);
-      const cachedResponse = getCachedResponse(url, method, data);
+      const cachedResponse = prefetchCache.get(ResponseCache.key(method, url, data));
       if (cachedResponse) {
+        const cachedData = parseResponseData(cachedResponse.data);
         onSuccess?.(cachedResponse);
-        pushFromResponseData(cachedResponse.data, config, onClose, onAfterLeave).then((modal) => {
-          updateBrowserUrl(cachedResponse.data.url, useBrowserHistory, cachedResponse.data);
+        pushFromResponseData(cachedData, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(cachedData.url, useBrowserHistory, cachedData);
           resolve(modal);
         }).catch(reject);
         return;
@@ -548,10 +568,11 @@
       };
       onStart?.();
       vue3.progress?.start();
-      Axios({ url, method, data, headers: requestHeaders }).then((response) => {
+      vue3.http.getClient().request({ url, method, data, headers: requestHeaders }).then((response) => {
+        const responseData = parseResponseData(response.data);
         onSuccess?.(response);
-        pushFromResponseData(response.data, config, onClose, onAfterLeave).then((modal) => {
-          updateBrowserUrl(response.data.url, useBrowserHistory, response.data);
+        pushFromResponseData(responseData, config, onClose, onAfterLeave).then((modal) => {
+          updateBrowserUrl(responseData.url, useBrowserHistory, responseData);
           resolve(modal);
         }).catch(reject);
       }).catch((...args) => {
@@ -580,10 +601,13 @@
   }
   const modalPropNames = ["closeButton", "closeExplicitly", "closeOnClickOutside", "maxWidth", "paddingClasses", "panelClasses", "position", "slideover"];
   const renderApp = (App, props) => {
-    if (props.resolveComponent) {
-      resolveComponent = props.resolveComponent;
-    }
     return () => vue.h(_sfc_main$8, () => vue.h(App, props));
+  };
+  const withInertiaModal = (app) => {
+    const originalRender = app._component.render;
+    if (originalRender) {
+      app._component.render = () => vue.h(_sfc_main$8, () => originalRender());
+    }
   };
   function useModalStack() {
     return {
@@ -1918,6 +1942,7 @@
   exports2.useModal = useModal;
   exports2.useModalStack = useModalStack;
   exports2.visitModal = visitModal;
+  exports2.withInertiaModal = withInertiaModal;
   Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
 }));
 //# sourceMappingURL=inertiaui-modal.umd.cjs.map

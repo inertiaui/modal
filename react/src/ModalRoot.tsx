@@ -1,6 +1,6 @@
 import { createElement, useEffect, useLayoutEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
 import { except, kebabCase, generateId, sameUrlPath, parseResponseData } from './helpers'
-import { ResponseCache } from '../../common/cache'
+import { ResponseCache } from './cache'
 import { router, usePage, progress, http } from '@inertiajs/react'
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type HttpRequestConfig } from '@inertiajs/core'
 import { createContext, useContext } from 'react'
