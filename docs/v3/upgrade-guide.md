@@ -12,7 +12,7 @@ Inertia Modal's major version is aligned with the Inertia.js version it supports
 | 2.x | v2 | Supported |
 | 0.x | v1 | Unsupported |
 
-A separate major version is needed because Inertia 3 replaced Axios with native fetch, which required changes to how Inertia Modal intercepts and handles modal responses.
+A separate major version is needed because Inertia 3 replaced Axios with a built-in HTTP client, which required changes to how Inertia Modal intercepts and handles modal responses.
 
 ## Installation
 
