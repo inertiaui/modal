@@ -11,6 +11,10 @@ if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
     putConfig({ useNativeDialog: import.meta.env.VITE_USE_NATIVE_DIALOG === 'true' })
 }
 
+function ModalLayout({ children }) {
+    return <>{children}<ModalRoot /></>
+}
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     progress: {
@@ -19,7 +23,7 @@ createInertiaApp({
     withApp(app) {
         return <ModalStackProvider>{app}</ModalStackProvider>
     },
-    layout: () => ({ children }) => <>{children}<ModalRoot /></>,
+    layout: () => ModalLayout,
 });
 
 if (window.location.pathname === '/props-from-config') {

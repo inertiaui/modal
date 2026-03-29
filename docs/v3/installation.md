@@ -75,11 +75,15 @@ createInertiaApp({
 ```jsx [React]
 import { ModalStackProvider, ModalRoot } from '@inertiaui/modal-react' // [!code ++]
 
+function ModalLayout({ children }) { // [!code ++]
+    return <>{children}<ModalRoot /></> // [!code ++]
+} // [!code ++]
+
 createInertiaApp({
     withApp(app) { // [!code ++]
         return <ModalStackProvider>{app}</ModalStackProvider> // [!code ++]
     }, // [!code ++]
-    layout: () => ({ children }) => <>{children}<ModalRoot /></>, // [!code ++]
+    layout: () => ModalLayout, // [!code ++]
 })
 ```
 
