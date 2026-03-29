@@ -146,15 +146,16 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       {
-        text: 'v3 (Inertia 3)',
+        text: 'v3',
         items: [
-          { text: 'v3 (Inertia 3)', link: '/introduction' },
-          { text: 'v2 (Inertia 2)', link: '/v2/introduction' },
-          { text: 'v0 (Legacy)', link: '/v0/introduction' },
-        ]
+          { text: 'v3 (Inertia 3) — current', link: '/introduction', activeMatch: '^/(?!v[0-9])' },
+          { text: 'v2 (Inertia 2)', link: '/v2/introduction', activeMatch: '^/v2/' },
+          { text: 'v0 (Unsupported)', link: '/v0/introduction', activeMatch: '^/v0/' },
+        ],
+        activeMatch: '.',
       },
       { text: 'Demo', link: 'https://www.youtube.com/watch?v=KAKOosmWV14' },
-      { text: 'Inertia UI portal', link: 'https://inertiaui.com/dashboard' }
+      { text: 'Inertia UI portal', link: 'https://inertiaui.com/dashboard' },
     ],
 
     search: { provider: 'local' },
