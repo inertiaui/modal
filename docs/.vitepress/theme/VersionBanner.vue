@@ -15,23 +15,28 @@ const cleanPath = computed(() => {
 })
 
 const isV0 = computed(() => cleanPath.value.startsWith('/v0/') || cleanPath.value === '/v0')
-const isV2 = computed(() => !isV0.value && cleanPath.value !== '/')
+const isV2 = computed(() => cleanPath.value.startsWith('/v2/') || cleanPath.value === '/v2')
 
-const equivalentV2Path = computed(() => {
-  if (!isV0.value) return null
-  return withBase(cleanPath.value.replace(/^\/v0/, '') || '/introduction')
-})
-
-const equivalentV0Path = computed(() => {
-  if (!isV2.value) return null
-  return withBase('/v0' + cleanPath.value)
+const equivalentV3Path = computed(() => {
+  if (isV0.value) {
+    return withBase(cleanPath.value.replace(/^\/v0/, '') || '/introduction')
+  }
+  if (isV2.value) {
+    return withBase(cleanPath.value.replace(/^\/v2/, '') || '/introduction')
+  }
+  return null
 })
 </script>
 
 <template>
   <div v-if="isV0" class="version-banner beta">
-    <strong>v0 (Legacy)</strong> &mdash; You are viewing the legacy documentation.
-    <a v-if="equivalentV2Path" :href="equivalentV2Path">Switch to v2 (Stable) &rarr;</a>
+    <strong>v0 (Unsupported)</strong> &mdash; This version is no longer supported.
+    <a v-if="equivalentV3Path" :href="equivalentV3Path">Switch to v3 (Inertia 3) &rarr;</a>
+  </div>
+
+  <div v-if="isV2" class="version-banner stable">
+    <strong>v2 (Inertia 2 only)</strong> &mdash; This version only works with Inertia.js v2. For Inertia.js v3, use Inertia Modal 3.x.
+    <a v-if="equivalentV3Path" :href="equivalentV3Path">Switch to v3 docs &rarr;</a>
   </div>
 </template>
 

@@ -100,7 +100,7 @@ export default function MyPage() {
 
 :::
 
-If you're [programmatically opening the modal](/basic-usage#programmatic-usage), you add listeners using the `listeners` option:
+If you're [programmatically opening the modal](/v2/basic-usage#programmatic-usage), you add listeners using the `listeners` option:
 
 ```js
 visitModal('/users/create', {

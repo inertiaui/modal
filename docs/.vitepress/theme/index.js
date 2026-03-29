@@ -16,6 +16,21 @@ export default {
         if (inBrowser) {
             const route = useRoute()
 
+            function updateVersionLabel() {
+                const path = route.path
+                let label = 'v3'
+                if (path.includes('/v2/')) label = 'v2'
+                else if (path.includes('/v0/')) label = 'v0'
+
+                const el = document.querySelector('.VPNavBarMenuGroup .text')
+                if (el && ['v3', 'v2', 'v0'].includes(el.textContent.trim())) {
+                    el.textContent = label
+                }
+            }
+
+            onMounted(() => nextTick(updateVersionLabel))
+            watch(() => route.path, () => nextTick(updateVersionLabel))
+
             // Click on the tab with the given label text
             function showCodeWithLabel(labelText) {
                 document.querySelectorAll(`.vp-code-group .tabs label`).forEach((label) => {

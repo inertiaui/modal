@@ -93,7 +93,7 @@ createInertiaApp({
 
 :::
 
-If you need more refined control over the mounting process, you should check out the [Custom App Mounting](/custom-app-mounting) documentation.
+If you need more refined control over the mounting process, you should check out the [Custom App Mounting](/v2/custom-app-mounting) documentation.
 
 ## Tailwind Configuration
 

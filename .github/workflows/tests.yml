@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        laravel: ['13.0', '12.0', '11.0']
+        laravel: ['13.0', '12.0']
         stack: [react, vue]
         app_mounting: [auto, custom]
         native_dialog: [true, false]
@@ -123,10 +123,10 @@ jobs:
           cd demo-app
           if [ "${{ matrix.laravel }}" == "13.0" ]; then
             composer remove laravel/tinker --no-update
-            composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:^2.0 --no-update --no-interaction
+            composer require laravel/framework:^${{ matrix.laravel }} --no-update --no-interaction
             composer update -W --no-progress --prefer-dist --no-interaction
           else
-            composer require laravel/framework:^${{ matrix.laravel }} inertiajs/inertia-laravel:^2.0 --no-interaction
+            composer require laravel/framework:^${{ matrix.laravel }} --no-interaction
           fi
           php artisan about
           npm install
@@ -134,7 +134,6 @@ jobs:
             npm install react@^19.0.0 react-dom@^19.0.0
           fi
           npm list react react-dom vue
-          npm install @inertiajs/react@^2.3.15 @inertiajs/vue3@^2.3.15
           npm install --install-links ../react
           npm install --install-links ../vue
           test -d node_modules/@inertiaui/modal-react || exit 1

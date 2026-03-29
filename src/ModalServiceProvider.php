@@ -9,6 +9,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Inertia\PropsResolver;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 use Tighten\Ziggy\BladeRouteGenerator;
@@ -46,21 +47,21 @@ class ModalServiceProvider extends ServiceProvider
             $this->currentRequest = $request;
         });
 
-        // Add a 'toArray' macro to Response for consistent serialization to so that
+        // Add a 'toArray' macro to Response for consistent serialization so that
         // any response can be serialized to an array. This is used in the Modal
         // class to pass the modal data as a prop to the base URL.
         Response::macro('toArray', function (): array {
             $request = app('request');
 
+            $resolver = new PropsResolver($request, $this->component);
+            [$resolvedProps, $resolvedMetadata] = $resolver->resolve($this->sharedProps, $this->props);
+
             return [
                 'component' => $this->component,
-                'props' => $this->resolveProperties($request, $this->props),
+                'props' => $resolvedProps,
                 'version' => $this->version,
                 'url' => Str::start(Str::after($request->fullUrl(), $request->getSchemeAndHttpHost()), '/'),
-                'meta' => [
-                    ...$this->resolveMergeProps($request),
-                    ...$this->resolveDeferredProps($request),
-                ],
+                'meta' => $resolvedMetadata,
             ];
         });
 

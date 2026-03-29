@@ -7,9 +7,8 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Scripts -->
-        @routes
-
         @if(config('app.stack') === 'react')
+            @viteReactRefresh
             @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @else
             @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])

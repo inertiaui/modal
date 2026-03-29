@@ -20,6 +20,7 @@ export type {
     ReloadOptions,
     EventCallback,
     ComponentResolver,
+    HttpMethod,
     PageProps,
     ModalRootProps,
     ModalRendererProps,

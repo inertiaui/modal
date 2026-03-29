@@ -1,6 +1,7 @@
 // Re-export from vanilla package
 import { generateId as vanillaGenerateId } from '@inertiaui/vanilla'
 export { except, only, rejectNullValues, kebabCase, isStandardDomEvent, sameUrlPath } from '@inertiaui/vanilla'
+export { parseResponseData } from '../../common/helpers'
 
 // Modal-specific helpers
 

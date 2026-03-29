@@ -40,7 +40,7 @@ Route::get('/modal-props-ignore-first-load', function () {
         return $data;
     }, $group);
 
-    $optional = fn (int $delay, string $data) => Inertia::lazy(function () use ($delay, $data) {
+    $optional = fn (int $delay, string $data) => Inertia::optional(function () use ($delay, $data) {
         usleep($delay * 1000);
 
         return $data;
@@ -50,7 +50,7 @@ Route::get('/modal-props-ignore-first-load', function () {
         'deferA' => $defer(250, 'Deferred data A- '.Str::random(), 'group-a'),
         'deferB' => $defer(500, 'Deferred data B- '.Str::random(), 'group-b'),
         'optional' => $optional(500, 'Optional data - '.Str::random()),
-        'lazy' => Inertia::lazy(function () {
+        'lazy' => Inertia::optional(function () {
             usleep(500 * 1000);
 
             return 'Lazy data - '.Str::random();

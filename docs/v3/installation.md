@@ -1,0 +1,138 @@
+# Installation
+
+There are two ways to install Inertia Modal. First, you can install the package with Composer. This package contains the Laravel package as well as the frontend packages. The advantage of installing it with Composer is that the frontend package is always in sync with the backend package. Alternatively, you can use npm to install the frontend package separately, but this requires you to manage the versions of the frontend and backend packages yourself.
+
+## Composer Installation
+
+```bash
+composer require inertiaui/modal:^3.0.0
+```
+
+After installing the package, you can link the React or Vue package into your project. This will create a symlink in your `node_modules` directory to the package in the `vendor` directory.
+
+::: code-group
+
+```bash [Vue]
+# npm
+npm install vendor/inertiaui/modal/vue
+
+# bun
+bun add vendor/inertiaui/modal/vue
+
+# pnpm
+pnpm add file:vendor/inertiaui/modal/vue
+```
+
+```bash [React]
+# npm
+npm install vendor/inertiaui/modal/react
+
+# bun
+bun add vendor/inertiaui/modal/react
+
+# pnpm
+pnpm add file:vendor/inertiaui/modal/react
+```
+
+:::
+
+::: info pnpm users
+When using pnpm, you must use the `file:` protocol (`pnpm add file:...`) instead of `pnpm install`. This ensures that transitive dependencies like `@inertiaui/vanilla` are resolved correctly.
+:::
+
+## NPM Installation
+
+You may also install the frontend packages separately.
+
+::: code-group
+
+```bash [Vue]
+npm install @inertiaui/modal-vue@^3.0.0
+```
+
+```bash [React]
+npm install @inertiaui/modal-react@^3.0.0
+```
+
+:::
+
+## Inertia.js Configuration
+
+Inertia Modal requires a *root*-component to be mounted in your app. You can do this in the main `app.js` file where you initialize your Inertia app using the `createInertiaApp` function.
+
+::: code-group
+
+```js [Vue]
+import { withInertiaModal } from '@inertiaui/modal-vue' // [!code ++]
+
+createInertiaApp({
+    withApp(app) { // [!code ++]
+        withInertiaModal(app) // [!code ++]
+    }, // [!code ++]
+})
+```
+
+```jsx [React]
+import { ModalStackProvider, ModalRoot } from '@inertiaui/modal-react' // [!code ++]
+
+function ModalLayout({ children }) { // [!code ++]
+    return <>{children}<ModalRoot /></> // [!code ++]
+} // [!code ++]
+
+createInertiaApp({
+    withApp(app) { // [!code ++]
+        return <ModalStackProvider>{app}</ModalStackProvider> // [!code ++]
+    }, // [!code ++]
+    layout: () => ModalLayout, // [!code ++]
+})
+```
+
+:::
+
+If you need more refined control over the mounting process, you should check out the [Custom App Mounting](/custom-app-mounting) documentation.
+
+## Tailwind Configuration
+
+Inertia Modal uses Tailwind CSS for styling. You need to tell Tailwind to scan the package's source files so that the utility classes are included in your CSS output.
+
+### Tailwind CSS 4
+
+In Tailwind CSS 4, add an `@source` directive to your CSS file:
+
+::: code-group
+
+```css [Vue]
+@source "../node_modules/@inertiaui/modal-vue/src";
+```
+
+```css [React]
+@source "../node_modules/@inertiaui/modal-react/src";
+```
+
+:::
+
+### Tailwind CSS 3
+
+If you're still on Tailwind CSS 3, include the package path in the *content* array of your `tailwind.config.js` file:
+
+::: code-group
+
+```js [Vue]
+export default {
+    content: [
+        './node_modules/@inertiaui/modal-vue/src/**/*.{js,ts,vue}',
+        // other paths...
+    ]
+}
+```
+
+```js [React]
+export default {
+    content: [
+        './node_modules/@inertiaui/modal-react/src/**/*.{js,ts,jsx,tsx}',
+        // other paths...
+    ]
+}
+```
+
+:::

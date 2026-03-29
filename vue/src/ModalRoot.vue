@@ -1,16 +1,14 @@
 <script setup>
-import { onMounted, onUnmounted, watch } from 'vue'
-import { router, usePage } from '@inertiajs/vue3'
+import { onUnmounted, watch } from 'vue'
+import { router, usePage, http } from '@inertiajs/vue3'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
-import { default as Axios } from 'axios'
 import { sameUrlPath } from './helpers'
 
 const modalStack = useModalStack()
 const $page = usePage()
 
 let isNavigating = false
-let initialModalStillOpened = false
 const pendingModalKeys = new Set()
 
 // Generate a unique key for deduplication (handles case when modal has no id)
@@ -31,7 +29,7 @@ onUnmounted(
             modalStack.clearClosingToBaseUrl()
             modalStack.closeAll(true)
             modalStack.setBaseUrl(null)
-            initialModalStillOpened = false
+
             return
         }
 
@@ -39,7 +37,7 @@ onUnmounted(
             // No modal data - close any open modals (force close without transition)
             modalStack.closeAll(true)
             modalStack.setBaseUrl(null)
-            initialModalStillOpened = false
+
             return
         }
 
@@ -48,7 +46,7 @@ onUnmounted(
         if (!sameUrlPath(pageUrl, modalOnBase.url)) {
             modalStack.closeAll(true)
             modalStack.setBaseUrl(null)
-            initialModalStillOpened = false
+
             return
         }
 
@@ -81,6 +79,11 @@ onUnmounted(
                     return
                 }
 
+                // Clear baseUrl before navigating so the interceptor doesn't add
+                // the modal header to the base page request (deferred props should
+                // load without the modal context after closing)
+                modalStack.setBaseUrl(null)
+
                 if (!isNavigating && typeof window !== 'undefined' && window.location.href !== modalOnBase.baseUrl) {
                     router.visit(modalOnBase.baseUrl, {
                         preserveScroll: true,
@@ -94,22 +97,27 @@ onUnmounted(
     }),
 )
 
-const axiosRequestInterceptor = (config) => {
+const requestInterceptor = (config) => {
     // A Modal is opened on top of a base route, so we need to pass this base route
     // so it can redirect back with the back() helper method...
-    // Only send the header when we have an actual base URL value
-    // Check modalStack first, then fall back to page props if a modal is still open from initial load
+    // Only send the header when we have an actual base URL value.
+    // Check modalStack first (set by navigate handler), then fall back to page props
+    // (available reactively before the navigate handler fires, needed for deferred props
+    // which Inertia 3 loads before the navigate event).
     const baseUrlValue = modalStack.getBaseUrl() ?? $page.props?._inertiaui_modal?.baseUrl ?? null
     if (baseUrlValue) {
+        config.headers = config.headers ?? {}
         config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
     }
 
     return config
 }
 
-let axiosInterceptorId = null
-onMounted(() => (axiosInterceptorId = Axios.interceptors.request.use(axiosRequestInterceptor)))
-onUnmounted(() => axiosInterceptorId !== null && Axios.interceptors.request.eject(axiosInterceptorId))
+// Register interceptor during setup (not onMounted) so it's available before
+// Inertia 3's deferred props loading, which fires during the page.set() promise
+// chain before onMounted hooks execute.
+const removeInterceptor = http.onRequest(requestInterceptor)
+onUnmounted(() => removeInterceptor())
 
 watch(
     () => $page.props?._inertiaui_modal,

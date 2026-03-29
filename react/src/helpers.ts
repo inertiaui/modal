@@ -1,5 +1,6 @@
 // Re-export helper utilities from vanilla
 export { sameUrlPath, except, only, rejectNullValues, kebabCase, isStandardDomEvent } from '@inertiaui/vanilla'
+export { parseResponseData } from '../../common/helpers'
 import { generateId as vanillaGenerateId } from '@inertiaui/vanilla'
 
 // Wrap generateId with custom callback support for testing

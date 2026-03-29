@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
-import axios from 'axios';
+import { http } from '@inertiajs/react';
 import { Modal, ModalLink } from '@inertiaui/modal-react';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
 
@@ -14,7 +14,7 @@ export default function CreateRole({ headerValue, name }) {
 
     const submit = (e) => {
         e.preventDefault();
-        axios.post('/roles', data).then(() => {
+        http.getClient().request({ method: 'post', url: '/roles', data, headers: { 'Accept': 'application/json' } }).then(() => {
             modalRef.current?.close();
         });
     };

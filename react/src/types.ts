@@ -1,6 +1,9 @@
-import type { AxiosResponse } from 'axios'
 import type { ComponentType, ReactNode } from 'react'
-import type { RequestPayload } from '@inertiajs/core'
+import type { RequestPayload, HttpResponse, Method } from '@inertiajs/core'
+
+import type { ModalTypeConfig } from './config'
+
+export type HttpMethod = Method
 
 export interface ModalResponseData {
     id?: string
@@ -14,24 +17,22 @@ export interface ModalResponseData {
     baseUrl?: string
 }
 
-export interface ModalConfig {
-    [key: string]: unknown
-}
+export type ModalConfig = Partial<ModalTypeConfig & { slideover: boolean }>
 
 export interface ReloadOptions {
     only?: string[]
     except?: string[]
-    method?: string
+    method?: HttpMethod
     data?: Record<string, unknown>
     headers?: Record<string, string>
     onStart?: () => void
-    onSuccess?: (response: AxiosResponse) => void
+    onSuccess?: (response: HttpResponse) => void
     onError?: (error: unknown) => void
     onFinish?: () => void
 }
 
 export interface VisitOptions {
-    method?: string
+    method?: HttpMethod
     data?: RequestPayload
     headers?: Record<string, string>
     config?: ModalConfig
@@ -40,7 +41,7 @@ export interface VisitOptions {
     queryStringArrayFormat?: 'brackets' | 'indices'
     navigate?: boolean
     onStart?: () => void
-    onSuccess?: (response?: AxiosResponse) => void
+    onSuccess?: (response?: HttpResponse) => void
     onError?: (...args: unknown[]) => void
     listeners?: Record<string, (...args: unknown[]) => void>
     // Props to pass to local modals (#152)
@@ -51,7 +52,7 @@ export interface VisitOptions {
 export type PrefetchOption = boolean | 'hover' | 'click' | 'mount' | Array<'hover' | 'click' | 'mount'>
 
 export interface PrefetchOptions {
-    method?: string
+    method?: HttpMethod
     data?: RequestPayload
     headers?: Record<string, string>
     queryStringArrayFormat?: 'brackets' | 'indices'
@@ -117,7 +118,7 @@ export interface ModalStackContextValue {
     reset: () => void
     visit: (
         href: string,
-        method: string,
+        method: HttpMethod,
         payload?: RequestPayload,
         headers?: Record<string, string>,
         config?: ModalConfig,
@@ -126,7 +127,7 @@ export interface ModalStackContextValue {
         queryStringArrayFormat?: 'brackets' | 'indices',
         useBrowserHistory?: boolean,
         onStart?: (() => void) | null,
-        onSuccess?: ((response?: AxiosResponse) => void) | null,
+        onSuccess?: ((response?: HttpResponse) => void) | null,
         onError?: ((...args: unknown[]) => void) | null,
     ) => Promise<Modal>
     visitModal: (url: string, options?: VisitOptions) => Promise<Modal>
@@ -138,7 +139,6 @@ export interface PageProps {
     initialPage?: {
         version?: string
     }
-    resolveComponent?: ComponentResolver
 }
 
 export interface ModalRootProps {

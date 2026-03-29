@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import inertia from '@inertiajs/vite';
 import react from '@vitejs/plugin-react';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
@@ -16,7 +17,7 @@ export default defineConfig({
     },
 
     resolve: {
-        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'axios', 'vue', 'react', 'react-dom'],
+        dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'vue', 'react', 'react-dom'],
         alias: {
             '@inertiaui/modal-react': '/../react',
             '@inertiaui/modal-vue': '/../vue'
@@ -28,6 +29,7 @@ export default defineConfig({
             input: reactStack ? 'resources/js/app.jsx' : 'resources/js/app.js',
             refresh: true,
         }),
+        inertia(),
         reactStack ? react() : vue({
             template: {
                 transformAssetUrls: {
