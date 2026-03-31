@@ -34,4 +34,9 @@ jobs:
           npm ci
           npm run build
           npm pack
-          npm publish --access public --provenance
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == 2.* ]]; then
+            npm publish --access public --provenance --tag v2
+          else
+            npm publish --access public --provenance
+          fi
