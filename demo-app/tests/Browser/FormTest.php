@@ -13,7 +13,8 @@ it('can submit a form from within the modal and show the validation error', func
         ->press('Save')
         ->assertSeeIn('.im-modal-content', 'The name field must be at least 3 characters.')
         ->assertSeeIn(modalSelector(), 'The name field must be at least 3 characters.')
-        ->assertNotPresent('.im-dialog[data-inertiaui-modal-index="1"]');
+        ->assertNotPresent('.im-dialog[data-inertiaui-modal-index="1"]')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can submit a form and redirect', function (bool $navigate) {
@@ -34,4 +35,6 @@ it('can submit a form and redirect', function (bool $navigate) {
         'id' => $user->id,
         'name' => $newName,
     ]);
+
+    $page->assertNoJavaScriptErrors();
 })->with('navigate');

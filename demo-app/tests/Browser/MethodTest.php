@@ -5,5 +5,6 @@ it('can open a modal with a custom method and data', function (bool $navigate) {
         ->waitForText('POST Visit')
         ->click('Open POST Modal')
         ->assertPresent(waitForModalSelector())
-        ->assertSeeIn("[data-testid='message']", 'Hey there!');
+        ->assertSeeIn("[data-testid='message']", 'Hey there!')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');

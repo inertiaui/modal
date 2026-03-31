@@ -5,7 +5,8 @@ it('can programmatically visit a local modal', function (bool $navigate) {
         ->waitForText('Visit programmatically')
         ->press('Open Local Modal')
         ->assertPresent(waitForModalSelector())
-        ->assertSeeIn('.im-modal-content', 'Hi there!');
+        ->assertSeeIn('.im-modal-content', 'Hi there!')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can programmatically visit a modal', function (bool $navigate) {
@@ -13,7 +14,8 @@ it('can programmatically visit a modal', function (bool $navigate) {
         ->waitForText('Visit programmatically')
         ->press('Open Route Modal')
         ->assertPresent(waitForModalSelector())
-        ->assertSeeIn('.im-modal-content', 'Hi again!');
+        ->assertSeeIn('.im-modal-content', 'Hi again!')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can programmatically visit a modal and use browser navigation', function () {
@@ -26,5 +28,6 @@ it('can programmatically visit a modal and use browser navigation', function () 
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page)
-        ->assertPathIs('/visit');
+        ->assertPathIs('/visit')
+        ->assertNoJavaScriptErrors();
 });

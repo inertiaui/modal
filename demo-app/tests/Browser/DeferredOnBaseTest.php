@@ -22,7 +22,8 @@ it('can perform a partial request on a base url', function (bool $navigate) {
 
     waitUntilMissingModal($page)
         ->assertSeeIn("[data-testid='deferred']", 'Deferred data without Base URL header: page users')
-        ->assertPathIs('/users');
+        ->assertPathIs('/users')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can perform a partial request on a base url when visiting the modal url directly', function () {
@@ -40,7 +41,8 @@ it('can perform a partial request on a base url when visiting the modal url dire
 
     waitUntilMissingModal($page)
         ->assertSeeIn("[data-testid='deferred']", 'Deferred data without Base URL header: page users')
-        ->assertPathIs('/users');
+        ->assertPathIs('/users')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can perform a partial request on a different base url', function () {
@@ -62,5 +64,6 @@ it('can perform a partial request on a different base url', function () {
 
     waitUntilMissingModal($page)
         ->assertSeeIn("[data-testid='deferred']", 'Deferred data without Base URL header: users.show')
-        ->assertPathIs('/users/'.$user->id);
+        ->assertPathIs('/users/'.$user->id)
+        ->assertNoJavaScriptErrors();
 });

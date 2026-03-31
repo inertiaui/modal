@@ -6,5 +6,6 @@ it('shows the inertia progress bar', function () {
         ->click('Open Slideover')
         ->assertPresent('#nprogress')
         ->assertPresent(waitForModalSelector())
-        ->assertNotPresent('#nprogress');
+        ->assertNotPresent('#nprogress')
+        ->assertNoJavaScriptErrors();
 });

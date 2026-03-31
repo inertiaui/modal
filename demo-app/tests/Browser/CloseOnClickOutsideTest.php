@@ -11,7 +11,8 @@ it('closes the modal when clicking outside by default', function () {
     clickOutsideModal($page);
 
     waitUntilMissingModal($page)
-        ->assertNotPresent('div[data-inertiaui-modal-id]');
+        ->assertNotPresent('div[data-inertiaui-modal-id]')
+        ->assertNoJavaScriptErrors();
 });
 
 it('does not close the modal when clicking outside with closeOnClickOutside=false', function () {
@@ -32,6 +33,8 @@ it('does not close the modal when clicking outside with closeOnClickOutside=fals
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
 });
 
 it('closes the slideover when clicking outside by default', function () {
@@ -45,7 +48,8 @@ it('closes the slideover when clicking outside by default', function () {
     clickOutsideModal($page);
 
     waitUntilMissingModal($page)
-        ->assertNotPresent('div[data-inertiaui-modal-id]');
+        ->assertNotPresent('div[data-inertiaui-modal-id]')
+        ->assertNoJavaScriptErrors();
 });
 
 it('does not close the slideover when clicking outside with closeOnClickOutside=false', function () {
@@ -66,4 +70,6 @@ it('does not close the slideover when clicking outside with closeOnClickOutside=
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
 });

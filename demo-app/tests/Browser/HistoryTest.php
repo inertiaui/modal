@@ -19,7 +19,8 @@ it('can open a modal and state it in the history', function () {
         ->forward()
         ->assertPresent(waitForModalSelector())
         ->assertSeeIn('.im-modal-content', 'Edit User')
-        ->assertPathIs('/users/'.$user->id.'/edit');
+        ->assertPathIs('/users/'.$user->id.'/edit')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can redirect back to the same base route', function () {
@@ -41,6 +42,8 @@ it('can redirect back to the same base route', function () {
         'id' => $user->id,
         'name' => $newName,
     ]);
+
+    $page->assertNoJavaScriptErrors();
 });
 
 it('can redirect back to a different base route', function () {
@@ -62,4 +65,6 @@ it('can redirect back to a different base route', function () {
         'id' => $user->id,
         'name' => $newName,
     ]);
+
+    $page->assertNoJavaScriptErrors();
 });
