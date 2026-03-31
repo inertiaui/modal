@@ -20,4 +20,6 @@ it('can submit a form and redirect', function (bool $navigate) {
         'id' => $user->id,
         'name' => $newName,
     ]);
+
+    $page->assertNoJavaScriptErrors();
 })->with('navigate');

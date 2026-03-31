@@ -12,7 +12,8 @@ it('can open the modal and close it with the close button', function () {
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page)
-        ->assertNotPresent('div[data-inertiaui-modal-id]');
+        ->assertNotPresent('div[data-inertiaui-modal-id]')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can open the slideover and close it with the close button', function (bool $navigate) {
@@ -27,7 +28,8 @@ it('can open the slideover and close it with the close button', function (bool $
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page)
-        ->assertNotPresent('div[data-inertiaui-modal-id]');
+        ->assertNotPresent('div[data-inertiaui-modal-id]')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can close the modal by pressing Escape key', function () {
@@ -44,7 +46,8 @@ it('can close the modal by pressing Escape key', function () {
     $page->page()->keyUp('Escape');
 
     waitUntilMissingModal($page)
-        ->assertNotPresent('div[data-inertiaui-modal-id]');
+        ->assertNotPresent('div[data-inertiaui-modal-id]')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can close the modal with a custom button', function () {
@@ -58,7 +61,8 @@ it('can close the modal with a custom button', function () {
         ->press('Cancel');
 
     waitUntilMissingModal($page)
-        ->assertNotPresent('div[data-inertiaui-modal-id]');
+        ->assertNotPresent('div[data-inertiaui-modal-id]')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can refetch the same base modal', function () {
@@ -110,5 +114,6 @@ it('can reload with data and headers', function () {
         ->press('Random Key from Data')
         ->assertSeeIn("[data-testid='randomKey']", 'from-data')
         ->press('Random Key from Header')
-        ->assertSeeIn("[data-testid='randomKey']", 'from-header');
+        ->assertSeeIn("[data-testid='randomKey']", 'from-header')
+        ->assertNoJavaScriptErrors();
 });

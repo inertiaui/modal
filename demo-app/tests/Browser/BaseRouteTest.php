@@ -14,7 +14,8 @@ it('can open a modal with a base route', function () {
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page)
-        ->assertPathIs('/users');
+        ->assertPathIs('/users')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can open a stacked modal on top of a modal with a base route', function () {
@@ -38,5 +39,6 @@ it('can open a stacked modal on top of a modal with a base route', function () {
     );
 
     $page->select('role', $newRole->id)
-        ->assertSelected('role', $newRole->id);
+        ->assertSelected('role', $newRole->id)
+        ->assertNoJavaScriptErrors();
 });

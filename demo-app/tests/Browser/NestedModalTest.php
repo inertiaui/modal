@@ -38,6 +38,8 @@ it('maintains body scroll lock when opening nested modals', function (bool $navi
     // Body should no longer have scroll lock
     $overflow = $page->script('window.getComputedStyle(document.body).overflow');
     expect($overflow)->not->toBe('hidden');
+
+    $page->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can open a second modal on top of the first one', function (bool $navigate) {
@@ -62,6 +64,8 @@ it('can open a second modal on top of the first one', function (bool $navigate) 
         ->assertDontSee('Edit User');
 
     waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can refresh props after closing the second modal', function () {
@@ -86,5 +90,6 @@ it('can refresh props after closing the second modal', function () {
     );
 
     $page->select('role', $newRole->id)
-        ->assertSelected('role', $newRole->id);
+        ->assertSelected('role', $newRole->id)
+        ->assertNoJavaScriptErrors();
 });

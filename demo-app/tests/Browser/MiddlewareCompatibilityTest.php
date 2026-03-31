@@ -12,5 +12,6 @@ it('can open modal with custom middleware that expects http response', function 
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page)
-        ->assertNotPresent('div[data-inertiaui-modal-id]');
+        ->assertNotPresent('div[data-inertiaui-modal-id]')
+        ->assertNoJavaScriptErrors();
 });

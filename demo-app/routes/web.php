@@ -163,6 +163,11 @@ Route::post('/test-modal-header-check', function () {
     return back();
 })->name('test-modal-header-check');
 
+// Test for navigate mode: modal route without configured base URL
+// When visited directly (e.g. page refresh), the server has no base URL to fall back to,
+// so it returns the modal component as the Inertia page. HeadlessModal must not crash.
+Route::get('/standalone-modal', fn () => Inertia::modal('StandaloneModal'))->name('standalone-modal');
+
 // General pages
 Route::get('{page}', function ($page) use ($deferred) {
     if (request()->query('slow')) {

@@ -27,5 +27,6 @@ it('handles invalid modal response gracefully without crashing', function (bool 
     $page->assertNotPresent(modalSelector());
 
     // The page should be functional - verify we can still see user data
-    $page->assertSee(firstUser()->name);
+    $page->assertSee(firstUser()->name)
+        ->assertNoJavaScriptErrors();
 })->with('navigate');

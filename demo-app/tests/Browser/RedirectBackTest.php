@@ -30,7 +30,8 @@ it('does not send stale modal base URL header after modal is closed', function (
     // If fixed, we'll see "OK: No stale modal headers detected"
     $page->click("[data-testid='test-modal-header-check']")
         ->waitForText('OK: No stale modal headers detected')
-        ->assertPathIs('/users');
+        ->assertPathIs('/users')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 // Test that navigating away also clears the stale header
@@ -60,7 +61,8 @@ it('does not use modal base URL for redirect back after modal is closed and navi
     // This should redirect back to /visit (current page), NOT /users (modal base URL)
     $page->click("[data-testid='test-redirect-back']")
         ->waitForText('Redirect back worked correctly!')
-        ->assertPathIs('/visit');
+        ->assertPathIs('/visit')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 // Simple test that verifies redirect back works from the same page
@@ -82,5 +84,6 @@ it('redirects back to current page after opening and closing modal', function (b
     // This should redirect back to /users
     $page->click("[data-testid='test-redirect-back']")
         ->waitForText('Redirect back worked correctly!')
-        ->assertPathIs('/users');
+        ->assertPathIs('/users')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');

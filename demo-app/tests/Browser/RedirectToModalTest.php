@@ -14,7 +14,8 @@ it('can open a page that redirects to a modal', function () {
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page)
-        ->assertPathIs('/visit');
+        ->assertPathIs('/visit')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can submit a form and redirect back to the same modal', function () {
@@ -34,4 +35,6 @@ it('can submit a form and redirect back to the same modal', function () {
         'id' => $user->id,
         'name' => $newName,
     ]);
+
+    $page->assertNoJavaScriptErrors();
 });

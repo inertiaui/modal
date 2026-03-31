@@ -138,7 +138,7 @@ const HeadlessModal = forwardRef<HeadlessModalRef, HeadlessModalProps>(
         const previousIsOpenRef = useRef<boolean | undefined>(undefined)
 
         useEffect(() => {
-            if (modalContext !== null) {
+            if (modalContext != null) {
                 if (modalContext.isOpen) {
                     onSuccess?.()
                 } else if (previousIsOpenRef.current === true) {
@@ -153,7 +153,7 @@ const HeadlessModal = forwardRef<HeadlessModalRef, HeadlessModalProps>(
         const [rendered, setRendered] = useState(false)
 
         useEffect(() => {
-            if (rendered && modalContext !== null && modalContext.isOpen) {
+            if (rendered && modalContext != null && modalContext.isOpen) {
                 if (modalContext.onTopOfStack) {
                     onFocus?.()
                 } else {

@@ -10,6 +10,8 @@ it('can have a modal with different max widths', function (string $size, int $ex
     $width = $page->script("document.querySelector('body .im-modal-wrapper').offsetWidth");
 
     expect($width)->toBe($expectedWidth);
+
+    $page->assertNoJavaScriptErrors();
 })->with('sizeAndPixels');
 
 it('can have a slideover with different max widths', function (string $size, int $expectedWidth) {
@@ -22,6 +24,8 @@ it('can have a slideover with different max widths', function (string $size, int
     $width = $page->script("document.querySelector('body .im-slideover-wrapper').offsetWidth");
 
     expect($width)->toBe($expectedWidth);
+
+    $page->assertNoJavaScriptErrors();
 })->with('sizeAndPixels');
 
 dataset('sizeAndPixels', [

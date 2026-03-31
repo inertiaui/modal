@@ -19,4 +19,6 @@ it('handles modal with base URL that returns another modal without infinite recu
     // Close the modal
     clickModalCloseButton($page, 0);
     waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
 })->with('navigate');
