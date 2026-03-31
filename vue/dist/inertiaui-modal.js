@@ -371,7 +371,7 @@ class Modal {
         const savedBaseUrl = baseUrl.value;
         baseUrl.value = null;
         closingToBaseUrlTarget = savedBaseUrl;
-        if (savedBaseUrl && typeof window !== "undefined") {
+        if (savedBaseUrl && typeof window !== "undefined" && !sameUrlPath(savedBaseUrl, window.location.href)) {
           router.push({
             url: savedBaseUrl,
             preserveScroll: true,
@@ -695,9 +695,9 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({
   setup(__props, { expose: __expose, emit: __emit }) {
     const props = __props;
     const modalStack = useModalStack();
-    const modalContext = props.name ? ref({}) : inject("modalContext");
+    const modalContext = props.name ? ref({}) : inject("modalContext", ref(null));
     const config = computed(() => {
-      const isSlideover = modalContext.value.config?.slideover ?? props.slideover ?? getConfig("type") === "slideover";
+      const isSlideover = modalContext.value?.config?.slideover ?? props.slideover ?? getConfig("type") === "slideover";
       return {
         slideover: isSlideover,
         closeButton: props.closeButton ?? getConfigByType(isSlideover, "closeButton"),
@@ -707,7 +707,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({
         paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, "paddingClasses"),
         panelClasses: props.panelClasses ?? getConfigByType(isSlideover, "panelClasses"),
         position: props.position ?? getConfigByType(isSlideover, "position"),
-        ...modalContext.value.config
+        ...modalContext.value?.config
       };
     });
     if (props.name) {
@@ -728,7 +728,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({
     onBeforeUnmount(() => unsubscribeEventListeners.value?.());
     const $attrs = useAttrs();
     function registerEventListeners() {
-      unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs);
+      unsubscribeEventListeners.value = modalContext.value?.registerEventListenersFromAttrs($attrs);
     }
     const emits = __emit;
     function emit(event, ...args) {
@@ -786,6 +786,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({
       { immediate: true }
     );
     const nextIndex = computed(() => {
+      if (!modalContext.value) return void 0;
       return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index;
     });
     const modalProps = computed(() => {
@@ -795,7 +796,7 @@ const _sfc_main$6 = /* @__PURE__ */ Object.assign({
     });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock(Fragment, null, [
-        unref(modalContext).shouldRender ? renderSlot(_ctx.$slots, "default", mergeProps({ key: 0 }, modalProps.value, {
+        unref(modalContext)?.shouldRender ? renderSlot(_ctx.$slots, "default", mergeProps({ key: 0 }, modalProps.value, {
           id: unref(modalContext).id,
           afterLeave: unref(modalContext).afterLeave,
           close: unref(modalContext).close,

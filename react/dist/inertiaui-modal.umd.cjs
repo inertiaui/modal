@@ -279,7 +279,7 @@
               const savedBaseUrl = baseUrl;
               baseUrl = null;
               closingToBaseUrlTarget = savedBaseUrl;
-              if (savedBaseUrl && typeof window !== "undefined") {
+              if (savedBaseUrl && typeof window !== "undefined" && !vanilla.sameUrlPath(savedBaseUrl, window.location.href)) {
                 react.router.push({
                   url: savedBaseUrl,
                   preserveScroll: true,
@@ -773,7 +773,7 @@
       }, [modalContext]);
       const previousIsOpenRef = React.useRef(void 0);
       React.useEffect(() => {
-        if (modalContext !== null) {
+        if (modalContext != null) {
           if (modalContext.isOpen) {
             onSuccess?.();
           } else if (previousIsOpenRef.current === true) {
@@ -784,7 +784,7 @@
       }, [modalContext?.isOpen]);
       const [rendered, setRendered] = React.useState(false);
       React.useEffect(() => {
-        if (rendered && modalContext !== null && modalContext.isOpen) {
+        if (rendered && modalContext != null && modalContext.isOpen) {
           if (modalContext.onTopOfStack) {
             onFocus?.();
           } else {

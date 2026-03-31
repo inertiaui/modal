@@ -265,7 +265,7 @@ const ModalStackProvider = ({ children }) => {
             const savedBaseUrl = baseUrl;
             baseUrl = null;
             closingToBaseUrlTarget = savedBaseUrl;
-            if (savedBaseUrl && typeof window !== "undefined") {
+            if (savedBaseUrl && typeof window !== "undefined" && !sameUrlPath(savedBaseUrl, window.location.href)) {
               router.push({
                 url: savedBaseUrl,
                 preserveScroll: true,
@@ -759,7 +759,7 @@ const HeadlessModal = forwardRef(
     }, [modalContext]);
     const previousIsOpenRef = useRef(void 0);
     useEffect(() => {
-      if (modalContext !== null) {
+      if (modalContext != null) {
         if (modalContext.isOpen) {
           onSuccess?.();
         } else if (previousIsOpenRef.current === true) {
@@ -770,7 +770,7 @@ const HeadlessModal = forwardRef(
     }, [modalContext?.isOpen]);
     const [rendered, setRendered] = useState(false);
     useEffect(() => {
-      if (rendered && modalContext !== null && modalContext.isOpen) {
+      if (rendered && modalContext != null && modalContext.isOpen) {
         if (modalContext.onTopOfStack) {
           onFocus?.();
         } else {
