@@ -2,6 +2,17 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 2.0.3 - 2026-03-31
+
+### What's Changed
+
+* Bump actions/cache from 4 to 5 by @dependabot[bot] in https://github.com/inertiaui/modal/pull/198
+* Bump actions/setup-node from 4 to 6 by @dependabot[bot] in https://github.com/inertiaui/modal/pull/199
+* Fix re-render on closing non-navigate modals by @pascalbaljet in https://github.com/inertiaui/modal/pull/205
+* Fix `HeadlessModal` crash when modal URL is visited directly by @pascalbaljet in https://github.com/inertiaui/modal/pull/206
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/2.0.2...2.0.3
+
 ## 2.0.2 - 2026-03-22
 
 **Full Changelog**: https://github.com/inertiaui/modal/compare/2.0.1...2.0.2
