@@ -36,7 +36,7 @@ jobs:
           npm pack
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == 2.* ]]; then
-            npm publish --access public --provenance --tag v2
+            npm publish --access public --provenance --tag legacy
           else
             npm publish --access public --provenance
           fi
