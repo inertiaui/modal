@@ -4,45 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Important Rules
 
-- **Never close GitHub issues** - Only the maintainer closes issues
-- **Never comment on GitHub issues on behalf of the maintainer** - Do not use `gh issue comment` or similar commands
-- **One fix per commit** - Each commit should only address one issue. Multiple commits per fix is fine, but do not bundle multiple issue fixes into a single commit. This allows tracking which commits relate to which issues.
-- **Verify bugfix tests fail without the fix** - When adding E2E tests for bugfixes, verify that the tests actually fail without the fix by temporarily reverting the fix and running the test. This ensures the test is actually testing the fix and not just passing coincidentally.
-- **Re-read GitHub issue after fixing** - After completing a fix, re-read the original GitHub issue to verify the fix addresses the reported problem and we haven't lost track of the actual issue.
+- **Never close GitHub issues** — only the maintainer closes issues
+- **Never comment on GitHub issues on behalf of the maintainer** — do not use `gh issue comment` or similar commands
+- **One fix per commit** — each commit should only address one issue. Multiple commits per fix is fine, but do not bundle multiple issue fixes into a single commit. This allows tracking which commits relate to which issues.
+- **Verify bugfix tests fail without the fix** — when adding E2E tests for bugfixes, verify that the tests actually fail without the fix by temporarily reverting the fix and running the test
+- **Re-read GitHub issue after fixing** — after completing a fix, re-read the original GitHub issue to verify the fix addresses the reported problem
 
-## Allowed Commands
+## Branches
 
-The following commands can be run without asking for permission:
+Two branches are actively maintained:
 
-- `php artisan serve` - Start the Laravel development server (can run in background when needed for browser tests)
-- `cd react && npm run dev` - Start React package Vite dev server (watch mode)
-- `cd vue && npm run dev` - Start Vue package Vite dev server (watch mode)
-- `cd demo-app && npm run dev` - Start demo app Vite dev server (watch mode)
+- **`2.x`** — for Inertia 2
+- **`3.x`** — for Inertia 3
 
-### Development Servers
+Both receive bug fixes and features. When working on an issue, check which branch it targets.
 
-**IMPORTANT**: When dev servers are running, do NOT run `npm run build` - Vite watches for changes and rebuilds automatically.
-
-For active development, spin up these servers in background (hot reloading, no manual rebuilds needed):
-
-```bash
-cd react && npm run dev      # React dev server
-cd vue && npm run dev        # Vue dev server
-cd demo-app && npm run dev   # demo-app Vite dev server
-cd demo-app && php artisan serve  # demo-app Laravel server
-```
-
-Then use the switch scripts to change frameworks:
-
-```bash
-cd demo-app
-./switch-demo-to-react.sh   # Switch to React
-./switch-demo-to-vue.sh     # Switch to Vue
-```
-
-Changes to React/Vue source will automatically rebuild and the demo-app will pick them up.
-
-### Vanilla Package Development
+## Vanilla Package Development
 
 The modal packages depend on `@inertiaui/vanilla`. For local development:
 
@@ -127,7 +104,7 @@ cd vue && npm run dev
 cd vue && npm run test
 ```
 
-### Build & Release
+### Build & Dependencies
 
 ```bash
 # Build everything (all checks + both frontends)
@@ -135,9 +112,6 @@ composer build
 
 # Update all dependencies (PHP, React, Vue, demo-app)
 composer update-all
-
-# Version bump (sets version in React/Vue packages, rebuilds)
-composer version -- 1.0.0-beta-6
 ```
 
 ### Demo App Development
@@ -166,6 +140,29 @@ npm run dev
 composer update && npm upgrade
 ```
 
+### Dev Servers (Solo)
+
+Dev processes are managed by [Solo](https://soloterm.com). Use Solo MCP tools to start/stop/inspect:
+
+```
+mcp__solo__select_project  # Select project
+mcp__solo__list_processes  # See available processes
+mcp__solo__get_process_output  # Read logs
+mcp__solo__restart_process     # Restart by name
+```
+
+Solo manages processes for both the **modal** and **vanilla** projects. When doing local development, check that both are running (`mcp__solo__list_projects`).
+
+**IMPORTANT**: When dev servers are running, do NOT run `npm run build` — Vite watches for changes and rebuilds automatically.
+
+Use the switch scripts to change the demo app's frontend framework:
+
+```bash
+cd demo-app
+./switch-demo-to-react.sh   # Switch to React
+./switch-demo-to-vue.sh     # Switch to Vue
+```
+
 ### CI Monitoring
 
 After pushing changes, monitor the CI workflow with GitHub CLI:
@@ -187,13 +184,37 @@ gh run view <run-id> --log-failed
 gh run view <run-id> --log-failed 2>&1 | grep -A 20 "FAILED"
 ```
 
-### Git Commit Guidelines
+## Git Commits
 
-- **Always create new commits** instead of amending existing ones. This preserves history and makes it easier to track changes.
-- Never use `git commit --amend` or `git push --force` unless explicitly requested.
-- **Use one-liner commit messages** - keep them short and simple, no multi-line descriptions.
-- **Commit as @pascalbaljet** - never add Co-Authored-By headers or similar.
-- **Run tests locally before committing** - ensure browser tests pass for both React and Vue stacks before pushing.
+- Always commit as the user — never add `Co-Authored-By` headers or commit as Claude
+- One-line commit messages only, no multi-line descriptions
+- Keep messages short and direct
+- Always create new commits instead of amending existing ones
+- Never use `git commit --amend` or `git push --force` unless explicitly requested
+- Run tests locally before committing — ensure browser tests pass for both React and Vue stacks
+
+## Pull Request Style
+
+**Titles**: Short and descriptive. Action-oriented verb first: "Fix...", "Add...", "Improve...", "Introduce...", "Refactor...", "Remove...", "Rename...", "Support for...". No conventional commit prefixes (`feat:`, `fix:`). No issue numbers in the title.
+
+**Body**: Plain prose, no markdown headers or sections (no `## Summary`, `## Test plan`). No bullet points, no emojis, no checklists. Typical structure:
+
+- **Trivial changes** (backports, dependency bumps, linting): empty body or one-liner like "Backport of #1234".
+- **Bug fixes**: explain what was wrong (root cause), what the fix does, and why. End with `Fixes #XXXX`.
+- **Features/refactors**: explain what is introduced or changed and the motivation. Reference related PRs/issues with `#XXXX` or `See #XXXX`.
+
+Use backticks for code references (function names, variable names, file paths, etc.). Keep it to 1-3 short paragraphs of flowing technical prose. Focus on the "why" and the mechanism, not on restating the diff.
+
+## Releasing
+
+1. `composer update-all` — update all dependencies (PHP, React, Vue, demo-app)
+2. `composer all` — run quality checks (analyse, refactor, format, eslint)
+3. `composer version -- X.Y.Z` — bump `version` in both `react/package.json` and `vue/package.json`, then rebuild both frontends
+4. Commit (e.g., `3.0.1`)
+5. Tag (`git tag 3.0.1`) and push tag
+6. Create GitHub release — the `Publish to NPM` workflow triggers on `release: created`
+
+Always bump versions **before** tagging, otherwise the publish workflow will publish the old version. The PHP package version is derived from the git tag by Composer.
 
 ## Architecture Overview
 
@@ -589,15 +610,6 @@ putConfig({
 })
 ```
 
-## Development Workflow
-
-1. Start dev servers (see Development Servers section above)
-2. Make changes to PHP source (`/src`)
-3. Make parallel changes to React (`/react/src`) and Vue (`/vue/src`)
-4. Run linting and static analysis: `composer all`
-5. Run browser tests: `cd demo-app && ./vendor/bin/pest tests/Browser`
-6. For release: `composer build` then `composer version -- X.Y.Z`
-
 ## Key Files to Understand
 
 **Backend:**
@@ -617,16 +629,6 @@ putConfig({
 - `vue/src/modalStack.js` - Stack management composable
 - `vue/src/HeadlessModal.vue` - Modal lifecycle and state
 - `vue/src/useModal.js` - Composable for accessing modal context
-
-## Package Publishing
-
-The repo publishes to three separate registries:
-
-1. **Composer** (`inertiaui/modal`): PHP source from `/src`
-2. **NPM** (`@inertiaui/modal-react`): Built from `/react`, includes `/dist` and `/src`
-3. **NPM** (`@inertiaui/modal-vue`): Built from `/vue`, includes `/dist` and `/src`
-
-Version numbers are kept in sync via `composer version` script.
 
 ## Browser Automation
 
