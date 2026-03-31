@@ -2,6 +2,15 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 3.0.1 - 2026-03-31
+
+### What's Changed
+
+* [3.x] Fix re-render on closing non-navigate modals by @pascalbaljet in https://github.com/inertiaui/modal/pull/205
+* [3.x] Fix `HeadlessModal` crash when modal URL is visited directly by @pascalbaljet in https://github.com/inertiaui/modal/pull/206
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/3.0.0...3.0.1
+
 ## 2.0.2 - 2026-03-22
 
 **Full Changelog**: https://github.com/inertiaui/modal/compare/2.0.1...2.0.2
