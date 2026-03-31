@@ -1,0 +1,31 @@
+name: modal
+icon: null
+processes:
+  App Webserver:
+    command: php artisan serve
+    working_dir: /Users/pascalbaljet/Sites/modal/demo-app
+    auto_start: true
+    auto_restart: false
+    restart_when_changed: []
+    env: {}
+  React Vite:
+    command: npm run dev
+    working_dir: /Users/pascalbaljet/Sites/modal/react
+    auto_start: true
+    auto_restart: true
+    restart_when_changed: []
+    env: {}
+  Vue Vite:
+    command: npm run dev
+    working_dir: /Users/pascalbaljet/Sites/modal/vue
+    auto_start: true
+    auto_restart: true
+    restart_when_changed: []
+    env: {}
+  App Vite:
+    command: npm run dev
+    working_dir: /Users/pascalbaljet/Sites/modal/demo-app
+    auto_start: true
+    auto_restart: true
+    restart_when_changed: []
+    env: {}
