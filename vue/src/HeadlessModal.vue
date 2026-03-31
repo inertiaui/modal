@@ -46,9 +46,9 @@ const props = defineProps({
 })
 
 const modalStack = useModalStack()
-const modalContext = props.name ? ref({}) : inject('modalContext')
+const modalContext = props.name ? ref({}) : inject('modalContext', ref(null))
 const config = computed(() => {
-    const isSlideover = modalContext.value.config?.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
+    const isSlideover = modalContext.value?.config?.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
 
     return {
         slideover: isSlideover,
@@ -59,7 +59,7 @@ const config = computed(() => {
         paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, 'paddingClasses'),
         panelClasses: props.panelClasses ?? getConfigByType(isSlideover, 'panelClasses'),
         position: props.position ?? getConfigByType(isSlideover, 'position'),
-        ...modalContext.value.config,
+        ...modalContext.value?.config,
     }
 })
 
@@ -87,7 +87,7 @@ onBeforeUnmount(() => unsubscribeEventListeners.value?.())
 const $attrs = useAttrs()
 
 function registerEventListeners() {
-    unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs)
+    unsubscribeEventListeners.value = modalContext.value?.registerEventListenersFromAttrs($attrs)
 }
 
 const emits = defineEmits(['modal-event', 'focus', 'blur', 'close', 'success'])
@@ -154,6 +154,7 @@ watch(
 )
 
 const nextIndex = computed(() => {
+    if (!modalContext.value) return undefined
     return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index
 })
 
@@ -172,7 +173,7 @@ defineOptions({
 
 <template>
     <slot
-        v-if="modalContext.shouldRender"
+        v-if="modalContext?.shouldRender"
         v-bind="modalProps"
         :id="modalContext.id"
         :after-leave="modalContext.afterLeave"

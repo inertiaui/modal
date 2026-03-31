@@ -8,5 +8,6 @@ it('can pass props to a local modal via visitModal', function () {
 
     // Assert the props were passed to the modal
     $page->assertSeeIn("[data-testid='modal-message']", 'Hello from props!')
-        ->assertSeeIn("[data-testid='modal-count']", '42');
+        ->assertSeeIn("[data-testid='modal-count']", '42')
+        ->assertNoJavaScriptErrors();
 });

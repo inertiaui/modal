@@ -9,7 +9,8 @@ it('can attach listeners to the modal link', function (bool $navigate) {
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page)
-        ->assertSeeIn("[data-testid='log']", 'start,success,close,after-leave');
+        ->assertSeeIn("[data-testid='log']", 'start,success,close,after-leave')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can attach listeners to the modal component', function () {
@@ -25,6 +26,8 @@ it('can attach listeners to the modal component', function () {
     clickModalCloseButton($page);
 
     waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
 });
 
 it('can attach a listener for blur', function (bool $navigate) {
@@ -39,5 +42,6 @@ it('can attach a listener for blur', function (bool $navigate) {
     clickModalCloseButton($page, 1);
 
     waitUntilMissingModal($page, 1)
-        ->assertSeeIn("[data-testid='log']", 'start,success,blur,focus');
+        ->assertSeeIn("[data-testid='log']", 'start,success,blur,focus')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');

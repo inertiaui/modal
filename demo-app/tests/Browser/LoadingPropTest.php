@@ -31,5 +31,6 @@ it('indicates when a modal is loading', function (bool $navigate) {
     expect($foundLoading)->toBeTrue('Loading state was never visible');
 
     // After modal opens, loading should be done
-    $page->assertDontSeeIn("[data-testid='modal-link']", 'Loading...');
+    $page->assertDontSeeIn("[data-testid='modal-link']", 'Loading...')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');

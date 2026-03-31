@@ -11,5 +11,6 @@ it('can dispatch events back and forth between nested modals', function (bool $n
         ->assertPresent(waitForModalSelector(1))
         ->click('Push message to parent')
         ->assertSeeIn("[data-testid='message']", 'Hello from child')
-        ->assertSeeIn("[data-testid='greeting']", 'Thanks from '.User::first()->name);
+        ->assertSeeIn("[data-testid='greeting']", 'Thanks from '.User::first()->name)
+        ->assertNoJavaScriptErrors();
 })->with('navigate');

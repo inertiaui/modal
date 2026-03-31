@@ -19,5 +19,6 @@ it('passes the props from the modal', function (bool $navigate) {
         ->assertAttributeContains('.im-slideover-positioner', 'class', 'justify-start') // Left-aligned
         ->assertAttributeContains('.im-slideover-content', 'class', 'p-8') // Padding classes
         ->assertAttributeContains('.im-slideover-content', 'class', 'bg-red-100') // Panel classes
-        ->assertAttributeContains('.im-slideover-wrapper', 'class', 'lg:max-w-2xl'); // Max width
+        ->assertAttributeContains('.im-slideover-wrapper', 'class', 'lg:max-w-2xl') // Max width
+        ->assertNoJavaScriptErrors();
 })->with('navigate');

@@ -10,6 +10,8 @@ it('can open a local modal and a nested one', function () {
     clickModalCloseButton($page, 1);
 
     waitUntilMissingModal($page, 1);
+
+    $page->assertNoJavaScriptErrors();
 });
 
 it('can close a local modal through a template ref', function () {
@@ -19,4 +21,6 @@ it('can close a local modal through a template ref', function () {
         ->press('Close Modal through Ref');
 
     waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
 });

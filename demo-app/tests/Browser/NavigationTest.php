@@ -16,4 +16,6 @@ it('closes the modal on navigation', function () {
         ->assertPathIs('/users/'.$user->id);
 
     waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
 });

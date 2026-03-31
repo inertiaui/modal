@@ -9,7 +9,8 @@ it('prefetches on mount and fires callbacks', function () {
 
     // Verify the prefetching and prefetched callbacks were fired
     $page->assertSeeIn("[data-testid='log']", 'mount-prefetching')
-        ->assertSeeIn("[data-testid='log']", 'mount-prefetched');
+        ->assertSeeIn("[data-testid='log']", 'mount-prefetched')
+        ->assertNoJavaScriptErrors();
 });
 
 it('prefetches on hover and fires callbacks', function () {
@@ -29,7 +30,8 @@ it('prefetches on hover and fires callbacks', function () {
     // Click to open the modal - it should use the cached response
     $page->click("[data-testid='prefetch-hover']")
         ->assertPresent(waitForModalSelector())
-        ->assertSeeIn('.im-modal-content', 'Edit User');
+        ->assertSeeIn('.im-modal-content', 'Edit User')
+        ->assertNoJavaScriptErrors();
 });
 
 it('opens modal after clicking prefetch link', function () {
@@ -44,5 +46,6 @@ it('opens modal after clicking prefetch link', function () {
         ->assertSeeIn('.im-modal-content', 'Edit User');
 
     // The click-success callback should have fired
-    $page->assertSeeIn("[data-testid='log']", 'click-success');
+    $page->assertSeeIn("[data-testid='log']", 'click-success')
+        ->assertNoJavaScriptErrors();
 });

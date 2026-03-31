@@ -11,4 +11,6 @@ it('can inject the current modal context from a component', function () {
         ->press('Close Modal with index 1');
 
     waitUntilMissingModal($page, 1);
+
+    $page->assertNoJavaScriptErrors();
 });

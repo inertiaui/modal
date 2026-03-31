@@ -11,7 +11,8 @@ it('ignores props on first load when opening a modal from a base route', functio
         ->assertSeeIn(modalSelector(), 'No lazy data loaded')
         // Optional props should load after pressing Make visible
         ->press('Make visible')
-        ->assertSeeIn("[data-testid='optional']", 'Optional data');
+        ->assertSeeIn("[data-testid='optional']", 'Optional data')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('can lazily load props', function (bool $navigate) {
@@ -21,7 +22,8 @@ it('can lazily load props', function (bool $navigate) {
         ->assertPresent(waitForModalSelector())
         ->assertSeeIn(modalSelector(), 'No lazy data loaded')
         ->press('Load lazy')
-        ->assertSeeIn("[data-testid='lazy']", 'Lazy data');
+        ->assertSeeIn("[data-testid='lazy']", 'Lazy data')
+        ->assertNoJavaScriptErrors();
 })->with('navigate');
 
 it('ignores props on first load when opening a modal directly', function () {
@@ -33,7 +35,8 @@ it('ignores props on first load when opening a modal directly', function () {
         ->assertSeeIn(modalSelector(), 'No lazy data loaded')
         // Optional props should load after pressing Make visible
         ->press('Make visible')
-        ->assertSeeIn("[data-testid='optional']", 'Optional data');
+        ->assertSeeIn("[data-testid='optional']", 'Optional data')
+        ->assertNoJavaScriptErrors();
 });
 
 it('can lazily load props when opening a modal directly', function () {
@@ -42,5 +45,6 @@ it('can lazily load props when opening a modal directly', function () {
         // Lazy Props
         ->assertSeeIn(modalSelector(), 'No lazy data loaded')
         ->press('Load lazy')
-        ->assertSeeIn("[data-testid='lazy']", 'Lazy data');
+        ->assertSeeIn("[data-testid='lazy']", 'Lazy data')
+        ->assertNoJavaScriptErrors();
 });
