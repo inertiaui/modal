@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import { ModalLink } from '@inertiaui/modal-react';
 import Container from './Container';
@@ -6,6 +6,16 @@ import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx
 import * as InertiaReact from '@inertiajs/react';
 
 export default function Users({ users, random, navigate, deferred }) {
+    // Track component re-renders for testing (#204)
+    const isFirstRender = useRef(true);
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        window.__pageUpdateCount = (window.__pageUpdateCount ?? 0) + 1;
+    });
+
     const alertGreeting = (greeting) => {
         alert(greeting);
     };
