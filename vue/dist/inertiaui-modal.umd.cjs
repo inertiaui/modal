@@ -365,7 +365,7 @@
           const savedBaseUrl = baseUrl.value;
           baseUrl.value = null;
           closingToBaseUrlTarget = savedBaseUrl;
-          if (savedBaseUrl && typeof window !== "undefined") {
+          if (savedBaseUrl && typeof window !== "undefined" && !vanilla.sameUrlPath(savedBaseUrl, window.location.href)) {
             vue3.router.push({
               url: savedBaseUrl,
               preserveScroll: true,
@@ -687,9 +687,9 @@
     setup(__props, { expose: __expose, emit: __emit }) {
       const props = __props;
       const modalStack = useModalStack();
-      const modalContext = props.name ? vue.ref({}) : vue.inject("modalContext");
+      const modalContext = props.name ? vue.ref({}) : vue.inject("modalContext", vue.ref(null));
       const config = vue.computed(() => {
-        const isSlideover = modalContext.value.config?.slideover ?? props.slideover ?? getConfig("type") === "slideover";
+        const isSlideover = modalContext.value?.config?.slideover ?? props.slideover ?? getConfig("type") === "slideover";
         return {
           slideover: isSlideover,
           closeButton: props.closeButton ?? getConfigByType(isSlideover, "closeButton"),
@@ -699,7 +699,7 @@
           paddingClasses: props.paddingClasses ?? getConfigByType(isSlideover, "paddingClasses"),
           panelClasses: props.panelClasses ?? getConfigByType(isSlideover, "panelClasses"),
           position: props.position ?? getConfigByType(isSlideover, "position"),
-          ...modalContext.value.config
+          ...modalContext.value?.config
         };
       });
       if (props.name) {
@@ -720,7 +720,7 @@
       vue.onBeforeUnmount(() => unsubscribeEventListeners.value?.());
       const $attrs = vue.useAttrs();
       function registerEventListeners() {
-        unsubscribeEventListeners.value = modalContext.value.registerEventListenersFromAttrs($attrs);
+        unsubscribeEventListeners.value = modalContext.value?.registerEventListenersFromAttrs($attrs);
       }
       const emits = __emit;
       function emit(event, ...args) {
@@ -778,6 +778,7 @@
         { immediate: true }
       );
       const nextIndex = vue.computed(() => {
+        if (!modalContext.value) return void 0;
         return modalStack.stack.value.find((m) => m.shouldRender && m.index > modalContext.value.index)?.index;
       });
       const modalProps = vue.computed(() => {
@@ -787,7 +788,7 @@
       });
       return (_ctx, _cache) => {
         return vue.openBlock(), vue.createElementBlock(vue.Fragment, null, [
-          vue.unref(modalContext).shouldRender ? vue.renderSlot(_ctx.$slots, "default", vue.mergeProps({ key: 0 }, modalProps.value, {
+          vue.unref(modalContext)?.shouldRender ? vue.renderSlot(_ctx.$slots, "default", vue.mergeProps({ key: 0 }, modalProps.value, {
             id: vue.unref(modalContext).id,
             afterLeave: vue.unref(modalContext).afterLeave,
             close: vue.unref(modalContext).close,
