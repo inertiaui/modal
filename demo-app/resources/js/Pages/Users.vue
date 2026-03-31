@@ -1,7 +1,7 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3'
 import { ModalLink } from '@inertiaui/modal-vue'
-import { onMounted,ref } from 'vue';
+import { onMounted, onUpdated, ref } from 'vue';
 import * as InertiaVue from '@inertiajs/vue3';
 import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue';
 import Container from './Container.vue'
@@ -32,6 +32,11 @@ const stateB = ref(rand())
 
 onMounted(() => {
     stateB.value = rand()
+})
+
+// Track component re-renders for testing (#204)
+onUpdated(() => {
+    window.__pageUpdateCount = (window.__pageUpdateCount ?? 0) + 1
 })
 
 function alertGreeting(greeting) {

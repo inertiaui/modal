@@ -1,5 +1,5 @@
 import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
-import { generateId, except, kebabCase, parseResponseData } from './helpers'
+import { generateId, except, kebabCase, parseResponseData, sameUrlPath } from './helpers'
 import { ResponseCache } from './cache'
 import type { ModalTypeConfig } from './config'
 import { router, usePage, progress, http } from '@inertiajs/vue3'
@@ -293,7 +293,11 @@ export class Modal {
             // Only suppresses navigate events to this specific URL
             closingToBaseUrlTarget = savedBaseUrl
 
-            if (savedBaseUrl && typeof window !== 'undefined') {
+            // Only call router.push() when the URL actually changed (navigate mode).
+            // In non-navigate mode (default), the URL never changes and _inertiaui_modal
+            // is never in page props, so router.push() would be a no-op that triggers
+            // an unnecessary full component re-render in Inertia v3.
+            if (savedBaseUrl && typeof window !== 'undefined' && !sameUrlPath(savedBaseUrl, window.location.href)) {
                 router.push({
                     url: savedBaseUrl,
                     preserveScroll: true,
