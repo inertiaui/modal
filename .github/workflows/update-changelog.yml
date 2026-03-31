@@ -13,10 +13,20 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: Determine branch from tag
+        id: branch
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          if [[ "$TAG" == 2.* ]]; then
+            echo "name=2.x" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=3.x" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ steps.branch.outputs.name }}
 
       - name: Update Changelog
         uses: stefanzweifel/changelog-updater-action@v1
@@ -27,6 +37,6 @@ jobs:
       - name: Commit updated CHANGELOG
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          branch: main
+          branch: ${{ steps.branch.outputs.name }}
           commit_message: Update CHANGELOG
           file_pattern: CHANGELOG.md
