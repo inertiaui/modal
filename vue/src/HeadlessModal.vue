@@ -1,6 +1,6 @@
 <script setup>
 import { getConfig, getConfigByType } from './config'
-import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, watch, unref } from 'vue'
+import { inject, onBeforeUnmount, provide, ref, computed, useAttrs, onMounted, watch, unref } from 'vue'
 import { useModalStack } from './modalStack'
 import ModalRenderer from './ModalRenderer.vue'
 
@@ -47,6 +47,13 @@ const props = defineProps({
 
 const modalStack = useModalStack()
 const modalContext = props.name ? ref({}) : inject('modalContext', ref(null))
+
+// Provide modalContext so children (e.g. CloseButton via useModal()) can access it,
+// especially for local modals where no ModalRenderer provides it.
+if (props.name) {
+    provide('modalContext', modalContext)
+}
+
 const config = computed(() => {
     const isSlideover = modalContext.value?.config?.slideover ?? props.slideover ?? getConfig('type') === 'slideover'
 
