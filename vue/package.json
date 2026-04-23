@@ -35,7 +35,7 @@
     },
     "devDependencies": {
         "@inertiajs/vue3": "^3.0.0",
-        "@inertiaui/vanilla": "^0.3.0",
+        "@inertiaui/vanilla": "^0.6.0",
         "@typescript-eslint/eslint-plugin": "^8.31.0",
         "@typescript-eslint/parser": "^8.31.0",
         "@vitejs/plugin-react": "^5.1.4",
@@ -57,7 +57,7 @@
         "vue-tsc": "^2.2.0"
     },
     "dependencies": {
-        "@inertiaui/vanilla": "^0.3.0"
+        "@inertiaui/vanilla": "^0.6.0"
     },
     "peerDependencies": {
         "@inertiajs/vue3": "^3.0.0",

@@ -36,7 +36,7 @@
     "devDependencies": {
         "@heroicons/react": "^2.1.4",
         "@inertiajs/react": "^3.0.0",
-        "@inertiaui/vanilla": "^0.3.0",
+        "@inertiaui/vanilla": "^0.6.0",
         "@testing-library/react": "^16.0.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
@@ -57,7 +57,7 @@
         "vitest": "^4.0.0"
     },
     "dependencies": {
-        "@inertiaui/vanilla": "^0.3.0"
+        "@inertiaui/vanilla": "^0.6.0"
     },
     "peerDependencies": {
         "@inertiajs/react": "^3.0.0",
