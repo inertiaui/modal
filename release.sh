@@ -47,7 +47,9 @@ SHORT_HEAD=$(git rev-parse --short HEAD)
 [ "$BRANCH" = "2.x" ] || die "2.x releases must be cut from '2.x' (currently on '$BRANCH')"
 
 info "Fetching from origin..."
-git fetch --tags --quiet origin
+# --force: trust origin as the source of truth for tags (overwrites local tags
+# whose SHA has drifted, e.g. from a manual rebase or rewrite of a release commit).
+git fetch --tags --force origin
 
 # Tag must not already exist
 if git rev-parse --verify --quiet "refs/tags/$TAG" >/dev/null; then
