@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 3.1.0 - 2026-04-26
+
+### What's Changed
+
+* Bump @inertiaui/vanilla to ^1.0.0 by @pascalbaljet in https://github.com/inertiaui/modal/pull/217
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/3.0.1...3.1.0
+
 ## 3.0.1 - 2026-03-31
 
 ### What's Changed
