@@ -998,10 +998,11 @@
         }
       }
       function handleDialogClick(event) {
-        if (event.target === dialogRef.value) {
-          if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly && props.config?.closeOnClickOutside !== false) {
-            props.modalContext.close();
-          }
+        if (!props.modalContext.onTopOfStack || props.config?.closeExplicitly || props.config?.closeOnClickOutside === false) return;
+        const clickTarget = event.target;
+        if (!clickTarget) return;
+        if (nativeWrapperRef.value && !nativeWrapperRef.value.contains(clickTarget)) {
+          props.modalContext.close();
         }
       }
       function openDialog() {
@@ -1094,7 +1095,7 @@
         }, [
           vue.createElementVNode("div", _hoisted_1$2, [
             vue.createElementVNode("div", {
-              class: vue.normalizeClass(["im-modal-positioner flex min-h-full justify-center", {
+              class: vue.normalizeClass(["im-modal-positioner flex min-h-full justify-center native-dialog", {
                 "items-start": __props.config.position === "top",
                 "items-center": __props.config.position === "center",
                 "items-end": __props.config.position === "bottom"
@@ -1286,10 +1287,11 @@
         }
       }
       function handleDialogClick(event) {
-        if (event.target === dialogRef.value) {
-          if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly && props.config?.closeOnClickOutside !== false) {
-            props.modalContext.close();
-          }
+        if (!props.modalContext.onTopOfStack || props.config?.closeExplicitly || props.config?.closeOnClickOutside === false) return;
+        const clickTarget = event.target;
+        if (!clickTarget) return;
+        if (nativeWrapperRef.value && !nativeWrapperRef.value.contains(clickTarget)) {
+          props.modalContext.close();
         }
       }
       function openDialog() {
@@ -1724,22 +1726,31 @@
           onPrefetched: () => emit("prefetched")
         });
       }
-      function onMouseenter() {
-        if (!prefetchModes.value.includes("hover")) return;
-        hoverTimeout.value = setTimeout(() => {
-          doPrefetch();
-        }, 75);
+      function onMouseenter(event) {
+        if (core.shouldIntercept(event)) {
+          event.preventDefault();
+          if (!prefetchModes.value.includes("hover")) return;
+          hoverTimeout.value = setTimeout(() => {
+            doPrefetch();
+          }, 75);
+        }
       }
-      function onMouseleave() {
-        if (hoverTimeout.value) {
-          clearTimeout(hoverTimeout.value);
-          hoverTimeout.value = null;
+      function onMouseleave(event) {
+        if (core.shouldIntercept(event)) {
+          event.preventDefault();
+          if (hoverTimeout.value) {
+            clearTimeout(hoverTimeout.value);
+            hoverTimeout.value = null;
+          }
         }
       }
       function onMousedown(event) {
-        if (!prefetchModes.value.includes("click")) return;
-        if (event.button !== 0) return;
-        doPrefetch();
+        if (core.shouldIntercept(event)) {
+          event.preventDefault();
+          if (!prefetchModes.value.includes("click")) return;
+          if (event.button !== 0) return;
+          doPrefetch();
+        }
       }
       vue.onMounted(() => {
         if (prefetchModes.value.includes("mount")) {
@@ -1783,35 +1794,38 @@
         modalContext.value = null;
         emit("after-leave");
       }
-      function handle() {
-        if (loading.value) {
-          return;
+      function handle(event) {
+        if (core.shouldIntercept(event)) {
+          event.preventDefault();
+          if (loading.value) {
+            return;
+          }
+          if (!props.href.startsWith("#")) {
+            loading.value = true;
+            emit("start");
+          }
+          modalStack.visit(
+            props.href,
+            props.method,
+            props.data,
+            props.headers,
+            vanilla.rejectNullValues(vanilla.only(props, modalPropNames)),
+            onClose,
+            onAfterLeave,
+            props.queryStringArrayFormat,
+            shouldNavigate.value
+          ).then((context) => {
+            modalContext.value = context;
+          }).catch((error) => {
+            console.error(error);
+            emit("error", error);
+          }).finally(() => loading.value = false);
         }
-        if (!props.href.startsWith("#")) {
-          loading.value = true;
-          emit("start");
-        }
-        modalStack.visit(
-          props.href,
-          props.method,
-          props.data,
-          props.headers,
-          vanilla.rejectNullValues(vanilla.only(props, modalPropNames)),
-          onClose,
-          onAfterLeave,
-          props.queryStringArrayFormat,
-          shouldNavigate.value
-        ).then((context) => {
-          modalContext.value = context;
-        }).catch((error) => {
-          console.error(error);
-          emit("error", error);
-        }).finally(() => loading.value = false);
       }
       return (_ctx, _cache) => {
         return vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(__props.as), vue.mergeProps(vue.unref($attrs), {
           href: __props.href,
-          onClick: vue.withModifiers(handle, ["prevent"]),
+          onClick: handle,
           onMouseenter,
           onMouseleave,
           onMousedown

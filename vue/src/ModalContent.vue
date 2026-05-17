@@ -134,10 +134,15 @@ function handleCancel(event) {
 }
 
 function handleDialogClick(event) {
-    if (event.target === dialogRef.value) {
-        if (props.modalContext.onTopOfStack && !props.config?.closeExplicitly && props.config?.closeOnClickOutside !== false) {
-            props.modalContext.close()
-        }
+    if (!props.modalContext.onTopOfStack || props.config?.closeExplicitly || props.config?.closeOnClickOutside === false) return
+
+    const clickTarget = event.target
+    if (!clickTarget) return
+
+    // Native dialog clicks can bubble from inner layout containers, so treat any click
+    // outside the actual modal wrapper as an outside click.
+    if (nativeWrapperRef.value && !nativeWrapperRef.value.contains(clickTarget)) {
+        props.modalContext.close()
     }
 }
 
@@ -241,7 +246,7 @@ watch(
     >
         <div class="im-modal-container fixed inset-0 overflow-y-auto p-4">
             <div
-                class="im-modal-positioner flex min-h-full justify-center"
+                class="im-modal-positioner flex min-h-full justify-center native-dialog"
                 :class="{
                     'items-start': config.position === 'top',
                     'items-center': config.position === 'center',

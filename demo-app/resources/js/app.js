@@ -21,6 +21,18 @@ createInertiaApp({
     },
 })
 
+putConfig({
+    type: 'modal',
+    //useNativeDialog: false,
+    closeOnClickOutside: true,
+
+    modal: {
+        closeButton: false,
+        closeExplicitly: false,
+        closeOnClickOutside: true,
+        },
+})
+
 if(window.location.pathname === '/props-from-config') {
     putConfig({
         type: 'slideover',
