@@ -140,10 +140,17 @@ const ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onA
 
     const handleDialogClick = useCallback(
         (event: MouseEvent) => {
-            if (event.target === dialogRef.current) {
-                if (modalContext.onTopOfStack && !config?.closeExplicitly && config?.closeOnClickOutside !== false) {
-                    modalContext.close()
-                }
+            if (!modalContext.onTopOfStack || config?.closeExplicitly || config?.closeOnClickOutside === false) {
+                return
+            }
+
+            const clickTarget = event.target as Node | null
+            if (!clickTarget) return
+
+            // Native dialog clicks can bubble from inner layout containers, so treat any click
+            // outside the actual modal wrapper as an outside click.
+            if (nativeWrapperRef.current && !nativeWrapperRef.current.contains(clickTarget)) {
+                modalContext.close()
             }
         },
         [modalContext, config?.closeExplicitly, config?.closeOnClickOutside],
