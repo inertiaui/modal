@@ -1,6 +1,6 @@
 import { useMemo, useState, forwardRef, useImperativeHandle, useEffect, useRef, ReactNode } from 'react'
 import { getConfig, getConfigByType } from './config'
-import { useModalIndex } from './ModalRenderer'
+import { ModalIndexContext, useModalIndex } from './ModalRenderer'
 import { useModalStack } from './ModalRoot'
 import ModalRenderer from './ModalRenderer'
 import type { Modal, ModalConfig, ReloadOptions } from './types'
@@ -204,7 +204,7 @@ const HeadlessModal = forwardRef<HeadlessModalRef, HeadlessModalProps>(
             return null
         }
 
-        return (
+        const content = (
             <>
                 {typeof children === 'function'
                     ? children({
@@ -231,6 +231,17 @@ const HeadlessModal = forwardRef<HeadlessModalRef, HeadlessModalProps>(
                 {nextIndex !== undefined && <ModalRenderer index={nextIndex} />}
             </>
         )
+
+        // For local modals, provide the modal index so useModal() works inside them
+        if (name) {
+            return (
+                <ModalIndexContext.Provider value={modalContext.index}>
+                    {content}
+                </ModalIndexContext.Provider>
+            )
+        }
+
+        return content
     },
 )
 

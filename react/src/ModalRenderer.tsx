@@ -2,7 +2,7 @@ import React, { useMemo, createElement } from 'react'
 import { useModalStack } from './ModalRoot'
 import type { ModalRendererProps } from './types'
 
-const ModalIndexContext = React.createContext<number | null>(null)
+export const ModalIndexContext = React.createContext<number | null>(null)
 ModalIndexContext.displayName = 'ModalIndexContext'
 
 export const useModalIndex = (): number | null => {

@@ -24,3 +24,23 @@ it('can close a local modal through a template ref', function () {
 
     $page->assertNoJavaScriptErrors();
 });
+
+it('can close a local modal through the close button', function () {
+    $page = visit('/local')
+        ->click('Open Local Modal')
+        ->assertSeeIn('.im-modal-content', 'This is a local modal');
+
+    clickModalCloseButton($page);
+
+    waitUntilMissingModal($page);
+
+    // Open and close again to ensure no leftover state
+    $page->click('Open Local Modal')
+        ->assertSeeIn('.im-modal-content', 'This is a local modal');
+
+    clickModalCloseButton($page);
+
+    waitUntilMissingModal($page);
+
+    $page->assertNoJavaScriptErrors();
+});
