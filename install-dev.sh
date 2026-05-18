@@ -1,21 +1,16 @@
 #! /bin/bash
+set -e
 
-# Prepare React Library for development
-cd react
-rm -rf node_modules
-npm install
+cd "$(dirname "$0")"
 
-# Prepare Vue Library for development
-cd ../vue
-rm -rf node_modules
-npm install
+# Install all workspace JS dependencies at the root (vue, react, demo-app)
+rm -rf node_modules vue/node_modules react/node_modules demo-app/node_modules
+pnpm install
 
-# Prepare demo app for development
-cd ../demo-app
-rm -rf node_modules
+# Prepare demo-app PHP side
+cd demo-app
 rm -rf vendor
-rm composer.lock
-npm install
+rm -f composer.lock
 composer install
 if [ ! -f .env ]; then
     cp .env.example .env

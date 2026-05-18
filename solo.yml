@@ -9,22 +9,22 @@ processes:
     restart_when_changed: []
     env: {}
   React Vite:
-    command: npm run dev
-    working_dir: /Users/pascalbaljet/Sites/modal/react
+    command: pnpm --filter @inertiaui/modal-react dev
+    working_dir: /Users/pascalbaljet/Sites/modal
     auto_start: true
     auto_restart: true
     restart_when_changed: []
     env: {}
   Vue Vite:
-    command: npm run dev
-    working_dir: /Users/pascalbaljet/Sites/modal/vue
+    command: pnpm --filter @inertiaui/modal-vue dev
+    working_dir: /Users/pascalbaljet/Sites/modal
     auto_start: true
     auto_restart: true
     restart_when_changed: []
     env: {}
   App Vite:
-    command: npm run dev
-    working_dir: /Users/pascalbaljet/Sites/modal/demo-app
+    command: pnpm --filter demo-app dev
+    working_dir: /Users/pascalbaljet/Sites/modal
     auto_start: true
     auto_restart: true
     restart_when_changed: []

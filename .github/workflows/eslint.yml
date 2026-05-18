@@ -14,52 +14,46 @@ on:
       - "vue/.eslintrc.cjs"
       - "vue/.prettierrc"
       - "vue/package.json"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
       - ".github/workflows/eslint.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   eslint:
     name: ESLint Code Analysis
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v5
-        env:
-          cache-name: cache-node-modules
+      - name: Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v6.0.8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          node-version: lts/*
+          cache: pnpm
 
       - name: Install dependencies
-        run: |
-          cd vue
-          npm ci
-          cd ../react
-          npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
         run: |
-          cd vue
-          npm run eslint
-          cd ../react
-          npm run eslint
+          pnpm --filter @inertiaui/modal-vue run eslint
+          pnpm --filter @inertiaui/modal-react run eslint
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: Fix styling
