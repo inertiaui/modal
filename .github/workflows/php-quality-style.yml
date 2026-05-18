@@ -10,17 +10,22 @@ on:
       - "phpstan.neon.dist"
       - "rector.php"
 
+permissions:
+  contents: read
+
 jobs:
   php-quality-style:
     name: PHP Quality and Style
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # 2.37.1
         with:
           php-version: "8.2"
           extensions: json, dom, curl, libxml, mbstring, zip
@@ -34,7 +39,7 @@ jobs:
         run: composer refactor
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: Refactor code with Rector
 
@@ -42,7 +47,7 @@ jobs:
         run: composer format
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: Format code with Pint
 

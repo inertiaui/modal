@@ -1,0 +1,19 @@
+{
+    "name": "inertiaui-modal",
+    "private": true,
+    "type": "module",
+    "packageManager": "pnpm@10.13.1",
+    "scripts": {
+        "dev:vue": "pnpm --filter @inertiaui/modal-vue dev",
+        "dev:react": "pnpm --filter @inertiaui/modal-react dev",
+        "dev:demo": "pnpm --filter demo-app dev",
+        "build": "pnpm --filter @inertiaui/modal-vue build && pnpm --filter @inertiaui/modal-react build",
+        "test": "pnpm --filter @inertiaui/modal-vue test --run && pnpm --filter @inertiaui/modal-react test --run",
+        "lint": "pnpm --filter @inertiaui/modal-vue eslint && pnpm --filter @inertiaui/modal-react eslint",
+        "format": "pnpm --filter @inertiaui/modal-vue prettier && pnpm --filter @inertiaui/modal-react prettier"
+    },
+    "devDependencies": {
+        "@inertiajs/core": "^3.0.0",
+        "@inertiaui/vanilla": "^1.0.2"
+    }
+}

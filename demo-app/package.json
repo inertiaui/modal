@@ -1,4 +1,5 @@
 {
+    "name": "demo-app",
     "private": true,
     "type": "module",
     "scripts": {
@@ -26,7 +27,7 @@
     },
     "dependencies": {
         "@inertiajs/vite": "^3.0.0",
-        "@inertiaui/modal-react": "file:../react",
-        "@inertiaui/modal-vue": "file:../vue"
+        "@inertiaui/modal-react": "workspace:*",
+        "@inertiaui/modal-vue": "workspace:*"
     }
 }
