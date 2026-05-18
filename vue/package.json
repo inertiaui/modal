@@ -43,18 +43,18 @@
         "@vitest/coverage-v8": "^4.0.0",
         "@vitest/ui": "^4.0.0",
         "@vue/test-utils": "^2.4.6",
-        "eslint": "^9.26.0",
+        "eslint": "^10.4.0",
         "eslint-plugin-vue": "^10.2.0",
         "happy-dom": "^20.0.0",
         "laravel-vite-plugin": "^3.0.0",
         "prettier": "^3.2.4",
-        "typescript": "^5.7.0",
+        "typescript": "^6.0.3",
         "vite": "^8.0.0",
         "vite-plugin-dts": "^5.0.0",
         "vitest": "^4.0.0",
         "vue": "^3.4.x",
         "vue-eslint-parser": "^10.1.0",
-        "vue-tsc": "^2.2.0"
+        "vue-tsc": "^3.2.9"
     },
     "dependencies": {
         "@inertiaui/vanilla": "^1.0.2"

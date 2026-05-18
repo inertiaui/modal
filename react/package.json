@@ -46,12 +46,12 @@
         "@vitest/coverage-v8": "^4.0.0",
         "@vitest/ui": "^4.0.0",
         "clsx": "^2.1.1",
-        "eslint": "^9.0.0",
+        "eslint": "^10.4.0",
         "happy-dom": "^20.0.0",
         "prettier": "^3.2.4",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
-        "typescript": "^5.7.0",
+        "react": "^19.2.6",
+        "react-dom": "^19.2.6",
+        "typescript": "^6.0.3",
         "vite": "^8.0.0",
         "vite-plugin-dts": "^5.0.0",
         "vitest": "^4.0.0"
@@ -61,7 +61,7 @@
     },
     "peerDependencies": {
         "@inertiajs/react": "^3.0.0",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0"
+        "react": "^19.2.6",
+        "react-dom": "^19.2.6"
     }
 }
