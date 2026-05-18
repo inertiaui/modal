@@ -1,27 +1,22 @@
 #!/bin/bash
 
-# Switch @inertiaui/vanilla to local development version (file:../../vanilla)
+# Switch @inertiaui/vanilla to local development version (link:../vanilla)
 # Use this for local development when working on vanilla alongside modal
 
 set -e
 
 cd "$(dirname "$0")"
 
-echo "Switching to local vanilla (file:../../vanilla)..."
+echo "Switching to local vanilla (link:../vanilla)..."
 
-# Update vue/package.json
-sed -i '' 's|"@inertiaui/vanilla": "[^"]*"|"@inertiaui/vanilla": "file:../../vanilla"|' vue/package.json
+# Root devDependencies
+sed -i '' 's|"@inertiaui/vanilla": "[^"]*"|"@inertiaui/vanilla": "link:../vanilla"|' package.json
 
-# Update react/package.json
-sed -i '' 's|"@inertiaui/vanilla": "[^"]*"|"@inertiaui/vanilla": "file:../../vanilla"|' react/package.json
+# vue + react package.json (both occurrences in each — devDeps and deps)
+sed -i '' 's|"@inertiaui/vanilla": "[^"]*"|"@inertiaui/vanilla": "link:../../vanilla"|g' vue/package.json
+sed -i '' 's|"@inertiaui/vanilla": "[^"]*"|"@inertiaui/vanilla": "link:../../vanilla"|g' react/package.json
 
-# Reinstall dependencies
-echo "Reinstalling vue dependencies..."
-cd vue && rm -rf node_modules package-lock.json && npm install
-cd ..
+echo "Reinstalling workspace dependencies..."
+pnpm install
 
-echo "Reinstalling react dependencies..."
-cd react && rm -rf node_modules package-lock.json && npm install
-cd ..
-
-echo "Done! Using local vanilla from ../../vanilla"
+echo "Done! Using local vanilla from ../vanilla"

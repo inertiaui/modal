@@ -31,7 +31,7 @@ MAJOR="${VERSION%%.*}"
 
 # ── required tools ──────────────────────────────────────────────────────
 command -v composer >/dev/null || die "composer not found"
-command -v npm      >/dev/null || die "npm not found"
+command -v pnpm     >/dev/null || die "pnpm not found"
 command -v gh       >/dev/null || die "gh CLI not found"
 
 # ── git state ───────────────────────────────────────────────────────────
@@ -115,10 +115,10 @@ read -r -p "Proceed? (y/N) " REPLY
 
 # ── bump versions ───────────────────────────────────────────────────────
 info "Bumping vue/package.json to $VERSION..."
-(cd vue && npm version "$VERSION" --no-git-tag-version --allow-same-version >/dev/null)
+(cd vue && pnpm version "$VERSION" --no-git-tag-version --allow-same-version >/dev/null)
 
 info "Bumping react/package.json to $VERSION..."
-(cd react && npm version "$VERSION" --no-git-tag-version --allow-same-version >/dev/null)
+(cd react && pnpm version "$VERSION" --no-git-tag-version --allow-same-version >/dev/null)
 
 # ── build ───────────────────────────────────────────────────────────────
 info "Running composer build (quality + lint + dist)..."
@@ -126,9 +126,9 @@ composer build
 
 # Verify `composer build` didn't leave unexpected source changes behind
 # (e.g. Pint/Rector/ESLint auto-fixes on a previously "clean" tree).
-# Expected modifications: package.json + package-lock.json in vue/+react/, and their dist/ dirs.
+# Expected modifications: package.json in vue/+react/, their dist/ dirs, and the root pnpm-lock.yaml.
 UNEXPECTED_CHANGES=$(git status --porcelain \
-    | grep -vE "^.M (react|vue)/dist/|^.M (react|vue)/package(\.json|-lock\.json)$|^\?\? (react|vue)/dist/" \
+    | grep -vE "^.M (react|vue)/dist/|^.M (react|vue)/package\.json$|^.M pnpm-lock\.yaml$|^\?\? (react|vue)/dist/" \
     || true)
 if [ -n "$UNEXPECTED_CHANGES" ]; then
     echo
@@ -147,8 +147,9 @@ done
 success "dist files present and non-empty"
 
 # ── commit ──────────────────────────────────────────────────────────────
-git add vue/package.json vue/package-lock.json vue/dist \
-        react/package.json react/package-lock.json react/dist
+git add vue/package.json vue/dist \
+        react/package.json react/dist \
+        pnpm-lock.yaml
 
 if git diff --cached --quiet; then
     warn "Nothing to commit (versions and dist unchanged)"
