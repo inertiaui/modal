@@ -35,7 +35,7 @@
     },
     "devDependencies": {
         "@heroicons/react": "^2.1.4",
-        "@inertiajs/react": "^2.3.15",
+        "@inertiajs/react": "^3.1.1",
         "@inertiaui/vanilla": "^1.0.2",
         "@testing-library/react": "^16.0.0",
         "@types/react": "^19.0.0",
@@ -47,12 +47,12 @@
         "@vitest/ui": "^4.0.0",
         "axios": "^1.6.0",
         "clsx": "^2.1.1",
-        "eslint": "^9.0.0",
+        "eslint": "^10.4.0",
         "happy-dom": "^20.0.0",
         "prettier": "^3.2.4",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
-        "typescript": "^5.7.0",
+        "react": "^19.2.6",
+        "react-dom": "^19.2.6",
+        "typescript": "^6.0.3",
         "vite": "^8.0.0",
         "vite-plugin-dts": "^5.0.0",
         "vitest": "^4.0.0"
@@ -61,9 +61,9 @@
         "@inertiaui/vanilla": "^1.0.2"
     },
     "peerDependencies": {
-        "@inertiajs/react": "^2.3.15",
+        "@inertiajs/react": "^3.1.1",
         "axios": "^1.6.0",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0"
+        "react": "^19.2.6",
+        "react-dom": "^19.2.6"
     }
 }

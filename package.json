@@ -13,7 +13,7 @@
         "format": "pnpm --filter @inertiaui/modal-vue prettier && pnpm --filter @inertiaui/modal-react prettier"
     },
     "devDependencies": {
-        "@inertiajs/core": "^2.3.15",
+        "@inertiajs/core": "^3.1.1",
         "@inertiaui/vanilla": "^1.0.2"
     }
 }
