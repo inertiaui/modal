@@ -1,0 +1,15 @@
+import { getConfig, putConfig, resetConfig } from './config';
+import { useModalStack, initFromPageProps, renderApp, withInertiaModal, Modal as ModalClass, modalPropNames, prefetch, ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, HttpMethod, PrefetchOption, PrefetchOptions } from './modalStack';
+import { default as useModal } from './useModal';
+import { default as Deferred } from './Deferred.vue';
+import { default as HeadlessModal } from './HeadlessModal.vue';
+import { default as ModalComponent } from './Modal.vue';
+import { default as ModalLink } from './ModalLink.vue';
+import { default as ModalRoot } from './ModalRoot.vue';
+import { default as WhenVisible } from './WhenVisible.vue';
+import * as dialogUtils from '@inertiaui/vanilla';
+declare function visitModal(url: string, options?: VisitOptions): Promise<ModalClass>;
+export { Deferred, HeadlessModal, ModalComponent as Modal, ModalLink, ModalRoot, WhenVisible, getConfig, putConfig, resetConfig, initFromPageProps, renderApp, withInertiaModal, useModal, useModalStack, visitModal, modalPropNames, prefetch, ModalClass as ModalInstance, dialogUtils, };
+export type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, HttpMethod, PrefetchOption, PrefetchOptions };
+export type { ModalTypeConfig } from './config';
+export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla';
