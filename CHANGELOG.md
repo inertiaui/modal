@@ -2,6 +2,14 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 3.1.1 - 2026-05-18
+
+### What's Changed
+
+* Harden CI workflows, bump @inertiaui/vanilla to ^1.0.2 by @pascalbaljet in https://github.com/inertiaui/modal/pull/221
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/3.1.0...3.1.1
+
 ## 3.1.0 - 2026-04-26
 
 ### What's Changed
