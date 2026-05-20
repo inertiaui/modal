@@ -9,6 +9,13 @@ import { getConfig } from './config'
 const modal = ref(null)
 const rendered = ref(false)
 
+const props = defineProps({
+    useNativeDialog: {
+        type: Boolean,
+        default: null,
+    },
+})
+
 const emits = defineEmits(['after-leave', 'blur', 'close', 'focus', 'success'])
 
 defineExpose({
@@ -78,7 +85,7 @@ function onCloseEvent() {
     cleanupAriaHidden = null
 }
 
-const useNativeDialog = computed(() => getConfig('useNativeDialog'))
+const useNativeDialog = computed(() => props.useNativeDialog ?? getConfig('useNativeDialog'))
 </script>
 
 <template>

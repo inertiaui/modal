@@ -51,6 +51,7 @@ interface ModalBaseProps {
     paddingClasses?: string
     panelClasses?: string
     position?: string
+    useNativeDialog?: boolean
 }
 
 type ModalProps = ModalBaseProps & Record<string, unknown>
@@ -63,7 +64,7 @@ interface BackdropTransitionProps {
 
 const Modal = forwardRef<HeadlessModalRef, ModalProps>(
     (allProps, ref) => {
-        const { name, children, onFocus, onBlur, onClose, onSuccess, onAfterLeave, ...props } = allProps as ModalBaseProps & Record<string, unknown>
+        const { name, children, onFocus, onBlur, onClose, onSuccess, onAfterLeave, useNativeDialog: useNativeDialogProp, ...props } = allProps as ModalBaseProps & Record<string, unknown>
         const renderChildren = (contentProps: ModalRenderProps) => {
             if (typeof children === 'function') {
                 return children(contentProps)
@@ -76,7 +77,10 @@ const Modal = forwardRef<HeadlessModalRef, ModalProps>(
         const cleanupScrollLockRef = useRef<(() => void) | null>(null)
         const cleanupAriaHiddenRef = useRef<(() => void) | null>(null)
         const [rendered, setRendered] = useState(false)
-        const useNativeDialog = useMemo(() => getConfig('useNativeDialog') as boolean, [])
+        const useNativeDialog = useMemo(
+            () => useNativeDialogProp ?? (getConfig('useNativeDialog') as boolean),
+            [useNativeDialogProp],
+        )
 
         useImperativeHandle(ref, () => headlessModalRef.current!, [headlessModalRef])
 
