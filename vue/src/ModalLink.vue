@@ -1,7 +1,7 @@
 <script setup>
 import { modalPropNames, useModalStack, prefetch as prefetchModal } from './modalStack'
 import { ref, provide, computed, watch, useAttrs, onBeforeUnmount, onMounted } from 'vue'
-import { only, rejectNullValues } from './helpers'
+import { only, rejectNullValues, shouldInterceptClick } from './helpers'
 import { getConfig } from './config'
 
 const props = defineProps({
@@ -200,6 +200,15 @@ function onAfterLeave() {
     emit('after-leave')
 }
 
+function onClick(event) {
+    if (!shouldInterceptClick(event, props.as === 'a')) {
+        return
+    }
+
+    event.preventDefault()
+    handle()
+}
+
 function handle() {
     if (loading.value) {
         return
@@ -238,7 +247,7 @@ function handle() {
         v-bind="$attrs"
         :is="as"
         :href="href"
-        @click.prevent="handle"
+        @click="onClick"
         @mouseenter="onMouseenter"
         @mouseleave="onMouseleave"
         @mousedown="onMousedown"

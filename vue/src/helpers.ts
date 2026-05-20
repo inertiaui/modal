@@ -5,6 +5,15 @@ export function parseResponseData(data: unknown): unknown {
     return typeof data === 'string' ? JSON.parse(data) : data
 }
 
+export function shouldInterceptClick(event: MouseEvent | undefined, isAnchor: boolean): boolean {
+    if (!isAnchor) return true
+    if (!event) return true
+    if (event.defaultPrevented) return false
+    if (event.button !== undefined && event.button !== 0) return false
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return false
+    return true
+}
+
 // Modal-specific helpers
 
 let generateIdUsingCallback: (() => string) | null = null

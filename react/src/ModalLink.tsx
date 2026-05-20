@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useMemo, useRef, ReactNode, ElementType, MouseEvent } from 'react'
 import { useModalStack, modalPropNames, prefetch as prefetchModal } from './ModalRoot'
-import { only, rejectNullValues, isStandardDomEvent } from './helpers'
+import { only, rejectNullValues, isStandardDomEvent, shouldInterceptClick } from './helpers'
 import { getConfig } from './config'
 import type { Modal, PrefetchOption, HttpMethod } from './types'
 import type { RequestPayload } from '@inertiajs/core'
@@ -174,6 +174,9 @@ const ModalLink = ({
 
     const handle = useCallback(
         (e?: MouseEvent) => {
+            if (!shouldInterceptClick(e, Component === 'a')) {
+                return
+            }
             e?.preventDefault()
             if (loading) return
 
@@ -204,7 +207,7 @@ const ModalLink = ({
                 })
                 .finally(() => setLoading(false))
         },
-        [href, method, data, headers, queryStringArrayFormat, props, onCloseCallback, onAfterLeaveCallback],
+        [href, method, data, headers, queryStringArrayFormat, props, onCloseCallback, onAfterLeaveCallback, Component],
     )
 
     return (
