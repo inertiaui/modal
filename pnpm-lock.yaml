@@ -18,8 +18,8 @@ importers:
   demo-app:
     dependencies:
       '@inertiajs/vite':
-        specifier: ^3.0.0
-        version: 3.1.1(vite@8.0.13(@types/node@25.8.0)(esbuild@0.27.7)(jiti@2.7.0))
+        specifier: ^3.3.0
+        version: 3.3.0(vite@8.0.13(@types/node@25.8.0)(esbuild@0.27.7)(jiti@2.7.0))
       '@inertiaui/modal-react':
         specifier: workspace:*
         version: link:../react
@@ -212,8 +212,8 @@ importers:
 
 packages:
 
-  '@babel/code-frame@7.29.0':
-    resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
+  '@babel/code-frame@7.29.7':
+    resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-string-parser@7.27.1':
@@ -224,6 +224,10 @@ packages:
     resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/helper-validator-identifier@7.29.7':
+    resolution: {integrity: sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/parser@7.29.3':
     resolution: {integrity: sha512-b3ctpQwp+PROvU/cttc4OYl4MzfJUWy6FZg+PMXfzmt/+39iHVF0sDfqay8TQM3JA2EUOyKcFZt75jWriQijsA==}
     engines: {node: '>=6.0.0'}
@@ -231,6 +235,10 @@ packages:
 
   '@babel/runtime@7.29.2':
     resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.29.0':
@@ -482,14 +490,22 @@ packages:
       axios:
         optional: true
 
+  '@inertiajs/core@3.3.0':
+    resolution: {integrity: sha512-6tEe5vtjwXJj68h0nkz84WkeZ8XA0phJ8ep1l/V+im62KTzlZTw9sxlmf8uNKu4seleXVw+idw48svxUCWla/Q==}
+    peerDependencies:
+      axios: ^1.15.2
+    peerDependenciesMeta:
+      axios:
+        optional: true
+
   '@inertiajs/react@3.1.1':
     resolution: {integrity: sha512-Z1MhuMaRC1rv7hdK8p8I4u88seku358Je4q7OPVG+FRSZAfnUGXGRBYaHq34HYDjoz1axb+/irkk1WdJFs37Rg==}
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
 
-  '@inertiajs/vite@3.1.1':
-    resolution: {integrity: sha512-QSUzZaKvfPLlcztoTtBoHkz76CFctK+SCGGuME9oGt2X1Dxj5U8c3BmWmLbw7UGesG1bRvrfqwstEmg7kTM8Ow==}
+  '@inertiajs/vite@3.3.0':
+    resolution: {integrity: sha512-UWm+I5OpxGnm1LBjgaPOI6/M8gurloxXRnzeNMd2UC6f6ObQo6RZvyLMMWInwS0fBief7lfkpj5sPZy+680CRA==}
     peerDependencies:
       vite: ^7.0.0 || ^8.0.0
 
@@ -1382,6 +1398,9 @@ packages:
 
   es-toolkit@1.46.1:
     resolution: {integrity: sha512-5eNtXOs3tbfxXOj04tjjseeWkRWaoCjdEI+96DgwzZoe6c9juL49pXlzAFTI72aWC9Y8p7168g6XIKjh7k6pyQ==}
+
+  es-toolkit@1.47.0:
+    resolution: {integrity: sha512-n1GuoD0WEQZMBk5tttoZSqwgyLx01oqa5XsBmCHwPyNe1S9jPBEmtR2pSgp2kJuWE3ciFZ6yRHmY4pM4C3OOkw==}
 
   esbuild@0.27.7:
     resolution: {integrity: sha512-IxpibTjyVnmrIQo5aqNpCgoACA/dTKLTlhMHihVHhdkxKyPO1uBBthumT0rdHmcsk9uMonIWS0m4FljWzILh3w==}
@@ -2338,9 +2357,9 @@ packages:
 
 snapshots:
 
-  '@babel/code-frame@7.29.0':
+  '@babel/code-frame@7.29.7':
     dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
+      '@babel/helper-validator-identifier': 7.29.7
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
@@ -2348,11 +2367,15 @@ snapshots:
 
   '@babel/helper-validator-identifier@7.28.5': {}
 
+  '@babel/helper-validator-identifier@7.29.7': {}
+
   '@babel/parser@7.29.3':
     dependencies:
       '@babel/types': 7.29.0
 
   '@babel/runtime@7.29.2': {}
+
+  '@babel/runtime@7.29.7': {}
 
   '@babel/types@7.29.0':
     dependencies:
@@ -2531,6 +2554,12 @@ snapshots:
       es-toolkit: 1.46.1
       laravel-precognition: 2.0.0
 
+  '@inertiajs/core@3.3.0':
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.31
+      es-toolkit: 1.47.0
+      laravel-precognition: 2.0.0
+
   '@inertiajs/react@3.1.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@inertiajs/core': 3.1.1
@@ -2541,9 +2570,9 @@ snapshots:
     transitivePeerDependencies:
       - axios
 
-  '@inertiajs/vite@3.1.1(vite@8.0.13(@types/node@25.8.0)(esbuild@0.27.7)(jiti@2.7.0))':
+  '@inertiajs/vite@3.3.0(vite@8.0.13(@types/node@25.8.0)(esbuild@0.27.7)(jiti@2.7.0))':
     dependencies:
-      '@inertiajs/core': 3.1.1
+      '@inertiajs/core': 3.3.0
       tinyglobby: 0.2.16
       vite: 8.0.13(@types/node@25.8.0)(esbuild@0.27.7)(jiti@2.7.0)
     transitivePeerDependencies:
@@ -2902,8 +2931,8 @@ snapshots:
 
   '@testing-library/dom@10.4.1':
     dependencies:
-      '@babel/code-frame': 7.29.0
-      '@babel/runtime': 7.29.2
+      '@babel/code-frame': 7.29.7
+      '@babel/runtime': 7.29.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16
@@ -3412,6 +3441,8 @@ snapshots:
   es-module-lexer@2.1.0: {}
 
   es-toolkit@1.46.1: {}
+
+  es-toolkit@1.47.0: {}
 
   esbuild@0.27.7:
     optionalDependencies:
