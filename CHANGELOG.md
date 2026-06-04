@@ -2,6 +2,15 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 2.1.2 - 2026-06-04
+
+### What's Changed
+
+* [2.x] Workflow hardening, Dependabot cooldown, migrate to oxlint/oxfmt by @pascalbaljet in https://github.com/inertiaui/modal/pull/246
+* Bump pnpm/action-setup from 4.3.0 to 6.0.8 in the github-actions group across 1 directory by @dependabot[bot] in https://github.com/inertiaui/modal/pull/243
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/2.1.1...2.1.2
+
 ## 2.1.1 - 2026-05-18
 
 ### What's Changed
