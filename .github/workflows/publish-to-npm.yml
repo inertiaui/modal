@@ -4,16 +4,15 @@ on:
         types: [created]
     workflow_dispatch:
 
-permissions: {}
+permissions:
+    contents: read
+    id-token: write
 
 jobs:
     build:
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            id-token: write
         strategy:
-            fail-fast: true
+            fail-fast: false
             matrix:
                 stack: [react, vue]
 
@@ -49,8 +48,4 @@ jobs:
             - name: Publish to npm
               env:
                   STACK: ${{ matrix.stack }}
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-              run: |
-                  cd "$STACK"
-                  pnpm pack
-                  npm publish --access public --provenance
+              run: cd "$STACK" && pnpm publish --no-git-checks

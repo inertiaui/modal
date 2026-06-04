@@ -2,3 +2,6 @@ packages:
     - vue
     - react
     - demo-app
+
+allowBuilds:
+    esbuild: true
