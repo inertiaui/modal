@@ -2,6 +2,17 @@
 
 All notable changes to `inertiaui/modal` will be documented in this file.
 
+## 3.1.2 - 2026-06-04
+
+### What's Changed
+
+* Configure dependabot to also target 2.x branch by @pascalbaljet in https://github.com/inertiaui/modal/pull/225
+* [3.x] Remove build devDependencies from shipped packages by @pascalbaljet in https://github.com/inertiaui/modal/pull/236
+* [3.x] Workflow hardening, dependabot cooldown, migrate to oxlint/oxfmt by @pascalbaljet in https://github.com/inertiaui/modal/pull/241
+* Bump pnpm/action-setup from 4.3.0 to 6.0.8 in the github-actions group across 1 directory by @dependabot[bot] in https://github.com/inertiaui/modal/pull/242
+
+**Full Changelog**: https://github.com/inertiaui/modal/compare/3.1.1...3.1.2
+
 ## 3.1.1 - 2026-05-18
 
 ### What's Changed
