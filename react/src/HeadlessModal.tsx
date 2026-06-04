@@ -1,8 +1,9 @@
 import { useMemo, useState, forwardRef, useImperativeHandle, useEffect, useRef, ReactNode } from 'react'
+
 import { getConfig, getConfigByType } from './config'
 import { useModalIndex } from './ModalRenderer'
-import { useModalStack } from './ModalRoot'
 import ModalRenderer from './ModalRenderer'
+import { useModalStack } from './ModalRoot'
 import type { Modal, ModalConfig, ReloadOptions } from './types'
 
 interface HeadlessModalConfig {
@@ -71,168 +72,163 @@ export interface HeadlessModalRef {
     readonly shouldRender: boolean | undefined
 }
 
-const HeadlessModal = forwardRef<HeadlessModalRef, HeadlessModalProps>(
-    (allProps, ref) => {
-        const { name, children, onFocus, onBlur, onClose, onSuccess, ...props } = allProps as HeadlessModalBaseProps & Record<string, unknown>
-        const modalIndex = useModalIndex()
-        const { stack, registerLocalModal, removeLocalModal } = useModalStack()
+const HeadlessModal = forwardRef<HeadlessModalRef, HeadlessModalProps>((allProps, ref) => {
+    const { name, children, onFocus, onBlur, onClose, onSuccess, ...props } = allProps as HeadlessModalBaseProps & Record<string, unknown>
+    const modalIndex = useModalIndex()
+    const { stack, registerLocalModal, removeLocalModal } = useModalStack()
 
-        const [localModalContext, setLocalModalContext] = useState<Modal | null>(null)
-        const modalContext = useMemo(
-            () => (name ? localModalContext : stack[modalIndex]),
-            [name, localModalContext, modalIndex, stack],
-        )
+    const [localModalContext, setLocalModalContext] = useState<Modal | null>(null)
+    const modalContext = useMemo(() => (name ? localModalContext : stack[modalIndex]), [name, localModalContext, modalIndex, stack])
 
-        const nextIndex = useMemo(() => {
-            return stack.find((m) => m.shouldRender && m.index > (modalContext?.index ?? -1))?.index
-        }, [modalIndex, stack])
+    const nextIndex = useMemo(() => {
+        return stack.find((m) => m.shouldRender && m.index > (modalContext?.index ?? -1))?.index
+    }, [modalIndex, stack])
 
-        const configSlideover = useMemo(
-            () => modalContext?.config.slideover ?? props.slideover ?? getConfig('type') === 'slideover',
-            [props.slideover, modalContext?.config.slideover],
-        )
+    const configSlideover = useMemo(
+        () => modalContext?.config.slideover ?? props.slideover ?? getConfig('type') === 'slideover',
+        [props.slideover, modalContext?.config.slideover],
+    )
 
-        const config: HeadlessModalConfig = useMemo(
-            () => ({
-                slideover: configSlideover as boolean,
-                closeButton: (props.closeButton ?? getConfigByType(configSlideover as boolean, 'closeButton')) as boolean,
-                closeExplicitly: (props.closeExplicitly ?? getConfigByType(configSlideover as boolean, 'closeExplicitly')) as boolean,
-                closeOnClickOutside: (props.closeOnClickOutside ?? getConfigByType(configSlideover as boolean, 'closeOnClickOutside')) as boolean,
-                maxWidth: (props.maxWidth ?? getConfigByType(configSlideover as boolean, 'maxWidth')) as string,
-                paddingClasses: (props.paddingClasses ?? getConfigByType(configSlideover as boolean, 'paddingClasses')) as string,
-                panelClasses: (props.panelClasses ?? getConfigByType(configSlideover as boolean, 'panelClasses')) as string,
-                position: (props.position ?? getConfigByType(configSlideover as boolean, 'position')) as string,
-                ...modalContext?.config,
-            }),
-            [props, modalContext?.config, configSlideover],
-        )
+    const config: HeadlessModalConfig = useMemo(
+        () => ({
+            slideover: configSlideover as boolean,
+            closeButton: (props.closeButton ?? getConfigByType(configSlideover as boolean, 'closeButton')) as boolean,
+            closeExplicitly: (props.closeExplicitly ?? getConfigByType(configSlideover as boolean, 'closeExplicitly')) as boolean,
+            closeOnClickOutside: (props.closeOnClickOutside ?? getConfigByType(configSlideover as boolean, 'closeOnClickOutside')) as boolean,
+            maxWidth: (props.maxWidth ?? getConfigByType(configSlideover as boolean, 'maxWidth')) as string,
+            paddingClasses: (props.paddingClasses ?? getConfigByType(configSlideover as boolean, 'paddingClasses')) as string,
+            panelClasses: (props.panelClasses ?? getConfigByType(configSlideover as boolean, 'panelClasses')) as string,
+            position: (props.position ?? getConfigByType(configSlideover as boolean, 'position')) as string,
+            ...modalContext?.config,
+        }),
+        [props, modalContext?.config, configSlideover],
+    )
 
-        useEffect(() => {
-            if (name) {
-                let removeListeners: (() => void) | null = null
+    useEffect(() => {
+        if (name) {
+            let removeListeners: (() => void) | null = null
 
-                registerLocalModal(name as string, (localContext) => {
-                    removeListeners = localContext.registerEventListenersFromProps(props as Record<string, unknown>)
-                    setLocalModalContext(localContext)
-                })
+            registerLocalModal(name as string, (localContext) => {
+                removeListeners = localContext.registerEventListenersFromProps(props as Record<string, unknown>)
+                setLocalModalContext(localContext)
+            })
 
-                return () => {
-                    removeListeners?.()
-                    removeListeners = null
-                    removeLocalModal(name as string)
-                }
+            return () => {
+                removeListeners?.()
+                removeListeners = null
+                removeLocalModal(name as string)
             }
-
-            return modalContext?.registerEventListenersFromProps(props as Record<string, unknown>)
-        }, [name])
-
-        // Store the latest modalContext in a ref to maintain reference
-        const modalContextRef = useRef(modalContext)
-
-        // Update the ref whenever modalContext changes
-        useEffect(() => {
-            modalContextRef.current = modalContext
-        }, [modalContext])
-
-        // Track previous isOpen value to only emit close when transitioning from true to false
-        const previousIsOpenRef = useRef<boolean | undefined>(undefined)
-
-        useEffect(() => {
-            if (modalContext != null) {
-                if (modalContext.isOpen) {
-                    onSuccess?.()
-                } else if (previousIsOpenRef.current === true) {
-                    // Only call onClose when transitioning from open to closed,
-                    // not when the component first mounts with isOpen undefined/false
-                    onClose?.()
-                }
-                previousIsOpenRef.current = modalContext.isOpen
-            }
-        }, [modalContext?.isOpen])
-
-        const [rendered, setRendered] = useState(false)
-
-        useEffect(() => {
-            if (rendered && modalContext != null && modalContext.isOpen) {
-                if (modalContext.onTopOfStack) {
-                    onFocus?.()
-                } else {
-                    onBlur?.()
-                }
-            }
-
-            setRendered(true)
-        }, [modalContext?.onTopOfStack])
-
-        useImperativeHandle(
-            ref,
-            () => ({
-                afterLeave: () => modalContextRef.current?.afterLeave(),
-                close: () => modalContextRef.current?.close(),
-                emit: (...args: [string, ...unknown[]]) => modalContextRef.current?.emit(...args),
-                getChildModal: () => modalContextRef.current?.getChildModal(),
-                getParentModal: () => modalContextRef.current?.getParentModal(),
-                reload: (options?: ReloadOptions) => modalContextRef.current?.reload(options),
-                setOpen: (open: boolean) => modalContextRef.current?.setOpen(open),
-
-                get id() {
-                    return modalContextRef.current?.id
-                },
-                get index() {
-                    return modalContextRef.current?.index
-                },
-                get isOpen() {
-                    return modalContextRef.current?.isOpen
-                },
-                get config() {
-                    return modalContextRef.current?.config
-                },
-                get modalContext() {
-                    return modalContextRef.current
-                },
-                get onTopOfStack() {
-                    return modalContextRef.current?.onTopOfStack
-                },
-                get shouldRender() {
-                    return modalContextRef.current?.shouldRender
-                },
-            }),
-            [modalContext],
-        )
-
-        if (!modalContext?.shouldRender) {
-            return null
         }
 
-        return (
-            <>
-                {typeof children === 'function'
-                    ? children({
-                          // Spread props first so they can be overridden by built-in props
-                          ...modalContext.props,
-                          afterLeave: modalContext.afterLeave,
-                          close: modalContext.close,
-                          config,
-                          emit: modalContext.emit,
-                          getChildModal: modalContext.getChildModal,
-                          getParentModal: modalContext.getParentModal,
-                          id: modalContext.id,
-                          index: modalContext.index,
-                          isOpen: modalContext.isOpen,
-                          modalContext,
-                          onTopOfStack: modalContext.onTopOfStack,
-                          reload: modalContext.reload,
-                          setOpen: modalContext.setOpen,
-                          shouldRender: modalContext.shouldRender,
-                      })
-                    : children}
+        return modalContext?.registerEventListenersFromProps(props as Record<string, unknown>)
+    }, [name])
 
-                {/* Next modal in the stack */}
-                {nextIndex !== undefined && <ModalRenderer index={nextIndex} />}
-            </>
-        )
-    },
-)
+    // Store the latest modalContext in a ref to maintain reference
+    const modalContextRef = useRef(modalContext)
+
+    // Update the ref whenever modalContext changes
+    useEffect(() => {
+        modalContextRef.current = modalContext
+    }, [modalContext])
+
+    // Track previous isOpen value to only emit close when transitioning from true to false
+    const previousIsOpenRef = useRef<boolean | undefined>(undefined)
+
+    useEffect(() => {
+        if (modalContext != null) {
+            if (modalContext.isOpen) {
+                onSuccess?.()
+            } else if (previousIsOpenRef.current === true) {
+                // Only call onClose when transitioning from open to closed,
+                // not when the component first mounts with isOpen undefined/false
+                onClose?.()
+            }
+            previousIsOpenRef.current = modalContext.isOpen
+        }
+    }, [modalContext?.isOpen])
+
+    const [rendered, setRendered] = useState(false)
+
+    useEffect(() => {
+        if (rendered && modalContext != null && modalContext.isOpen) {
+            if (modalContext.onTopOfStack) {
+                onFocus?.()
+            } else {
+                onBlur?.()
+            }
+        }
+
+        setRendered(true)
+    }, [modalContext?.onTopOfStack])
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            afterLeave: () => modalContextRef.current?.afterLeave(),
+            close: () => modalContextRef.current?.close(),
+            emit: (...args: [string, ...unknown[]]) => modalContextRef.current?.emit(...args),
+            getChildModal: () => modalContextRef.current?.getChildModal(),
+            getParentModal: () => modalContextRef.current?.getParentModal(),
+            reload: (options?: ReloadOptions) => modalContextRef.current?.reload(options),
+            setOpen: (open: boolean) => modalContextRef.current?.setOpen(open),
+
+            get id() {
+                return modalContextRef.current?.id
+            },
+            get index() {
+                return modalContextRef.current?.index
+            },
+            get isOpen() {
+                return modalContextRef.current?.isOpen
+            },
+            get config() {
+                return modalContextRef.current?.config
+            },
+            get modalContext() {
+                return modalContextRef.current
+            },
+            get onTopOfStack() {
+                return modalContextRef.current?.onTopOfStack
+            },
+            get shouldRender() {
+                return modalContextRef.current?.shouldRender
+            },
+        }),
+        [modalContext],
+    )
+
+    if (!modalContext?.shouldRender) {
+        return null
+    }
+
+    return (
+        <>
+            {typeof children === 'function'
+                ? children({
+                      // Spread props first so they can be overridden by built-in props
+                      ...modalContext.props,
+                      afterLeave: modalContext.afterLeave,
+                      close: modalContext.close,
+                      config,
+                      emit: modalContext.emit,
+                      getChildModal: modalContext.getChildModal,
+                      getParentModal: modalContext.getParentModal,
+                      id: modalContext.id,
+                      index: modalContext.index,
+                      isOpen: modalContext.isOpen,
+                      modalContext,
+                      onTopOfStack: modalContext.onTopOfStack,
+                      reload: modalContext.reload,
+                      setOpen: modalContext.setOpen,
+                      shouldRender: modalContext.shouldRender,
+                  })
+                : children}
+
+            {/* Next modal in the stack */}
+            {nextIndex !== undefined && <ModalRenderer index={nextIndex} />}
+        </>
+    )
+})
 
 HeadlessModal.displayName = 'HeadlessModal'
 export default HeadlessModal

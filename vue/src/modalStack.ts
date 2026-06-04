@@ -1,8 +1,9 @@
-import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
-import { generateId, except, kebabCase, sameUrlPath } from './helpers'
-import { router, usePage, progress } from '@inertiajs/vue3'
 import { mergeDataIntoQueryString, type RequestPayload } from '@inertiajs/core'
+import { router, usePage, progress } from '@inertiajs/vue3'
 import { default as Axios, type AxiosResponse } from 'axios'
+import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
+
+import { generateId, except, kebabCase, sameUrlPath } from './helpers'
 import ModalRoot from './ModalRoot.vue'
 
 // Type definitions
@@ -415,7 +416,7 @@ export class Modal {
             data: method === 'get' ? {} : data,
             params: method === 'get' ? data : {},
             headers: {
-                ...(options.headers ?? {}),
+                ...options.headers,
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Inertia': 'true',
                 'X-Inertia-Partial-Component': this.response.component,
@@ -465,12 +466,7 @@ function pushLocalModal(
 }
 
 function isValidModalResponse(data: unknown): data is ModalResponseData {
-    return (
-        typeof data === 'object' &&
-        data !== null &&
-        'component' in data &&
-        typeof (data as ModalResponseData).component === 'string'
-    )
+    return typeof data === 'object' && data !== null && 'component' in data && typeof (data as ModalResponseData).component === 'string'
 }
 
 function updateBrowserUrl(url: string | undefined, useBrowserHistory: boolean, modalData?: ModalResponseData): void {
@@ -515,9 +511,7 @@ function pushFromResponseData(
         )
     }
 
-    return resolveComponent(responseData.component).then((component) =>
-        push(markRaw(component), responseData, config, onClose, onAfterLeave),
-    )
+    return resolveComponent(responseData.component).then((component) => push(markRaw(component), responseData, config, onClose, onAfterLeave))
 }
 
 function visit(

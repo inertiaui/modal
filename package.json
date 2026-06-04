@@ -9,8 +9,8 @@
         "dev:demo": "pnpm --filter demo-app dev",
         "build": "pnpm --filter @inertiaui/modal-vue build && pnpm --filter @inertiaui/modal-react build",
         "test": "pnpm --filter @inertiaui/modal-vue test --run && pnpm --filter @inertiaui/modal-react test --run",
-        "lint": "pnpm --filter @inertiaui/modal-vue eslint && pnpm --filter @inertiaui/modal-react eslint",
-        "format": "pnpm --filter @inertiaui/modal-vue prettier && pnpm --filter @inertiaui/modal-react prettier"
+        "lint": "oxlint --fix",
+        "format": "oxfmt"
     },
     "devDependencies": {
         "@heroicons/react": "^2.1.4",
@@ -21,20 +21,16 @@
         "@testing-library/react": "^16.0.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "@typescript-eslint/eslint-plugin": "^8.31.0",
-        "@typescript-eslint/parser": "^8.31.0",
         "@vitejs/plugin-react": "^6.0.0",
         "@vitejs/plugin-vue": "^6.0.4",
         "@vitest/coverage-v8": "^4.0.0",
         "@vitest/ui": "^4.0.0",
         "@vue/test-utils": "^2.4.6",
-        "axios": "^1.6.0",
         "clsx": "^2.1.1",
-        "eslint": "^9.26.0",
-        "eslint-plugin-vue": "^10.2.0",
         "happy-dom": "^20.0.0",
+        "oxfmt": "^0.52.0",
+        "oxlint": "^1.67.0",
         "laravel-vite-plugin": "^3.0.0",
-        "prettier": "^3.2.4",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "typescript": "^5.7.0",
@@ -42,7 +38,6 @@
         "vite-plugin-dts": "^5.0.0",
         "vitest": "^4.0.0",
         "vue": "^3.4.x",
-        "vue-eslint-parser": "^10.1.0",
         "vue-tsc": "^2.2.0"
     }
 }

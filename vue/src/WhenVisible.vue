@@ -79,14 +79,8 @@ onUnmounted(() => observer?.disconnect())
 </script>
 
 <template>
-    <component
-        :is="props.as"
-        ref="rootElement"
-    >
+    <component :is="props.as" ref="rootElement">
         <slot v-if="loaded"></slot>
-        <slot
-            v-else
-            name="fallback"
-        ></slot>
+        <slot v-else name="fallback"></slot>
     </component>
 </template>

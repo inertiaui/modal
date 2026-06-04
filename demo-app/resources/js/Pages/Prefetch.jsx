@@ -1,13 +1,14 @@
-import { useState, useCallback } from 'react';
-import { ModalLink } from '@inertiaui/modal-react';
-import Container from './Container';
+import { ModalLink } from '@inertiaui/modal-react'
+import { useState, useCallback } from 'react'
+
+import Container from './Container'
 
 export default function Prefetch() {
-    const [log, setLog] = useState([]);
+    const [log, setLog] = useState([])
 
     const push = useCallback((value) => {
-        setLog((prev) => [...prev, value]);
-    }, []);
+        setLog((prev) => [...prev, value])
+    }, [])
 
     return (
         <Container>
@@ -20,7 +21,7 @@ export default function Prefetch() {
                     href="/users/1/edit"
                     prefetch="hover"
                     data-testid="prefetch-hover"
-                    className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                    className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                     onPrefetching={() => push('prefetching')}
                     onPrefetched={() => push('prefetched')}
                     onSuccess={() => push('success')}
@@ -32,7 +33,7 @@ export default function Prefetch() {
                     href="/users/1/edit"
                     prefetch="click"
                     data-testid="prefetch-click"
-                    className="px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded-md"
+                    className="rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-600"
                     onPrefetching={() => push('click-prefetching')}
                     onPrefetched={() => push('click-prefetched')}
                     onSuccess={() => push('click-success')}
@@ -44,7 +45,7 @@ export default function Prefetch() {
                     href="/users/1/edit"
                     prefetch="mount"
                     data-testid="prefetch-mount"
-                    className="px-2 py-1 text-xs font-medium text-purple-600 bg-purple-100 rounded-md"
+                    className="rounded-md bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600"
                     onPrefetching={() => push('mount-prefetching')}
                     onPrefetched={() => push('mount-prefetched')}
                     onSuccess={() => push('mount-success')}
@@ -56,7 +57,7 @@ export default function Prefetch() {
                     href="/users/1/edit"
                     prefetch={['hover', 'click']}
                     data-testid="prefetch-multiple"
-                    className="px-2 py-1 text-xs font-medium text-orange-600 bg-orange-100 rounded-md"
+                    className="rounded-md bg-orange-100 px-2 py-1 text-xs font-medium text-orange-600"
                     onPrefetching={() => push('multi-prefetching')}
                     onPrefetched={() => push('multi-prefetched')}
                     onSuccess={() => push('multi-success')}
@@ -68,7 +69,7 @@ export default function Prefetch() {
                     href="/users/1/edit"
                     prefetch={true}
                     data-testid="prefetch-true"
-                    className="px-2 py-1 text-xs font-medium text-teal-600 bg-teal-100 rounded-md"
+                    className="rounded-md bg-teal-100 px-2 py-1 text-xs font-medium text-teal-600"
                     onPrefetching={() => push('true-prefetching')}
                     onPrefetched={() => push('true-prefetched')}
                     onSuccess={() => push('true-success')}
@@ -77,5 +78,5 @@ export default function Prefetch() {
                 </ModalLink>
             </div>
         </Container>
-    );
+    )
 }

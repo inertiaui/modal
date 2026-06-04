@@ -28,9 +28,6 @@
         "dev": "NODE_ENV=development vite build --watch",
         "build": "vite build",
         "build-watch": "NODE_ENV=development vite build --watch",
-        "lint": "eslint src/",
-        "eslint": "eslint src/",
-        "prettier": "prettier -w src/",
         "test": "vitest"
     },
     "dependencies": {

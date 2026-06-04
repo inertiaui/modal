@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
-import CloseButton from './CloseButton.vue'
 import { createFocusTrap, onEscapeKey, animate, cancelAnimations } from '@inertiaui/vanilla'
+import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
+
+import CloseButton from './CloseButton.vue'
 import { getMaxWidthClass } from './constants'
 
 const props = defineProps({
@@ -14,8 +15,8 @@ const props = defineProps({
 const emit = defineEmits(['after-leave'])
 
 const isRendered = ref(false)
-const isVisible = ref(false)  // For backdrop sync
-const entered = ref(false)    // After animation completes
+const isVisible = ref(false) // For backdrop sync
+const entered = ref(false) // After animation completes
 const wrapperRef = ref(null)
 const dialogRef = ref(null)
 const nativeWrapperRef = ref(null)
@@ -26,19 +27,19 @@ let cleanupEscapeKey = null
 const maxWidthClass = computed(() => getMaxWidthClass(props.config.maxWidth))
 
 // Get translate value based on position
-const getTranslateX = () => props.config.position === 'left' ? '-100%' : '100%'
+const getTranslateX = () => (props.config.position === 'left' ? '-100%' : '100%')
 
 // ============ Animation handlers using Web Animations API ============
 
 async function animateIn(element) {
     if (!element) return
 
-    isVisible.value = true  // Trigger backdrop immediately
+    isVisible.value = true // Trigger backdrop immediately
     const translateX = getTranslateX()
 
     await animate(element, [
         { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
-        { transform: 'translate3d(0, 0, 0)', opacity: 1 }
+        { transform: 'translate3d(0, 0, 0)', opacity: 1 },
     ])
 
     entered.value = true
@@ -48,12 +49,12 @@ async function animateIn(element) {
 async function animateOut(element) {
     if (!element) return
 
-    isVisible.value = false  // Trigger backdrop fade out immediately
+    isVisible.value = false // Trigger backdrop fade out immediately
     const translateX = getTranslateX()
 
     await animate(element, [
         { transform: 'translate3d(0, 0, 0)', opacity: 1 },
-        { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 }
+        { transform: `translate3d(${translateX}, 0, 0)`, opacity: 0 },
     ])
 
     isRendered.value = false
@@ -244,7 +245,7 @@ watch(
         @cancel="handleCancel"
         @click="handleDialogClick"
     >
-        <div class="im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden">
+        <div class="im-slideover-container fixed inset-0 overflow-x-hidden overflow-y-auto">
             <div
                 class="im-slideover-positioner flex min-h-full items-center"
                 :class="{
@@ -254,28 +255,14 @@ watch(
             >
                 <div
                     ref="nativeWrapperRef"
-                    :class="[
-                        'im-slideover-wrapper w-full transition-[filter] duration-300',
-                        modalContext.onTopOfStack ? '' : 'blur-xs',
-                        maxWidthClass,
-                    ]"
+                    :class="['im-slideover-wrapper w-full transition-[filter] duration-300', modalContext.onTopOfStack ? '' : 'blur-xs', maxWidthClass]"
                 >
-                    <div
-                        class="im-slideover-content relative"
-                        :data-inertiaui-modal-entered="entered"
-                        :class="[config.paddingClasses, config.panelClasses]"
-                    >
-                        <div
-                            v-if="config.closeButton"
-                            class="absolute right-0 top-0 pr-3 pt-3"
-                        >
+                    <div class="im-slideover-content relative" :data-inertiaui-modal-entered="entered" :class="[config.paddingClasses, config.panelClasses]">
+                        <div v-if="config.closeButton" class="absolute top-0 right-0 pt-3 pr-3">
                             <CloseButton />
                         </div>
 
-                        <slot
-                            :modal-context="modalContext"
-                            :config="config"
-                        />
+                        <slot :modal-context="modalContext" :config="config" />
                     </div>
                 </div>
             </div>
@@ -283,11 +270,7 @@ watch(
     </dialog>
 
     <!-- Non-native dialog mode -->
-    <div
-        v-else-if="isRendered"
-        class="im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden"
-        @mousedown.self="handleClickOutside"
-    >
+    <div v-else-if="isRendered" class="im-slideover-container fixed inset-0 z-40 overflow-x-hidden overflow-y-auto" @mousedown.self="handleClickOutside">
         <div
             class="im-slideover-positioner flex min-h-full items-center"
             :class="{
@@ -300,30 +283,16 @@ watch(
                 ref="wrapperRef"
                 role="dialog"
                 aria-modal="true"
-                :class="[
-                    'im-slideover-wrapper w-full transition-[filter] duration-300',
-                    modalContext.onTopOfStack ? '' : 'blur-xs',
-                    maxWidthClass,
-                ]"
+                :class="['im-slideover-wrapper w-full transition-[filter] duration-300', modalContext.onTopOfStack ? '' : 'blur-xs', maxWidthClass]"
             >
                 <span class="sr-only">Dialog</span>
 
-                <div
-                    class="im-slideover-content relative"
-                    :data-inertiaui-modal-entered="entered"
-                    :class="[config.paddingClasses, config.panelClasses]"
-                >
-                    <div
-                        v-if="config.closeButton"
-                        class="absolute right-0 top-0 pr-3 pt-3"
-                    >
+                <div class="im-slideover-content relative" :data-inertiaui-modal-entered="entered" :class="[config.paddingClasses, config.panelClasses]">
+                    <div v-if="config.closeButton" class="absolute top-0 right-0 pt-3 pr-3">
                         <CloseButton />
                     </div>
 
-                    <slot
-                        :modal-context="modalContext"
-                        :config="config"
-                    />
+                    <slot :modal-context="modalContext" :config="config" />
                 </div>
             </div>
         </div>

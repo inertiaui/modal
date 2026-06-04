@@ -1,8 +1,9 @@
-import { Modal, useModalStack } from '@inertiaui/modal-react';
-import Container from './Container';
+import { Modal, useModalStack } from '@inertiaui/modal-react'
+
+import Container from './Container'
 
 export default function LocalWithProps() {
-    const { visitModal } = useModalStack();
+    const { visitModal } = useModalStack()
 
     function openWithProps() {
         visitModal('#local-props', {
@@ -10,7 +11,7 @@ export default function LocalWithProps() {
                 message: 'Hello from props!',
                 count: 42,
             },
-        });
+        })
     }
 
     return (
@@ -34,5 +35,5 @@ export default function LocalWithProps() {
                 )}
             </Modal>
         </>
-    );
+    )
 }

@@ -1,10 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
-import { ModalStackProvider, useModalStack, modalPropNames, initFromPageProps } from '../src/ModalRoot'
-import axios from 'axios'
 import { router } from '@inertiajs/react'
 import { usePage } from '@inertiajs/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
+import axios from 'axios'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
 import { generateIdUsing } from '../src/helpers'
+import { ModalStackProvider, useModalStack, modalPropNames, initFromPageProps } from '../src/ModalRoot'
 
 vi.mock('@inertiajs/react', () => ({
     router: {

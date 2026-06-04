@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, onUnmounted, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
-import { useModalStack } from './modalStack'
-import ModalRenderer from './ModalRenderer.vue'
 import { default as Axios } from 'axios'
+import { onMounted, onUnmounted, watch } from 'vue'
+
 import { sameUrlPath } from './helpers'
+import ModalRenderer from './ModalRenderer.vue'
+import { useModalStack } from './modalStack'
 
 const modalStack = useModalStack()
 const $page = usePage()
@@ -127,9 +128,7 @@ watch(
         // If there's no previous modal but we have modals in the stack (opened via XHR),
         // check if the new modal matches any open modal and update its props
         if (!previousModal && modalStack.stack.value.length > 0) {
-            const existingModal = modalStack.stack.value.find(
-                (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url),
-            )
+            const existingModal = modalStack.stack.value.find((m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url))
             if (existingModal) {
                 existingModal.updateProps(newModal.props ?? {})
             }
@@ -141,8 +140,5 @@ watch(
 <template>
     <slot />
 
-    <ModalRenderer
-        v-if="modalStack.stack.value.length"
-        :index="0"
-    />
+    <ModalRenderer v-if="modalStack.stack.value.length" :index="0" />
 </template>

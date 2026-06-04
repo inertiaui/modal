@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useCallback, useMemo, ReactNode, SyntheticEvent, MouseEvent } from 'react'
-import CloseButton from './CloseButton'
-import clsx from 'clsx'
 import { createFocusTrap, onEscapeKey, animate, cancelAnimations } from '@inertiaui/vanilla'
+import clsx from 'clsx'
+import { useState, useEffect, useRef, useCallback, useMemo, ReactNode, SyntheticEvent, MouseEvent } from 'react'
+
+import CloseButton from './CloseButton'
 import { getMaxWidthClass } from './constants'
 import type { Modal } from './types'
 
@@ -26,8 +27,8 @@ interface SlideoverContentProps {
 
 const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAfterLeave, children }: SlideoverContentProps) => {
     const [isRendered, setIsRendered] = useState(false)
-    const [isVisible, setIsVisible] = useState(false)  // For backdrop sync
-    const [entered, setEntered] = useState(false)      // After animation completes
+    const [isVisible, setIsVisible] = useState(false) // For backdrop sync
+    const [entered, setEntered] = useState(false) // After animation completes
     const wrapperRef = useRef<HTMLDivElement>(null)
     const dialogRef = useRef<HTMLDialogElement>(null)
     const nativeWrapperRef = useRef<HTMLDivElement>(null)
@@ -240,12 +241,9 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
     // ============ Render ============
 
     const renderContent = () => (
-        <div
-            className={`im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`}
-            data-inertiaui-modal-entered={entered}
-        >
+        <div className={`im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`} data-inertiaui-modal-entered={entered}>
             {config.closeButton && (
-                <div className="absolute right-0 top-0 pr-3 pt-3">
+                <div className="absolute top-0 right-0 pt-3 pr-3">
                     <CloseButton onClick={modalContext.close} />
                 </div>
             )}
@@ -268,7 +266,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
                 onCancel={handleCancel}
                 onClick={handleDialogClick}
             >
-                <div className="im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden">
+                <div className="im-slideover-container fixed inset-0 overflow-x-hidden overflow-y-auto">
                     <div
                         className={clsx('im-slideover-positioner flex min-h-full items-center', {
                             'justify-start rtl:justify-end': config?.position === 'left',
@@ -277,7 +275,11 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
                     >
                         <div
                             ref={nativeWrapperRef}
-                            className={clsx('im-slideover-wrapper w-full transition-[filter] duration-300', modalContext.onTopOfStack ? '' : 'blur-xs', maxWidthClass)}
+                            className={clsx(
+                                'im-slideover-wrapper w-full transition-[filter] duration-300',
+                                modalContext.onTopOfStack ? '' : 'blur-xs',
+                                maxWidthClass,
+                            )}
                         >
                             {renderContent()}
                         </div>
@@ -291,10 +293,7 @@ const SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal,
     if (!isRendered) return null
 
     return (
-        <div
-            className="im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden"
-            onMouseDown={handleClickOutside}
-        >
+        <div className="im-slideover-container fixed inset-0 z-40 overflow-x-hidden overflow-y-auto" onMouseDown={handleClickOutside}>
             <div
                 className={clsx('im-slideover-positioner flex min-h-full items-center', {
                     'justify-start rtl:justify-end': config?.position === 'left',

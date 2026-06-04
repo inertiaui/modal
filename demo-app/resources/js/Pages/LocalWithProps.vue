@@ -1,7 +1,8 @@
 <script setup>
-import Container from './Container.vue'
 import { Modal, useModal, visitModal } from '@inertiaui/modal-vue'
 import { ref } from 'vue'
+
+import Container from './Container.vue'
 
 const receivedMessage = ref('')
 
@@ -20,9 +21,7 @@ function openWithProps() {
         <div class="flex flex-col items-start gap-4">
             <h2 class="text-lg font-medium text-gray-900">Local Modal with Props</h2>
 
-            <button @click="openWithProps" data-testid="open-with-props">
-                Open Local Modal with Props
-            </button>
+            <button @click="openWithProps" data-testid="open-with-props">Open Local Modal with Props</button>
 
             <p data-testid="received-message">{{ receivedMessage }}</p>
         </div>
