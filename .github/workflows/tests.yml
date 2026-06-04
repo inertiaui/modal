@@ -19,14 +19,16 @@ on:
       - "demo-app/phpunit.xml.dist"
       - ".github/workflows/tests.yml"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   tests:
     name: Pest L${{ matrix.laravel }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}, Native Dialog ${{ matrix.native_dialog }}
     timeout-minutes: 15
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
 
     strategy:
       fail-fast: false
@@ -45,6 +47,11 @@ jobs:
       MATRIX_STACK: ${{ matrix.stack }}
 
     steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:

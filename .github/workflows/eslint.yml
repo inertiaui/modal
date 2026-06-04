@@ -19,8 +19,7 @@ on:
       - "pnpm-workspace.yaml"
       - ".github/workflows/eslint.yml"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   eslint:
@@ -31,6 +30,11 @@ jobs:
       contents: write
 
     steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
