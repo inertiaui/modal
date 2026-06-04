@@ -1,0 +1,18 @@
+// Minimal Inertia + Inertia Modal bootstrap for the consumer smoke test.
+//
+// Deliberately tiny: the duplicate-Inertia bug is about how the package and its
+// peers resolve and bundle in a real customer install, not about the starter's
+// own UI. Modal 2.x wires the modal root through the renderApp() helper, exactly
+// as the installation docs show.
+import '../css/app.css'
+import { createInertiaApp } from '@inertiajs/react'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import { createRoot } from 'react-dom/client'
+import { renderApp } from '@inertiaui/modal-react'
+
+createInertiaApp({
+    resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
+    setup({ el, App, props }) {
+        createRoot(el).render(renderApp(App, props))
+    },
+})
