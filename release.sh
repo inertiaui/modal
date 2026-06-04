@@ -115,10 +115,10 @@ read -r -p "Proceed? (y/N) " REPLY
 
 # ── bump versions ───────────────────────────────────────────────────────
 info "Bumping vue/package.json to $VERSION..."
-(cd vue && pnpm version "$VERSION" --no-git-tag-version --allow-same-version >/dev/null)
+(cd vue && pnpm version "$VERSION" --no-git-tag-version --no-git-checks --allow-same-version >/dev/null)
 
 info "Bumping react/package.json to $VERSION..."
-(cd react && pnpm version "$VERSION" --no-git-tag-version --allow-same-version >/dev/null)
+(cd react && pnpm version "$VERSION" --no-git-tag-version --no-git-checks --allow-same-version >/dev/null)
 
 # ── build ───────────────────────────────────────────────────────────────
 info "Running composer build (quality + lint + dist)..."
