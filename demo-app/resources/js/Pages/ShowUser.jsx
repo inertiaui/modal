@@ -1,6 +1,7 @@
-import { ModalLink } from '@inertiaui/modal-react';
-import Container from './Container';
-import * as InertiaReact from '@inertiajs/react';
+import * as InertiaReact from '@inertiajs/react'
+import { ModalLink } from '@inertiaui/modal-react'
+
+import Container from './Container'
 
 export default function UserProfile({ user, deferred }) {
     return (
@@ -10,24 +11,23 @@ export default function UserProfile({ user, deferred }) {
                 <p className="text-xl text-gray-500">{user.email}</p>
             </div>
 
-            {
-                InertiaReact.Deferred ?
-                    <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
-                        <p data-testid="deferred">
-                            {deferred}
-                        </p>
-                    </InertiaReact.Deferred> : <p data-testid="deferred"> No Deferred Component</p>
-            }
+            {InertiaReact.Deferred ? (
+                <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
+                    <p data-testid="deferred">{deferred}</p>
+                </InertiaReact.Deferred>
+            ) : (
+                <p data-testid="deferred"> No Deferred Component</p>
+            )}
 
             <ModalLink
                 navigate
                 as="button"
                 data-testid={`edit-user-${user.id}`}
                 href={`/users/${user.id}/edit`}
-                className="mt-4 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                className="mt-4 rounded-md bg-indigo-100 px-3 py-2 text-sm font-medium text-indigo-600"
             >
                 Edit
             </ModalLink>
-        </Container >
-    );
-};
+        </Container>
+    )
+}

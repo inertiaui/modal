@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { useModalStack, modalPropNames } from './../src/modalStack'
-import axios from 'axios'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
+import axios from 'axios'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
 import { generateIdUsing } from '../src/helpers'
+import { useModalStack, modalPropNames } from './../src/modalStack'
 
 vi.mock('@inertiajs/vue3', () => ({
     router: {
@@ -316,7 +317,16 @@ describe('modalStack', () => {
 
     describe('modalPropNames', () => {
         it('should contain the correct prop names', () => {
-            expect(modalPropNames).toEqual(['closeButton', 'closeExplicitly', 'closeOnClickOutside', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover'])
+            expect(modalPropNames).toEqual([
+                'closeButton',
+                'closeExplicitly',
+                'closeOnClickOutside',
+                'maxWidth',
+                'paddingClasses',
+                'panelClasses',
+                'position',
+                'slideover',
+            ])
         })
     })
 })

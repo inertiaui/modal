@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
-import { ModalLink, putConfig } from '@inertiaui/modal-react';
-import Container from './Container';
+import { ModalLink, putConfig } from '@inertiaui/modal-react'
+import { useEffect } from 'react'
+
+import Container from './Container'
 
 export default function CloseOnClickOutside() {
     // Disable native dialog for this test page so we can properly test click-outside
     useEffect(() => {
         putConfig({ useNativeDialog: false })
-    }, []);
+    }, [])
     return (
         <Container>
             <div className="flex flex-col items-start gap-4">
@@ -15,7 +16,7 @@ export default function CloseOnClickOutside() {
                 <ModalLink
                     href="/users/1/edit"
                     data-testid="open-with-click-outside"
-                    className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                    className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                 >
                     Open Modal (default - closes on click outside)
                 </ModalLink>
@@ -24,7 +25,7 @@ export default function CloseOnClickOutside() {
                     href="/users/1/edit"
                     closeOnClickOutside={false}
                     data-testid="open-without-click-outside"
-                    className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                    className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                 >
                     Open Modal (closeOnClickOutside=false)
                 </ModalLink>
@@ -33,7 +34,7 @@ export default function CloseOnClickOutside() {
                     href="/users/1/edit"
                     slideover
                     data-testid="open-slideover-with-click-outside"
-                    className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                    className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                 >
                     Open Slideover (default - closes on click outside)
                 </ModalLink>
@@ -43,11 +44,11 @@ export default function CloseOnClickOutside() {
                     slideover
                     closeOnClickOutside={false}
                     data-testid="open-slideover-without-click-outside"
-                    className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                    className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                 >
                     Open Slideover (closeOnClickOutside=false)
                 </ModalLink>
             </div>
         </Container>
-    );
+    )
 }

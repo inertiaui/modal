@@ -1,12 +1,11 @@
-import './bootstrap';
-import '../css/app.css';
-
-import { createRoot } from 'react-dom/client';
-import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import './bootstrap'
+import '../css/app.css'
+import { createInertiaApp } from '@inertiajs/react'
 import { putConfig, renderApp } from '@inertiaui/modal-react'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import { createRoot } from 'react-dom/client'
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 // Configure native dialog mode (defaults to true if not set)
 if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
@@ -17,16 +16,14 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
     setup({ el, App, props }) {
-        const root = createRoot(el);
+        const root = createRoot(el)
 
-        root.render(
-            renderApp(App, props)
-        );
+        root.render(renderApp(App, props))
     },
     progress: {
         color: '#4B5563',
     },
-});
+})
 
 if (window.location.pathname === '/props-from-config') {
     putConfig({
@@ -38,6 +35,6 @@ if (window.location.pathname === '/props-from-config') {
             paddingClasses: 'p-8',
             panelClasses: 'min-h-screen bg-red-100',
             position: 'left',
-        }
+        },
     })
 }

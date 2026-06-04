@@ -5,5 +5,5 @@ export default function Data({ message }) {
         <Modal>
             <p data-testid="message">{message}</p>
         </Modal>
-    );
+    )
 }

@@ -1,16 +1,17 @@
-import { Modal, ModalLink } from '@inertiaui/modal-react';
-import Container from './Container';
-import { useRef } from 'react';
+import { Modal, ModalLink } from '@inertiaui/modal-react'
+import { useRef } from 'react'
+
+import Container from './Container'
 
 export default function Local() {
-    const modalRef = useRef(null);
+    const modalRef = useRef(null)
 
     function closeModal() {
-        modalRef.current.close();
+        modalRef.current.close()
     }
 
     function alertModalId() {
-        alert(modalRef.current.id);
+        alert(modalRef.current.id)
     }
 
     return (
@@ -18,26 +19,17 @@ export default function Local() {
             <Container>
                 <div className="flex justify-between">
                     <h2 className="text-lg font-medium text-gray-900">Local</h2>
-                    <ModalLink
-                        href="#local"
-                        className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
-                    >
+                    <ModalLink href="#local" className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600">
                         Open Local Modal
                     </ModalLink>
                 </div>
             </Container>
             <Modal name="local" ref={modalRef}>
                 This is a local modal
-                <ModalLink href="/roles/create">
-                    Create Role
-                </ModalLink>
-                <button onClick={closeModal}>
-                    Close Modal through Ref
-                </button>
-                <button onClick={alertModalId}>
-                    Alert Modal ID
-                </button>
+                <ModalLink href="/roles/create">Create Role</ModalLink>
+                <button onClick={closeModal}>Close Modal through Ref</button>
+                <button onClick={alertModalId}>Alert Modal ID</button>
             </Modal>
         </>
-    );
+    )
 }

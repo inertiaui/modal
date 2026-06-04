@@ -1,54 +1,54 @@
-import React, { useEffect, useRef } from 'react';
-import { Link, useForm } from '@inertiajs/react';
-import { ModalLink } from '@inertiaui/modal-react';
-import Container from './Container';
-import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
-import * as InertiaReact from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react'
+import * as InertiaReact from '@inertiajs/react'
+import { ModalLink } from '@inertiaui/modal-react'
+import React, { useEffect, useRef } from 'react'
+
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx'
+import Container from './Container'
 
 export default function Users({ users, random, navigate, deferred }) {
     // Track component re-renders for testing (#204)
-    const isFirstRender = useRef(true);
+    const isFirstRender = useRef(true)
     useEffect(() => {
         if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
+            isFirstRender.current = false
+            return
         }
-        window.__pageUpdateCount = (window.__pageUpdateCount ?? 0) + 1;
-    });
+        window.__pageUpdateCount = (window.__pageUpdateCount ?? 0) + 1
+    })
 
     const alertGreeting = (greeting) => {
-        alert(greeting);
-    };
+        alert(greeting)
+    }
 
-    const testRedirectBackForm = useForm({});
-    const testModalHeaderForm = useForm({});
+    const testRedirectBackForm = useForm({})
+    const testModalHeaderForm = useForm({})
 
     const testRedirectBack = () => {
-        testRedirectBackForm.post('/test-redirect-back');
-    };
+        testRedirectBackForm.post('/test-redirect-back')
+    }
 
     const testModalHeaderCheck = () => {
-        testModalHeaderForm.post('/test-modal-header-check');
-    };
+        testModalHeaderForm.post('/test-modal-header-check')
+    }
 
     return (
         <Container>
             <div className="flex justify-between">
                 <h2 className="text-lg font-medium text-gray-900">Users</h2>
-                {
-                    InertiaReact.Deferred ?
-                        <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
-                            <p data-testid="deferred">
-                                {deferred}
-                            </p>
-                        </InertiaReact.Deferred> : <p data-testid="deferred"> No Deferred Component</p>
-                }
+                {InertiaReact.Deferred ? (
+                    <InertiaReact.Deferred data="deferred" fallback={<div>Loading...</div>}>
+                        <p data-testid="deferred">{deferred}</p>
+                    </InertiaReact.Deferred>
+                ) : (
+                    <p data-testid="deferred"> No Deferred Component</p>
+                )}
             </div>
-            <div className="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
+            <div className="mt-6 overflow-hidden bg-white shadow sm:rounded-md">
                 <ul className="divide-y divide-gray-200">
-                    {users.map(user => (
-                        <li key={user.id} className="flex items-center justify-between py-4 px-6 hover:bg-gray-50">
-                            <div className="flex items-center w-full">
+                    {users.map((user) => (
+                        <li key={user.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50">
+                            <div className="flex w-full items-center">
                                 <div>
                                     <div className="text-sm font-medium text-gray-900">{user.name}</div>
                                     <div className="text-sm text-gray-500">{user.email}</div>
@@ -57,7 +57,7 @@ export default function Users({ users, random, navigate, deferred }) {
                                     <Link
                                         data-testid={`view-user-${user.id}`}
                                         href={`/users/${user.id}`}
-                                        className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                        className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                                     >
                                         View
                                     </Link>
@@ -66,7 +66,7 @@ export default function Users({ users, random, navigate, deferred }) {
                                         navigate={navigate}
                                         data-testid={`edit-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
-                                        className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                        className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                                         onUserGreets={alertGreeting}
                                     >
                                         Edit
@@ -76,7 +76,7 @@ export default function Users({ users, random, navigate, deferred }) {
                                         navigate={navigate}
                                         data-testid={`slideover-user-${user.id}`}
                                         href={`/users/${user.id}/edit`}
-                                        className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                        className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                                         onUserGreets={alertGreeting}
                                     >
                                         Slideover
@@ -94,39 +94,27 @@ export default function Users({ users, random, navigate, deferred }) {
                 <button
                     data-testid="test-redirect-back"
                     onClick={testRedirectBack}
-                    className="px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
+                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white"
                 >
                     Test Redirect Back
                 </button>
                 <button
                     data-testid="test-modal-header-check"
                     onClick={testModalHeaderCheck}
-                    className="px-3 py-2 text-sm font-medium text-white bg-orange-600 rounded-md"
+                    className="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white"
                 >
                     Check Modal Header
                 </button>
-                <Link
-                    data-testid="nav-visit"
-                    href="/visit"
-                    className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md"
-                >
+                <Link data-testid="nav-visit" href="/visit" className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white">
                     Go to Visit Page
                 </Link>
-                <ModalLink
-                    navigate={navigate}
-                    href="/modal-with-modal-base"
-                    className="px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-md"
-                >
+                <ModalLink navigate={navigate} href="/modal-with-modal-base" className="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white">
                     Modal with Modal Base
                 </ModalLink>
-                <ModalLink
-                    navigate={navigate}
-                    href="/modal-invalid-response"
-                    className="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md"
-                >
+                <ModalLink navigate={navigate} href="/modal-invalid-response" className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white">
                     Invalid Response
                 </ModalLink>
             </div>
         </Container>
-    );
-};
+    )
+}

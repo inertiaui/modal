@@ -6,9 +6,9 @@
 // as the installation docs show.
 import '../css/app.css'
 import { createInertiaApp } from '@inertiajs/vue3'
+import { renderApp } from '@inertiaui/modal-vue'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createApp } from 'vue'
-import { renderApp } from '@inertiaui/modal-vue'
 
 createInertiaApp({
     resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob('./pages/**/*.vue')),

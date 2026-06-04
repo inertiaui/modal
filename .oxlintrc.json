@@ -1,0 +1,14 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["typescript", "react", "vue", "unicorn"],
+    "env": { "builtin": true, "browser": true, "es2024": true },
+    "ignorePatterns": ["**/dist/**", "**/node_modules/**", "**/vendor/**", "**/bootstrap/ssr/**", "**/public/build/**", "**/*.d.ts"],
+    "rules": {
+        "react/react-in-jsx-scope": "off",
+        "react/no-unescaped-entities": "off",
+        "react-hooks/exhaustive-deps": "off",
+        "no-unused-vars": "off",
+        "no-unused-expressions": "off",
+        "no-empty-pattern": "off"
+    }
+}

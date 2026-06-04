@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import { ModalLink } from '@inertiaui/modal-react';
-import Container from './Container';
+import { ModalLink } from '@inertiaui/modal-react'
+import { useState } from 'react'
+
+import Container from './Container'
 
 export default function Events({ navigate }) {
-    const [log, setLog] = useState([]);
+    const [log, setLog] = useState([])
 
     const addToLog = (event) => {
-        setLog(prevLog => [...prevLog, event]);
-    };
+        setLog((prevLog) => [...prevLog, event])
+    }
 
     return (
         <Container>
@@ -18,7 +19,7 @@ export default function Events({ navigate }) {
             <ModalLink
                 data-testid="modal-link"
                 href="/users/1/edit"
-                className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                 navigate={navigate}
                 onClose={() => addToLog('close')}
                 onFocus={() => addToLog('focus')}
@@ -30,5 +31,5 @@ export default function Events({ navigate }) {
                 Open Modal
             </ModalLink>
         </Container>
-    );
+    )
 }

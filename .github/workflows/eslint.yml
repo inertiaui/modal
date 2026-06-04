@@ -1,59 +1,62 @@
-name: Analyse with ESLint
+name: JS Quality and Style
 
 on:
-  pull_request:
-    branches: [develop]
-  push:
-    paths:
-      - "**.js"
-      - "**.jsx"
-      - "**.vue"
-      - "react/.eslintrc.cjs"
-      - "react/.prettierrc"
-      - "react/package.json"
-      - "vue/.eslintrc.cjs"
-      - "vue/.prettierrc"
-      - "vue/package.json"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - ".github/workflows/eslint.yml"
+    push:
+        paths:
+            - '**.js'
+            - '**.jsx'
+            - '**.ts'
+            - '**.tsx'
+            - '**.vue'
+            - '**.mjs'
+            - 'react/package.json'
+            - 'react/tsconfig.json'
+            - 'vue/package.json'
+            - 'vue/tsconfig.json'
+            - '.oxlintrc.json'
+            - '.oxfmtrc.json'
+            - '.github/workflows/eslint.yml'
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
-  eslint:
-    name: ESLint Code Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
+    js-quality:
+        name: JS Quality and Style
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        permissions:
+            contents: write
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.head_ref }}
+        steps:
+            - name: Harden runner
+              uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+              with:
+                  egress-policy: audit
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v6.0.8
+            - name: Checkout code
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  ref: ${{ github.head_ref }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: lts/*
-          cache: pnpm
+            - name: Install pnpm
+              uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v6.0.8
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+            - name: Setup Node.js
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+              with:
+                  node-version: lts/*
+                  cache: pnpm
 
-      - name: Run ESLint
-        run: |
-          pnpm --filter @inertiaui/modal-vue run eslint
-          pnpm --filter @inertiaui/modal-react run eslint
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
-        with:
-          commit_message: Fix styling
+            - name: Run Oxlint (auto-fix)
+              run: pnpm run lint
+
+            - name: Run Oxfmt (auto-fix)
+              run: pnpm run format
+
+            - name: Commit changes
+              uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
+              with:
+                  commit_message: Fix styling

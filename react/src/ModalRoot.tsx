@@ -1,11 +1,12 @@
-import { createElement, useEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
-import { default as Axios, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { except, kebabCase, generateId, sameUrlPath } from './helpers'
-import { router, usePage, progress } from '@inertiajs/react'
 import { mergeDataIntoQueryString, type RequestPayload } from '@inertiajs/core'
+import { router, usePage, progress } from '@inertiajs/react'
+import { default as Axios, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import { createElement, useEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
 import { createContext, useContext } from 'react'
-import ModalRenderer from './ModalRenderer'
+
 import { getConfig } from './config'
+import { except, kebabCase, generateId, sameUrlPath } from './helpers'
+import ModalRenderer from './ModalRenderer'
 import type {
     Modal,
     ModalConfig,
@@ -380,7 +381,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
                 data: method === 'get' ? {} : data,
                 params: method === 'get' ? data : {},
                 headers: {
-                    ...(options.headers ?? {}),
+                    ...options.headers,
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': 'true',
                     'X-Inertia-Partial-Component': this.response.component,
@@ -410,12 +411,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
     }
 
     const isValidModalResponse = (data: unknown): data is ModalResponseData => {
-        return (
-            typeof data === 'object' &&
-            data !== null &&
-            'component' in data &&
-            typeof (data as ModalResponseData).component === 'string'
-        )
+        return typeof data === 'object' && data !== null && 'component' in data && typeof (data as ModalResponseData).component === 'string'
     }
 
     const pushFromResponseData = (
@@ -437,9 +433,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
             )
         }
 
-        return resolveComponent(responseData.component).then((component) =>
-            push(component, responseData, config, onClose, onAfterLeave),
-        )
+        return resolveComponent(responseData.component).then((component) => push(component, responseData, config, onClose, onAfterLeave))
     }
 
     const loadDeferredProps = (modal: Modal) => {
@@ -704,10 +698,7 @@ export const renderApp = (App: ComponentType<{ children: (props: RenderInertiaAp
                 return Component.layout
                     .slice()
                     .reverse()
-                    .reduce(
-                        (acc, Layout) => createElement(Layout as ComponentType<Record<string, unknown>>, props, acc),
-                        child as ReactNode,
-                    )
+                    .reduce((acc, Layout) => createElement(Layout as ComponentType<Record<string, unknown>>, props, acc), child as ReactNode)
             }
 
             return child
@@ -866,9 +857,7 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
         // If there's no previous modal but we have modals in the stack (opened via XHR),
         // check if the new modal matches any open modal and update its props
         if (!previousModal && context && context.stack.length > 0) {
-            const existingModal = context.stack.find(
-                (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url),
-            )
+            const existingModal = context.stack.find((m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url))
             if (existingModal) {
                 existingModal.updateProps(newModal.props ?? {})
             }

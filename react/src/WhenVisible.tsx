@@ -1,7 +1,8 @@
 // See: https://github.com/inertiajs/inertia/blob/48bcd21fb7daf467d0df1bfde2408f161f94a579/packages/react/src/WhenVisible.ts
 import { createElement, useCallback, useEffect, useRef, useState, ReactNode, ElementType } from 'react'
-import useModal from './useModal'
+
 import type { ReloadOptions } from './types'
+import useModal from './useModal'
 
 interface WhenVisibleProps {
     children: ReactNode

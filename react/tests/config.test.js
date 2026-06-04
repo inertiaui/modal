@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+
 import { resetConfig, putConfig, getConfig } from '../src/config'
 
 describe('Config Module', () => {

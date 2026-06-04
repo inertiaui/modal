@@ -1,4 +1,4 @@
-import { Modal } from '@inertiaui/modal-react';
+import { Modal } from '@inertiaui/modal-react'
 
 export default function Slideover() {
     return (
@@ -15,5 +15,5 @@ export default function Slideover() {
                 <h2 className="text-lg font-medium text-gray-900">Slideover with Props</h2>
             </div>
         </Modal>
-    );
+    )
 }

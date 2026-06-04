@@ -1,4 +1,4 @@
 packages:
-  - vue
-  - react
-  - demo-app
+    - vue
+    - react
+    - demo-app

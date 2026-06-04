@@ -1,27 +1,28 @@
-import { Modal, ModalLink, useModalStack } from '@inertiaui/modal-react';
-import Container from './Container';
-import { Link, useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react'
+import { Modal, ModalLink, useModalStack } from '@inertiaui/modal-react'
+
+import Container from './Container'
 
 export default function Visit({ navigate }) {
-    const { visitModal } = useModalStack();
-    const testRedirectBackForm = useForm({});
+    const { visitModal } = useModalStack()
+    const testRedirectBackForm = useForm({})
 
     const testRedirectBack = () => {
-        testRedirectBackForm.post('/test-redirect-back');
-    };
+        testRedirectBackForm.post('/test-redirect-back')
+    }
 
     const openLocalModal = () => {
-        visitModal('#local');
-    };
+        visitModal('#local')
+    }
 
     const visitEdit = () => {
         visitModal('/users/1/edit', {
             navigate: true,
             listeners: {
                 userGreets: function (greeting) {
-                    alert(greeting);
-                }
-            }
+                    alert(greeting)
+                },
+            },
         })
     }
 
@@ -60,15 +61,13 @@ export default function Visit({ navigate }) {
                     <button
                         data-testid="test-redirect-back"
                         onClick={testRedirectBack}
-                        className="mt-2 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
+                        className="mt-2 rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white"
                     >
                         Test Redirect Back
                     </button>
                 </div>
             </Container>
-            <Modal name="local">
-                Hi there!
-            </Modal>
+            <Modal name="local">Hi there!</Modal>
         </>
-    );
+    )
 }

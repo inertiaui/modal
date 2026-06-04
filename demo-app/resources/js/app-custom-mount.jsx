@@ -1,13 +1,13 @@
-import './bootstrap';
-import '../css/app.css';
-
-import { createRoot } from 'react-dom/client';
-import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import './bootstrap'
+import '../css/app.css'
+import { createInertiaApp } from '@inertiajs/react'
 import { putConfig, ModalStackProvider, initFromPageProps, setPageLayout } from '@inertiaui/modal-react'
-import ModalLayout from './ModalLayout';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import { createRoot } from 'react-dom/client'
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+import ModalLayout from './ModalLayout'
+
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 // Configure native dialog mode (defaults to true if not set)
 if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
@@ -16,23 +16,22 @@ if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx'))
-        .then(setPageLayout(ModalLayout)),
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')).then(setPageLayout(ModalLayout)),
     setup({ el, App, props }) {
-        const root = createRoot(el);
+        const root = createRoot(el)
 
-        initFromPageProps(props);
+        initFromPageProps(props)
 
         root.render(
             <ModalStackProvider>
                 <App {...props} />
-            </ModalStackProvider>
-        );
+            </ModalStackProvider>,
+        )
     },
     progress: {
         color: '#4B5563',
     },
-});
+})
 
 if (window.location.pathname === '/props-from-config') {
     putConfig({
@@ -44,6 +43,6 @@ if (window.location.pathname === '/props-from-config') {
             paddingClasses: 'p-8',
             panelClasses: 'min-h-screen bg-red-100',
             position: 'left',
-        }
+        },
     })
 }

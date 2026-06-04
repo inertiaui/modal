@@ -25,8 +25,5 @@ const allKeysAreAvailable = computed(() => {
 <template>
     <slot v-if="allKeysAreAvailable" />
 
-    <slot
-        v-else
-        name="fallback"
-    />
+    <slot v-else name="fallback" />
 </template>
