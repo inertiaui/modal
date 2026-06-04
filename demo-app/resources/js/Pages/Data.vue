@@ -1,9 +1,9 @@
 <script setup>
-import { Modal } from '@inertiaui/modal-vue';
+import { Modal } from '@inertiaui/modal-vue'
 
 defineProps({
     message: String,
-});
+})
 </script>
 
 <template>

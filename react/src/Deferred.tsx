@@ -1,5 +1,6 @@
 // See: https://github.com/inertiajs/inertia/blob/48bcd21fb7daf467d0df1bfde2408f161f94a579/packages/react/src/Deferred.ts
 import { useEffect, useState, ReactNode } from 'react'
+
 import useModal from './useModal'
 
 interface DeferredProps {

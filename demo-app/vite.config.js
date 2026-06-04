@@ -1,15 +1,15 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import inertia from '@inertiajs/vite';
-import react from '@vitejs/plugin-react';
-import vue from '@vitejs/plugin-vue';
-import tailwindcss from '@tailwindcss/vite';
+import fs from 'fs'
 
-import fs from 'fs';
-import dotenv from 'dotenv';
-const env = dotenv.parse(fs.readFileSync('.env'));
-const reactStack = env.APP_STACK !== 'vue';
-const packagesAreInstalled = fs.existsSync('node_modules/@inertiaui/modal-react') && fs.existsSync('node_modules/@inertiaui/modal-vue');
+import inertia from '@inertiajs/vite'
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import vue from '@vitejs/plugin-vue'
+import dotenv from 'dotenv'
+import laravel from 'laravel-vite-plugin'
+import { defineConfig } from 'vite'
+const env = dotenv.parse(fs.readFileSync('.env'))
+const reactStack = env.APP_STACK !== 'vue'
+const packagesAreInstalled = fs.existsSync('node_modules/@inertiaui/modal-react') && fs.existsSync('node_modules/@inertiaui/modal-vue')
 
 export default defineConfig({
     build: {
@@ -20,8 +20,8 @@ export default defineConfig({
         dedupe: ['@inertiajs/react', '@inertiajs/vue3', 'vue', 'react', 'react-dom'],
         alias: {
             '@inertiaui/modal-react': '/../react',
-            '@inertiaui/modal-vue': '/../vue'
-        }
+            '@inertiaui/modal-vue': '/../vue',
+        },
     },
 
     plugins: [
@@ -30,14 +30,16 @@ export default defineConfig({
             refresh: true,
         }),
         inertia(),
-        reactStack ? react() : vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
-            },
-        }),
+        reactStack
+            ? react()
+            : vue({
+                  template: {
+                      transformAssetUrls: {
+                          base: null,
+                          includeAbsolute: false,
+                      },
+                  },
+              }),
         tailwindcss(),
     ],
-});
+})

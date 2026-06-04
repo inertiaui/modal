@@ -1,6 +1,6 @@
 <script setup>
 import { Deferred, Modal, WhenVisible } from '@inertiaui/modal-vue'
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 defineProps({
     deferA: String,
@@ -13,7 +13,7 @@ const visible = ref(false)
 </script>
 
 <template>
-    <Modal v-slot="{reload}">
+    <Modal v-slot="{ reload }">
         <Deferred :data="['deferA', 'deferB']">
             <template #fallback>
                 <p data-testid="defer">Loading defer...</p>
@@ -29,9 +29,7 @@ const visible = ref(false)
         </Deferred>
 
         <div class="mt-8">
-            <button type="button" @click="reload({only: ['lazy']})" class="underline">
-                Load lazy
-            </button>
+            <button type="button" @click="reload({ only: ['lazy'] })" class="underline">Load lazy</button>
 
             <p data-testid="lazy" :class="lazy ? 'text-green-500' : ''">
                 {{ lazy ?? 'No lazy data loaded' }}
@@ -39,9 +37,7 @@ const visible = ref(false)
         </div>
 
         <div class="mt-8">
-            <button type="button" @click="visible = !visible" class="underline">
-                Make {{ visible ? 'invisible' : 'visible' }}
-            </button>
+            <button type="button" @click="visible = !visible" class="underline">Make {{ visible ? 'invisible' : 'visible' }}</button>
 
             <div v-show="visible">
                 <WhenVisible data="optional" always>

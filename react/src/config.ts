@@ -61,8 +61,8 @@ class Config {
                 navigate: key.navigate ?? defaultConfig.navigate,
                 useNativeDialog: key.useNativeDialog ?? defaultConfig.useNativeDialog,
                 appElement: key.appElement !== undefined ? key.appElement : defaultConfig.appElement,
-                modal: { ...defaultConfig.modal, ...(key.modal ?? {}) },
-                slideover: { ...defaultConfig.slideover, ...(key.slideover ?? {}) },
+                modal: { ...defaultConfig.modal, ...key.modal },
+                slideover: { ...defaultConfig.slideover, ...key.slideover },
             }
             return
         }
@@ -95,5 +95,4 @@ const configInstance = new Config()
 export const resetConfig = (): void => configInstance.reset()
 export const putConfig = (key: string | Partial<ModalConfig>, value?: unknown): void => configInstance.put(key, value)
 export const getConfig = (key?: string): unknown => configInstance.get(key)
-export const getConfigByType = (isSlideover: boolean, key: string): unknown =>
-    configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`)
+export const getConfigByType = (isSlideover: boolean, key: string): unknown => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`)

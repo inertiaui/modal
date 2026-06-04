@@ -1,15 +1,16 @@
+import * as dialogUtils from '@inertiaui/vanilla'
+
 import { getConfig, putConfig, resetConfig } from './config'
-import { useModalStack, initFromPageProps, renderApp, withInertiaModal, Modal as ModalClass, modalPropNames, prefetch } from './modalStack'
-import type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, HttpMethod, PrefetchOption, PrefetchOptions } from './modalStack'
-import useModal from './useModal'
 import Deferred from './Deferred.vue'
 import HeadlessModal from './HeadlessModal.vue'
+import { kebabCase } from './helpers'
 import ModalComponent from './Modal.vue'
 import ModalLink from './ModalLink.vue'
 import ModalRoot from './ModalRoot.vue'
+import { useModalStack, initFromPageProps, renderApp, withInertiaModal, Modal as ModalClass, modalPropNames, prefetch } from './modalStack'
+import type { ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, HttpMethod, PrefetchOption, PrefetchOptions } from './modalStack'
+import useModal from './useModal'
 import WhenVisible from './WhenVisible.vue'
-import * as dialogUtils from '@inertiaui/vanilla'
-import { kebabCase } from './helpers'
 
 function visitModal(url: string, options: VisitOptions = {}): Promise<ModalClass> {
     return useModalStack()

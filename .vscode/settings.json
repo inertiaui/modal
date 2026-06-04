@@ -1,6 +1,6 @@
 {
-  "search.exclude": {
-    "vue/dist": true,
-    "react/dist": true
-  }
+    "search.exclude": {
+        "vue/dist": true,
+        "react/dist": true
+    }
 }

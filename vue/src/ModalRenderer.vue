@@ -1,7 +1,8 @@
 <script setup>
+import { computed, provide } from 'vue'
+
 import { only } from './helpers'
 import { useModalStack } from './modalStack'
-import { computed, provide } from 'vue'
 
 const props = defineProps({
     index: {

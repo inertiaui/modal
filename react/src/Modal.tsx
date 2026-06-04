@@ -1,10 +1,11 @@
+import { lockScroll, markAriaHidden } from '@inertiaui/vanilla'
 import { forwardRef, useRef, useImperativeHandle, useState, useEffect, useCallback, useMemo, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+
+import { getConfig } from './config'
 import HeadlessModal, { HeadlessModalRef } from './HeadlessModal'
 import ModalContent from './ModalContent'
 import SlideoverContent from './SlideoverContent'
-import { lockScroll, markAriaHidden } from '@inertiaui/vanilla'
-import { getConfig } from './config'
 import type { Modal as ModalType, ReloadOptions } from './types'
 
 interface ModalConfig {
@@ -61,158 +62,145 @@ interface BackdropTransitionProps {
     onAfterAppear?: () => void
 }
 
-const Modal = forwardRef<HeadlessModalRef, ModalProps>(
-    (allProps, ref) => {
-        const { name, children, onFocus, onBlur, onClose, onSuccess, onAfterLeave, ...props } = allProps as ModalBaseProps & Record<string, unknown>
-        const renderChildren = (contentProps: ModalRenderProps) => {
-            if (typeof children === 'function') {
-                return children(contentProps)
-            }
-
-            return children
+const Modal = forwardRef<HeadlessModalRef, ModalProps>((allProps, ref) => {
+    const { name, children, onFocus, onBlur, onClose, onSuccess, onAfterLeave, ...props } = allProps as ModalBaseProps & Record<string, unknown>
+    const renderChildren = (contentProps: ModalRenderProps) => {
+        if (typeof children === 'function') {
+            return children(contentProps)
         }
 
-        const headlessModalRef = useRef<HeadlessModalRef>(null)
-        const cleanupScrollLockRef = useRef<(() => void) | null>(null)
-        const cleanupAriaHiddenRef = useRef<(() => void) | null>(null)
-        const [rendered, setRendered] = useState(false)
-        const useNativeDialog = useMemo(() => getConfig('useNativeDialog') as boolean, [])
+        return children
+    }
 
-        useImperativeHandle(ref, () => headlessModalRef.current!, [headlessModalRef])
+    const headlessModalRef = useRef<HeadlessModalRef>(null)
+    const cleanupScrollLockRef = useRef<(() => void) | null>(null)
+    const cleanupAriaHiddenRef = useRef<(() => void) | null>(null)
+    const [rendered, setRendered] = useState(false)
+    const useNativeDialog = useMemo(() => getConfig('useNativeDialog') as boolean, [])
 
-        // Cleanup on unmount
-        useEffect(() => {
-            return () => {
-                cleanupScrollLockRef.current?.()
-                cleanupAriaHiddenRef.current?.()
-            }
-        }, [])
+    useImperativeHandle(ref, () => headlessModalRef.current!, [headlessModalRef])
 
-        const handleSuccess = useCallback(() => {
-            onSuccess?.()
-            if (!cleanupScrollLockRef.current) {
-                cleanupScrollLockRef.current = lockScroll()
-                cleanupAriaHiddenRef.current = markAriaHidden(getConfig('appElement') as string)
-            }
-        }, [onSuccess])
-
-        const handleClose = useCallback(() => {
-            onClose?.()
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
             cleanupScrollLockRef.current?.()
             cleanupAriaHiddenRef.current?.()
-            cleanupScrollLockRef.current = null
-            cleanupAriaHiddenRef.current = null
-        }, [onClose])
+        }
+    }, [])
 
-        const handleAfterLeave = useCallback(() => {
-            onAfterLeave?.()
-        }, [onAfterLeave])
+    const handleSuccess = useCallback(() => {
+        onSuccess?.()
+        if (!cleanupScrollLockRef.current) {
+            cleanupScrollLockRef.current = lockScroll()
+            cleanupAriaHiddenRef.current = markAriaHidden(getConfig('appElement') as string)
+        }
+    }, [onSuccess])
 
-        return (
-            <HeadlessModal
-                ref={headlessModalRef}
-                name={name}
-                onFocus={onFocus ?? undefined}
-                onBlur={onBlur ?? undefined}
-                onClose={handleClose}
-                onSuccess={handleSuccess}
-                {...props}
-            >
-                {({
-                    afterLeave,
-                    close,
-                    config,
-                    emit,
-                    getChildModal,
-                    getParentModal,
-                    id,
-                    index,
-                    isOpen,
-                    modalContext,
-                    onTopOfStack,
-                    reload,
-                    setOpen,
-                    shouldRender,
-                    ...extraProps
-                }) => (
-                    <ModalPortal>
-                        <div
-                            className="im-dialog relative z-20"
-                            data-inertiaui-modal-id={id}
-                            data-inertiaui-modal-index={index}
-                            aria-hidden={!onTopOfStack}
-                        >
-                            {/* Only render backdrop for the first modal (non-native dialog mode) */}
-                            {/* Native dialog uses ::backdrop pseudo-element instead */}
-                            {index === 0 && !useNativeDialog && (
-                                <BackdropTransition
-                                    show={isOpen}
-                                    appear={!rendered}
-                                    onAfterAppear={() => setRendered(true)}
-                                />
-                            )}
+    const handleClose = useCallback(() => {
+        onClose?.()
+        cleanupScrollLockRef.current?.()
+        cleanupAriaHiddenRef.current?.()
+        cleanupScrollLockRef.current = null
+        cleanupAriaHiddenRef.current = null
+    }, [onClose])
 
-                            {/* The modal/slideover content itself */}
-                            {config.slideover ? (
-                                <SlideoverContent
-                                    modalContext={modalContext}
-                                    config={config}
-                                    useNativeDialog={useNativeDialog}
-                                    isFirstModal={index === 0}
-                                    onAfterLeave={handleAfterLeave}
-                                >
-                                    {renderChildren({
-                                        ...extraProps,
-                                        afterLeave,
-                                        close,
-                                        config,
-                                        emit,
-                                        getChildModal,
-                                        getParentModal,
-                                        id,
-                                        index,
-                                        isOpen,
-                                        modalContext,
-                                        onTopOfStack,
-                                        reload,
-                                        setOpen,
-                                        shouldRender,
-                                    })}
-                                </SlideoverContent>
-                            ) : (
-                                <ModalContent
-                                    modalContext={modalContext}
-                                    config={config}
-                                    useNativeDialog={useNativeDialog}
-                                    isFirstModal={index === 0}
-                                    onAfterLeave={handleAfterLeave}
-                                >
-                                    {renderChildren({
-                                        ...extraProps,
-                                        afterLeave,
-                                        close,
-                                        config,
-                                        emit,
-                                        getChildModal,
-                                        getParentModal,
-                                        id,
-                                        index,
-                                        isOpen,
-                                        modalContext,
-                                        onTopOfStack,
-                                        reload,
-                                        setOpen,
-                                        shouldRender,
-                                    })}
-                                </ModalContent>
-                            )}
-                        </div>
-                    </ModalPortal>
-                )}
-            </HeadlessModal>
-        )
-    },
-)
+    const handleAfterLeave = useCallback(() => {
+        onAfterLeave?.()
+    }, [onAfterLeave])
+
+    return (
+        <HeadlessModal
+            ref={headlessModalRef}
+            name={name}
+            onFocus={onFocus ?? undefined}
+            onBlur={onBlur ?? undefined}
+            onClose={handleClose}
+            onSuccess={handleSuccess}
+            {...props}
+        >
+            {({
+                afterLeave,
+                close,
+                config,
+                emit,
+                getChildModal,
+                getParentModal,
+                id,
+                index,
+                isOpen,
+                modalContext,
+                onTopOfStack,
+                reload,
+                setOpen,
+                shouldRender,
+                ...extraProps
+            }) => (
+                <ModalPortal>
+                    <div className="im-dialog relative z-20" data-inertiaui-modal-id={id} data-inertiaui-modal-index={index} aria-hidden={!onTopOfStack}>
+                        {/* Only render backdrop for the first modal (non-native dialog mode) */}
+                        {/* Native dialog uses ::backdrop pseudo-element instead */}
+                        {index === 0 && !useNativeDialog && <BackdropTransition show={isOpen} appear={!rendered} onAfterAppear={() => setRendered(true)} />}
+
+                        {/* The modal/slideover content itself */}
+                        {config.slideover ? (
+                            <SlideoverContent
+                                modalContext={modalContext}
+                                config={config}
+                                useNativeDialog={useNativeDialog}
+                                isFirstModal={index === 0}
+                                onAfterLeave={handleAfterLeave}
+                            >
+                                {renderChildren({
+                                    ...extraProps,
+                                    afterLeave,
+                                    close,
+                                    config,
+                                    emit,
+                                    getChildModal,
+                                    getParentModal,
+                                    id,
+                                    index,
+                                    isOpen,
+                                    modalContext,
+                                    onTopOfStack,
+                                    reload,
+                                    setOpen,
+                                    shouldRender,
+                                })}
+                            </SlideoverContent>
+                        ) : (
+                            <ModalContent
+                                modalContext={modalContext}
+                                config={config}
+                                useNativeDialog={useNativeDialog}
+                                isFirstModal={index === 0}
+                                onAfterLeave={handleAfterLeave}
+                            >
+                                {renderChildren({
+                                    ...extraProps,
+                                    afterLeave,
+                                    close,
+                                    config,
+                                    emit,
+                                    getChildModal,
+                                    getParentModal,
+                                    id,
+                                    index,
+                                    isOpen,
+                                    modalContext,
+                                    onTopOfStack,
+                                    reload,
+                                    setOpen,
+                                    shouldRender,
+                                })}
+                            </ModalContent>
+                        )}
+                    </div>
+                </ModalPortal>
+            )}
+        </HeadlessModal>
+    )
+})
 
 // Simple portal component
 function ModalPortal({ children }: { children: ReactNode }) {

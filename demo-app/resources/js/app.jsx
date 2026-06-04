@@ -1,10 +1,9 @@
-import './bootstrap';
-import '../css/app.css';
-
-import { createInertiaApp } from '@inertiajs/react';
+import './bootstrap'
+import '../css/app.css'
+import { createInertiaApp } from '@inertiajs/react'
 import { putConfig, ModalStackProvider, ModalRoot } from '@inertiaui/modal-react'
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 // Configure native dialog mode (defaults to true if not set)
 if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
@@ -12,7 +11,12 @@ if (import.meta.env.VITE_USE_NATIVE_DIALOG !== undefined) {
 }
 
 function ModalLayout({ children }) {
-    return <>{children}<ModalRoot /></>
+    return (
+        <>
+            {children}
+            <ModalRoot />
+        </>
+    )
 }
 
 createInertiaApp({
@@ -24,7 +28,7 @@ createInertiaApp({
         return <ModalStackProvider>{app}</ModalStackProvider>
     },
     layout: () => ModalLayout,
-});
+})
 
 if (window.location.pathname === '/props-from-config') {
     putConfig({
@@ -36,6 +40,6 @@ if (window.location.pathname === '/props-from-config') {
             paddingClasses: 'p-8',
             panelClasses: 'min-h-screen bg-red-100',
             position: 'left',
-        }
+        },
     })
 }

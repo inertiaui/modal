@@ -1,6 +1,5 @@
 import './bootstrap'
 import '../css/app.css'
-
 import { createInertiaApp } from '@inertiajs/vue3'
 import { putConfig, withInertiaModal } from '@inertiaui/modal-vue'
 
@@ -21,7 +20,7 @@ createInertiaApp({
     },
 })
 
-if(window.location.pathname === '/props-from-config') {
+if (window.location.pathname === '/props-from-config') {
     putConfig({
         type: 'slideover',
         slideover: {
@@ -31,6 +30,6 @@ if(window.location.pathname === '/props-from-config') {
             paddingClasses: 'p-8',
             panelClasses: 'min-h-screen bg-red-100',
             position: 'left',
-        }
+        },
     })
 }

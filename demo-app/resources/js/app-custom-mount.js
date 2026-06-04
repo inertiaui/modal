@@ -1,10 +1,9 @@
 import './bootstrap'
 import '../css/app.css'
-
-import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { putConfig, ModalRoot } from '@inertiaui/modal-vue'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import { createApp, h } from 'vue'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
@@ -26,7 +25,7 @@ createInertiaApp({
     },
 })
 
-if(window.location.pathname === '/props-from-config') {
+if (window.location.pathname === '/props-from-config') {
     putConfig({
         type: 'slideover',
         slideover: {
@@ -36,6 +35,6 @@ if(window.location.pathname === '/props-from-config') {
             paddingClasses: 'p-8',
             panelClasses: 'min-h-screen bg-red-100',
             position: 'left',
-        }
+        },
     })
 }

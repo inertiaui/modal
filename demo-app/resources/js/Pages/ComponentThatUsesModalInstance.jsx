@@ -8,9 +8,11 @@ export default function ComponentThatUsesModalInstance() {
         console.log(props.roles)
     }
 
-    return (
-        modal ? <div>
+    return modal ? (
+        <div>
             <button onClick={() => modal.close()}>Close Modal with index {modal.index}</button>
-        </div> : <div />
+        </div>
+    ) : (
+        <div />
     )
 }

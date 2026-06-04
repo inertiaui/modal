@@ -1,7 +1,8 @@
 <script setup>
-import Container from './Container.vue'
 import { ModalLink, putConfig } from '@inertiaui/modal-vue'
 import { onMounted } from 'vue'
+
+import Container from './Container.vue'
 
 // Disable native dialog for this test page so we can properly test click-outside
 onMounted(() => {
@@ -17,7 +18,7 @@ onMounted(() => {
             <ModalLink
                 href="/users/1/edit"
                 data-testid="open-with-click-outside"
-                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
             >
                 Open Modal (default - closes on click outside)
             </ModalLink>
@@ -26,7 +27,7 @@ onMounted(() => {
                 href="/users/1/edit"
                 :closeOnClickOutside="false"
                 data-testid="open-without-click-outside"
-                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
             >
                 Open Modal (closeOnClickOutside=false)
             </ModalLink>
@@ -35,7 +36,7 @@ onMounted(() => {
                 href="/users/1/edit"
                 slideover
                 data-testid="open-slideover-with-click-outside"
-                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
             >
                 Open Slideover (default - closes on click outside)
             </ModalLink>
@@ -45,7 +46,7 @@ onMounted(() => {
                 slideover
                 :closeOnClickOutside="false"
                 data-testid="open-slideover-without-click-outside"
-                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
             >
                 Open Slideover (closeOnClickOutside=false)
             </ModalLink>

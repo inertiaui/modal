@@ -1,14 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-import Container from './Container.vue'
 import { ModalLink } from '@inertiaui/modal-vue'
+import { ref } from 'vue'
+
+import Container from './Container.vue'
 
 const log = ref([])
 
 function push(value) {
     log.value.push(value)
 }
-
 
 defineProps({
     navigate: Boolean,
@@ -29,7 +29,7 @@ defineProps({
             :navigate="navigate"
             data-testid="modal-link"
             href="/users/1/edit"
-            class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+            class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
             @close="push('close')"
             @focus="push('focus')"
             @after-leave="push('after-leave')"

@@ -1,11 +1,12 @@
-import { createElement, useEffect, useLayoutEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
-import { except, kebabCase, generateId, sameUrlPath, parseResponseData } from './helpers'
-import { ResponseCache } from './cache'
-import { router, usePage, progress, http } from '@inertiajs/react'
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type HttpRequestConfig } from '@inertiajs/core'
+import { router, usePage, progress, http } from '@inertiajs/react'
+import { createElement, useEffect, useLayoutEffect, useState, useRef, useReducer, ReactNode, ComponentType } from 'react'
 import { createContext, useContext } from 'react'
-import ModalRenderer from './ModalRenderer'
+
+import { ResponseCache } from './cache'
 import { getConfig } from './config'
+import { except, kebabCase, generateId, sameUrlPath, parseResponseData } from './helpers'
+import ModalRenderer from './ModalRenderer'
 import type {
     Modal,
     ModalConfig,
@@ -346,7 +347,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
                     data: method === 'get' ? undefined : data,
                     params: method === 'get' ? data : undefined,
                     headers: {
-                        ...(options.headers ?? {}),
+                        ...options.headers,
                         Accept: 'text/html, application/xhtml+xml',
                         'X-Inertia': 'true',
                         'X-Inertia-Partial-Component': this.response.component,
@@ -376,12 +377,7 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
     }
 
     const isValidModalResponse = (data: unknown): data is ModalResponseData => {
-        return (
-            typeof data === 'object' &&
-            data !== null &&
-            'component' in data &&
-            typeof (data as ModalResponseData).component === 'string'
-        )
+        return typeof data === 'object' && data !== null && 'component' in data && typeof (data as ModalResponseData).component === 'string'
     }
 
     const pushFromResponseData = (
@@ -399,9 +395,9 @@ export const ModalStackProvider = ({ children }: ModalStackProviderProps) => {
             )
         }
 
-        return router.resolveComponent(responseData.component).then((component) =>
-            push(component as ComponentType, responseData, config, onClose, onAfterLeave),
-        )
+        return router
+            .resolveComponent(responseData.component)
+            .then((component) => push(component as ComponentType, responseData, config, onClose, onAfterLeave))
     }
 
     const loadDeferredProps = (modal: Modal) => {
@@ -665,10 +661,7 @@ export const renderApp = (App: ComponentType<{ children: (props: RenderInertiaAp
                 return Component.layout
                     .slice()
                     .reverse()
-                    .reduce(
-                        (acc, Layout) => createElement(Layout as ComponentType<Record<string, unknown>>, props, acc),
-                        child as ReactNode,
-                    )
+                    .reduce((acc, Layout) => createElement(Layout as ComponentType<Record<string, unknown>>, props, acc), child as ReactNode)
             }
 
             return child
@@ -715,14 +708,18 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
     // Register interceptor in useLayoutEffect (fires during commit, before microtasks).
     // Inertia 3 loads deferred props during page.set() microtasks which fire after commit
     // but before useEffect — useLayoutEffect ensures the interceptor is registered in time.
-    useLayoutEffect(() => http.onRequest((config: HttpRequestConfig) => {
-        const baseUrlValue = baseUrl ?? pageRef.current.props._inertiaui_modal?.baseUrl ?? null
-        if (baseUrlValue) {
-            config.headers = config.headers ?? {}
-            config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
-        }
-        return config
-    }), [])
+    useLayoutEffect(
+        () =>
+            http.onRequest((config: HttpRequestConfig) => {
+                const baseUrlValue = baseUrl ?? pageRef.current.props._inertiaui_modal?.baseUrl ?? null
+                if (baseUrlValue) {
+                    config.headers = config.headers ?? {}
+                    config.headers['X-InertiaUI-Modal-Base-Url'] = baseUrlValue
+                }
+                return config
+            }),
+        [],
+    )
 
     useEffect(() => router.on('start', () => (isNavigatingRef.current = true)), [])
     useEffect(() => router.on('finish', () => (isNavigatingRef.current = false)), [])
@@ -831,9 +828,7 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
         // If there's no previous modal but we have modals in the stack (opened via XHR),
         // check if the new modal matches any open modal and update its props
         if (!previousModal && context && context.stack.length > 0) {
-            const existingModal = context.stack.find(
-                (m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url),
-            )
+            const existingModal = context.stack.find((m) => m.response?.component === newModal.component && sameUrlPath(m.response?.url, newModal.url))
             if (existingModal) {
                 existingModal.updateProps(newModal.props ?? {})
             }
@@ -847,4 +842,3 @@ export const ModalRoot = ({ children }: ModalRootProps) => {
         </>
     )
 }
-

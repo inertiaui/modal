@@ -1,10 +1,11 @@
 <script setup>
-import ModalContent from './ModalContent.vue'
-import HeadlessModal from './HeadlessModal.vue'
-import SlideoverContent from './SlideoverContent.vue'
-import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { lockScroll, markAriaHidden } from '@inertiaui/vanilla'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
+
 import { getConfig } from './config'
+import HeadlessModal from './HeadlessModal.vue'
+import ModalContent from './ModalContent.vue'
+import SlideoverContent from './SlideoverContent.vue'
 
 const modal = ref(null)
 const rendered = ref(false)
@@ -107,12 +108,7 @@ const useNativeDialog = computed(() => getConfig('useNativeDialog'))
         @blur="emits('blur')"
     >
         <Teleport to="body">
-            <div
-                :data-inertiaui-modal-id="id"
-                :data-inertiaui-modal-index="index"
-                class="im-dialog relative z-20"
-                :aria-hidden="!onTopOfStack"
-            >
+            <div :data-inertiaui-modal-id="id" :data-inertiaui-modal-index="index" class="im-dialog relative z-20" :aria-hidden="!onTopOfStack">
                 <!-- Only render backdrop for the first modal (non-native dialog mode) -->
                 <!-- Native dialog uses ::backdrop pseudo-element instead -->
                 <Transition
@@ -126,10 +122,7 @@ const useNativeDialog = computed(() => getConfig('useNativeDialog'))
                     leave-to-class="opacity-0"
                     @after-appear="rendered = true"
                 >
-                    <div
-                        v-if="isOpen"
-                        class="im-backdrop fixed inset-0 z-30 bg-black/75"
-                    />
+                    <div v-if="isOpen" class="im-backdrop fixed inset-0 z-30 bg-black/75" />
                 </Transition>
 
                 <!-- The modal/slideover content itself -->

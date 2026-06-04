@@ -1,11 +1,12 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3'
+import * as InertiaVue from '@inertiajs/vue3'
 import { ModalLink } from '@inertiaui/modal-vue'
-import { onMounted, onUpdated, ref } from 'vue';
-import * as InertiaVue from '@inertiajs/vue3';
-import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue';
-import Container from './Container.vue'
+import { onMounted, onUpdated, ref } from 'vue'
+
 import CustomButton from '../Components/CustomButton.vue'
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.vue'
+import Container from './Container.vue'
 
 const testRedirectBackForm = useForm({})
 const testModalHeaderForm = useForm({})
@@ -22,8 +23,8 @@ defineProps({
     users: Object,
     random: Number,
     navigate: Boolean,
-    deferred: String
-});
+    deferred: String,
+})
 
 const rand = () => Math.floor(Math.random() * 100000) + 1
 
@@ -52,9 +53,7 @@ function alertGreeting(greeting) {
             <p data-testid="state-a">A: {{ stateA }}</p>
             <p data-testid="state-b">B: {{ stateB }}</p> -->
             <component v-if="InertiaVue.Deferred" :is="InertiaVue.Deferred" data="deferred">
-                <template #fallback>
-                    Loading...
-                </template>
+                <template #fallback> Loading... </template>
 
                 <p data-testid="deferred">{{ deferred }}</p>
             </component>
@@ -62,10 +61,10 @@ function alertGreeting(greeting) {
             <p v-else data-testid="deferred">No Deferred Component</p>
         </div>
 
-        <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="mt-6 overflow-hidden bg-white shadow sm:rounded-md">
             <ul class="divide-y divide-gray-200">
-                <li v-for="user in users" :key="user.id" class="flex items-center justify-between py-4 px-6 hover:bg-gray-50">
-                    <div class="flex items-center w-full">
+                <li v-for="user in users" :key="user.id" class="flex items-center justify-between px-6 py-4 hover:bg-gray-50">
+                    <div class="flex w-full items-center">
                         <div class="">
                             <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
                             <div class="text-sm text-gray-500">{{ user.email }}</div>
@@ -74,7 +73,7 @@ function alertGreeting(greeting) {
                             <Link
                                 :href="`/users/${user.id}`"
                                 :data-testid="'view-user-' + user.id"
-                                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                             >
                                 View
                             </Link>
@@ -82,7 +81,7 @@ function alertGreeting(greeting) {
                                 :navigate="navigate"
                                 :data-testid="'edit-user-' + user.id"
                                 :href="`/users/${user.id}/edit`"
-                                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                                 @user-greets="alertGreeting"
                             >
                                 Edit
@@ -92,17 +91,12 @@ function alertGreeting(greeting) {
                                 :navigate="navigate"
                                 :data-testid="'slideover-user-' + user.id"
                                 :href="`/users/${user.id}/edit`"
-                                class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                                class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                                 @user-greets="alertGreeting"
                             >
                                 Slideover
                             </ModalLink>
-                            <ModalLink
-                                :as="CustomButton"
-                                :navigate="navigate"
-                                :data-testid="'custom-button-user-' + user.id"
-                                :href="`/users/${user.id}/edit`"
-                            >
+                            <ModalLink :as="CustomButton" :navigate="navigate" :data-testid="'custom-button-user-' + user.id" :href="`/users/${user.id}/edit`">
                                 Custom
                             </ModalLink>
                         </div>
@@ -114,39 +108,21 @@ function alertGreeting(greeting) {
 
         <!-- Test redirect()->back() after modal close (issue #153) -->
         <div class="mt-4 flex space-x-4">
-            <button
-                data-testid="test-redirect-back"
-                @click="testRedirectBack"
-                class="px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md"
-            >
+            <button data-testid="test-redirect-back" @click="testRedirectBack" class="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white">
                 Test Redirect Back
             </button>
             <button
                 data-testid="test-modal-header-check"
                 @click="testModalHeaderCheck"
-                class="px-3 py-2 text-sm font-medium text-white bg-orange-600 rounded-md"
+                class="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white"
             >
                 Check Modal Header
             </button>
-            <Link
-                data-testid="nav-visit"
-                href="/visit"
-                class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md"
-            >
-                Go to Visit Page
-            </Link>
-            <ModalLink
-                :navigate="navigate"
-                href="/modal-with-modal-base"
-                class="px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-md"
-            >
+            <Link data-testid="nav-visit" href="/visit" class="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white"> Go to Visit Page </Link>
+            <ModalLink :navigate="navigate" href="/modal-with-modal-base" class="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white">
                 Modal with Modal Base
             </ModalLink>
-            <ModalLink
-                :navigate="navigate"
-                href="/modal-invalid-response"
-                class="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md"
-            >
+            <ModalLink :navigate="navigate" href="/modal-invalid-response" class="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white">
                 Invalid Response
             </ModalLink>
         </div>

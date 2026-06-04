@@ -1,6 +1,7 @@
 <script setup>
-import Container from './Container.vue'
 import { ModalLink } from '@inertiaui/modal-vue'
+
+import Container from './Container.vue'
 </script>
 
 <template>
@@ -12,7 +13,7 @@ import { ModalLink } from '@inertiaui/modal-vue'
         <ModalLink
             data-testid="modal-link"
             href="/slideover?slow=1"
-            class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+            class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
             #default="{ loading }"
         >
             {{ loading ? 'Loading...' : 'Open Slideover' }}

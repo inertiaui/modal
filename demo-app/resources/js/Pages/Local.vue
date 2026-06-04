@@ -1,16 +1,17 @@
 <script setup>
-import Container from './Container.vue'
 import { Modal, ModalLink } from '@inertiaui/modal-vue'
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const modalRef = ref(null);
+import Container from './Container.vue'
+
+const modalRef = ref(null)
 
 function closeModal() {
-    modalRef.value.close();
+    modalRef.value.close()
 }
 
 function alertModalId() {
-    alert(modalRef.value.id);
+    alert(modalRef.value.id)
 }
 </script>
 
@@ -19,25 +20,17 @@ function alertModalId() {
         <div class="flex justify-between">
             <h2 class="text-lg font-medium text-gray-900">Local</h2>
 
-            <ModalLink href="#local" class="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md">
-                Open Local Modal
-            </ModalLink>
+            <ModalLink href="#local" class="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"> Open Local Modal </ModalLink>
         </div>
     </Container>
 
     <Modal name="local" ref="modalRef">
         This is a local modal
 
-        <ModalLink href="/roles/create">
-            Create Role
-        </ModalLink>
+        <ModalLink href="/roles/create"> Create Role </ModalLink>
 
-        <button @click="closeModal">
-            Close Modal through Ref
-        </button>
+        <button @click="closeModal">Close Modal through Ref</button>
 
-        <button @click="alertModalId">
-            Alert Modal ID
-        </button>
+        <button @click="alertModalId">Alert Modal ID</button>
     </Modal>
 </template>
