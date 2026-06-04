@@ -13,7 +13,35 @@
         "format": "pnpm --filter @inertiaui/modal-vue prettier && pnpm --filter @inertiaui/modal-react prettier"
     },
     "devDependencies": {
+        "@heroicons/react": "^2.1.4",
         "@inertiajs/core": "^3.0.0",
-        "@inertiaui/vanilla": "^1.0.2"
+        "@inertiajs/react": "^3.0.0",
+        "@inertiajs/vue3": "^3.0.0",
+        "@inertiaui/vanilla": "^1.0.2",
+        "@testing-library/react": "^16.0.0",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.31.0",
+        "@typescript-eslint/parser": "^8.31.0",
+        "@vitejs/plugin-react": "^6.0.0",
+        "@vitejs/plugin-vue": "^6.0.4",
+        "@vitest/coverage-v8": "^4.0.0",
+        "@vitest/ui": "^4.0.0",
+        "@vue/test-utils": "^2.4.6",
+        "clsx": "^2.1.1",
+        "eslint": "^9.26.0",
+        "eslint-plugin-vue": "^10.2.0",
+        "happy-dom": "^20.0.0",
+        "laravel-vite-plugin": "^3.0.0",
+        "prettier": "^3.2.4",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "typescript": "^5.7.0",
+        "vite": "^8.0.0",
+        "vite-plugin-dts": "^5.0.0",
+        "vitest": "^4.0.0",
+        "vue": "^3.4.x",
+        "vue-eslint-parser": "^10.1.0",
+        "vue-tsc": "^2.2.0"
     }
 }
