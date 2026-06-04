@@ -1,6 +1,7 @@
 <script setup>
-import Container from './Container.vue'
 import { ModalLink } from '@inertiaui/modal-vue'
+
+import Container from './Container.vue'
 </script>
 
 <template>
@@ -9,12 +10,6 @@ import { ModalLink } from '@inertiaui/modal-vue'
             <h2 class="text-lg font-medium text-gray-900">Header</h2>
         </div>
 
-        <ModalLink
-            data-testid="modal-link"
-            href="/roles/create"
-            :headers="{ 'X-Test-Header': 'Test Header Value' }"
-        >
-            Open Modal
-        </ModalLink>
+        <ModalLink data-testid="modal-link" href="/roles/create" :headers="{ 'X-Test-Header': 'Test Header Value' }"> Open Modal </ModalLink>
     </Container>
 </template>

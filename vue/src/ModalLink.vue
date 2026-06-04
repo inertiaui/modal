@@ -1,8 +1,9 @@
 <script setup>
-import { modalPropNames, useModalStack, prefetch as prefetchModal } from './modalStack'
 import { ref, provide, computed, watch, useAttrs, onBeforeUnmount, onMounted } from 'vue'
-import { only, rejectNullValues } from './helpers'
+
 import { getConfig } from './config'
+import { only, rejectNullValues } from './helpers'
+import { modalPropNames, useModalStack, prefetch as prefetchModal } from './modalStack'
 
 const props = defineProps({
     href: {
@@ -234,15 +235,7 @@ function handle() {
 </script>
 
 <template>
-    <component
-        v-bind="$attrs"
-        :is="as"
-        :href="href"
-        @click.prevent="handle"
-        @mouseenter="onMouseenter"
-        @mouseleave="onMouseleave"
-        @mousedown="onMousedown"
-    >
+    <component v-bind="$attrs" :is="as" :href="href" @click.prevent="handle" @mouseenter="onMouseenter" @mouseleave="onMouseleave" @mousedown="onMousedown">
         <slot :loading="loading" />
     </component>
 </template>

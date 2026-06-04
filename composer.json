@@ -30,16 +30,16 @@
         "analyse": "vendor/bin/phpstan analyse --memory-limit=512M",
         "format": "vendor/bin/pint",
         "refactor": "vendor/bin/rector",
-        "eslint-react": "pnpm --filter @inertiaui/modal-react run eslint",
-        "eslint-vue": "pnpm --filter @inertiaui/modal-vue run eslint",
+        "lint": "pnpm run lint",
+        "fmt": "pnpm run format",
         "build-react": "pnpm --filter @inertiaui/modal-react run build",
         "build-vue": "pnpm --filter @inertiaui/modal-vue run build",
         "all": [
             "@analyse",
             "@refactor",
             "@format",
-            "@eslint-react",
-            "@eslint-vue"
+            "@lint",
+            "@fmt"
         ],
         "build": [
             "@all",

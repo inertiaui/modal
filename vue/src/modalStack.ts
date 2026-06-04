@@ -1,9 +1,10 @@
+import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type Method } from '@inertiajs/core'
+import { router, usePage, progress, http } from '@inertiajs/vue3'
 import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
-import { generateId, except, kebabCase, parseResponseData, sameUrlPath } from './helpers'
+
 import { ResponseCache } from './cache'
 import type { ModalTypeConfig } from './config'
-import { router, usePage, progress, http } from '@inertiajs/vue3'
-import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type Method } from '@inertiajs/core'
+import { generateId, except, kebabCase, parseResponseData, sameUrlPath } from './helpers'
 import ModalRoot from './ModalRoot.vue'
 
 // Type definitions
@@ -375,7 +376,7 @@ export class Modal {
                 data: method === 'get' ? undefined : data,
                 params: method === 'get' ? data : undefined,
                 headers: {
-                    ...(options.headers ?? {}),
+                    ...options.headers,
                     Accept: 'text/html, application/xhtml+xml',
                     'X-Inertia': 'true',
                     'X-Inertia-Partial-Component': this.response.component,
@@ -425,12 +426,7 @@ function pushLocalModal(
 }
 
 function isValidModalResponse(data: unknown): data is ModalResponseData {
-    return (
-        typeof data === 'object' &&
-        data !== null &&
-        'component' in data &&
-        typeof (data as ModalResponseData).component === 'string'
-    )
+    return typeof data === 'object' && data !== null && 'component' in data && typeof (data as ModalResponseData).component === 'string'
 }
 
 function updateBrowserUrl(url: string | undefined, useBrowserHistory: boolean, modalData?: ModalResponseData): void {
@@ -471,9 +467,9 @@ function pushFromResponseData(
         )
     }
 
-    return router.resolveComponent(responseData.component).then((component) =>
-        push(markRaw(component as Component), responseData, config, onClose, onAfterLeave),
-    )
+    return router
+        .resolveComponent(responseData.component)
+        .then((component) => push(markRaw(component as Component), responseData, config, onClose, onAfterLeave))
 }
 
 function visit(

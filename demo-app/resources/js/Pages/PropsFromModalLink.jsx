@@ -1,5 +1,6 @@
-import { ModalLink } from '@inertiaui/modal-react';
-import Container from './Container';
+import { ModalLink } from '@inertiaui/modal-react'
+
+import Container from './Container'
 
 export default function PropsFromModalLink({ users }) {
     return (
@@ -9,7 +10,7 @@ export default function PropsFromModalLink({ users }) {
             </div>
             <ModalLink
                 href="/users/1/edit"
-                className="px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-100 rounded-md"
+                className="rounded-md bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-600"
                 closeButton={false}
                 closeExplicitly={true}
                 maxWidth="2xl"
@@ -21,5 +22,5 @@ export default function PropsFromModalLink({ users }) {
                 Edit User 1
             </ModalLink>
         </Container>
-    );
+    )
 }

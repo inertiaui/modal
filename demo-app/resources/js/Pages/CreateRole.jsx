@@ -1,29 +1,29 @@
-import React, { useState, useRef } from 'react';
-import { useForm } from '@inertiajs/react';
-import { http } from '@inertiajs/react';
-import { Modal, ModalLink } from '@inertiaui/modal-react';
-import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx';
+import { useForm } from '@inertiajs/react'
+import { http } from '@inertiajs/react'
+import { Modal, ModalLink } from '@inertiaui/modal-react'
+import React, { useState, useRef } from 'react'
+
+import ComponentThatUsesModalInstance from './ComponentThatUsesModalInstance.jsx'
 
 export default function CreateRole({ headerValue, name }) {
     const { data, setData, errors, post } = useForm({
         name: '',
-    });
+    })
 
-    const modalRef = useRef(null);
-    const [greeting, setGreeting] = useState('');
+    const modalRef = useRef(null)
+    const [greeting, setGreeting] = useState('')
 
     const submit = (e) => {
-        e.preventDefault();
-        http.getClient().request({ method: 'post', url: '/roles', data, headers: { 'Accept': 'application/json' } }).then(() => {
-            modalRef.current?.close();
-        });
-    };
+        e.preventDefault()
+        http.getClient()
+            .request({ method: 'post', url: '/roles', data, headers: { Accept: 'application/json' } })
+            .then(() => {
+                modalRef.current?.close()
+            })
+    }
 
     return (
-        <Modal
-            ref={modalRef}
-            onGreeting={(event) => setGreeting(event)}
-        >
+        <Modal ref={modalRef} onGreeting={(event) => setGreeting(event)}>
             {({ close, getParentModal, emit }) => (
                 <>
                     <div>
@@ -44,10 +44,7 @@ export default function CreateRole({ headerValue, name }) {
                             </p>
                         )}
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => getParentModal().emit('message', 'Hello from child')}
-                    >
+                    <button type="button" onClick={() => getParentModal().emit('message', 'Hello from child')}>
                         Push message to parent
                     </button>
                     <form className="mt-8 space-y-6" onSubmit={submit}>
@@ -65,9 +62,7 @@ export default function CreateRole({ headerValue, name }) {
                                     autoComplete="off"
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 />
-                                {errors.name && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.name}</p>
-                                )}
+                                {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
                             </div>
                         </div>
                         <div className="flex items-center justify-end">
@@ -76,25 +71,23 @@ export default function CreateRole({ headerValue, name }) {
                             </ModalLink>
                             <button
                                 type="button"
-                                className="inline-flex items-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                                className="inline-flex items-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none"
                                 onClick={close}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="ml-3 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="ml-3 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
                             >
                                 Save
                             </button>
                         </div>
                     </form>
-                    <Modal name="another-local-modal">
-                        Hawaiian noises?
-                    </Modal>
+                    <Modal name="another-local-modal">Hawaiian noises?</Modal>
                     <ComponentThatUsesModalInstance />
                 </>
             )}
         </Modal>
-    );
-};
+    )
+}

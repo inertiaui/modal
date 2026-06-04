@@ -1,9 +1,9 @@
 <script setup>
-import { Modal } from '@inertiaui/modal-vue';
+import { Modal } from '@inertiaui/modal-vue'
 </script>
 
 <template>
-     <Modal
+    <Modal
         :close-button="false"
         :close-explicitly="true"
         max-width="2xl"
@@ -11,9 +11,9 @@ import { Modal } from '@inertiaui/modal-vue';
         panel-classes="bg-red-100 min-h-screen"
         position="left"
         :slideover="true"
-     >
+    >
         <div class="flex justify-between">
             <h2 class="text-lg font-medium text-gray-900">Slideover with Props</h2>
         </div>
-     </Modal>
+    </Modal>
 </template>

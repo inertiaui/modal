@@ -4,7 +4,7 @@ function log(value) {
     console.log(value)
 }
 
-export default function ModalEvents({ }) {
+export default function ModalEvents({}) {
     return (
         <Modal
             onSuccess={() => log('success')}
@@ -13,9 +13,7 @@ export default function ModalEvents({ }) {
             onClose={() => log('close')}
             onAfterLeave={() => log('after-leave')}
         >
-            <ModalLink href="/roles/create">
-                Create role
-            </ModalLink>
+            <ModalLink href="/roles/create">Create role</ModalLink>
         </Modal>
     )
 }

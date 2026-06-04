@@ -36,7 +36,10 @@ export class ResponseCache<T> {
         })
 
         if (cacheFor > 0) {
-            this.timers.set(key, setTimeout(() => this.delete(key), cacheFor))
+            this.timers.set(
+                key,
+                setTimeout(() => this.delete(key), cacheFor),
+            )
         }
     }
 

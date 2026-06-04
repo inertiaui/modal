@@ -1,6 +1,7 @@
-import { h, onMounted, nextTick, watch } from 'vue'
 import { inBrowser, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
+import { h, onMounted, nextTick, watch } from 'vue'
+
 import VersionBanner from './VersionBanner.vue'
 
 export default {
@@ -29,7 +30,10 @@ export default {
             }
 
             onMounted(() => nextTick(updateVersionLabel))
-            watch(() => route.path, () => nextTick(updateVersionLabel))
+            watch(
+                () => route.path,
+                () => nextTick(updateVersionLabel),
+            )
 
             // Click on the tab with the given label text
             function showCodeWithLabel(labelText) {

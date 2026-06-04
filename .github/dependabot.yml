@@ -3,55 +3,55 @@
 
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 5
-    labels:
-      - "dependencies"
-    groups:
-      github-actions:
-        patterns:
-          - "*"
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 5
-    target-branch: "2.x"
-    labels:
-      - "dependencies"
-    groups:
-      github-actions:
-        patterns:
-          - "*"
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 5
-    labels:
-      - "dependencies"
-    groups:
-      dev-dependencies:
-        dependency-type: "development"
-        patterns:
-          - "*"
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 5
-    target-branch: "2.x"
-    labels:
-      - "dependencies"
-    groups:
-      dev-dependencies:
-        dependency-type: "development"
-        patterns:
-          - "*"
+    - package-ecosystem: 'github-actions'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+      cooldown:
+          default-days: 5
+      labels:
+          - 'dependencies'
+      groups:
+          github-actions:
+              patterns:
+                  - '*'
+    - package-ecosystem: 'github-actions'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+      cooldown:
+          default-days: 5
+      target-branch: '2.x'
+      labels:
+          - 'dependencies'
+      groups:
+          github-actions:
+              patterns:
+                  - '*'
+    - package-ecosystem: 'npm'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+      cooldown:
+          default-days: 5
+      labels:
+          - 'dependencies'
+      groups:
+          dev-dependencies:
+              dependency-type: 'development'
+              patterns:
+                  - '*'
+    - package-ecosystem: 'npm'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+      cooldown:
+          default-days: 5
+      target-branch: '2.x'
+      labels:
+          - 'dependencies'
+      groups:
+          dev-dependencies:
+              dependency-type: 'development'
+              patterns:
+                  - '*'

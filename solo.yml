@@ -1,31 +1,31 @@
 name: modal
 icon: null
 processes:
-  App Webserver:
-    command: php artisan serve
-    working_dir: /Users/pascalbaljet/Sites/modal/demo-app
-    auto_start: true
-    auto_restart: false
-    restart_when_changed: []
-    env: {}
-  React Vite:
-    command: pnpm --filter @inertiaui/modal-react dev
-    working_dir: /Users/pascalbaljet/Sites/modal
-    auto_start: true
-    auto_restart: true
-    restart_when_changed: []
-    env: {}
-  Vue Vite:
-    command: pnpm --filter @inertiaui/modal-vue dev
-    working_dir: /Users/pascalbaljet/Sites/modal
-    auto_start: true
-    auto_restart: true
-    restart_when_changed: []
-    env: {}
-  App Vite:
-    command: pnpm --filter demo-app dev
-    working_dir: /Users/pascalbaljet/Sites/modal
-    auto_start: true
-    auto_restart: true
-    restart_when_changed: []
-    env: {}
+    App Webserver:
+        command: php artisan serve
+        working_dir: /Users/pascalbaljet/Sites/modal/demo-app
+        auto_start: true
+        auto_restart: false
+        restart_when_changed: []
+        env: {}
+    React Vite:
+        command: pnpm --filter @inertiaui/modal-react dev
+        working_dir: /Users/pascalbaljet/Sites/modal
+        auto_start: true
+        auto_restart: true
+        restart_when_changed: []
+        env: {}
+    Vue Vite:
+        command: pnpm --filter @inertiaui/modal-vue dev
+        working_dir: /Users/pascalbaljet/Sites/modal
+        auto_start: true
+        auto_restart: true
+        restart_when_changed: []
+        env: {}
+    App Vite:
+        command: pnpm --filter demo-app dev
+        working_dir: /Users/pascalbaljet/Sites/modal
+        auto_start: true
+        auto_restart: true
+        restart_when_changed: []
+        env: {}

@@ -1,9 +1,10 @@
-import { useCallback, useState, useEffect, useMemo, useRef, ReactNode, ElementType, MouseEvent } from 'react'
-import { useModalStack, modalPropNames, prefetch as prefetchModal } from './ModalRoot'
-import { only, rejectNullValues, isStandardDomEvent } from './helpers'
-import { getConfig } from './config'
-import type { Modal, PrefetchOption, HttpMethod } from './types'
 import type { RequestPayload } from '@inertiajs/core'
+import { useCallback, useState, useEffect, useMemo, useRef, ReactNode, ElementType, MouseEvent } from 'react'
+
+import { getConfig } from './config'
+import { only, rejectNullValues, isStandardDomEvent } from './helpers'
+import { useModalStack, modalPropNames, prefetch as prefetchModal } from './ModalRoot'
+import type { Modal, PrefetchOption, HttpMethod } from './types'
 
 interface ModalLinkProps {
     href: string

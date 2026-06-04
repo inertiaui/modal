@@ -1,8 +1,9 @@
 <script setup>
-import { getConfig, getConfigByType } from './config'
 import { inject, onBeforeUnmount, ref, computed, useAttrs, onMounted, watch, unref } from 'vue'
-import { useModalStack } from './modalStack'
+
+import { getConfig, getConfigByType } from './config'
 import ModalRenderer from './ModalRenderer.vue'
+import { useModalStack } from './modalStack'
 
 const props = defineProps({
     name: {
@@ -192,8 +193,5 @@ defineOptions({
     />
 
     <!-- The next modal in the stack -->
-    <ModalRenderer
-        v-if="nextIndex"
-        :index="nextIndex"
-    />
+    <ModalRenderer v-if="nextIndex" :index="nextIndex" />
 </template>

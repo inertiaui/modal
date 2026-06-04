@@ -1,14 +1,15 @@
+import * as dialogUtils from '@inertiaui/vanilla'
 import { createElement } from 'react'
+
 import { getConfig, putConfig, resetConfig } from './config'
-import { useModalIndex } from './ModalRenderer'
-import { useModalStack, ModalRoot, ModalStackProvider, renderApp, initFromPageProps, modalPropNames, prefetch } from './ModalRoot'
-import useModal from './useModal'
 import Deferred from './Deferred'
 import HeadlessModal from './HeadlessModal'
 import Modal from './Modal'
 import ModalLink from './ModalLink'
+import { useModalIndex } from './ModalRenderer'
+import { useModalStack, ModalRoot, ModalStackProvider, renderApp, initFromPageProps, modalPropNames, prefetch } from './ModalRoot'
+import useModal from './useModal'
 import WhenVisible from './WhenVisible'
-import * as dialogUtils from '@inertiaui/vanilla'
 
 // Types
 export type {
@@ -34,12 +35,12 @@ export type { ModalTypeConfig } from './config'
 
 export type { CleanupFunction, FocusTrapOptions, EscapeKeyOptions } from '@inertiaui/vanilla'
 
-const setPageLayout = <T extends { default: { layout?: (page: React.ReactNode) => React.ReactNode } }>(
-    layout: React.ComponentType<{ children?: React.ReactNode }>,
-) => (module: T): T => {
-    module.default.layout = (page) => createElement(layout, { children: page })
-    return module
-}
+const setPageLayout =
+    <T extends { default: { layout?: (page: React.ReactNode) => React.ReactNode } }>(layout: React.ComponentType<{ children?: React.ReactNode }>) =>
+    (module: T): T => {
+        module.default.layout = (page) => createElement(layout, { children: page })
+        return module
+    }
 
 export {
     Deferred,
