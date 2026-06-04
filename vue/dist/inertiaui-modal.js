@@ -1,8 +1,8 @@
-import { Fragment, Teleport, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, h, inject, markRaw, mergeProps, nextTick, normalizeClass, onBeforeUnmount, onMounted, onUnmounted, openBlock, provide, readonly, ref, renderSlot, resolveDynamicComponent, toValue, unref, useAttrs, watch, withCtx, withModifiers } from "vue";
 import * as dialogUtils from "@inertiaui/vanilla";
 import { animate, cancelAnimations, createFocusTrap, except, generateId, kebabCase, lockScroll, markAriaHidden, onEscapeKey, only, rejectNullValues, sameUrlPath } from "@inertiaui/vanilla";
-import { progress, router, usePage } from "@inertiajs/vue3";
+import { Fragment, Teleport, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, h, inject, markRaw, mergeProps, nextTick, normalizeClass, onBeforeUnmount, onMounted, onUnmounted, openBlock, provide, readonly, ref, renderSlot, resolveDynamicComponent, toValue, unref, useAttrs, watch, withCtx, withModifiers } from "vue";
 import { mergeDataIntoQueryString } from "@inertiajs/core";
+import { progress, router, usePage } from "@inertiajs/vue3";
 import Axios from "axios";
 //#region src/config.ts
 var defaultConfig = {
@@ -46,11 +46,11 @@ var Config = class {
 				appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
 				modal: {
 					...defaultConfig.modal,
-					...key.modal ?? {}
+					...key.modal
 				},
 				slideover: {
 					...defaultConfig.slideover,
-					...key.slideover ?? {}
+					...key.slideover
 				}
 			};
 			return;
@@ -77,32 +77,32 @@ var putConfig = (key, value) => configInstance.put(key, value);
 var getConfig = (key) => configInstance.get(key);
 var getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
 //#endregion
+//#region src/Deferred.vue
+var _sfc_main = {
+	__name: "Deferred",
+	props: { data: {
+		type: [String, Array],
+		required: true
+	} },
+	setup(__props) {
+		const props = __props;
+		const modalContext = inject("modalContext");
+		if (!modalContext) throw new Error("Deferred component must be used inside a Modal component");
+		const allKeysAreAvailable = computed(() => {
+			return (Array.isArray(props.data) ? props.data : [props.data]).every((key) => modalContext.value.props[key] !== void 0);
+		});
+		return (_ctx, _cache) => {
+			return allKeysAreAvailable.value ? renderSlot(_ctx.$slots, "default", { key: 0 }) : renderSlot(_ctx.$slots, "fallback", { key: 1 });
+		};
+	}
+};
+//#endregion
 //#region src/helpers.ts
 var generateIdUsingCallback = null;
 function generateId$1(prefix = "inertiaui_modal_") {
 	if (generateIdUsingCallback) return generateIdUsingCallback();
 	return generateId(prefix);
 }
-//#endregion
-//#region src/ModalRenderer.vue
-var _sfc_main$9 = {
-	__name: "ModalRenderer",
-	props: { index: {
-		type: Number,
-		required: true
-	} },
-	setup(__props) {
-		const props = __props;
-		const modalStack = useModalStack();
-		const modalContext = computed(() => {
-			return modalStack.stack.value[props.index];
-		});
-		provide("modalContext", modalContext);
-		return (_ctx, _cache) => {
-			return modalContext.value?.component ? (openBlock(), createBlock(unref(modalContext).component, mergeProps({ key: 0 }, unref(only)(modalContext.value.props ?? {}, modalContext.value.getComponentPropKeys(), true), { onModalEvent: _cache[0] || (_cache[0] = (event, ...args) => modalContext.value.emit(event, ...args)) }), null, 16)) : createCommentVNode("", true);
-		};
-	}
-};
 //#endregion
 //#region src/ModalRoot.vue
 var _sfc_main$4 = {
@@ -358,7 +358,7 @@ var Modal = class {
 				data: method === "get" ? {} : data,
 				params: method === "get" ? data : {},
 				headers: {
-					...options.headers ?? {},
+					...options.headers,
 					Accept: "text/html, application/xhtml+xml",
 					"X-Inertia": "true",
 					"X-Inertia-Partial-Component": this.response.component,
@@ -535,27 +535,22 @@ function useModalStack() {
 	};
 }
 //#endregion
-//#region src/useModal.ts
-function useModal() {
-	return toValue(inject("modalContext", null));
-}
-//#endregion
-//#region src/Deferred.vue
-var _sfc_main = {
-	__name: "Deferred",
-	props: { data: {
-		type: [String, Array],
+//#region src/ModalRenderer.vue
+var _sfc_main$9 = {
+	__name: "ModalRenderer",
+	props: { index: {
+		type: Number,
 		required: true
 	} },
 	setup(__props) {
 		const props = __props;
-		const modalContext = inject("modalContext");
-		if (!modalContext) throw new Error("Deferred component must be used inside a Modal component");
-		const allKeysAreAvailable = computed(() => {
-			return (Array.isArray(props.data) ? props.data : [props.data]).every((key) => modalContext.value.props[key] !== void 0);
+		const modalStack = useModalStack();
+		const modalContext = computed(() => {
+			return modalStack.stack.value[props.index];
 		});
+		provide("modalContext", modalContext);
 		return (_ctx, _cache) => {
-			return allKeysAreAvailable.value ? renderSlot(_ctx.$slots, "default", { key: 0 }) : renderSlot(_ctx.$slots, "fallback", { key: 1 });
+			return modalContext.value?.component ? (openBlock(), createBlock(unref(modalContext).component, mergeProps({ key: 0 }, unref(only)(modalContext.value.props ?? {}, modalContext.value.getComponentPropKeys(), true), { onModalEvent: _cache[0] || (_cache[0] = (event, ...args) => modalContext.value.emit(event, ...args)) }), null, 16)) : createCommentVNode("", true);
 		};
 	}
 };
@@ -719,6 +714,11 @@ var _sfc_main$1 = /* @__PURE__ */ Object.assign({ inheritAttrs: false }, {
 	}
 });
 //#endregion
+//#region src/useModal.ts
+function useModal() {
+	return toValue(inject("modalContext", null));
+}
+//#endregion
 //#region src/CloseButton.vue
 var _sfc_main$8 = {
 	__name: "CloseButton",
@@ -772,12 +772,12 @@ var _hoisted_1$2 = { class: "im-modal-container fixed inset-0 overflow-y-auto p-
 var _hoisted_2$2 = ["data-inertiaui-modal-entered"];
 var _hoisted_3$1 = {
 	key: 0,
-	class: "absolute right-0 top-0 pr-3 pt-3"
+	class: "absolute top-0 right-0 pt-3 pr-3"
 };
 var _hoisted_4$1 = ["data-inertiaui-modal-entered"];
 var _hoisted_5$1 = {
 	key: 0,
-	class: "absolute right-0 top-0 pr-3 pt-3"
+	class: "absolute top-0 right-0 pt-3 pr-3"
 };
 var _sfc_main$7 = {
 	__name: "ModalContent",
@@ -997,16 +997,16 @@ var _sfc_main$7 = {
 };
 //#endregion
 //#region src/SlideoverContent.vue
-var _hoisted_1$1 = { class: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden" };
+var _hoisted_1$1 = { class: "im-slideover-container fixed inset-0 overflow-x-hidden overflow-y-auto" };
 var _hoisted_2$1 = ["data-inertiaui-modal-entered"];
 var _hoisted_3 = {
 	key: 0,
-	class: "absolute right-0 top-0 pr-3 pt-3"
+	class: "absolute top-0 right-0 pt-3 pr-3"
 };
 var _hoisted_4 = ["data-inertiaui-modal-entered"];
 var _hoisted_5 = {
 	key: 0,
-	class: "absolute right-0 top-0 pr-3 pt-3"
+	class: "absolute top-0 right-0 pt-3 pr-3"
 };
 var _sfc_main$6 = {
 	__name: "SlideoverContent",
@@ -1195,7 +1195,7 @@ var _sfc_main$6 = {
 				config: __props.config
 			})], 10, _hoisted_2$1)], 2)], 2)])], 34)) : isRendered.value ? (openBlock(), createElementBlock("div", {
 				key: 1,
-				class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
+				class: "im-slideover-container fixed inset-0 z-40 overflow-x-hidden overflow-y-auto",
 				onMousedown: withModifiers(handleClickOutside, ["self"])
 			}, [createElementVNode("div", {
 				class: normalizeClass(["im-slideover-positioner flex min-h-full items-center", {

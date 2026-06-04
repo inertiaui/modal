@@ -1,11 +1,11 @@
 import { getConfig, putConfig, resetConfig } from './config';
-import { useModalStack, initFromPageProps, renderApp, Modal as ModalClass, modalPropNames, prefetch, ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, PrefetchOption, PrefetchOptions } from './modalStack';
-import { default as useModal } from './useModal';
 import { default as Deferred } from './Deferred.vue';
 import { default as HeadlessModal } from './HeadlessModal.vue';
 import { default as ModalComponent } from './Modal.vue';
 import { default as ModalLink } from './ModalLink.vue';
 import { default as ModalRoot } from './ModalRoot.vue';
+import { useModalStack, initFromPageProps, renderApp, Modal as ModalClass, modalPropNames, prefetch, ModalStack, ModalResponseData, ModalConfig, ReloadOptions, VisitOptions, PrefetchOption, PrefetchOptions } from './modalStack';
+import { default as useModal } from './useModal';
 import { default as WhenVisible } from './WhenVisible.vue';
 import * as dialogUtils from '@inertiaui/vanilla';
 declare function visitModal(url: string, options?: VisitOptions): Promise<ModalClass>;

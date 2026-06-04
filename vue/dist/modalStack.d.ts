@@ -1,6 +1,6 @@
-import { h, Component, Ref, ComputedRef } from 'vue';
 import { RequestPayload } from '@inertiajs/core';
 import { AxiosResponse } from 'axios';
+import { h, Component, Ref, ComputedRef } from 'vue';
 export interface ModalResponseData {
     id?: string;
     component: string;

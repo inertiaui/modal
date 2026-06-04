@@ -1,6 +1,6 @@
+import { RequestPayload } from '@inertiajs/core';
 import { AxiosResponse } from 'axios';
 import { ComponentType, ReactNode } from 'react';
-import { RequestPayload } from '@inertiajs/core';
 export interface ModalResponseData {
     id?: string;
     component: string;
