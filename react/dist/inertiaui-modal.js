@@ -1,8 +1,8 @@
-import React, { createContext, createElement, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
 import * as dialogUtils from "@inertiaui/vanilla";
 import { animate, cancelAnimations, createFocusTrap, except, generateId, isStandardDomEvent, kebabCase, lockScroll, markAriaHidden, onEscapeKey, only, rejectNullValues, sameUrlPath } from "@inertiaui/vanilla";
-import { http, progress, router, usePage } from "@inertiajs/react";
+import React, { createContext, createElement, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
 import { mergeDataIntoQueryString } from "@inertiajs/core";
+import { http, progress, router, usePage } from "@inertiajs/react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { createPortal } from "react-dom";
 //#region src/config.ts
@@ -47,11 +47,11 @@ var Config = class {
 				appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
 				modal: {
 					...defaultConfig.modal,
-					...key.modal ?? {}
+					...key.modal
 				},
 				slideover: {
 					...defaultConfig.slideover,
-					...key.slideover ?? {}
+					...key.slideover
 				}
 			};
 			return;
@@ -77,16 +77,6 @@ var resetConfig = () => configInstance.reset();
 var putConfig = (key, value) => configInstance.put(key, value);
 var getConfig = (key) => configInstance.get(key);
 var getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
-//#endregion
-//#region src/helpers.ts
-function parseResponseData(data) {
-	return typeof data === "string" ? JSON.parse(data) : data;
-}
-var generateIdUsingCallback = null;
-function generateId$1(prefix = "inertiaui_") {
-	if (generateIdUsingCallback) return generateIdUsingCallback();
-	return generateId(prefix);
-}
 //#endregion
 //#region src/cache.ts
 var ResponseCache = class {
@@ -133,6 +123,16 @@ var ResponseCache = class {
 		this.inFlight.delete(key);
 	}
 };
+//#endregion
+//#region src/helpers.ts
+function parseResponseData(data) {
+	return typeof data === "string" ? JSON.parse(data) : data;
+}
+var generateIdUsingCallback = null;
+function generateId$1(prefix = "inertiaui_") {
+	if (generateIdUsingCallback) return generateIdUsingCallback();
+	return generateId(prefix);
+}
 //#endregion
 //#region src/ModalRoot.tsx
 var ModalStackContext = createContext(null);
@@ -306,7 +306,7 @@ var ModalStackProvider = ({ children }) => {
 					data: method === "get" ? void 0 : data,
 					params: method === "get" ? data : void 0,
 					headers: {
-						...options.headers ?? {},
+						...options.headers,
 						Accept: "text/html, application/xhtml+xml",
 						"X-Inertia": "true",
 						"X-Inertia-Partial-Component": this.response.component,
@@ -755,6 +755,21 @@ var HeadlessModal = forwardRef((allProps, ref) => {
 });
 HeadlessModal.displayName = "HeadlessModal";
 //#endregion
+//#region ../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
+function r(e) {
+	var t, f, n = "";
+	if ("string" == typeof e || "number" == typeof e) n += e;
+	else if ("object" == typeof e) if (Array.isArray(e)) {
+		var o = e.length;
+		for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+	} else for (f in e) e[f] && (n && (n += " "), n += f);
+	return n;
+}
+function clsx() {
+	for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
+	return n;
+}
+//#endregion
 //#region src/CloseButton.tsx
 function CloseButton({ onClick }) {
 	return /* @__PURE__ */ jsxs("button", {
@@ -779,21 +794,6 @@ function CloseButton({ onClick }) {
 			})
 		})]
 	});
-}
-//#endregion
-//#region ../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
-function r(e) {
-	var t, f, n = "";
-	if ("string" == typeof e || "number" == typeof e) n += e;
-	else if ("object" == typeof e) if (Array.isArray(e)) {
-		var o = e.length;
-		for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
-	} else for (f in e) e[f] && (n && (n += " "), n += f);
-	return n;
-}
-function clsx() {
-	for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
-	return n;
 }
 //#endregion
 //#region src/constants.ts
@@ -1001,7 +1001,7 @@ var ModalContent = ({ modalContext, config, useNativeDialog, isFirstModal, onAft
 		className: `im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`,
 		"data-inertiaui-modal-entered": entered,
 		children: [config.closeButton && /* @__PURE__ */ jsx("div", {
-			className: "absolute right-0 top-0 pr-3 pt-3",
+			className: "absolute top-0 right-0 pt-3 pr-3",
 			children: /* @__PURE__ */ jsx(CloseButton, { onClick: modalContext.close })
 		}), typeof children === "function" ? children({
 			modalContext,
@@ -1241,7 +1241,7 @@ var SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, o
 		className: `im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`,
 		"data-inertiaui-modal-entered": entered,
 		children: [config.closeButton && /* @__PURE__ */ jsx("div", {
-			className: "absolute right-0 top-0 pr-3 pt-3",
+			className: "absolute top-0 right-0 pt-3 pr-3",
 			children: /* @__PURE__ */ jsx(CloseButton, { onClick: modalContext.close })
 		}), typeof children === "function" ? children({
 			modalContext,
@@ -1254,7 +1254,7 @@ var SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, o
 		onCancel: handleCancel,
 		onClick: handleDialogClick,
 		children: /* @__PURE__ */ jsx("div", {
-			className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden",
+			className: "im-slideover-container fixed inset-0 overflow-x-hidden overflow-y-auto",
 			children: /* @__PURE__ */ jsx("div", {
 				className: clsx("im-slideover-positioner flex min-h-full items-center", {
 					"justify-start rtl:justify-end": config?.position === "left",
@@ -1270,7 +1270,7 @@ var SlideoverContent = ({ modalContext, config, useNativeDialog, isFirstModal, o
 	});
 	if (!isRendered) return null;
 	return /* @__PURE__ */ jsx("div", {
-		className: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
+		className: "im-slideover-container fixed inset-0 z-40 overflow-x-hidden overflow-y-auto",
 		onMouseDown: handleClickOutside,
 		children: /* @__PURE__ */ jsx("div", {
 			className: clsx("im-slideover-positioner flex min-h-full items-center", {

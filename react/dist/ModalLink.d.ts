@@ -1,6 +1,6 @@
+import { RequestPayload } from '@inertiajs/core';
 import { ReactNode, ElementType } from 'react';
 import { PrefetchOption, HttpMethod } from './types';
-import { RequestPayload } from '@inertiajs/core';
 interface ModalLinkProps {
     href: string;
     method?: HttpMethod;

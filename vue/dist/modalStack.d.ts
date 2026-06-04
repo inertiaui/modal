@@ -1,6 +1,6 @@
+import { RequestPayload, HttpResponse, Method } from '@inertiajs/core';
 import { h, Component, Ref, ComputedRef } from 'vue';
 import { ModalTypeConfig } from './config';
-import { RequestPayload, HttpResponse, Method } from '@inertiajs/core';
 export interface ModalResponseData {
     id?: string;
     component: string;

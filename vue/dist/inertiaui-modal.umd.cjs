@@ -1,12 +1,12 @@
 (function(global, factory) {
-	typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue"), require("@inertiaui/vanilla"), require("@inertiajs/vue3"), require("@inertiajs/core")) : typeof define === "function" && define.amd ? define([
+	typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("@inertiaui/vanilla"), require("vue"), require("@inertiajs/core"), require("@inertiajs/vue3")) : typeof define === "function" && define.amd ? define([
 		"exports",
-		"vue",
 		"@inertiaui/vanilla",
-		"@inertiajs/vue3",
-		"@inertiajs/core"
-	], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.Vue, global.InertiaUIVanilla, global.InertiaVue3, global.InertiaCore));
-})(this, function(exports, vue, _inertiaui_vanilla, _inertiajs_vue3, _inertiajs_core) {
+		"vue",
+		"@inertiajs/core",
+		"@inertiajs/vue3"
+	], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.InertiaUIVanilla, global.Vue, global.InertiaCore, global.InertiaVue3));
+})(this, function(exports, _inertiaui_vanilla, vue, _inertiajs_core, _inertiajs_vue3) {
 	Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 	//#region \0rolldown/runtime.js
 	var __create = Object.create;
@@ -73,11 +73,11 @@
 					appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
 					modal: {
 						...defaultConfig.modal,
-						...key.modal ?? {}
+						...key.modal
 					},
 					slideover: {
 						...defaultConfig.slideover,
-						...key.slideover ?? {}
+						...key.slideover
 					}
 				};
 				return;
@@ -103,6 +103,26 @@
 	var putConfig = (key, value) => configInstance.put(key, value);
 	var getConfig = (key) => configInstance.get(key);
 	var getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
+	//#endregion
+	//#region src/Deferred.vue
+	var _sfc_main = {
+		__name: "Deferred",
+		props: { data: {
+			type: [String, Array],
+			required: true
+		} },
+		setup(__props) {
+			const props = __props;
+			const modalContext = (0, vue.inject)("modalContext");
+			if (!modalContext) throw new Error("Deferred component must be used inside a Modal component");
+			const allKeysAreAvailable = (0, vue.computed)(() => {
+				return (Array.isArray(props.data) ? props.data : [props.data]).every((key) => modalContext.value.props[key] !== void 0);
+			});
+			return (_ctx, _cache) => {
+				return allKeysAreAvailable.value ? (0, vue.renderSlot)(_ctx.$slots, "default", { key: 0 }) : (0, vue.renderSlot)(_ctx.$slots, "fallback", { key: 1 });
+			};
+		}
+	};
 	//#endregion
 	//#region src/helpers.ts
 	function parseResponseData(data) {
@@ -157,26 +177,6 @@
 		}
 		deleteInFlight(key) {
 			this.inFlight.delete(key);
-		}
-	};
-	//#endregion
-	//#region src/ModalRenderer.vue
-	var _sfc_main$9 = {
-		__name: "ModalRenderer",
-		props: { index: {
-			type: Number,
-			required: true
-		} },
-		setup(__props) {
-			const props = __props;
-			const modalStack = useModalStack();
-			const modalContext = (0, vue.computed)(() => {
-				return modalStack.stack.value[props.index];
-			});
-			(0, vue.provide)("modalContext", modalContext);
-			return (_ctx, _cache) => {
-				return modalContext.value?.component ? ((0, vue.openBlock)(), (0, vue.createBlock)((0, vue.unref)(modalContext).component, (0, vue.mergeProps)({ key: 0 }, (0, vue.unref)(_inertiaui_vanilla.only)(modalContext.value.props ?? {}, modalContext.value.getComponentPropKeys(), true), { onModalEvent: _cache[0] || (_cache[0] = (event, ...args) => modalContext.value.emit(event, ...args)) }), null, 16)) : (0, vue.createCommentVNode)("", true);
-			};
 		}
 	};
 	//#endregion
@@ -411,7 +411,7 @@
 					data: method === "get" ? void 0 : data,
 					params: method === "get" ? data : void 0,
 					headers: {
-						...options.headers ?? {},
+						...options.headers,
 						Accept: "text/html, application/xhtml+xml",
 						"X-Inertia": "true",
 						"X-Inertia-Partial-Component": this.response.component,
@@ -592,27 +592,22 @@
 		};
 	}
 	//#endregion
-	//#region src/useModal.ts
-	function useModal() {
-		return (0, vue.toValue)((0, vue.inject)("modalContext", null));
-	}
-	//#endregion
-	//#region src/Deferred.vue
-	var _sfc_main = {
-		__name: "Deferred",
-		props: { data: {
-			type: [String, Array],
+	//#region src/ModalRenderer.vue
+	var _sfc_main$9 = {
+		__name: "ModalRenderer",
+		props: { index: {
+			type: Number,
 			required: true
 		} },
 		setup(__props) {
 			const props = __props;
-			const modalContext = (0, vue.inject)("modalContext");
-			if (!modalContext) throw new Error("Deferred component must be used inside a Modal component");
-			const allKeysAreAvailable = (0, vue.computed)(() => {
-				return (Array.isArray(props.data) ? props.data : [props.data]).every((key) => modalContext.value.props[key] !== void 0);
+			const modalStack = useModalStack();
+			const modalContext = (0, vue.computed)(() => {
+				return modalStack.stack.value[props.index];
 			});
+			(0, vue.provide)("modalContext", modalContext);
 			return (_ctx, _cache) => {
-				return allKeysAreAvailable.value ? (0, vue.renderSlot)(_ctx.$slots, "default", { key: 0 }) : (0, vue.renderSlot)(_ctx.$slots, "fallback", { key: 1 });
+				return modalContext.value?.component ? ((0, vue.openBlock)(), (0, vue.createBlock)((0, vue.unref)(modalContext).component, (0, vue.mergeProps)({ key: 0 }, (0, vue.unref)(_inertiaui_vanilla.only)(modalContext.value.props ?? {}, modalContext.value.getComponentPropKeys(), true), { onModalEvent: _cache[0] || (_cache[0] = (event, ...args) => modalContext.value.emit(event, ...args)) }), null, 16)) : (0, vue.createCommentVNode)("", true);
 			};
 		}
 	};
@@ -776,6 +771,11 @@
 		}
 	});
 	//#endregion
+	//#region src/useModal.ts
+	function useModal() {
+		return (0, vue.toValue)((0, vue.inject)("modalContext", null));
+	}
+	//#endregion
 	//#region src/CloseButton.vue
 	var _sfc_main$8 = {
 		__name: "CloseButton",
@@ -829,12 +829,12 @@
 	var _hoisted_2$2 = ["data-inertiaui-modal-entered"];
 	var _hoisted_3$1 = {
 		key: 0,
-		class: "absolute right-0 top-0 pr-3 pt-3"
+		class: "absolute top-0 right-0 pt-3 pr-3"
 	};
 	var _hoisted_4$1 = ["data-inertiaui-modal-entered"];
 	var _hoisted_5$1 = {
 		key: 0,
-		class: "absolute right-0 top-0 pr-3 pt-3"
+		class: "absolute top-0 right-0 pt-3 pr-3"
 	};
 	var _sfc_main$7 = {
 		__name: "ModalContent",
@@ -1054,16 +1054,16 @@
 	};
 	//#endregion
 	//#region src/SlideoverContent.vue
-	var _hoisted_1$1 = { class: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden" };
+	var _hoisted_1$1 = { class: "im-slideover-container fixed inset-0 overflow-x-hidden overflow-y-auto" };
 	var _hoisted_2$1 = ["data-inertiaui-modal-entered"];
 	var _hoisted_3 = {
 		key: 0,
-		class: "absolute right-0 top-0 pr-3 pt-3"
+		class: "absolute top-0 right-0 pt-3 pr-3"
 	};
 	var _hoisted_4 = ["data-inertiaui-modal-entered"];
 	var _hoisted_5 = {
 		key: 0,
-		class: "absolute right-0 top-0 pr-3 pt-3"
+		class: "absolute top-0 right-0 pt-3 pr-3"
 	};
 	var _sfc_main$6 = {
 		__name: "SlideoverContent",
@@ -1252,7 +1252,7 @@
 					config: __props.config
 				})], 10, _hoisted_2$1)], 2)], 2)])], 34)) : isRendered.value ? ((0, vue.openBlock)(), (0, vue.createElementBlock)("div", {
 					key: 1,
-					class: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
+					class: "im-slideover-container fixed inset-0 z-40 overflow-x-hidden overflow-y-auto",
 					onMousedown: (0, vue.withModifiers)(handleClickOutside, ["self"])
 				}, [(0, vue.createElementVNode)("div", {
 					class: (0, vue.normalizeClass)(["im-slideover-positioner flex min-h-full items-center", {

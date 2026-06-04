@@ -1,14 +1,14 @@
 (function(global, factory) {
-	typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react"), require("@inertiaui/vanilla"), require("@inertiajs/react"), require("@inertiajs/core"), require("react/jsx-runtime"), require("react-dom")) : typeof define === "function" && define.amd ? define([
+	typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("@inertiaui/vanilla"), require("react"), require("@inertiajs/core"), require("@inertiajs/react"), require("react/jsx-runtime"), require("react-dom")) : typeof define === "function" && define.amd ? define([
 		"exports",
-		"react",
 		"@inertiaui/vanilla",
-		"@inertiajs/react",
+		"react",
 		"@inertiajs/core",
+		"@inertiajs/react",
 		"react/jsx-runtime",
 		"react-dom"
-	], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.React, global.InertiaUIVanilla, global.InertiaReact, global.InertiaCore, global.ReactJSXRuntime, global.ReactDOM));
-})(this, function(exports, react, _inertiaui_vanilla, _inertiajs_react, _inertiajs_core, react_jsx_runtime, react_dom) {
+	], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.InertiaUIModal = {}, global.InertiaUIVanilla, global.React, global.InertiaCore, global.InertiaReact, global.ReactJSXRuntime, global.ReactDOM));
+})(this, function(exports, _inertiaui_vanilla, react, _inertiajs_core, _inertiajs_react, react_jsx_runtime, react_dom) {
 	Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 	//#region \0rolldown/runtime.js
 	var __create = Object.create;
@@ -32,8 +32,8 @@
 		enumerable: true
 	}) : target, mod));
 	//#endregion
-	react = __toESM(react, 1);
 	_inertiaui_vanilla = __toESM(_inertiaui_vanilla, 1);
+	react = __toESM(react, 1);
 	//#region src/config.ts
 	var defaultConfig = {
 		type: "modal",
@@ -76,11 +76,11 @@
 					appElement: key.appElement !== void 0 ? key.appElement : defaultConfig.appElement,
 					modal: {
 						...defaultConfig.modal,
-						...key.modal ?? {}
+						...key.modal
 					},
 					slideover: {
 						...defaultConfig.slideover,
-						...key.slideover ?? {}
+						...key.slideover
 					}
 				};
 				return;
@@ -106,16 +106,6 @@
 	var putConfig = (key, value) => configInstance.put(key, value);
 	var getConfig = (key) => configInstance.get(key);
 	var getConfigByType = (isSlideover, key) => configInstance.get(isSlideover ? `slideover.${key}` : `modal.${key}`);
-	//#endregion
-	//#region src/helpers.ts
-	function parseResponseData(data) {
-		return typeof data === "string" ? JSON.parse(data) : data;
-	}
-	var generateIdUsingCallback = null;
-	function generateId(prefix = "inertiaui_") {
-		if (generateIdUsingCallback) return generateIdUsingCallback();
-		return (0, _inertiaui_vanilla.generateId)(prefix);
-	}
 	//#endregion
 	//#region src/cache.ts
 	var ResponseCache = class {
@@ -162,6 +152,16 @@
 			this.inFlight.delete(key);
 		}
 	};
+	//#endregion
+	//#region src/helpers.ts
+	function parseResponseData(data) {
+		return typeof data === "string" ? JSON.parse(data) : data;
+	}
+	var generateIdUsingCallback = null;
+	function generateId(prefix = "inertiaui_") {
+		if (generateIdUsingCallback) return generateIdUsingCallback();
+		return (0, _inertiaui_vanilla.generateId)(prefix);
+	}
 	//#endregion
 	//#region src/ModalRoot.tsx
 	var ModalStackContext = (0, react.createContext)(null);
@@ -335,7 +335,7 @@
 						data: method === "get" ? void 0 : data,
 						params: method === "get" ? data : void 0,
 						headers: {
-							...options.headers ?? {},
+							...options.headers,
 							Accept: "text/html, application/xhtml+xml",
 							"X-Inertia": "true",
 							"X-Inertia-Partial-Component": this.response.component,
@@ -784,6 +784,21 @@
 	});
 	HeadlessModal.displayName = "HeadlessModal";
 	//#endregion
+	//#region ../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
+	function r(e) {
+		var t, f, n = "";
+		if ("string" == typeof e || "number" == typeof e) n += e;
+		else if ("object" == typeof e) if (Array.isArray(e)) {
+			var o = e.length;
+			for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+		} else for (f in e) e[f] && (n && (n += " "), n += f);
+		return n;
+	}
+	function clsx() {
+		for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
+		return n;
+	}
+	//#endregion
 	//#region src/CloseButton.tsx
 	function CloseButton({ onClick }) {
 		return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
@@ -808,21 +823,6 @@
 				})
 			})]
 		});
-	}
-	//#endregion
-	//#region ../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
-	function r(e) {
-		var t, f, n = "";
-		if ("string" == typeof e || "number" == typeof e) n += e;
-		else if ("object" == typeof e) if (Array.isArray(e)) {
-			var o = e.length;
-			for (t = 0; t < o; t++) e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
-		} else for (f in e) e[f] && (n && (n += " "), n += f);
-		return n;
-	}
-	function clsx() {
-		for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
-		return n;
 	}
 	//#endregion
 	//#region src/constants.ts
@@ -1030,7 +1030,7 @@
 			className: `im-modal-content relative ${config.paddingClasses} ${config.panelClasses}`,
 			"data-inertiaui-modal-entered": entered,
 			children: [config.closeButton && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-				className: "absolute right-0 top-0 pr-3 pt-3",
+				className: "absolute top-0 right-0 pt-3 pr-3",
 				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CloseButton, { onClick: modalContext.close })
 			}), typeof children === "function" ? children({
 				modalContext,
@@ -1270,7 +1270,7 @@
 			className: `im-slideover-content relative ${config.paddingClasses} ${config.panelClasses}`,
 			"data-inertiaui-modal-entered": entered,
 			children: [config.closeButton && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-				className: "absolute right-0 top-0 pr-3 pt-3",
+				className: "absolute top-0 right-0 pt-3 pr-3",
 				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CloseButton, { onClick: modalContext.close })
 			}), typeof children === "function" ? children({
 				modalContext,
@@ -1283,7 +1283,7 @@
 			onCancel: handleCancel,
 			onClick: handleDialogClick,
 			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-				className: "im-slideover-container fixed inset-0 overflow-y-auto overflow-x-hidden",
+				className: "im-slideover-container fixed inset-0 overflow-x-hidden overflow-y-auto",
 				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 					className: clsx("im-slideover-positioner flex min-h-full items-center", {
 						"justify-start rtl:justify-end": config?.position === "left",
@@ -1299,7 +1299,7 @@
 		});
 		if (!isRendered) return null;
 		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-			className: "im-slideover-container fixed inset-0 z-40 overflow-y-auto overflow-x-hidden",
+			className: "im-slideover-container fixed inset-0 z-40 overflow-x-hidden overflow-y-auto",
 			onMouseDown: handleClickOutside,
 			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 				className: clsx("im-slideover-positioner flex min-h-full items-center", {
