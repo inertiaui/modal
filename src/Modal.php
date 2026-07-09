@@ -134,7 +134,9 @@ class Modal implements Responsable
     }
 
     /**
-     * Determine whether the referer may be used as a base URL candidate.
+     * Determine whether the referer may be used as a base URL candidate. Relative
+     * referers are always accepted; absolute referers must match the origin of
+     * the current request or the configured base URL.
      */
     protected function isAcceptableReferer(Request $request, ?string $referer): bool
     {
@@ -144,23 +146,16 @@ class Modal implements Responsable
 
         $refererOrigin = $this->extractOrigin($referer);
 
-        if ($refererOrigin === null) {
-            return true;
-        }
-
-        if ($refererOrigin === $this->extractOriginFromRequest($request)) {
-            return true;
-        }
-
-        $baseUrl = $this->getBaseUrl();
-
-        return $baseUrl !== null && $refererOrigin === $this->extractOrigin($baseUrl);
+        return $refererOrigin === null
+            || $refererOrigin === strtolower($request->getSchemeAndHttpHost())
+            || $refererOrigin === $this->extractOrigin((string) $this->getBaseUrl());
     }
 
     /**
-     * @return array{scheme: string, host: string, port: int|null}|null
+     * Extract the normalized origin (scheme://host[:port], default ports omitted)
+     * from a URL, or null when the URL has no scheme and host.
      */
-    protected function extractOrigin(string $url): ?array
+    protected function extractOrigin(string $url): ?string
     {
         $parts = parse_url($url);
 
@@ -168,27 +163,14 @@ class Modal implements Responsable
             return null;
         }
 
-        return [
-            'scheme' => strtolower($parts['scheme']),
-            'host' => strtolower($parts['host']),
-            'port' => $parts['port'] ?? match (strtolower($parts['scheme'])) {
-                'http' => 80,
-                'https' => 443,
-                default => null,
-            },
-        ];
-    }
+        $scheme = strtolower($parts['scheme']);
+        $origin = $scheme.'://'.strtolower($parts['host']);
 
-    /**
-     * @return array{scheme: string, host: string, port: int|null}
-     */
-    protected function extractOriginFromRequest(Request $request): array
-    {
-        return [
-            'scheme' => strtolower($request->getScheme()),
-            'host' => strtolower($request->getHost()),
-            'port' => $request->getPort(),
-        ];
+        if (isset($parts['port']) && $parts['port'] !== ($scheme === 'https' ? 443 : 80)) {
+            $origin .= ':'.$parts['port'];
+        }
+
+        return $origin;
     }
 
     /**
