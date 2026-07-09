@@ -215,6 +215,17 @@ class ResolveBaseUrlTest extends TestCase
     }
 
     #[Test]
+    public function it_ignores_cross_origin_referer_when_resolving_base_url()
+    {
+        $this->modal->baseUrl('https://example.com/users');
+
+        $request = Request::create('https://example.com/users/1/edit', 'GET');
+        $request->headers->set('referer', 'https://www.google.com/search?q=foo');
+
+        $this->assertEquals('https://example.com/users', $this->modal->resolveBaseUrl($request));
+    }
+
+    #[Test]
     public function it_prevents_infinite_loop_when_referer_matches_modal_route()
     {
         $user = UserFactory::new()->create();

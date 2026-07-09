@@ -115,10 +115,12 @@ class Modal implements Responsable
      */
     public function resolveBaseUrl(Request $request): ?string
     {
+        $referer = $request->header('referer');
+
         // Check each source in priority order, skipping any that match current path (prevents infinite loops)
         $candidates = [
             $request->header(self::HEADER_BASE_URL),
-            $request->header('referer'),
+            $this->isAcceptableReferer($request, $referer) ? $referer : null,
             $this->getBaseUrl(),
         ];
 
@@ -129,6 +131,64 @@ class Modal implements Responsable
         }
 
         return null;
+    }
+
+    /**
+     * Determine whether the referer may be used as a base URL candidate.
+     */
+    protected function isAcceptableReferer(Request $request, ?string $referer): bool
+    {
+        if ($referer === null) {
+            return false;
+        }
+
+        $refererOrigin = $this->extractOrigin($referer);
+
+        if ($refererOrigin === null) {
+            return true;
+        }
+
+        if ($refererOrigin === $this->extractOriginFromRequest($request)) {
+            return true;
+        }
+
+        $baseUrl = $this->getBaseUrl();
+
+        return $baseUrl !== null && $refererOrigin === $this->extractOrigin($baseUrl);
+    }
+
+    /**
+     * @return array{scheme: string, host: string, port: int|null}|null
+     */
+    protected function extractOrigin(string $url): ?array
+    {
+        $parts = parse_url($url);
+
+        if ($parts === false || ! isset($parts['scheme'], $parts['host'])) {
+            return null;
+        }
+
+        return [
+            'scheme' => strtolower($parts['scheme']),
+            'host' => strtolower($parts['host']),
+            'port' => $parts['port'] ?? match (strtolower($parts['scheme'])) {
+                'http' => 80,
+                'https' => 443,
+                default => null,
+            },
+        ];
+    }
+
+    /**
+     * @return array{scheme: string, host: string, port: int|null}
+     */
+    protected function extractOriginFromRequest(Request $request): array
+    {
+        return [
+            'scheme' => strtolower($request->getScheme()),
+            'host' => strtolower($request->getHost()),
+            'port' => $request->getPort(),
+        ];
     }
 
     /**
