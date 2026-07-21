@@ -1,8 +1,10 @@
 import { inBrowser, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
-import { h, onMounted, nextTick, watch } from 'vue'
+import { h, nextTick, onMounted, watch } from 'vue'
 
 import VersionBanner from './VersionBanner.vue'
+
+import './custom.css'
 
 export default {
     extends: DefaultTheme,
@@ -14,121 +16,115 @@ export default {
     },
 
     setup() {
-        if (inBrowser) {
-            const route = useRoute()
+        if (!inBrowser) {
+            return
+        }
 
-            function updateVersionLabel() {
-                const path = route.path
-                let label = 'v3'
-                if (path.includes('/v2/')) label = 'v2'
-                else if (path.includes('/v0/')) label = 'v0'
+        const route = useRoute()
+        const storageKey = 'inertiauiModalCodeGroupTab'
+        const boundLabels = new WeakSet()
+        let preventScroll = false
 
-                const el = document.querySelector('.VPNavBarMenuGroup .text')
-                if (el && ['v3', 'v2', 'v0'].includes(el.textContent.trim())) {
-                    el.textContent = label
-                }
+        function scrollToY(y) {
+            window.scrollTo({
+                top: y,
+                behavior: 'instant',
+            })
+        }
+
+        function updateVersionLabel() {
+            const path = route.path
+            let label = 'v3'
+            if (path.includes('/v2/')) label = 'v2'
+            else if (path.includes('/v0/')) label = 'v0'
+
+            const el = document.querySelector('.VPNavBarMenuGroup .text')
+            if (el && ['v3', 'v2', 'v0'].includes(el.textContent.trim())) {
+                el.textContent = label
             }
+        }
 
-            onMounted(() => nextTick(updateVersionLabel))
-            watch(
-                () => route.path,
-                () => nextTick(updateVersionLabel),
-            )
-
-            // Click on the tab with the given label text
-            function showCodeWithLabel(labelText) {
-                document.querySelectorAll(`.vp-code-group .tabs label`).forEach((label) => {
-                    if (label.innerText === labelText) {
-                        const input = document.getElementById(label.getAttribute('for'))
-
-                        if (!input.checked) {
-                            label.click()
-                        }
-                    }
-                })
-            }
-
-            let preventScroll = false
-
-            function bindClickEvents() {
-                // Find all the labels
-                const labels = document.querySelectorAll('.vp-code-group .tabs label')
-
-                labels.forEach((label) => {
-                    label.addEventListener('click', ($event) => {
-                        const labelFor = label.getAttribute('for')
-                        const initialRect = label.getBoundingClientRect()
-                        const initialScrollY = window.scrollY
-
-                        // Save the selected tab
-                        localStorage.setItem('codeGroupTab', label.innerText)
-
-                        // Show the selected tab on each code group
-                        showCodeWithLabel(label.innerText)
-
-                        // Use nextTick to ensure DOM is updated and scroll to the position
-                        // so that the clicked label is at the same position as before
-                        nextTick(() => {
-                            if (preventScroll || !$event.isTrusted) {
-                                return
-                            }
-
-                            // Find the new position of the label
-                            const labelNew = document.querySelector(`label[for="${labelFor}"]`)
-                            const newRect = labelNew.getBoundingClientRect()
-
-                            // Calculate the difference in position relative to the document
-                            const yDiff = newRect.top + window.scrollY - (initialRect.top + initialScrollY)
-
-                            // Scroll to maintain the label's position
-                            scrollToY(initialScrollY + yDiff)
-                        })
-                    })
-                })
-            }
-
-            // Scroll to the given Y position without animation
-            function scrollToY(y) {
-                window.scrollTo({
-                    top: y,
-                    behavior: 'instant',
-                })
-            }
-
-            // Select the given tab and scroll to the top of the page
-            function selectTabAndScrollToTop(tab) {
-                if (!tab) {
+        function showCodeWithLabel(labelText) {
+            document.querySelectorAll('.vp-code-group .tabs label').forEach((label) => {
+                if (label.innerText !== labelText) {
                     return
                 }
 
-                // Restore the last selected tab and scroll back to to top
-                // Enable 'preventScroll' to avoid scrolling to all the tabs
-                preventScroll = true
-                showCodeWithLabel(tab)
-                nextTick(() => {
-                    preventScroll = false
-                    scrollToY(0)
+                const input = document.getElementById(label.getAttribute('for'))
+
+                if (input && !input.checked) {
+                    label.click()
+                }
+            })
+        }
+
+        function bindClickEvents() {
+            document.querySelectorAll('.vp-code-group .tabs label').forEach((label) => {
+                if (boundLabels.has(label)) {
+                    return
+                }
+
+                boundLabels.add(label)
+
+                label.addEventListener('click', (event) => {
+                    const labelFor = label.getAttribute('for')
+                    const initialRect = label.getBoundingClientRect()
+                    const initialScrollY = window.scrollY
+
+                    localStorage.setItem(storageKey, label.innerText)
+                    showCodeWithLabel(label.innerText)
+
+                    nextTick(() => {
+                        if (preventScroll || !event.isTrusted || !labelFor) {
+                            return
+                        }
+
+                        const selectedLabel = document.querySelector(`label[for="${labelFor}"]`)
+
+                        if (!selectedLabel) {
+                            return
+                        }
+
+                        const newRect = selectedLabel.getBoundingClientRect()
+                        const yDiff = newRect.top + window.scrollY - (initialRect.top + initialScrollY)
+
+                        scrollToY(initialScrollY + yDiff)
+                    })
                 })
+            })
+        }
+
+        function selectTabAndScrollToTop(tab) {
+            if (!tab) {
+                return
             }
 
-            // Bind click event on initial page and restore the last selected tab
-            onMounted(() =>
-                nextTick(() => {
-                    bindClickEvents()
-                    selectTabAndScrollToTop(localStorage.getItem('codeGroupTab'))
-                }),
-            )
+            preventScroll = true
+            showCodeWithLabel(tab)
 
-            watch(
-                () => route.path,
-                () => {
-                    nextTick(() => {
-                        // Bind click event on new page
-                        bindClickEvents()
-                        selectTabAndScrollToTop(localStorage.getItem('codeGroupTab'))
-                    })
-                },
-            )
+            nextTick(() => {
+                preventScroll = false
+                scrollToY(0)
+            })
         }
+
+        onMounted(() => {
+            nextTick(() => {
+                updateVersionLabel()
+                bindClickEvents()
+                selectTabAndScrollToTop(localStorage.getItem(storageKey))
+            })
+        })
+
+        watch(
+            () => route.path,
+            () => {
+                nextTick(() => {
+                    updateVersionLabel()
+                    bindClickEvents()
+                    selectTabAndScrollToTop(localStorage.getItem(storageKey))
+                })
+            },
+        )
     },
 }

@@ -1,5 +1,61 @@
 import { defineConfig } from 'vitepress'
 
+/*
+  Light: ink-on-paper with balanced product syntax accents.
+  Dark: the same color meaning on a deep night surface.
+*/
+const inertiaModalLight = {
+    name: 'inertia-modal-light',
+    type: 'light',
+    colors: {
+        'editor.background': '#f6f7fb',
+        'editor.foreground': '#111827',
+    },
+    tokenColors: [
+        { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#9ca3af', fontStyle: 'italic' } },
+        { scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'], settings: { foreground: '#7e57c2', fontStyle: '' } },
+        { scope: ['string', 'string.quoted', 'punctuation.definition.string'], settings: { foreground: '#15803d' } },
+        { scope: ['constant.numeric', 'constant.language', 'constant.character'], settings: { foreground: '#c2410c' } },
+        { scope: ['variable', 'variable.other', 'variable.parameter', 'variable.language'], settings: { foreground: '#334155' } },
+        {
+            scope: ['support.function', 'entity.name.function', 'meta.function-call', 'meta.function-call entity.name.function'],
+            settings: { foreground: '#2563eb' },
+        },
+        { scope: ['entity.name.class', 'entity.name.type', 'support.class', 'entity.other.inherited-class'], settings: { foreground: '#5b21b6' } },
+        { scope: ['entity.name.tag', 'meta.tag'], settings: { foreground: '#2563eb' } },
+        { scope: ['entity.other.attribute-name'], settings: { foreground: '#7e57c2' } },
+        { scope: ['punctuation', 'meta.brace', 'punctuation.section'], settings: { foreground: '#64748b' } },
+        { scope: ['variable.other.property', 'support.type.property-name'], settings: { foreground: '#334155' } },
+        { scope: ['support.type', 'support.constant'], settings: { foreground: '#7e57c2' } },
+    ],
+}
+
+const inertiaModalDark = {
+    name: 'inertia-modal-dark',
+    type: 'dark',
+    colors: {
+        'editor.background': '#1f1a2e',
+        'editor.foreground': '#e8e3ec',
+    },
+    tokenColors: [
+        { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#676e95', fontStyle: 'italic' } },
+        { scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'], settings: { foreground: '#c792ea', fontStyle: '' } },
+        { scope: ['string', 'string.quoted', 'punctuation.definition.string'], settings: { foreground: '#c3e88d' } },
+        { scope: ['constant.numeric', 'constant.language', 'constant.character'], settings: { foreground: '#f78c6c' } },
+        { scope: ['variable', 'variable.other', 'variable.parameter', 'variable.language'], settings: { foreground: '#a6accd' } },
+        {
+            scope: ['support.function', 'entity.name.function', 'meta.function-call', 'meta.function-call entity.name.function'],
+            settings: { foreground: '#82aaff' },
+        },
+        { scope: ['entity.name.class', 'entity.name.type', 'support.class', 'entity.other.inherited-class'], settings: { foreground: '#ffcb6b' } },
+        { scope: ['entity.name.tag', 'meta.tag'], settings: { foreground: '#89ddff' } },
+        { scope: ['entity.other.attribute-name'], settings: { foreground: '#c792ea' } },
+        { scope: ['punctuation', 'meta.brace', 'punctuation.section'], settings: { foreground: '#89ddff' } },
+        { scope: ['variable.other.property', 'support.type.property-name'], settings: { foreground: '#a6accd' } },
+        { scope: ['support.type', 'support.constant'], settings: { foreground: '#c792ea' } },
+    ],
+}
+
 const v0Sidebar = [
     {
         text: 'Getting Started',
@@ -141,6 +197,7 @@ for (const file of v3Files) {
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     title: 'Inertia Modal Documentation',
+    titleTemplate: ':title · Inertia Modal',
     head: [
         process.env.NODE_ENV === 'production'
             ? [
@@ -153,13 +210,32 @@ export default defineConfig({
               ]
             : [],
         ['link', { rel: 'icon', href: '/favicon.ico' }],
+        ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+        ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+        [
+            'link',
+            {
+                rel: 'stylesheet',
+                href: 'https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&family=Geist+Mono:wght@100..900&family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&family=Schibsted+Grotesk:wght@400..900&display=swap',
+            },
+        ],
     ],
     description: 'Documentation for the Inertia Modal package',
     base: process.env.NODE_ENV === 'production' ? '/inertia-modal/docs/' : null,
     cleanUrls: process.env.NODE_ENV === 'production',
+    markdown: {
+        theme: { light: inertiaModalLight, dark: inertiaModalDark },
+    },
     rewrites,
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
+        logo: {
+            light: '/inertiaui-logo.svg',
+            dark: '/inertiaui-logo-white.svg',
+            alt: 'Inertia UI',
+        },
+        siteTitle: 'Modal Documentation',
+
         nav: [
             {
                 text: 'v3',
