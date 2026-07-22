@@ -199,16 +199,6 @@ export default defineConfig({
     title: 'Inertia Modal Documentation',
     titleTemplate: ':title · Inertia Modal',
     head: [
-        process.env.NODE_ENV === 'production'
-            ? [
-                  'script',
-                  {
-                      defer: '',
-                      src: 'https://helloworld.protone.media/hey.js',
-                      'data-website-id': '553d745e-2115-4553-9d5d-bf4bc49052f5',
-                  },
-              ]
-            : [],
         ['link', { rel: 'icon', href: '/favicon.ico' }],
         ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
         ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
@@ -222,6 +212,7 @@ export default defineConfig({
     ],
     description: 'Documentation for the Inertia Modal package',
     base: process.env.NODE_ENV === 'production' ? '/inertia-modal/docs/' : null,
+    outDir: process.env.NODE_ENV === 'production' ? './dist/inertia-modal/docs' : './dist',
     cleanUrls: process.env.NODE_ENV === 'production',
     markdown: {
         theme: { light: inertiaModalLight, dark: inertiaModalDark },
