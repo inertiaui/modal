@@ -3,7 +3,7 @@
     "private": true,
     "scripts": {
         "docs:dev": "vitepress dev",
-        "docs:build": "vitepress build",
+        "docs:build": "vitepress build && printf '/inertia-modal/docs   /inertia-modal/docs/introduction   301\\n/inertia-modal/docs/   /inertia-modal/docs/introduction   301\\n' > dist/_redirects",
         "docs:build:ci": "vitepress build --outDir .vitepress/dist-ci",
         "docs:preview": "vitepress preview"
     },
