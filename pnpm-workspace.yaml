@@ -2,6 +2,7 @@ packages:
     - vue
     - react
     - demo-app
+    - docs
 
 allowBuilds:
     esbuild: true
