@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+    <defs>
+        <linearGradient id="inertia-ui-icon-mark" x1="512" y1="168" x2="512" y2="856" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#8b35f1" />
+            <stop offset="1" stop-color="#581c87" />
+        </linearGradient>
+    </defs>
+    <rect width="1024" height="1024" fill="#fbfaff" />
+    <g transform="translate(431 168) scale(7.6)" fill="url(#inertia-ui-icon-mark)">
+        <path d="M1.5,90.6h20.8V29.4H1.5v61.1Z" />
+        <ellipse cx="12" cy="11.8" rx="12" ry="11.8" />
+    </g>
+</svg>

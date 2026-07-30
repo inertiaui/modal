@@ -3,12 +3,12 @@
     "private": true,
     "scripts": {
         "docs:dev": "vitepress dev",
-        "docs:build": "vitepress build && printf '/   /inertia-modal/docs/introduction   301\\n/inertia-modal/docs   /inertia-modal/docs/introduction   301\\n/inertia-modal/docs/   /inertia-modal/docs/introduction   301\\n' > dist/_redirects",
-        "docs:build:ci": "vitepress build --outDir .vitepress/dist-ci",
-        "docs:preview": "vitepress preview"
+        "docs:build": "inertiaui-vitepress-build --redirects .vitepress/redirects"
     },
     "dependencies": {
+        "@inertiaui/docs-theme": "git+https://github.com/inertiaui/docs-theme.git#main",
         "vitepress": "^1.6.4",
+        "vitepress-plugin-llms": "^1.13.3",
         "vue": "^3.5.0"
     }
 }

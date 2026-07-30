@@ -9,6 +9,7 @@ testbench.yaml
 vendor
 node_modules
 /docs/.vitepress/cache
+/docs/.vitepress/dist-ci
 /demo-app/storage/debugbar
 .DS_Store
 /demo-app/tests/Browser/downloads
@@ -17,4 +18,5 @@ vue/inertiaui-modal-vue-*.tgz
 /agents
 CLAUDE.md
 /docs/.vitepress/dist
+/docs/dist
 /issue-reports

@@ -1,14 +1,14 @@
+import { createInertiaUiTheme } from '@inertiaui/docs-theme'
+import '@inertiaui/docs-theme/base.css'
 import { inBrowser, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { h, nextTick, onMounted, watch } from 'vue'
 
 import VersionBanner from './VersionBanner.vue'
 
-import './custom.css'
-
-export default {
-    extends: DefaultTheme,
-
+export default createInertiaUiTheme(DefaultTheme, {
+    codeGroupStorageKey: 'inertiauiModalCodeGroupTab',
+    useRoute,
     Layout() {
         return h(DefaultTheme.Layout, null, {
             'doc-before': () => h(VersionBanner),
@@ -127,4 +127,4 @@ export default {
             },
         )
     },
-}
+})

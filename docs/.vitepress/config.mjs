@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import llmstxt from 'vitepress-plugin-llms'
 
 /*
   Light: ink-on-paper with balanced product syntax accents.
@@ -285,5 +286,8 @@ export default defineConfig({
 
         pageData.frontmatter.head ??= []
         pageData.frontmatter.head.push(['link', { rel: 'canonical', href: canonicalUrl }])
+    },
+    vite: {
+        plugins: [llmstxt()],
     },
 })
