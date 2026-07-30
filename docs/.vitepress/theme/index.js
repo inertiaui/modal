@@ -1,4 +1,5 @@
 import { createInertiaUiTheme } from '@inertiaui/docs-theme'
+
 import '@inertiaui/docs-theme/base.css'
 import { inBrowser, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
