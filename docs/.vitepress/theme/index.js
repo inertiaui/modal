@@ -4,6 +4,7 @@ import DefaultTheme from 'vitepress/theme'
 import { h, nextTick, onMounted, watch } from 'vue'
 
 import VersionBanner from './VersionBanner.vue'
+
 import '@inertiaui/docs-theme/base.css'
 
 export default createInertiaUiTheme(DefaultTheme, {
