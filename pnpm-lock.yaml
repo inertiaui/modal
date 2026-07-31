@@ -151,8 +151,8 @@ importers:
   docs:
     dependencies:
       '@inertiaui/docs-theme':
-        specifier: git+https://github.com/inertiaui/docs-theme.git#main
-        version: https://codeload.github.com/inertiaui/docs-theme/tar.gz/7c58f46f7e08a8024b8713898bd61d484ae7356a(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))
+        specifier: github:inertiaui/docs-theme#main
+        version: https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))
       vitepress:
         specifier: ^1.6.4
         version: 1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3)
@@ -272,8 +272,8 @@ packages:
     resolution: {integrity: sha512-PIOUXlSnrqM0S+WOgDRb4RzotydJH7ZoT6tOyL7tAO7qJOfvX5wsEW8Pe+PMKMwvuI4/gIyK9cg2H7lJXqnc4Q==}
     engines: {node: '>= 14.0.0'}
 
-  '@babel/code-frame@7.29.0':
-    resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
+  '@babel/code-frame@7.29.7':
+    resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-string-parser@7.27.1':
@@ -284,6 +284,10 @@ packages:
     resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/helper-validator-identifier@7.29.7':
+    resolution: {integrity: sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/parser@7.29.3':
     resolution: {integrity: sha512-b3ctpQwp+PROvU/cttc4OYl4MzfJUWy6FZg+PMXfzmt/+39iHVF0sDfqay8TQM3JA2EUOyKcFZt75jWriQijsA==}
     engines: {node: '>=6.0.0'}
@@ -291,6 +295,10 @@ packages:
 
   '@babel/runtime@7.29.2':
     resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.29.0':
@@ -511,8 +519,8 @@ packages:
     peerDependencies:
       vue: ^3.0.0
 
-  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/7c58f46f7e08a8024b8713898bd61d484ae7356a':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/inertiaui/docs-theme/tar.gz/7c58f46f7e08a8024b8713898bd61d484ae7356a}
+  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3}
     version: 0.1.0
     hasBin: true
     peerDependencies:
@@ -2813,9 +2821,9 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.56.0
 
-  '@babel/code-frame@7.29.0':
+  '@babel/code-frame@7.29.7':
     dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
+      '@babel/helper-validator-identifier': 7.29.7
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
@@ -2823,11 +2831,15 @@ snapshots:
 
   '@babel/helper-validator-identifier@7.28.5': {}
 
+  '@babel/helper-validator-identifier@7.29.7': {}
+
   '@babel/parser@7.29.3':
     dependencies:
       '@babel/types': 7.29.0
 
   '@babel/runtime@7.29.2': {}
+
+  '@babel/runtime@7.29.7': {}
 
   '@babel/types@7.29.0':
     dependencies:
@@ -2996,7 +3008,7 @@ snapshots:
     transitivePeerDependencies:
       - axios
 
-  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/7c58f46f7e08a8024b8713898bd61d484ae7356a(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))':
+  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))':
     dependencies:
       vitepress: 1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3)
       vue: 3.5.34(typescript@5.9.3)
@@ -3416,8 +3428,8 @@ snapshots:
 
   '@testing-library/dom@10.4.1':
     dependencies:
-      '@babel/code-frame': 7.29.0
-      '@babel/runtime': 7.29.2
+      '@babel/code-frame': 7.29.7
+      '@babel/runtime': 7.29.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16

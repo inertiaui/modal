@@ -6,7 +6,7 @@
         "docs:build": "inertiaui-vitepress-build --redirects .vitepress/redirects"
     },
     "dependencies": {
-        "@inertiaui/docs-theme": "git+https://github.com/inertiaui/docs-theme.git#main",
+        "@inertiaui/docs-theme": "github:inertiaui/docs-theme#main",
         "vitepress": "^1.6.4",
         "vitepress-plugin-llms": "^1.13.3",
         "vue": "^3.5.0"

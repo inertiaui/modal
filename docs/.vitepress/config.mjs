@@ -1,61 +1,30 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { createInertiaUiDocsConfig, createInertiaUiSeoTransform, extractInertiaUiDescription, inertiaUiHead } from '@inertiaui/docs-theme'
 import { defineConfig } from 'vitepress'
 import llmstxt from 'vitepress-plugin-llms'
 
-/*
-  Light: ink-on-paper with balanced product syntax accents.
-  Dark: the same color meaning on a deep night surface.
-*/
-const inertiaModalLight = {
-    name: 'inertia-modal-light',
-    type: 'light',
-    colors: {
-        'editor.background': '#f6f7fb',
-        'editor.foreground': '#111827',
-    },
-    tokenColors: [
-        { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#9ca3af', fontStyle: 'italic' } },
-        { scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'], settings: { foreground: '#7e57c2', fontStyle: '' } },
-        { scope: ['string', 'string.quoted', 'punctuation.definition.string'], settings: { foreground: '#15803d' } },
-        { scope: ['constant.numeric', 'constant.language', 'constant.character'], settings: { foreground: '#c2410c' } },
-        { scope: ['variable', 'variable.other', 'variable.parameter', 'variable.language'], settings: { foreground: '#334155' } },
-        {
-            scope: ['support.function', 'entity.name.function', 'meta.function-call', 'meta.function-call entity.name.function'],
-            settings: { foreground: '#2563eb' },
-        },
-        { scope: ['entity.name.class', 'entity.name.type', 'support.class', 'entity.other.inherited-class'], settings: { foreground: '#5b21b6' } },
-        { scope: ['entity.name.tag', 'meta.tag'], settings: { foreground: '#2563eb' } },
-        { scope: ['entity.other.attribute-name'], settings: { foreground: '#7e57c2' } },
-        { scope: ['punctuation', 'meta.brace', 'punctuation.section'], settings: { foreground: '#64748b' } },
-        { scope: ['variable.other.property', 'support.type.property-name'], settings: { foreground: '#334155' } },
-        { scope: ['support.type', 'support.constant'], settings: { foreground: '#7e57c2' } },
-    ],
-}
-
-const inertiaModalDark = {
-    name: 'inertia-modal-dark',
-    type: 'dark',
-    colors: {
-        'editor.background': '#1f1a2e',
-        'editor.foreground': '#e8e3ec',
-    },
-    tokenColors: [
-        { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#676e95', fontStyle: 'italic' } },
-        { scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'], settings: { foreground: '#c792ea', fontStyle: '' } },
-        { scope: ['string', 'string.quoted', 'punctuation.definition.string'], settings: { foreground: '#c3e88d' } },
-        { scope: ['constant.numeric', 'constant.language', 'constant.character'], settings: { foreground: '#f78c6c' } },
-        { scope: ['variable', 'variable.other', 'variable.parameter', 'variable.language'], settings: { foreground: '#a6accd' } },
-        {
-            scope: ['support.function', 'entity.name.function', 'meta.function-call', 'meta.function-call entity.name.function'],
-            settings: { foreground: '#82aaff' },
-        },
-        { scope: ['entity.name.class', 'entity.name.type', 'support.class', 'entity.other.inherited-class'], settings: { foreground: '#ffcb6b' } },
-        { scope: ['entity.name.tag', 'meta.tag'], settings: { foreground: '#89ddff' } },
-        { scope: ['entity.other.attribute-name'], settings: { foreground: '#c792ea' } },
-        { scope: ['punctuation', 'meta.brace', 'punctuation.section'], settings: { foreground: '#89ddff' } },
-        { scope: ['variable.other.property', 'support.type.property-name'], settings: { foreground: '#a6accd' } },
-        { scope: ['support.type', 'support.constant'], settings: { foreground: '#c792ea' } },
-    ],
-}
+const sharedConfig = createInertiaUiDocsConfig({
+    productSlug: 'inertia-modal',
+    githubLink: 'https://github.com/inertiaui/modal',
+})
+const DOCS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const SITE_NAME = 'Inertia Modal Documentation'
+const SITE_TITLE_SUFFIX = 'Inertia Modal'
+const SITE_URL = 'https://inertiaui.com/inertia-modal/docs'
+const SITE_BASE_URL = 'https://inertiaui.com/inertia-modal'
+const SITE_DESCRIPTION =
+    'Open Laravel and Inertia.js routes in accessible Vue and React modals or slideovers without changing existing controllers.'
+const AUTHOR_NAME = 'Pascal Baljet'
+const AUTHOR_URL = 'https://pascalbaljet.dev'
+const ORGANIZATION = 'Inertia UI'
+const ORGANIZATION_URL = 'https://inertiaui.com'
+const OG_IMAGE = 'https://inertiaui.com/inertia-modal/docs/icon-1024x1024.png'
+const TWITTER_HANDLE = '@pascalbaljet'
+const SOFTWARE_REQUIREMENTS = 'PHP 8.2+, Laravel 12+, Inertia Laravel 3+, Vue 3.4+ or React 19, Tailwind CSS 4+'
+const ARTICLE_DEPENDENCIES = 'See the versioned Requirements page for Laravel, Inertia.js, Vue, React, and Tailwind CSS compatibility.'
 
 const v0Sidebar = [
     {
@@ -195,52 +164,187 @@ for (const file of v3Files) {
     rewrites[`v3/${file}.md`] = `${file}.md`
 }
 
-const productionHead =
-    process.env.NODE_ENV === 'production'
-        ? [
-              [
-                  'script',
-                  {
-                      async: '',
-                      src: 'https://analytics.ahrefs.com/analytics.js',
-                      'data-key': 'A06g5iU8TH9IWlCPkl0/OQ',
-                  },
-              ],
-          ]
-        : []
+function descriptionForPage(relativePath, fallback) {
+    const candidates = [relativePath]
+
+    if (relativePath === 'index.md') {
+        candidates.push('v3/introduction.md')
+    } else if (!relativePath.startsWith('v0/') && !relativePath.startsWith('v2/')) {
+        candidates.push(`v3/${relativePath}`)
+    }
+
+    for (const candidate of candidates) {
+        try {
+            const filePath = path.resolve(DOCS_ROOT, candidate)
+            return extractInertiaUiDescription(fs.readFileSync(filePath, 'utf-8'), fallback)
+        } catch {
+            // Try the next source path candidate.
+        }
+    }
+
+    return fallback
+}
+
+function sectionFor(slug) {
+    const versionPrefix = slug.startsWith('v0/') || slug.startsWith('v2/') ? slug.split('/')[0] : ''
+    const pageSlug = versionPrefix ? slug.slice(versionPrefix.length + 1) : slug
+    const baseUrl = versionPrefix ? `${SITE_URL}/${versionPrefix}` : SITE_URL
+    const gettingStarted = ['introduction', 'requirements', 'installation', 'upgrade-guide']
+    const usage = [
+        'basic-usage',
+        'configuration',
+        'modal-props',
+        'base-route-url',
+        'close-modal',
+        'event-bus',
+        'nested-stacked-modals',
+        'reload-props',
+        'lazy-props',
+        'deferred-props',
+        'load-when-visible',
+        'local-modals',
+        'styling',
+    ]
+
+    if (gettingStarted.includes(pageSlug)) return { name: 'Getting Started', url: `${baseUrl}/introduction` }
+    if (usage.includes(pageSlug)) return { name: 'Usage', url: `${baseUrl}/basic-usage` }
+
+    return { name: 'Advanced', url: `${baseUrl}/custom-app-mounting` }
+}
+
+const transformPageData = createInertiaUiSeoTransform({
+    siteName: SITE_NAME,
+    siteTitleSuffix: SITE_TITLE_SUFFIX,
+    siteUrl: SITE_URL,
+    siteBaseUrl: SITE_BASE_URL,
+    siteDescription: SITE_DESCRIPTION,
+    ogImage: OG_IMAGE,
+    authorName: AUTHOR_NAME,
+    authorUrl: AUTHOR_URL,
+    organization: ORGANIZATION,
+    organizationUrl: ORGANIZATION_URL,
+    articleDependencies: ARTICLE_DEPENDENCIES,
+    descriptionForPage,
+    sectionFor,
+    softwareApplication: ({ ids }) => ({
+        name: SITE_TITLE_SUFFIX,
+        alternateName: ['Inertia Modal for Laravel', 'Inertia UI Modal'],
+        applicationCategory: 'DeveloperApplication',
+        applicationSubCategory: 'Laravel package, Inertia.js modal library, UI component library',
+        operatingSystem: 'Cross-platform',
+        url: SITE_BASE_URL,
+        installUrl: `${SITE_URL}/installation`,
+        sameAs: ['https://github.com/inertiaui/modal', 'https://github.com/inertiaui', 'https://twitter.com/pascalbaljet'],
+        description: SITE_DESCRIPTION,
+        author: { '@id': ids.person },
+        publisher: { '@id': ids.organization },
+        creator: { '@id': ids.person },
+        offers: {
+            '@type': 'Offer',
+            name: 'Inertia Modal MIT License',
+            description: 'Open-source Laravel, Vue, and React modal package for Inertia.js applications.',
+            price: '0',
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+            url: 'https://github.com/inertiaui/modal',
+            category: 'Open-source package',
+        },
+        softwareRequirements: SOFTWARE_REQUIREMENTS,
+        featureList: [
+            'Route-based modals and slideovers',
+            'Vue and React frontend packages',
+            'Base route and base URL support',
+            'Nested and stacked modals',
+            'Reusable local modals',
+            'Lazy, deferred, and visible prop loading',
+            'Headless mode',
+            'Native HTML dialog support',
+            'TypeScript type definitions',
+        ],
+        image: OG_IMAGE,
+    }),
+    installationHowTo: ({ canonicalUrl }) => ({
+        name: 'Install Inertia Modal for Laravel + Inertia.js',
+        description: 'Step-by-step installation of Inertia Modal in a Laravel + Inertia.js application.',
+        totalTime: 'PT5M',
+        supply: [
+            { '@type': 'HowToSupply', name: 'Laravel 12+ application' },
+            { '@type': 'HowToSupply', name: 'Inertia.js v3 application' },
+            { '@type': 'HowToSupply', name: 'Vue 3.4+ or React 19 frontend' },
+            { '@type': 'HowToSupply', name: 'Tailwind CSS 4+' },
+        ],
+        tool: [
+            { '@type': 'HowToTool', name: 'Composer' },
+            { '@type': 'HowToTool', name: 'npm, pnpm, or bun' },
+        ],
+        step: [
+            {
+                '@type': 'HowToStep',
+                position: 1,
+                name: 'Install the PHP package',
+                text: 'Run composer require inertiaui/modal:^3.0.0 to install the Laravel package.',
+                url: `${canonicalUrl}#composer-installation`,
+            },
+            {
+                '@type': 'HowToStep',
+                position: 2,
+                name: 'Install the frontend package',
+                text: 'Install the Vue or React package from Composer vendor files or from npm.',
+                url: `${canonicalUrl}#npm-installation`,
+            },
+            {
+                '@type': 'HowToStep',
+                position: 3,
+                name: 'Register the modal root',
+                text: 'Wrap your Inertia app with the Vue or React modal integration so route responses can render in modals.',
+                url: `${canonicalUrl}#inertia-js-configuration`,
+            },
+            {
+                '@type': 'HowToStep',
+                position: 4,
+                name: 'Configure Tailwind CSS',
+                text: 'Add the package source path to Tailwind so modal utility classes are included in your CSS output.',
+                url: `${canonicalUrl}#tailwind-configuration`,
+            },
+        ],
+    }),
+})
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-    title: 'Inertia Modal Documentation',
-    titleTemplate: ':title · Inertia Modal',
-    head: [
-        ...productionHead,
+    ...sharedConfig,
+    title: SITE_NAME,
+    titleTemplate: `:title - ${SITE_TITLE_SUFFIX}`,
+    head: inertiaUiHead([
         ['link', { rel: 'icon', href: '/favicon.ico' }],
-        ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
-        ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-        [
-            'link',
-            {
-                rel: 'stylesheet',
-                href: 'https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&family=Geist+Mono:wght@100..900&family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&family=Schibsted+Grotesk:wght@400..900&display=swap',
-            },
-        ],
-    ],
-    description: 'Documentation for the Inertia Modal package',
-    base: process.env.NODE_ENV === 'production' ? '/inertia-modal/docs/' : null,
-    outDir: process.env.NODE_ENV === 'production' ? './dist/inertia-modal/docs' : './dist',
-    cleanUrls: process.env.NODE_ENV === 'production',
-    markdown: {
-        theme: { light: inertiaModalLight, dark: inertiaModalDark },
+        ['link', { rel: 'apple-touch-icon', href: '/apple-icon.png' }],
+        ['meta', { name: 'theme-color', content: '#7e57c2' }],
+        ['meta', { name: 'author', content: AUTHOR_NAME }],
+        ['meta', { name: 'publisher', content: ORGANIZATION }],
+        ['meta', { name: 'application-name', content: SITE_TITLE_SUFFIX }],
+        ['meta', { name: 'apple-mobile-web-app-title', content: SITE_TITLE_SUFFIX }],
+        ['meta', { property: 'og:type', content: 'website' }],
+        ['meta', { property: 'og:site_name', content: SITE_NAME }],
+        ['meta', { property: 'og:image', content: OG_IMAGE }],
+        ['meta', { property: 'og:image:width', content: '1024' }],
+        ['meta', { property: 'og:image:height', content: '1024' }],
+        ['meta', { property: 'og:image:alt', content: 'Inertia Modal, route-based modals and slideovers for Laravel and Inertia.js' }],
+        ['meta', { property: 'og:locale', content: 'en_US' }],
+        ['meta', { name: 'twitter:card', content: 'summary' }],
+        ['meta', { name: 'twitter:site', content: TWITTER_HANDLE }],
+        ['meta', { name: 'twitter:creator', content: TWITTER_HANDLE }],
+        ['meta', { name: 'twitter:image', content: OG_IMAGE }],
+        ['meta', { name: 'twitter:image:alt', content: 'Inertia Modal, route-based modals and slideovers for Laravel and Inertia.js' }],
+        ['meta', { name: 'robots', content: 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1' }],
+    ]),
+    description: SITE_DESCRIPTION,
+    lastUpdated: true,
+    sitemap: {
+        hostname: `${SITE_URL}/`,
     },
     rewrites,
     themeConfig: {
-        // https://vitepress.dev/reference/default-theme-config
-        logo: {
-            light: '/inertiaui-logo.svg',
-            dark: '/inertiaui-logo-white.svg',
-            alt: 'Inertia UI',
-        },
+        ...sharedConfig.themeConfig,
         siteTitle: 'Modal Documentation',
 
         nav: [
@@ -257,36 +361,13 @@ export default defineConfig({
             { text: 'Inertia UI portal', link: 'https://inertiaui.com/dashboard' },
         ],
 
-        search: { provider: 'local' },
-
         sidebar: {
             '/v0/': v0Sidebar,
             '/v2/': v2Sidebar,
             '/': v3Sidebar,
         },
-
-        logoLink: process.env.NODE_ENV === 'production' ? '/inertia-modal/docs/introduction' : '/introduction',
-
-        aside: false,
-
-        socialLinks: [
-            { icon: 'github', link: 'https://github.com/inertiaui/modal' },
-            { icon: 'twitter', link: 'https://twitter.com/pascalbaljet' },
-            {
-                icon: {
-                    svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3c3.4 .4 6.7 .9 10 1.3zM288 227.1C261.9 176.4 190.9 81.9 124.9 35.3C61.6-9.4 37.5-1.7 21.6 5.5C3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7c3.3-.5 6.6-.9 10-1.4c-3.3 .5-6.6 1-10 1.4C74.3 308.6-9.1 342.8 100.3 464.5C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4c102.4-103.4 28.1-156-65.8-169.9c-3.3-.4-6.7-.8-10-1.3c3.4 .4 6.7 .9 10 1.3c64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1z"/></svg>',
-                },
-                link: 'https://bsky.app/profile/pascalbaljet.bsky.social',
-            },
-            { icon: 'youtube', link: 'https://youtube.com/pascalbaljet' },
-        ],
     },
-    transformPageData(pageData) {
-        const canonicalUrl = `https://inertiaui.com/inertia-modal/docs/${pageData.relativePath}`.replace(/index\.md$/, '').replace(/\.md$/, '')
-
-        pageData.frontmatter.head ??= []
-        pageData.frontmatter.head.push(['link', { rel: 'canonical', href: canonicalUrl }])
-    },
+    transformPageData,
     vite: {
         plugins: [llmstxt()],
     },
