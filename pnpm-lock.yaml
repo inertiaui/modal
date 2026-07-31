@@ -152,7 +152,7 @@ importers:
     dependencies:
       '@inertiaui/docs-theme':
         specifier: github:inertiaui/docs-theme#main
-        version: https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))
+        version: https://codeload.github.com/inertiaui/docs-theme/tar.gz/8800c3fdfea6184bf6fe7717547a179e1d20afcc(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))
       vitepress:
         specifier: ^1.6.4
         version: 1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3)
@@ -519,8 +519,8 @@ packages:
     peerDependencies:
       vue: ^3.0.0
 
-  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3}
+  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/8800c3fdfea6184bf6fe7717547a179e1d20afcc':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/inertiaui/docs-theme/tar.gz/8800c3fdfea6184bf6fe7717547a179e1d20afcc}
     version: 0.1.0
     hasBin: true
     peerDependencies:
@@ -3008,7 +3008,7 @@ snapshots:
     transitivePeerDependencies:
       - axios
 
-  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/965b288abdb916f13cf3f6c5bd05b95657d896e3(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))':
+  '@inertiaui/docs-theme@https://codeload.github.com/inertiaui/docs-theme/tar.gz/8800c3fdfea6184bf6fe7717547a179e1d20afcc(vitepress@1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3))(vue@3.5.34(typescript@5.9.3))':
     dependencies:
       vitepress: 1.6.4(@algolia/client-search@5.56.0)(@types/node@25.8.0)(@types/react@19.2.14)(lightningcss@1.32.0)(postcss@8.5.14)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)(typescript@5.9.3)
       vue: 3.5.34(typescript@5.9.3)
