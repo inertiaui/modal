@@ -357,7 +357,7 @@ export default defineConfig({
                 activeMatch: '.',
             },
             { text: 'Demo', link: 'https://www.youtube.com/watch?v=KAKOosmWV14' },
-            { text: 'Inertia UI portal', link: 'https://inertiaui.com/dashboard' },
+            { text: 'Inertia UI portal', link: 'https://inertiaui.com/login' },
         ],
 
         sidebar: {
