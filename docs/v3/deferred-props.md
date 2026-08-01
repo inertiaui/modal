@@ -2,8 +2,6 @@
 
 Just like regular Inertia pages, you can defer a prop for your modal so that it loads asynchronously after the modal has been rendered. This can improve the initial rendering speed of the modal.
 
-> [!WARNING] This feature requires Inertia.js v2.0.
-
 ## Make a prop deferred
 
 Deferring modal props works exactly the same as [deferring page props](https://inertiajs.com/deferred-props) in Inertia. You may use the `defer` method and pass a callback that returns the actual data:

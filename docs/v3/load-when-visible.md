@@ -2,8 +2,6 @@
 
 Just like with regular Inertia pages, you can make modal props optional, meaning they are not evaluated and passed to the frontend until needed. You may combine this with the `WhenVisible` component to load a prop only when an element becomes visible in the viewport.
 
-> [!WARNING] This feature requires Inertia.js v2.0.
-
 ## Make a prop optional
 
 To make a prop optional, simply call the `optional` method and pass a callback that returns the actual data:
