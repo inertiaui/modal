@@ -19,6 +19,10 @@ on:
             - 'demo-app/phpunit.xml.dist'
             - '.github/workflows/tests.yml'
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+    cancel-in-progress: true
+
 permissions: {}
 
 jobs:
