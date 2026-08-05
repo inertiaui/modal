@@ -106,6 +106,7 @@ const v3Sidebar = [
             { text: 'Requirements', link: '/requirements' },
             { text: 'Installation', link: '/installation' },
             { text: 'Upgrade Guide', link: '/upgrade-guide' },
+            { text: 'AI-Assisted Coding', link: '/ai-assisted-coding' },
         ],
     },
     {
@@ -141,6 +142,7 @@ const v3Files = [
     'requirements',
     'installation',
     'upgrade-guide',
+    'ai-assisted-coding',
     'basic-usage',
     'configuration',
     'modal-props',
@@ -188,7 +190,7 @@ function sectionFor(slug) {
     const versionPrefix = slug.startsWith('v0/') || slug.startsWith('v2/') ? slug.split('/')[0] : ''
     const pageSlug = versionPrefix ? slug.slice(versionPrefix.length + 1) : slug
     const baseUrl = versionPrefix ? `${SITE_URL}/${versionPrefix}` : SITE_URL
-    const gettingStarted = ['introduction', 'requirements', 'installation', 'upgrade-guide']
+    const gettingStarted = ['introduction', 'requirements', 'installation', 'upgrade-guide', 'ai-assisted-coding']
     const usage = [
         'basic-usage',
         'configuration',
@@ -259,6 +261,7 @@ const transformPageData = createInertiaUiSeoTransform({
             'Headless mode',
             'Native HTML dialog support',
             'TypeScript type definitions',
+            'Laravel Boost skills for AI-assisted coding',
         ],
         image: OG_IMAGE,
     }),
