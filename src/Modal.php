@@ -115,10 +115,12 @@ class Modal implements Responsable
      */
     public function resolveBaseUrl(Request $request): ?string
     {
+        $referer = $request->header('referer');
+
         // Check each source in priority order, skipping any that match current path (prevents infinite loops)
         $candidates = [
             $request->header(self::HEADER_BASE_URL),
-            $request->header('referer'),
+            $this->isAcceptableReferer($request, $referer) ? $referer : null,
             $this->getBaseUrl(),
         ];
 
@@ -129,6 +131,46 @@ class Modal implements Responsable
         }
 
         return null;
+    }
+
+    /**
+     * Determine whether the referer may be used as a base URL candidate. Relative
+     * referers are always accepted; absolute referers must match the origin of
+     * the current request or the configured base URL.
+     */
+    protected function isAcceptableReferer(Request $request, ?string $referer): bool
+    {
+        if ($referer === null) {
+            return false;
+        }
+
+        $refererOrigin = $this->extractOrigin($referer);
+
+        return $refererOrigin === null
+            || $refererOrigin === strtolower($request->getSchemeAndHttpHost())
+            || $refererOrigin === $this->extractOrigin((string) $this->getBaseUrl());
+    }
+
+    /**
+     * Extract the normalized origin (scheme://host[:port], default ports omitted)
+     * from a URL, or null when the URL has no scheme and host.
+     */
+    protected function extractOrigin(string $url): ?string
+    {
+        $parts = parse_url($url);
+
+        if ($parts === false || ! isset($parts['scheme'], $parts['host'])) {
+            return null;
+        }
+
+        $scheme = strtolower($parts['scheme']);
+        $origin = $scheme.'://'.strtolower($parts['host']);
+
+        if (isset($parts['port']) && $parts['port'] !== ($scheme === 'https' ? 443 : 80)) {
+            $origin .= ':'.$parts['port'];
+        }
+
+        return $origin;
     }
 
     /**
