@@ -348,8 +348,17 @@ export default defineConfig({
     themeConfig: {
         ...sharedConfig.themeConfig,
         siteTitle: 'Modal Documentation',
+        sidebarMenuLabel: 'Content',
 
         nav: [
+            {
+                text: 'Products',
+                items: [
+                    { text: 'Inertia Table', link: 'https://inertiaui.com/inertia-table/docs/introduction' },
+                    { text: 'Inertia Forms', link: 'https://inertiaui.com/inertia-forms/docs/introduction' },
+                    { text: 'Inertia Modal', link: 'https://inertiaui.com/inertia-modal/docs/introduction' },
+                ],
+            },
             {
                 text: 'v3',
                 items: [
