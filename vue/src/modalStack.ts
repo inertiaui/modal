@@ -1,6 +1,6 @@
 import { mergeDataIntoQueryString, type RequestPayload, type HttpResponse, type Method } from '@inertiajs/core'
 import { router, usePage, progress, http } from '@inertiajs/vue3'
-import { computed, readonly, ref, markRaw, h, nextTick, type Component, type Ref, type ComputedRef } from 'vue'
+import { computed, readonly, ref, markRaw, h, nextTick, type App, type Component, type Ref, type ComputedRef } from 'vue'
 
 import { ResponseCache } from './cache'
 import type { ModalTypeConfig } from './config'
@@ -586,10 +586,13 @@ export const renderApp = (App: Component, props: { resolveComponent?: ComponentR
     return () => h(ModalRoot, () => h(App, props))
 }
 
-export const withInertiaModal = (app: { _component: { render?: () => ReturnType<typeof h> } }): void => {
-    const originalRender = app._component.render
+export const withInertiaModal = (app: App | { _component: { render?: () => ReturnType<typeof h> } }): void => {
+    // A `ConcreteComponent` may be functional and has no typed `render`, but the root component mounted by Inertia always returns a single VNode.
+    const rootComponent = app._component as { render?: () => ReturnType<typeof h> }
+    const originalRender = rootComponent.render
+
     if (originalRender) {
-        app._component.render = () => h(ModalRoot, () => originalRender())
+        rootComponent.render = () => h(ModalRoot, () => originalRender())
     }
 }
 
