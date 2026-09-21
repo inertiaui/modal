@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\HandleInertiaRequests;
 use Database\Factories\UserFactory;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Inertia\Testing\AssertableInertia;
 use InertiaUI\Modal\Modal;
 use PHPUnit\Framework\Attributes\Test;
@@ -79,5 +82,19 @@ class ModalTest extends TestCase
                     ->where('baseUrl', '/users')
                 )
             );
+    }
+
+    #[Test]
+    public function it_sets_the_url_in_ssr_state_with_inertia_app_component()
+    {
+        $this->withoutMiddleware(HandleInertiaRequests::class);
+
+        Inertia::setRootView('app-inertia3');
+
+        $content = $this->get('/users/1/edit')->getContent();
+
+        $page = json_decode(Str::between($content, '<script data-page="app" type="application/json">', '</script>'), true);
+
+        $this->assertSame('/users/1/edit', $page['url']);
     }
 }
