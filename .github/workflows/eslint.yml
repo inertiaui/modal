@@ -4,32 +4,27 @@ on:
     push:
         paths:
             - '**.js'
-            - '**.jsx'
             - '**.ts'
-            - '**.tsx'
-            - '**.vue'
             - '**.mjs'
             - 'react/package.json'
             - 'react/tsconfig.json'
             - 'vue/package.json'
             - 'vue/tsconfig.json'
-            - '.oxlintrc.json'
-            - '.oxfmtrc.json'
-            - '.github/workflows/eslint.yml'
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
-    cancel-in-progress: true
+    cancel-in-progress: false
 
 permissions: {}
 
 jobs:
     js-quality:
         name: JS Quality and Style
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         timeout-minutes: 5
         permissions:
             contents: write
+                      Actions
 
         steps:
             - name: Harden runner
