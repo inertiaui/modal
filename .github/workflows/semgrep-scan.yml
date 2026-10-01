@@ -1,6 +1,3 @@
-[![Semgrep](https://github.com/reideroma1/modal/actions/workflows/semgrep.yml/badge.svg)](https://github.com/reideroma1/modal/actions/workflows/semgrep.yml)
-
-
 name: Semgrep 
 
 
@@ -10,7 +7,7 @@ on:
     pull_request:
         branches: [3.x, 2.x]
     schedule:
-        - cron: '37 4 * * 1'
+        - cron: '39 18 * * 7'
 
 permissions: {}
 
