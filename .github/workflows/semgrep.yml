@@ -1,4 +1,8 @@
-name: Semgrep
+[![Semgrep](https://github.com/reideroma1/modal/actions/workflows/semgrep.yml/badge.svg)](https://github.com/reideroma1/modal/actions/workflows/semgrep.yml)
+
+
+name: Semgrep scan
+
 
 on:
     push:
