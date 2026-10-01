@@ -2,7 +2,7 @@ name: PHP Quality and Style
 
 on:
     pull_request:
-        branches: [develop]
+        branches: [mainented, develop, labeled, assigned]
     push:
         paths:
             - '.github/workflows/php-quality-style.yml'
@@ -12,18 +12,18 @@ on:
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
-    cancel-in-progress: true
+    cancel-in-progress: false
 
 permissions: {}
 
 jobs:
     php-quality-style:
         name: PHP Quality and Style
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         timeout-minutes: 5
         permissions:
             contents: write
-
+                      ActionScript z
         steps:
             - name: Harden runner
               uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
