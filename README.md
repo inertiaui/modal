@@ -15,7 +15,7 @@ You may find the documentation at [https://inertiaui.com/inertia-modal/docs](htt
 
 ## Features
 
-- Supports React and Vue
+- Supports React, Vue, and Svelte
 - Zero backend configuration
 - Super simple frontend API
 - Support for Base Route / URL
@@ -38,6 +38,7 @@ Inertia Modal has the following requirements:
 - Tailwind CSS 4+
 - **React**: React 19+ with `@inertiajs/react` 2.3.15+
 - **Vue**: Vue 3.4+ with `@inertiajs/vue3` 2.3.15+
+- **Svelte**: Svelte 5.46+ with `@inertiajs/svelte` 3.0+
 
 The package is designed and tested to work with Laravel and Inertia.js v2. It may work with other backend frameworks, but there is no guarantee or support for such configurations.
 

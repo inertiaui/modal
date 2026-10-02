@@ -26,7 +26,11 @@ class AppServiceProvider extends ServiceProvider
             $installed = collect(File::json(base_path('vendor/composer/installed.json'))['packages'] ?? [])
                 ->firstWhere('name', 'inertiajs/inertia-laravel');
 
-            AboutCommand::add('Inertia.js', 'Stack', config('app.stack') === 'vue' ? 'Vue.js' : 'React.js');
+            AboutCommand::add('Inertia.js', 'Stack', match (config('app.stack')) {
+                'react' => 'React.js',
+                'svelte' => 'Svelte',
+                default => 'Vue.js',
+            });
             AboutCommand::add('Inertia.js', 'Version', $installed['version'] ?? 'Not installed');
         }
 

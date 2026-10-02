@@ -1,0 +1,42 @@
+import type { RequestPayload } from '@inertiajs/core';
+import { type Component, type Snippet } from 'svelte';
+import { type HttpMethod, type PrefetchOption } from './modalStack.svelte.js';
+interface Props {
+    href: string;
+    method?: HttpMethod;
+    data?: RequestPayload;
+    as?: string | Component<Record<string, unknown>>;
+    headers?: Record<string, string>;
+    queryStringArrayFormat?: 'brackets' | 'indices';
+    navigate?: boolean;
+    prefetch?: PrefetchOption;
+    cacheFor?: number;
+    closeButton?: boolean | null;
+    closeExplicitly?: boolean | null;
+    closeOnClickOutside?: boolean | null;
+    maxWidth?: string | null;
+    paddingClasses?: string | boolean | null;
+    panelClasses?: string | boolean | null;
+    position?: string | null;
+    slideover?: boolean | null;
+    children?: Snippet<[{
+        loading: boolean;
+    }]>;
+    onAfterLeave?: () => void;
+    onBlur?: () => void;
+    onClose?: () => void;
+    onError?: (error: unknown) => void;
+    onFocus?: () => void;
+    onStart?: () => void;
+    onSuccess?: () => void;
+    onPrefetching?: () => void;
+    onPrefetched?: () => void;
+    onclick?: (event: MouseEvent) => void;
+    onmouseenter?: (event: MouseEvent) => void;
+    onmouseleave?: (event: MouseEvent) => void;
+    onmousedown?: (event: MouseEvent) => void;
+    [key: string]: unknown;
+}
+declare const ModalLink: Component<Props, {}, "">;
+type ModalLink = ReturnType<typeof ModalLink>;
+export default ModalLink;

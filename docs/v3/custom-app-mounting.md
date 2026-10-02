@@ -66,6 +66,44 @@ createInertiaApp({
 });
 ```
 
+## Svelte
+
+In Svelte, mount `ModalRoot` instead of the Inertia `App` component. `ModalRoot` renders the Inertia app and the modal stack:
+
+```js
+import { mount } from 'svelte'
+import { createInertiaApp } from '@inertiajs/svelte'
+import { ModalRoot } from '@inertiaui/modal-svelte'
+
+createInertiaApp({
+    resolve: (name) => {
+        const pages = import.meta.glob('./Pages/**/*.svelte')
+        return pages[`./Pages/${name}.svelte`]()
+    },
+    setup({ el, App, props }) {
+        mount(ModalRoot, {
+            target: el,
+            props: {
+                App,
+                appProps: props,
+            },
+        })
+    },
+})
+```
+
+`withInertiaModal` does the same mount:
+
+```js
+import { withInertiaModal } from '@inertiaui/modal-svelte'
+
+createInertiaApp({
+    setup(options) {
+        withInertiaModal(options)
+    },
+})
+```
+
 ## Vue
 
 In Vue, it is a little bit simpler because you only need to make changes to the main `app.js` file. You need to wrap the `App` component within the `ModalRoot` component:

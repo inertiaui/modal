@@ -11,6 +11,7 @@ on:
             - '**.tsx'
             - '**.php'
             - '**.vue'
+            - '**.svelte'
             - '**/composer.json'
             - '**/package.json'
             - '.gitattributes'
@@ -70,6 +71,8 @@ jobs:
               run: |
                   pnpm --filter @inertiaui/modal-vue run build
                   pnpm --filter @inertiaui/modal-react run build
+                  pnpm --filter @inertiaui/modal-svelte run build
+                  pnpm --filter @inertiaui/modal-svelte run test --run
 
             - name: Upload built frontend packages
               uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -78,6 +81,7 @@ jobs:
                   path: |
                       vue/dist
                       react/dist
+                      svelte/dist
                   if-no-files-found: error
                   retention-days: 1
 
@@ -95,7 +99,7 @@ jobs:
             fail-fast: false
             matrix:
                 laravel: ['13.0', '12.0']
-                stack: [react, vue]
+                stack: [react, vue, svelte]
                 app_mounting: [auto, custom]
                 native_dialog: [true, false]
 
@@ -161,11 +165,11 @@ jobs:
                   cd demo-app
                   cp .env.example .env
 
-            - name: Set React Environment Variables
-              if: ${{ matrix.stack == 'react' }}
+            - name: Set frontend stack
+              if: ${{ matrix.stack != 'vue' }}
               run: |
                   cd demo-app
-                  sed -i -e "s|APP_STACK=vue|APP_STACK=react|g" .env
+                  sed -i -e "s|^APP_STACK=.*|APP_STACK=${{ matrix.stack }}|" .env
 
             - name: Test libraries
               env:
@@ -178,6 +182,7 @@ jobs:
                   cd demo-app/resources/js
                   mv app-custom-mount.js app.js
                   mv app-custom-mount.jsx app.jsx
+                  mv app-custom-mount.svelte.js app.svelte.js
 
             - name: Prepare Laravel app
               run: |
@@ -191,6 +196,7 @@ jobs:
                   fi
                   php artisan about
                   test -d node_modules/@inertiaui/modal-react || exit 1
+                  test -d node_modules/@inertiaui/modal-svelte || exit 1
                   test -d node_modules/@inertiaui/modal-vue || exit 1
                   pnpm --filter demo-app run build
                   php artisan key:generate

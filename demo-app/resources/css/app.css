@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 
-@source '../../../{react,vue}/src/**/*.{js,jsx,ts,tsx,vue}';
+@source '../../../{react,vue,svelte}/src/**/*.{js,jsx,ts,tsx,vue,svelte}';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../../resources/views/**/*.blade.php';
-@source '../js/**/*.{vue,jsx}';
+@source '../js/**/*.{vue,jsx,svelte}';

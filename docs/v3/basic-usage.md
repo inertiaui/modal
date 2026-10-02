@@ -15,6 +15,12 @@ import { Modal, ModalLink } from '@inertiaui/modal-vue'
 import { Modal, ModalLink } from '@inertiaui/modal-react'
 ```
 
+```svelte [Svelte]
+<script>
+    import { Modal, ModalLink } from '@inertiaui/modal-svelte'
+</script>
+```
+
 :::
 
 Instead of importing the components on every page, you may also consider importing them globally in your `app.js` file:
@@ -61,6 +67,19 @@ export default function CreateUserModal() {
         </Modal>
     );
 }
+```
+
+```svelte [Svelte]
+<script>
+    import { Modal } from '@inertiaui/modal-svelte'
+</script>
+
+<Modal>
+    <h1>Create User</h1>
+    <form>
+        <!-- Form fields -->
+    </form>
+</Modal>
 ```
 
 :::
@@ -492,6 +511,18 @@ function UserIndex() {
         <button onClick={createUserModal}>Create User</button>
     );
 }
+```
+
+```svelte [Svelte]
+<script>
+    import { visitModal } from '@inertiaui/modal-svelte'
+
+    function createUserModal() {
+        visitModal('/users/create')
+    }
+</script>
+
+<button onclick={createUserModal}>Create User</button>
 ```
 
 :::

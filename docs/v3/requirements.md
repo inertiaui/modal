@@ -23,10 +23,11 @@ Inertia Modal 3.x **only** works with Inertia.js v3. If you're using Inertia.js 
 - Tailwind CSS 4+ (or use [headless mode](/headless-mode) with Tailwind CSS 3)
 - **React**: React 19+ with `@inertiajs/react` 3.0+
 - **Vue**: Vue 3.4+ with `@inertiajs/vue3` 3.0+
+- **Svelte**: Svelte 5.46+ with `@inertiajs/svelte` 3.0+
 
 ## TypeScript Support
 
-Both the React and Vue packages include TypeScript type definitions. You can import types from the packages:
+The React, Vue, and Svelte packages include TypeScript type definitions. You can import types from the packages:
 
 ::: code-group
 
@@ -36,6 +37,10 @@ import type { ModalConfig, ModalTypeConfig } from '@inertiaui/modal-vue'
 
 ```ts [React]
 import type { ModalConfig, ModalTypeConfig } from '@inertiaui/modal-react'
+```
+
+```ts [Svelte]
+import type { ModalConfig, ModalTypeConfig } from '@inertiaui/modal-svelte'
 ```
 
 :::

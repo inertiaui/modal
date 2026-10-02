@@ -8,7 +8,7 @@ There are two ways to install Inertia Modal. First, you can install the package 
 composer require inertiaui/modal:^3.0.0
 ```
 
-After installing the package, you can link the React or Vue package into your project. This will create a symlink in your `node_modules` directory to the package in the `vendor` directory.
+After installing the package, you can link the React, Vue, or Svelte package into your project. This will create a symlink in your `node_modules` directory to the package in the `vendor` directory.
 
 ::: code-group
 
@@ -34,6 +34,17 @@ bun add vendor/inertiaui/modal/react
 pnpm add file:vendor/inertiaui/modal/react
 ```
 
+```bash [Svelte]
+# npm
+npm install vendor/inertiaui/modal/svelte
+
+# bun
+bun add vendor/inertiaui/modal/svelte
+
+# pnpm
+pnpm add file:vendor/inertiaui/modal/svelte
+```
+
 :::
 
 ::: info pnpm users
@@ -52,6 +63,10 @@ npm install @inertiaui/modal-vue@^3.0.0
 
 ```bash [React]
 npm install @inertiaui/modal-react@^3.0.0
+```
+
+```bash [Svelte]
+npm install @inertiaui/modal-svelte@^3.0.0
 ```
 
 :::
@@ -87,6 +102,16 @@ createInertiaApp({
 })
 ```
 
+```js [Svelte]
+import { withInertiaModal } from '@inertiaui/modal-svelte' // [!code ++]
+
+createInertiaApp({
+    setup(options) { // [!code ++]
+        withInertiaModal(options) // [!code ++]
+    }, // [!code ++]
+})
+```
+
 :::
 
 If you need more refined control over the mounting process, you should check out the [Custom App Mounting](/custom-app-mounting) documentation.
@@ -107,6 +132,10 @@ In Tailwind CSS 4, add an `@source` directive to your CSS file:
 
 ```css [React]
 @source "../node_modules/@inertiaui/modal-react/src";
+```
+
+```css [Svelte]
+@source "../node_modules/@inertiaui/modal-svelte/src";
 ```
 
 :::
@@ -130,6 +159,15 @@ export default {
 export default {
     content: [
         './node_modules/@inertiaui/modal-react/src/**/*.{js,ts,jsx,tsx}',
+        // other paths...
+    ]
+}
+```
+
+```js [Svelte]
+export default {
+    content: [
+        './node_modules/@inertiaui/modal-svelte/src/**/*.{js,ts,svelte}',
         // other paths...
     ]
 }

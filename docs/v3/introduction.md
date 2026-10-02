@@ -8,7 +8,7 @@ You are reading the docs for **Inertia Modal 3.x**, which requires **Inertia.js 
 
 Here's a summary of the features:
 
-- Supports React and Vue
+- Supports React, Vue, and Svelte
 - Zero backend configuration
 - Super simple frontend API
 - Support for Base Route / URL

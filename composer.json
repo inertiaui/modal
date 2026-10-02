@@ -33,6 +33,7 @@
         "lint": "pnpm run lint",
         "fmt": "pnpm run format",
         "build-react": "pnpm --filter @inertiaui/modal-react run build",
+        "build-svelte": "pnpm --filter @inertiaui/modal-svelte run build",
         "build-vue": "pnpm --filter @inertiaui/modal-vue run build",
         "all": [
             "@analyse",
@@ -44,11 +45,14 @@
         "build": [
             "@all",
             "@build-react",
+            "@build-svelte",
             "@build-vue"
         ],
         "version": [
             "pnpm --filter @inertiaui/modal-react version ${VERSION}",
             "@build-react",
+            "pnpm --filter @inertiaui/modal-svelte version ${VERSION}",
+            "@build-svelte",
             "pnpm --filter @inertiaui/modal-vue version ${VERSION}",
             "@build-vue"
         ],

@@ -8,6 +8,7 @@ phpstan.neon
 testbench.yaml
 vendor
 node_modules
+.svelte-kit
 /docs/.vitepress/cache
 /docs/.vitepress/dist-ci
 /demo-app/storage/debugbar

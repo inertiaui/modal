@@ -1,6 +1,6 @@
 ---
 name: inertia-modal-development
-description: Build and work with inertiaui/modal features including opening routes in modals/slideovers, configuring modal behavior, prefetching, local modals, nested modals, event communication, and headless mode. Supports both React and Vue.
+description: Build and work with inertiaui/modal features including opening routes in modals/slideovers, configuring modal behavior, prefetching, local modals, nested modals, event communication, and headless mode. Supports React, Vue, and Svelte.
 license: MIT
 metadata:
   author: Inertia UI
@@ -9,13 +9,13 @@ metadata:
 # Inertia Modal Development
 
 ## Overview
-Use inertiaui/modal to open any Laravel route in a Modal or Slideover without modifying existing routes or controllers. Works with both React and Vue, supports nested modals, prefetching, local modals, headless mode, and TypeScript.
+Use inertiaui/modal to open any Laravel route in a Modal or Slideover without modifying existing routes or controllers. Works with React, Vue, and Svelte, supports nested modals, prefetching, local modals, headless mode, and TypeScript.
 
 ## When to Activate
 - Activate when working with modals or slideovers in a Laravel + Inertia.js application.
 - Activate when code references `ModalLink`, `Modal`, `HeadlessModal`, `ModalRoot`, `useModal`, `useModalStack`, `visitModal`, or `Inertia::modal()`.
 - Activate when the user wants to open a route in a modal, configure modal behavior, use prefetching, set up nested modals, or communicate between modals.
-- Activate when imports reference `@inertiaui/modal-vue` or `@inertiaui/modal-react`.
+- Activate when imports reference `@inertiaui/modal-vue`, `@inertiaui/modal-react`, or `@inertiaui/modal-svelte`.
 
 ## Scope
 - In scope: modal routes, ModalLink, Modal component, configuration, prefetching, local modals, nested modals, event bus, reload props, deferred props, headless mode, base route/URL, styling.
@@ -24,7 +24,7 @@ Use inertiaui/modal to open any Laravel route in a Modal or Slideover without mo
 ## Workflow
 1. Identify the task (opening a modal, configuring behavior, setting up communication, etc.).
 2. Read `references/inertia-modal-guide.md` and focus on the relevant section.
-3. Apply the patterns from the reference, using the correct framework (React or Vue).
+3. Apply the patterns from the reference, using the correct framework (React, Vue, or Svelte).
 
 ## Core Concepts
 
@@ -66,6 +66,14 @@ createInertiaApp({
         root.render(renderApp(App, props));
     }
 });
+
+// Svelte
+import { withInertiaModal } from '@inertiaui/modal-svelte'
+createInertiaApp({
+    setup(options) {
+        withInertiaModal(options)
+    }
+})
 ```
 
 ### Frontend: ModalLink Component

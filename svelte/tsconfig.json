@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": false,
+        "noImplicitAny": false,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "verbatimModuleSyntax": true,
+        "lib": ["DOM", "ES2022"],
+        "types": ["vite/client"]
+    },
+    "include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts", "src/**/*.d.ts"]
+}

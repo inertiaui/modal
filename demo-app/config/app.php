@@ -10,9 +10,13 @@ use Illuminate\Support\ServiceProvider;
 return [
 
     /**
-     * The stack that should be used by the application. Can be 'vue' or 'react'.
+     * The stack that should be used by the application. Can be 'vue', 'react', or 'svelte'.
      */
-    'stack' => env('APP_STACK', 'vue') === 'vue' ? 'vue' : 'react',
+    'stack' => match (env('APP_STACK', 'vue')) {
+        'react' => 'react',
+        'svelte' => 'svelte',
+        default => 'vue',
+    },
 
     /*
     |--------------------------------------------------------------------------

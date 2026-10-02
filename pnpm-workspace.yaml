@@ -1,6 +1,7 @@
 packages:
     - vue
     - react
+    - svelte
     - demo-app
     - docs
 
