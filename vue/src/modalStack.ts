@@ -137,7 +137,7 @@ export function prefetch(href: string, options: PrefetchOptions = {}): Promise<v
 // No-ops: Inertia 3 uses router.resolveComponent() directly.
 // Kept for backward compatibility with v2 setup code.
 const setComponentResolver = (_resolver: ComponentResolver): void => {}
-export const initFromPageProps = (_pageProps: { resolveComponent?: ComponentResolver }): void => {}
+export const initFromPageProps = (_pageProps: Record<string, any>): void => {}
 
 export class Modal {
     id: string
@@ -582,7 +582,8 @@ function push(
 
 export const modalPropNames = ['closeButton', 'closeExplicitly', 'closeOnClickOutside', 'maxWidth', 'paddingClasses', 'panelClasses', 'position', 'slideover']
 
-export const renderApp = (App: Component, props: { resolveComponent?: ComponentResolver }): (() => ReturnType<typeof h>) => {
+// Accepts Inertia 3's setup props, whose resolveComponent no longer matches ComponentResolver.
+export const renderApp = (App: Component, props: Record<string, any>): (() => ReturnType<typeof h>) => {
     return () => h(ModalRoot, () => h(App, props))
 }
 
