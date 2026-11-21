@@ -32,7 +32,7 @@ Version 2.x has updated minimum requirements:
 
 | Dependency | 0.x | 2.x |
 |------------|-----|-----|
-| PHP | 8.2+ | 8.2+ |
+| PHP | 8.2+ | 8.3+ |
 | Laravel | 10.48+ | 12+ |
 | Inertia Laravel | 1.3+ or 2.0+ | 2.0+ |
 | React | 18.2+ or 19+ | 19+ |
