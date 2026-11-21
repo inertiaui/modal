@@ -33,7 +33,7 @@ Version 2.x has updated minimum requirements:
 | Dependency | 0.x | 2.x |
 |------------|-----|-----|
 | PHP | 8.2+ | 8.2+ |
-| Laravel | 10.48+ | 11.11+ or 12+ |
+| Laravel | 10.48+ | 12+ |
 | Inertia Laravel | 1.3+ or 2.0+ | 2.0+ |
 | React | 18.2+ or 19+ | 19+ |
 | Vue | 3.4+ | 3.4+ |
@@ -251,7 +251,7 @@ import type { ModalConfig, ModalTypeConfig } from '@inertiaui/modal-react'
 
 1. **React 18 is no longer supported** — upgrade to React 19
 2. **Inertia.js v1 is no longer supported** — upgrade to Inertia Laravel 2.0+ and `@inertiajs/react` or `@inertiajs/vue3` 2.3.15+
-3. **Laravel 10 is no longer supported** — upgrade to Laravel 11.11+ or 12+
+3. **Laravel 10 is no longer supported** — upgrade to Laravel 12+
 4. **Tailwind CSS 4 is required** — the default UI is built for Tailwind 4. Use [headless mode](/headless-mode) if you need to stay on Tailwind 3
 5. **Native `<dialog>` element is the default** — the `.im-backdrop` element is no longer rendered. Custom backdrop CSS needs to target `dialog.im-dialog::backdrop` instead. Set `useNativeDialog: false` to opt out
 6. **Tailwind content paths changed** — source files are now TypeScript (`.ts`/`.tsx`). If using Tailwind 3, update your content paths accordingly
