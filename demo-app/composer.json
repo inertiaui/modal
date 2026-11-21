@@ -18,9 +18,9 @@
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0|^8.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-browser": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0"
+        "pestphp/pest": "^4.0|^5.0",
+        "pestphp/pest-plugin-browser": "^4.0|^5.0",
+        "pestphp/pest-plugin-laravel": "^4.0|^5.0"
     },
     "repositories": [
         {
