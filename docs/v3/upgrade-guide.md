@@ -44,7 +44,7 @@ Version 3.x has updated minimum requirements:
 
 | Dependency | 2.x | 3.x |
 |------------|-----|-----|
-| PHP | 8.2+ | 8.2+ |
+| PHP | 8.2+ | 8.3+ |
 | Laravel | 11.11+ or 12+ | 12+ |
 | Inertia Laravel | 2.0+ | 3.0+ |
 | React | 19+ | 19+ |
