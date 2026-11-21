@@ -27,7 +27,7 @@ const messageRef = ref('')
 function submit() {
     form.put(`/users/${props.user.id}`, {
         onSuccess() {
-            modalRef.value.close()
+            modalRef.value?.close()
         },
     })
 }
