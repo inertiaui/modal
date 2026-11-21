@@ -5,7 +5,7 @@ Complete reference for `inertiaui/modal`. Full documentation: https://inertiaui.
 ## Requirements
 
 ### Backend
-- PHP 8.3+
+- PHP 8.2+
 - Laravel 12+ or Laravel 13+
 - Inertia Laravel 2.0+
 
