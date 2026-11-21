@@ -82,7 +82,7 @@ jobs:
                   retention-days: 1
 
     tests:
-        name: Pest L${{ matrix.laravel }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}, Native Dialog ${{ matrix.native_dialog }}
+        name: Pest P${{ matrix.php }} L${{ matrix.laravel }} (${{ matrix.stack }}), App Mounting ${{ matrix.app_mounting }}, Native Dialog ${{ matrix.native_dialog }}
         timeout-minutes: 15
         runs-on: ubuntu-latest
         needs: package-surface
@@ -95,9 +95,27 @@ jobs:
             fail-fast: false
             matrix:
                 laravel: ['13.0', '12.0']
+                php: ['8.4', '8.3']
                 stack: [react, vue]
                 app_mounting: [auto, custom]
                 native_dialog: [true, false]
+                exclude:
+                    - laravel: '13.0'
+                      php: '8.3'
+                    - laravel: '12.0'
+                      php: '8.4'
+                # Laravel 12 does not support PHP 8.6, so only Laravel 13 runs on it.
+                include:
+                    - laravel: '13.0'
+                      php: '8.6'
+                      stack: react
+                      app_mounting: auto
+                      native_dialog: false
+                    - laravel: '13.0'
+                      php: '8.6'
+                      stack: vue
+                      app_mounting: auto
+                      native_dialog: false
 
         env:
             APP_URL: 'http://127.0.0.1:8000'
@@ -127,7 +145,7 @@ jobs:
             - name: Setup PHP
               uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
-                  php-version: ${{ matrix.laravel == '13.0' && '8.4' || '8.3' }}
+                  php-version: ${{ matrix.php }}
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, mysql, mysqli, pdo_mysql
                   coverage: none
 
@@ -211,7 +229,7 @@ jobs:
               if: failure()
               uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
               with:
-                  name: pest-artifacts-${{ matrix.laravel }}-${{ matrix.stack }}-${{ matrix.app_mounting }}-${{ matrix.native_dialog }}
+                  name: pest-artifacts-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stack }}-${{ matrix.app_mounting }}-${{ matrix.native_dialog }}
                   path: |
                       demo-app/tests/Browser/Screenshots
                       demo-app/storage/logs
