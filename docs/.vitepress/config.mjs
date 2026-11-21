@@ -22,7 +22,7 @@ const ORGANIZATION = 'Inertia UI'
 const ORGANIZATION_URL = 'https://inertiaui.com'
 const OG_IMAGE = 'https://inertiaui.com/inertia-modal/docs/icon-1024x1024.png'
 const TWITTER_HANDLE = '@pascalbaljet'
-const SOFTWARE_REQUIREMENTS = 'PHP 8.3+, Laravel 12+, Inertia Laravel 3+, Vue 3.4+ or React 19, Tailwind CSS 4+'
+const SOFTWARE_REQUIREMENTS = 'PHP 8.2+, Laravel 12+, Inertia Laravel 3+, Vue 3.4+ or React 19, Tailwind CSS 4+'
 const ARTICLE_DEPENDENCIES = 'See the versioned Requirements page for Laravel, Inertia.js, Vue, React, and Tailwind CSS compatibility.'
 
 const v0Sidebar = [

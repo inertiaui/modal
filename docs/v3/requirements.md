@@ -14,7 +14,7 @@ Inertia Modal 3.x **only** works with Inertia.js v3. If you're using Inertia.js 
 
 ## Backend
 
-- PHP 8.3+
+- PHP 8.2+
 - Laravel 12+ or Laravel 13+
 - Inertia Laravel 3.0+
 

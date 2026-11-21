@@ -4,7 +4,7 @@
     "description": "The Inertia Modal Demo App",
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^3.0",
         "inertiaui/modal": "*",
