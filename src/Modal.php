@@ -12,6 +12,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 use Illuminate\View\View;
 use Inertia\Response as InertiaResponse;
+use Inertia\Ssr\SsrState;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class Modal implements Responsable
@@ -229,10 +230,27 @@ class Modal implements Responsable
         $viewData = $originalContent->getData();
         $viewData['page']['url'] = $url;
 
+        $this->setSsrStateUrl($url);
+
         foreach (static::$beforeBaseRerenderCallbacks as $callback) {
             $callback($request, $response);
         }
 
         return ResponseFactory::view($originalContent->getName(), $viewData);
+    }
+
+    /**
+     * Keep Inertia's SsrState in sync with the spoofed URL.
+     */
+    protected function setSsrStateUrl(string $url): void
+    {
+        $ssrState = app(SsrState::class);
+        $page = $ssrState->page;
+
+        if ($page !== []) {
+            $page['url'] = $url;
+
+            $ssrState->setPage($page);
+        }
     }
 }
