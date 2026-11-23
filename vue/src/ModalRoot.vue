@@ -116,9 +116,10 @@ const requestInterceptor = (config) => {
 
 // Register interceptor during setup (not onMounted) so it's available before
 // Inertia 3's deferred props loading, which fires during the page.set() promise
-// chain before onMounted hooks execute.
-const removeInterceptor = http.onRequest(requestInterceptor)
-onUnmounted(() => removeInterceptor())
+// chain before onMounted hooks execute. Skip it during SSR, where onUnmounted
+// never runs and every render would leak a handler.
+const removeInterceptor = typeof window === 'undefined' ? null : http.onRequest(requestInterceptor)
+onUnmounted(() => removeInterceptor?.())
 
 watch(
     () => $page.props?._inertiaui_modal,
