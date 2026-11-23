@@ -38,6 +38,12 @@ class DispatchBaseUrlRequest
         $requestForBaseUrl->setDefaultRequestLocale($originalRequest->getDefaultLocale());
 
         $route = $this->router->getRoutes()->match($requestForBaseUrl);
+
+        // Re-bind the route to the current container, like Router::findRoute() does. With
+        // route:cache, CompiledRouteCollection caches the hydrated Route per worker, so under
+        // Octane it may still hold a previous request's (terminated) application sandbox.
+        $route->setContainer(app());
+
         $requestForBaseUrl->setRouteResolver(fn () => $route);
 
         // No need to call setLaravelSession() as it's done by the StartSession middleware
