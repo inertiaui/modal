@@ -182,7 +182,7 @@ Another great example is reloading the parent modal when the child modal is clos
 
 ## Form Submissions in Nested Modals
 
-When you have nested modals and need to submit forms, you'll need to be careful about how you handle the form submission. If you use Inertia's router (like `router.post()`), the redirect response will navigate back to the base route, which closes all modals in the stack.
+When you have nested modals and need to submit forms, you'll need to be careful about how you handle the form submission. If you use Inertia's router (like `router.post()`), the redirect response will navigate back to the [base route](/base-route-url), which closes all modals in the stack.
 
 Instead, use **Axios** for form submissions in nested modals:
 
