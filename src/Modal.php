@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InertiaUI\Modal;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,9 +36,17 @@ class Modal implements Responsable
      */
     protected static array $excludeMiddlewareOnBaseUrl = [];
 
-    public function __construct(protected string $component, protected array $props = [])
+    /**
+     * @var array<string, mixed> The props passed to the modal component.
+     */
+    protected array $props;
+
+    /**
+     * @param  array<string, mixed>|Arrayable<string, mixed>  $props
+     */
+    public function __construct(protected string $component, array|Arrayable $props = [])
     {
-        //
+        $this->props = $props instanceof Arrayable ? $props->toArray() : $props;
     }
 
     /**
