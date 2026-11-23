@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Inertia\PropsResolver;
 use Inertia\Response;
 use Inertia\ResponseFactory;
+use Inertia\Testing\AssertableInertia;
 use Tighten\Ziggy\BladeRouteGenerator;
 
 class ModalServiceProvider extends ServiceProvider
@@ -84,6 +85,8 @@ class ModalServiceProvider extends ServiceProvider
             // ensuring that modal-specific redirects (like closing a modal) work correctly.
             $this->app->alias('inertiaui_modal_redirector', 'redirect');
         }
+
+        $this->registerTestingMacros();
     }
 
     /**
@@ -92,5 +95,20 @@ class ModalServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/inertiaui-modal.php', 'inertiaui-modal');
+    }
+
+    private function registerTestingMacros(): void
+    {
+        AssertableInertia::macro('whereModal', function (string $expected) {
+            $this->where('_inertiaui_modal.component', $expected);
+
+            return $this;
+        });
+
+        AssertableInertia::macro('whereBaseRouteUrl', function (string $expected) {
+            $this->where('_inertiaui_modal.baseUrl', $expected);
+
+            return $this;
+        });
     }
 }
